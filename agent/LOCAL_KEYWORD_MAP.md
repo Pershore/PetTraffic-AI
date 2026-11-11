@@ -37,3 +37,20 @@ Atnaujinta: 2026-11-11
 2. Palyginti parodymus, paspaudimus, CTR ir vidutinę poziciją.
 3. Pirmiausia gerinti puslapius, kurie jau gauna parodymų, bet turi mažą CTR arba nepakankamą atsakymą.
 4. Jei duomenų nėra, patikrinti indeksavimą ir turinio kokybę. Neprikurti daug panašių puslapių.
+
+
+## Konkurentų turinio spragos – 2026-11-11
+
+Greita viešų Lietuvos augintinių turinio svetainių peržiūra parodė, kad kiti leidėjai ir klinikos aktyviai publikuoja temas apie parazitus, keliones, fejerverkų keliamą stresą, odos niežulį, šlubavimą, skiepus ir vyresnių gyvūnų priežiūrą. Tai yra turinio spragų kandidatai, o ne įrodymas apie konkrečią paieškų apimtį.
+
+| Kandidatinė tema | Kodėl verta svarstyti | Prioritetas |
+|---|---|---|
+| Šuns ir katės apsauga nuo erkių | Sezoninė, praktiška ir abiem augintiniams aktuali | Aukštas prieš pavasarį |
+| Šuo vemia automobilyje / kelionės su augintiniu | Konkretus šeimininko klausimas, kurio esamas transportavimo straipsnis neapima | Vidutinis |
+| Šuns ar katės odos niežulys | Dažnas požymis, reikalaujantis aiškaus skirtumo tarp priežasčių ir veterinaro apžiūros | Vidutinis |
+| Šlubavimas šuniui ar katei | Praktinis sveikatos klausimas su aiškiais skubumo požymiais | Vidutinis |
+| Fejerverkų ir garsų baimė | Sezoninė tema prieš šventes, tinkama trumpiems vaizdo įrašams | Aukštas prieš gruodį |
+| Kaip dažnai vežti katę / šunį profilaktinei apžiūrai | Profilaktikos klasterio spraga | Vidutinis |
+| Vyresnio augintinio priežiūra | Ilgalaikė, plati tema, galima susieti su mityba ir sveikata | Žemesnis |
+
+**Konkurentų pavyzdžiai, peržiūrėti tik kaip temų signalai:** InfoVet, DR.VET, Purina Lietuva ir Vilniaus veterinarijos gydykla. Jų turinio struktūros ar tekstų nekopijuoti. Prieš kuriant naują straipsnį patikrinti Search Console užklausas ir surinkti pirminius veterinarinius šaltinius.
