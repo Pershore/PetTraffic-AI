@@ -18,12 +18,13 @@ Daugiau apie matavimą: https://pettraffic-ai.pages.dev/articles/kates-kvepavima
 
 **Vaizdo idėja:** tikroviška, rami miegančios katės nuotrauka; švarus fonas, jokio medicininio dramatizavimo. Ant vaizdo trumpa antraštė „Ar žinote katės ramybės kvėpavimo dažnį?“.
 
-### Įrašas 2 – Gargždų vietinis gidas
-Gargždų augintinių šeimininkams paruošėme vienoje vietoje surinktus viešai skelbiamus veterinarijos klinikų kontaktus. Prieš vykstant visada paskambinkite ir pasitikrinkite darbo laiką bei ar klinika gali priimti jūsų augintinį. Sąrašas nėra reitingas ar mokama rekomendacija – tai praktiškas vietos informacijos gidas.
+### Įrašas 2 – ARO Vet Gargžduose
+Ieškote kasdienių priežiūros priemonių šuniui ar katei? ARO Vet internetinėje parduotuvėje rasite atskiras šunų ir kačių kategorijas – nuo kailio priežiūros iki sveikatos prekių. Prieš pirkdami patikrinkite produkto aprašymą, dydį ir ar priemonė tinka jūsų augintiniui.
 
-Gidas: https://pettraffic-ai.pages.dev/gargzdai-augintiniams.html
+ARO Vet parduotuvė: https://arovetvaistine.lt/
+Vietinis pristatymas: https://pettraffic-ai.pages.dev/gargzdai-augintiniams.html
 
-**Vaizdo idėja:** tikroviška šuns šeimininko ir šuns nuotrauka lauke Gargždų aplinkai būdingoje žalioje erdvėje; nenaudoti klinikų logotipų be leidimo.
+**Vaizdo idėja:** originali, PetTraffic AI sukurta neutrali augintinio priežiūros iliustracija. Nenaudoti ARO Vet logotipo ar produktų nuotraukų be raštiško leidimo.
 
 ## 2 savaitė
 
