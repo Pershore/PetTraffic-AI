@@ -35,6 +35,25 @@ Dabartinė svetainė naudoja lengvas SVG iliustracijas. Jos greitos, bet vizuali
 4. Kiekvienam paveikslėliui: prasmingas failo vardas, tikslus alt tekstas, tinkami matmenys, WebP/AVIF kur tinka, responsive dydžiai ir lazy loading ne pirmam ekrano vaizdui.
 5. Socialiniams tinklams sukurti bendrą 1200×630 Open Graph šabloną ir kiekvienai svarbiai temai unikalų vaizdą. Naudoti tik originalius, licencijuotus arba aiškiai leidžiamus vaizdus.
 
+
+## 2026-11-11 vietinės paieškos patikros papildymas
+
+### Patikrinti vietos informacijos šaltiniai
+- Gargžduose viešai randamos CityVet, Libetera ir Šarūno veterinarijos klinikos.
+- ARO oficiali svetainė skelbia kontaktinį telefoną +370 683 45099; jos vieta Smėlio g. 10, Gargždai, papildomai nurodoma oficialiame VMVT nuotolinės prekybos veterinariniais vaistais sąraše.
+- „Dotty“ šunų kirpykla nurodoma viešame kirpyklų sąraše, tačiau kontaktą ir registraciją prieš publikavimą reikia periodiškai patvirtinti.
+- Klaipėdos rajone oficialius kontaktus skelbia „Nuaro fondas“ (Kalnuvėnai) ir VšĮ „Būk mano draugas“ (Glaudėnai).
+- Kiti regioniniai paieškos rezultatai apima klinikas Klaipėdos mieste ir rajono gyvenvietėse; atskirus miestelius į gidą įtraukti tik kai patikrinamas realus atstumas, paslaugos ir kontaktai.
+
+### Šaltinių kokybės taisyklė
+Pirmenybė teikiama pačios įstaigos svetainei arba oficialiam institucijos sąrašui. Kai prieinamas tik katalogas, puslapyje tai aiškiai įvardijama kaip viešas katalogo įrašas, o ne oficialus šaltinis. Jei telefonai skiriasi, naudojamas tik įstaigos oficialiai skelbiamas kontaktas arba kontaktas laikinai praleidžiamas.
+
+### Paieškos rezultatų momentinė patikra
+2026-11-11 atlikta greita vieša paieška pagal `site:pettraffic-ai.pages.dev` grąžino tuščius rezultatus. Tai nėra galutinis indeksavimo įrodymas, tačiau reiškia, kad šiuo metu negalime teigti, jog naujas domenas jau matomas Google. Reikia patikrinti Google Search Console URL Inspection, Page indexing ir sitemap būsenas, kai prieiga bus suteikta.
+
+### Vietinė konkurencinė aplinka
+Vietos paieškoje jau matomi įstaigų oficialūs puslapiai ir katalogai, pvz., Info.lt, 1551, Baltasis Linari(s), PetGo ir specializuoti kirpyklų sąrašai. Mūsų skirtumas turi būti ne ilgesnis sąrašas, o aiškiai suskirstyta informacija, pirminių šaltinių nuorodos, duomenų patikros data, skubios pagalbos atsakomybės ribos ir patogi mobilioji navigacija. Nekopijuoti kitų svetainių atsiliepimų ar reitingų.
+
 ## 30 dienų marketingo ritmas
 - 2 kokybiški socialiniai įrašai per savaitę, o ne kasdienis nuorodų spam.
 - Vienas įrašas pateikia konkretų patarimą be būtinybės paspausti nuorodą; antras gali pristatyti naują arba atnaujintą gidą.

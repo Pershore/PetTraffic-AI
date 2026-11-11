@@ -15,6 +15,14 @@ Svarbu: žemiau pateiktos frazės yra paieškos ketinimo hipotezės, ne patikrin
 | šunų kirpykla Gargždai | Rasti paslaugą | Tik atskiras vietos gido blokas, jei patikrinti kontaktai |
 | gyvūno čipavimas Gargždai | Paslauga + praktinė informacija | Vietos gidas + oficiali VMVT informacija |
 
+Papildomos vietinės frazės pagal dabar patikrintą gido aprėptį:
+- šunų kirpykla Gargždai / šunų kirpimas Gargžduose;
+- veterinarijos vaistinė Gargždai;
+- gyvūnų prieglauda Klaipėdos rajone / kur priglausti šunį ar katę Klaipėdos rajone;
+- gyvūnų globa Glaudėnai / Kalnuvėnai.
+
+Šios frazės yra paieškos ketinimo hipotezės, ne patvirtintos paieškų apimtys. Atskirti klinikų, kirpyklų, vaistinių ir globos organizacijų paieškas – jų lankytojų poreikiai skiriasi.
+
 ## 2. Klaipėdos rajonas – regioninis ketinimas
 
 Galimos frazės: veterinaras Klaipėdos rajone, veterinarijos klinika netoli Gargždų, kur paženklinti katę Klaipėdos rajone, ką daryti radus šunį Klaipėdos rajone.
