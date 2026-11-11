@@ -10,7 +10,7 @@ Auginti tikrus Lietuvos šunų ir kačių šeimininkų apsilankymus, jų pasitik
 
 ## Dabartinės būklės auditas
 
-- Svetainėje yra 12 straipsnių HTML failų; dabartiniame sitemap įtraukti visi 12 straipsnių URL.
+- Svetainėje yra 13 straipsnių HTML failų; dabartiniame sitemap įtraukti visi 13 straipsnių URL.
 - Pradinis puslapis turi temų pasirinkimą, straipsnių paiešką ir filtrus; toliau gerinti kelią nuo konkretaus klausimo iki tinkamo atsakymo.
 - Pagrindiniame puslapyje jau yra paieška ir teminiai filtrai; tikrinti jų naudojamumą mobiliuosiuose įrenginiuose.
 - Projektas yra nepriklausomas informacinis leidinys. Komercinis turinys galimas tik atskirai įvertinus jo naudą, patikimumą ir skaidrų reklamos ar partnerystės žymėjimą.
@@ -127,7 +127,7 @@ Toliau pateiktos temos atrinktos pagal matomą Lietuvos augintinių turinio pasi
 |---|---|---|---|
 | 1 | Katė dažnai eina į kraiko dėžę, bet nesišlapina – ką daryti? | Aiški, didelės svarbos problema | Skubumo požymiai, ypač patinams, ko nedaryti ir kaip saugiai vykti į kliniką |
 | 2 | Kiek kartų per minutę turi kvėpuoti katė ramybės būsenoje? | Konkretus, pamatuojamas klausimas | Kaip skaičiuoti miegant, kada kartoti, kada skambinti veterinarui; remtis klinikiniais šaltiniais |
-| 3 | Šuo viduriuoja – ką stebėti ir kada kreiptis į veterinarą? | Dažna šeimininkų situacija | Skubūs požymiai, vanduo, galimi rizikos veiksniai, šuniukų ir senjorų atsargumas |
+| 3 | Šuo viduriuoja – ką stebėti ir kada kreiptis į veterinarą? | Dažna šeimininkų situacija | Parengtas atskiras gidas: skubūs požymiai, vanduo, rizikos veiksniai, šuniukų ir senjorų atsargumas |
 | 4 | Kaip suprasti, ar šuo turi antsvorio? | Ilgalaikė kasdienė problema | Kūno būklės vertinimo schema, svorio stebėjimas, kada tartis dėl raciono |
 | 5 | Kiek vandens turi išgerti šuo ar katė? | Lengvai pritaikomas kasdienis klausimas | Matavimo būdas, kas keičia poreikį, kada padidėjęs troškulys svarbus |
 | 6 | Kaip išmokyti katę naudotis kraiko dėžute? | Aiški elgesio ir namų aplinkos užduotis | Dėžučių vieta, kiekis, kraiko tipas, valymas ir kada atmesti sveikatos priežastį |
