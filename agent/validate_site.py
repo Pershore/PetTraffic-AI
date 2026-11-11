@@ -24,6 +24,7 @@ class PageParser(HTMLParser):
         self.canonicals: list[str] = []
         self.ids: set[str] = set()
         self.links: list[str] = []
+        self.image_errors: list[str] = []
 
     def handle_starttag(self, tag: str, attrs) -> None:
         attrs = dict(attrs)
@@ -39,6 +40,8 @@ class PageParser(HTMLParser):
             self.canonicals.append(attrs.get("href", "").strip())
         if attrs.get("id"):
             self.ids.add(attrs["id"])
+        if tag == "img" and not attrs.get("alt", "").strip():
+            self.image_errors.append("image is missing a descriptive alt attribute")
         for key in ("href", "src"):
             value = attrs.get(key)
             if value:
@@ -87,6 +90,10 @@ def main() -> int:
             continue
         parsed_pages[page.resolve()] = parser
         rel = page.relative_to(ROOT)
+        if parser.image_errors:
+            errors.extend(f"{rel}: {message}" for message in parser.image_errors)
+        if "__CARDS__" in page.read_text(encoding="utf-8"):
+            errors.append(f"{rel}: unresolved __CARDS__ template marker")
         if parser.lang != "lt":
             errors.append(f"{rel}: expected <html lang='lt'>")
         if not "".join(parser.title_parts).strip():
