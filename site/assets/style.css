@@ -25,8 +25,4 @@ footer{max-width:1200px;margin:auto;border-top:1px solid var(--line);padding:25p
 .breadcrumbs a{font-weight:700;text-decoration:none}
 .breadcrumbs [aria-current="page"]{color:var(--ink)}
 
-/* ARO Vet product promotion */
-.aro-product-feature{display:grid;grid-template-columns:minmax(180px,280px) 1fr;gap:28px;align-items:center;background:#f5f2e9;border:1px solid #e8e1d2;border-radius:20px;padding:22px;margin:24px 0}.aro-product-feature img{display:block;width:100%;max-width:260px;aspect-ratio:1/1;object-fit:contain;background:#fff;border-radius:14px}.aro-product-feature h3{font-size:24px;line-height:1.2;margin:8px 0}.aro-product-feature p{max-width:680px}.aro-price{font-size:24px;font-weight:800;color:#315443;margin:12px 0 4px}.aro-price small{display:block;font-size:12px;font-weight:500;color:#68786f}.ad-disclaimer{font-size:12px;color:#758078;margin:8px 0 22px}@media(max-width:620px){.aro-product-feature{grid-template-columns:1fr;gap:14px;padding:16px}.aro-product-feature img{max-width:100%;max-height:250px}}
-
-/* ARO Vet featured product – no unlicensed third-party imagery */
 .aro-product-text{grid-template-columns:150px minmax(0,1fr)}.aro-product-icon{width:128px;height:128px;display:grid;place-items:center;border-radius:50%;background:#e4eee3;font-size:64px}.aro-product-text h3{font-size:24px;line-height:1.2;margin:8px 0}.aro-product-text p{max-width:680px}.ad-disclaimer{font-size:12px;color:#758078;margin:8px 0 22px}@media(max-width:620px){.aro-product-text{grid-template-columns:1fr;gap:12px}.aro-product-icon{width:92px;height:92px;font-size:46px}}
