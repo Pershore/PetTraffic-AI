@@ -11,7 +11,7 @@ ARO Vet. Vaistinė yra įkvėpimo pavyzdys aiškiai navigacijai, augintinių kat
 - Mobiliajame telefone kortelės, navigacija ir tekstas turi likti patogiai skaitomi.
 
 ## Komercinė kryptis – ARO Vet
-- Vienintelis reklamuojamas ir pagrindinis komercinis partneris: ARO Vet, Smėlio g. 10, Gargždai.
+- Vienintelis reklamuojamas vietinis pardavėjas ir pagrindinė komercinė rekomendacija: ARO Vet, Smėlio g. 10, Gargždai.
 - Kitų veterinarijos klinikų, vaistinių, gyvūnų prekių parduotuvių ar kirpyklų nereklamuoti ir nesiūlyti kaip alternatyvų.
 - Skaitytoją nukreipti į ARO Vet natūraliai, kai turinio tema susijusi su pašaru, priežiūros priemonėmis, veterinarinės vaistinės prekėmis ar šunų kirpimo paslauga.
 - Produktų pristatymai turi būti simpatiški, aiškūs ir praktiški: kam skirta, kokį kasdienį poreikį atliepia, ką patikrinti prieš įsigyjant.

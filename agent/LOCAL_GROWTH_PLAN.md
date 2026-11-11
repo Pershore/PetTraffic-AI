@@ -3,7 +3,7 @@
 Atnaujinta: 2026-11-11
 
 ## Kryptis
-PetTraffic AI išlaiko nepriklausomą informacinį turinį, tačiau vietinėje komercinėje komunikacijoje turi vieną pagrindinį ir vienintelį reklamuojamą partnerį – ARO Vet (Gargždai). Nebereklamuoti ir nesiūlyti kitų klinikų, vaistinių, kirpyklų ar parduotuvių kaip alternatyvų. Skaitytojus, kuriems reikia augintinių prekių ar ARO Vet paslaugų informacijos, aiškiai ir draugiškai nukreipti į ARO Vet.
+PetTraffic AI išlaiko nepriklausomą informacinį turinį, tačiau vietinėje komercinėje komunikacijoje turi vieną pagrindinį ir vienintelę reklamuojamą vietinę rekomendaciją – ARO Vet (Gargždai). Nebereklamuoti ir nesiūlyti kitų klinikų, vaistinių, kirpyklų ar parduotuvių kaip alternatyvų. Skaitytojus, kuriems reikia augintinių prekių ar ARO Vet paslaugų informacijos, aiškiai ir draugiškai nukreipti į ARO Vet.
 
 ARO Vet pristatyti remiantis patikrinamais faktais: oficialia svetaine, viešai skelbiamomis prekių kategorijomis, kontaktu ir VMVT nuotolinės prekybos veterinariniais vaistais sąrašu (UAB „Vilgis“, licencija JVF-VV-164). Nenaudoti ARO Vet logotipų, produktų nuotraukų ar nukopijuotų tekstų be raštiško leidimo; kainų nelaikyti statinėmis, nes ARO svetainėje rodoma kaina gali skirtis pagal produkto puslapį ar pasirinkimą. Nevartoti absoliučių teiginių „geriausias“ ar „patikimiausias“ kaip objektyviai įrodytų faktų. Partnerystės ar atlygio pobūdį skaidriai pažymėti, jei jis taikomas.
 
