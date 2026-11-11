@@ -101,6 +101,30 @@ def main() -> int:
                 lines.append(f"| {q} | {row.get('clicks',0):.0f} | {row.get('impressions',0):.0f} | {row.get('ctr',0):.1%} | {row.get('position',0):.1f} |")
         else:
             lines.append("_Search Console šiam laikotarpiui užklausų eilučių nepateikė._")
+
+        lines += ["", "### Daugiausia parodymų sulaukę puslapiai", ""]
+        gsc_pages_body = {
+            "startDate":start_s,
+            "endDate":end_s,
+            "dimensions":["page"],
+            "rowLimit":10
+        }
+        gsc_pages = session.post(gsc_url, json=gsc_pages_body, timeout=30)
+        gsc_pages.raise_for_status()
+        page_rows = gsc_pages.json().get("rows", [])
+        if page_rows:
+            lines += ["| Puslapis | Paspaudimai | Parodymai | CTR | Vid. pozicija |",
+                      "|---|---:|---:|---:|---:|"]
+            for row in page_rows:
+                page_url = row.get("keys",[""])[0].replace("|", "%7C")
+                lines.append(
+                    f"| {page_url} | {row.get('clicks',0):.0f} | "
+                    f"{row.get('impressions',0):.0f} | {row.get('ctr',0):.1%} | "
+                    f"{row.get('position',0):.1f} |"
+                )
+        else:
+            lines.append("_Search Console puslapių eilučių nepateikė._")
+
         lines += ["", "Ataskaita apibendrina statistinius duomenis; atskiri lankytojai neidentifikuojami."]
         OUT.write_text("\n".join(lines)+"\n", encoding="utf-8")
         print(f"Analytics report created: {OUT}")
