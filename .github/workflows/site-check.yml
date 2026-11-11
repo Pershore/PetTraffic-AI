@@ -1,6 +1,8 @@
 name: Pet traffic site checks
 
 on:
+  schedule:
+    - cron: "30 5 * * *"
   pull_request:
     branches: [main]
   push:
