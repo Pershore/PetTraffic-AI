@@ -53,7 +53,7 @@
     let visibleCount = 0;
 
     articleCards.forEach((card) => {
-      const categories = (card.dataset.category || '').split(/\\s+/);
+      const categories = (card.dataset.category || '').split(/\s+/);
       const matchesCategory = activeFilter === 'visi' || categories.includes(activeFilter);
       const matchesText = !query || card.textContent.toLocaleLowerCase('lt-LT').includes(query);
       const visible = matchesCategory && matchesText;
