@@ -14,8 +14,7 @@ Vieną kartą reikia:
 4. Search Console svetainės nuosavybėje pridėti tą pačią paskyrą su ribota skaitymo prieiga.
 5. GitHub repo Settings → Secrets and variables → Actions pridėti:
    - Secret: `GOOGLE_SERVICE_ACCOUNT_JSON` – visas paslaugos paskyros JSON turinys.
-   - Variable: `GA4_PROPERTY_ID` – skaitinis GA4 nuosavybės ID (ne matavimo ID, kuris prasideda G-).
-   - Variable: `GSC_SITE_URL` – tikslus patvirtintos nuosavybės adresas, pvz. `https://pettraffic-ai.pages.dev/`.
+   - GA4 nuosavybės ID `563539278` ir svetainės adresas `https://pettraffic-ai.pages.dev/` jau įrašyti kaip saugūs numatytieji nustatymai darbo eigoje; jų GitHub Variables kurti nereikia. Jei ateityje keisis GA4 nuosavybė ar Search Console adresas, juos galima perrašyti per `GA4_PROPERTY_ID` ir `GSC_SITE_URL` kintamuosius.
 
 Darbo eiga renka tik agreguotus skaičius: aktyvius naudotojus, sesijas, puslapių peržiūras ir Search Console užklausų paspaudimus / parodymus. Ji neidentifikuoja atskirų lankytojų. Jei nustatymų nėra, ataskaita aiškiai pažymi, kad duomenys neprijungti.
 
