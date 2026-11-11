@@ -1,4 +1,4 @@
-name: PetTraffic AI analytics snapshot
+name: Pet traffic analytics snapshot
 
 on:
   schedule:
