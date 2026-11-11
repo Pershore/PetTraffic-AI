@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""PetTraffic AI static-site checks. Uses only Python's standard library."""
+"""Pet traffic static-site checks. Uses only Python's standard library."""
 from __future__ import annotations
 
 from html.parser import HTMLParser
@@ -140,11 +140,11 @@ def main() -> int:
         errors.append(f"Backup file must not be published inside site/: {backup.relative_to(ROOT)}")
 
     if errors:
-        print("PetTraffic AI validation FAILED:")
+        print("Pet traffic validation FAILED:")
         for error in errors:
             print(f" - {error}")
         return 1
-    print(f"PetTraffic AI validation PASSED: {len(pages)} HTML pages, local links, SEO basics, sitemap and robots.txt.")
+    print(f"Pet traffic validation PASSED: {len(pages)} HTML pages, local links, SEO basics, sitemap and robots.txt.")
     return 0
 
 
