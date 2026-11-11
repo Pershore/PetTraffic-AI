@@ -56,29 +56,13 @@ Greita viešų Lietuvos augintinių turinio svetainių peržiūra parodė, kad k
 **Konkurentų pavyzdžiai, peržiūrėti tik kaip temų signalai:** InfoVet, DR.VET, Purina Lietuva ir Vilniaus veterinarijos gydykla. Jų turinio struktūros ar tekstų nekopijuoti. Prieš kuriant naują straipsnį patikrinti Search Console užklausas ir surinkti pirminius veterinarinius šaltinius.
 
 
-## ARO Vet partnerio paieškos klasteris
 
-Šios frazės yra tyrimo hipotezės, o ne patikrinti paieškų kiekiai. Tikrinti Search Console ir Google Ads Keyword Planner prieš kuriant atskirus puslapius.
+## Sezoninė tema: fejerverkų baimė
 
-| Frazės hipotezė | Ketinimas | Rekomenduojamas puslapis |
+| Paieškos frazės hipotezė | Ketinimas | Puslapis |
 |---|---|---|
-| ARO Vet | Prekės ženklo paieška | Partnerio pristatymo puslapis |
-| ARO Vet vaistinė | Rasti parduotuvę | Partnerio pristatymo puslapis |
-| ARO Vet atsiliepimai | Įvertinti pardavėją | Skaidrus partnerio pristatymas, tik tikri atsiliepimai |
-| ARO Vet šunų maistas | Rasti šunų pašarą | Šunų maisto rekomendacijų puslapis |
-| ARO Vet kačių maistas | Rasti kačių pašarą | Kačių maisto rekomendacijų puslapis |
-| ARO Vet priemonės nuo erkių | Pasirinkti apsaugos priemonę | Sezoninis edukacinis vadovas + kategorijos nuoroda |
-| ARO Vet vitaminai šunims | Rasti papildus | Papildų pasirinkimo vadovas su veterinarinių konsultacijų ribomis |
-| ARO Vet dantų priežiūra | Rasti priežiūros priemones | Esamas dantų priežiūros straipsnis |
+| šuo bijo fejerverkų ką daryti | Sumažinti baimę ir pabėgimo riziką | /articles/augintiniai-ir-fejerverkai-kaip-padeti.html |
+| katė bijo fejerverkų | Paruošti saugią vietą namuose | /articles/augintiniai-ir-fejerverkai-kaip-padeti.html |
+| kaip nuraminti šunį per fejerverkus | Suprasti saugius veiksmus ir kada tartis su veterinaru | /articles/augintiniai-ir-fejerverkai-kaip-padeti.html |
 
-**Svarbu:** nerašyti atskirų plonų puslapių vien tam, kad būtų įterptas prekės ženklas. Kiekvienas puslapis turi atsakyti į realų klausimą, atskleisti partnerio ryšį ir turėti originalią vertę.
-
-## Komercinės intencijos temos, kurios gali natūraliai vesti į ARO Vet
-- Kaip pasirinkti visavertį šunų pašarą pagal amžių ir dydį.
-- Kaip skaityti kačių pašaro etiketę.
-- Kokių priemonių reikia šuniuko kasdienei priežiūrai.
-- Kaip saugiai pripratinti katę prie dantų priežiūros.
-- Kaip pasirinkti tinkamą transportavimo priemonę katei.
-- Kuo skiriasi kasdienės priežiūros priemonės nuo veterinarinio gydymo priemonių.
-
-Nepridėti medicininių produktų į skubios pagalbos straipsnius kaip pirkimo CTA.
+Šios frazės yra intencijos hipotezės, ne patikrinti paieškų kiekiai. Prieš kuriant papildomą turinį, patikrinti Search Console užklausas ir įvertinti, ar atskiras puslapis nesidubliuotų su esamu vadovu.
