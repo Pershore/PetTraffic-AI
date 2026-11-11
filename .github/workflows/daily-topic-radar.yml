@@ -28,3 +28,11 @@ jobs:
           path: reports/topic-radar.md
           if-no-files-found: error
           retention-days: 30
+      - name: Add topic report to job summary
+        if: always()
+        run: |
+          if [ -f reports/topic-radar.md ]; then
+            cat reports/topic-radar.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'Temų ataskaita nesukurta; patikrink ankstesnių žingsnių žurnalus.' >> "$GITHUB_STEP_SUMMARY"
+          fi
