@@ -10,6 +10,16 @@ ARO Vet. Vaistinė yra įkvėpimo pavyzdys aiškiai navigacijai, augintinių kat
 - Straipsnių puslapiuose naudojama viena aiški H1 antraštė, trumpas įvadas, teminės H2 dalys, sąrašai, šaltiniai ir aiški pastaba apie veterinarinę konsultaciją.
 - Mobiliajame telefone kortelės, navigacija ir tekstas turi likti patogiai skaitomi.
 
+## Komercinė kryptis – ARO Vet
+- Vienintelis reklamuojamas ir pagrindinis komercinis partneris: ARO Vet, Smėlio g. 10, Gargždai.
+- Kitų veterinarijos klinikų, vaistinių, gyvūnų prekių parduotuvių ar kirpyklų nereklamuoti ir nesiūlyti kaip alternatyvų.
+- Skaitytoją nukreipti į ARO Vet natūraliai, kai turinio tema susijusi su pašaru, priežiūros priemonėmis, veterinarinės vaistinės prekėmis ar šunų kirpimo paslauga.
+- Produktų pristatymai turi būti simpatiški, aiškūs ir praktiški: kam skirta, kokį kasdienį poreikį atliepia, ką patikrinti prieš įsigyjant.
+- Naudoti tik ARO Vet svetainėje patikrintus produktų pavadinimus, nuotraukas, aprašymus, kainas ir pirkimo URL. Jei kaina nepatikrinta tą pačią dieną, jos nerodyti.
+- Nenaudoti nepagrįstų superliatyvų („geriausias“, „patikimiausias“) kaip objektyvaus fakto. Pasitikėjimą grįsti patikrinamais faktais, pvz., viešu VMVT sąrašu.
+- Reklamą, partnerystės ar komisinius ryšius aiškiai atskirti ir pažymėti pagal realų susitarimą.
+- Veterinarinių vaistų ar papildų nerekomenduoti gydymui, nenurodyti dozavimo ir nežadėti poveikio. Dėl gydymo – veterinarijos gydytojas.
+
 ## Rašymo maniera
 - Rašyti lietuviškai, paprastai, draugiškai ir pagarbiai augintinio šeimininkui.
 - Kreiptis nuosekliai: „jūsų augintinis“, „šuo“, „katė“, „šeimininkas“. Vengti kaitalioti „tu“ ir „jūs“ tame pačiame puslapyje.

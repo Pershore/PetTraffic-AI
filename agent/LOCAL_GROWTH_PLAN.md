@@ -3,7 +3,9 @@
 Atnaujinta: 2026-11-11
 
 ## Kryptis
-PetTraffic AI lieka nepriklausomu augintinių informacijos projektu, o ne veterinarijos klinika ar paslaugų teikėju. Vietinis matomumas auginamas per realiai naudingą Gargždų ir Klaipėdos rajono informaciją, ne per fiktyvų verslo profilį ar miestų raktažodžių puslapių masinę gamybą.
+PetTraffic AI išlaiko nepriklausomą informacinį turinį, tačiau vietinėje komercinėje komunikacijoje turi vieną pagrindinį ir vienintelį reklamuojamą partnerį – ARO Vet (Gargždai). Nebereklamuoti ir nesiūlyti kitų klinikų, vaistinių, kirpyklų ar parduotuvių kaip alternatyvų. Skaitytojus, kuriems reikia augintinių prekių ar ARO Vet paslaugų informacijos, aiškiai ir draugiškai nukreipti į ARO Vet.
+
+ARO Vet pristatyti remiantis patikrinamais faktais: oficialia svetaine, viešai skelbiamomis prekių kategorijomis, kontaktu ir VMVT nuotolinės prekybos veterinariniais vaistais sąrašu. Nevartoti absoliučių teiginių „geriausias“ ar „patikimiausias“ kaip objektyviai įrodytų faktų. Partnerystės ar atlygio pobūdį skaidriai pažymėti, jei jis taikomas.
 
 ## Turinio politika: kokybė, ne kiekis
 - Esamas straipsnių katalogas jau turi pakankamai temų pirmajam augimo etapui. Naujo straipsnio nekurti vien tam, kad padidėtų skaičius.
@@ -11,14 +13,14 @@ PetTraffic AI lieka nepriklausomu augintinių informacijos projektu, o ne veteri
 - Naują straipsnį publikuoti tik tada, kai Search Console arba realūs skaitytojų klausimai rodo aiškią spragą, o tekstas suteikia originalų praktinį atsakymą.
 - Veterinarinėms temoms būtina naudoti pirminius veterinarinius šaltinius, aiškiai nurodyti skubius požymius ir nekurti diagnozių.
 
-## Vietinis SEO: Gargždai ir Klaipėdos rajonas
-Pirmas vietinis puslapis: /gargzdai-augintiniams.html – nepriklausomas kontaktų gidas augintinių šeimininkams. Jame pateikiami viešai skelbiami klinikų kontaktai, šaltiniai ir perspėjimas prieš vykstant susisiekti. Tai nėra reitingas, rekomendacija ar mokama reklama.
+## Vietinis SEO: ARO Vet Gargžduose
+Pagrindinis vietinis komercinis puslapis: /gargzdai-augintiniams.html – ARO Vet pristatymas, kontaktai, internetinė parduotuvė, šunų ir kačių prekių kategorijos. Pašalinti kitų vietinių klinikų, vaistinių, kirpyklų ir prieglaudų reklaminius / rekomendacinius sąrašus. Nenaudoti konkurentų pavadinimų kaip nukreipimo tikslų.
 
-Tolimesnės vietinės temos, tik patikrinus naudą ir faktus:
-1. Augintinio ženklinimas ir registracija Klaipėdos rajone – remtis VMVT ir ŽŪDC informacija.
-2. Ką daryti radus pasiklydusį gyvūną Gargžduose – tik patikrinus savivaldybės ir atsakingų įstaigų kontaktus.
-3. Gyvūnų kirpyklos, prieglaudos, gyvūnų prekių vietos – tik su patikrintais kontaktais ir aiškia duomenų atnaujinimo data.
-Vengti atskirų plonų puslapių kiekvienai gyvenvietei. Geriau vienas nuolat atnaujinamas regiono gidas su tikrais duomenimis.
+ARO Vet internetinės parduotuvės kategorijos, kurios gali būti naudojamos tikrinant prekes ir rengiant turinį:
+- https://arovetvaistine.lt/category/sunys/sveikatos-prieziura/
+- https://arovetvaistine.lt/category/kates/sveikatos-prieziura/
+- https://arovetvaistine.lt/category/sunys/prieziuros-priemones/
+- https://arovetvaistine.lt/
 
 ## Google paieška ir techninis SEO
 - Search Console: stebėti parodymus, paspaudimus, CTR, pozicijas, indeksavimo klaidas ir užklausas pagal puslapį.
@@ -55,11 +57,12 @@ Pirmenybė teikiama pačios įstaigos svetainei arba oficialiam institucijos są
 Vietos paieškoje jau matomi įstaigų oficialūs puslapiai ir katalogai, pvz., Info.lt, 1551, Baltasis Linari(s), PetGo ir specializuoti kirpyklų sąrašai. Mūsų skirtumas turi būti ne ilgesnis sąrašas, o aiškiai suskirstyta informacija, pirminių šaltinių nuorodos, duomenų patikros data, skubios pagalbos atsakomybės ribos ir patogi mobilioji navigacija. Nekopijuoti kitų svetainių atsiliepimų ar reitingų.
 
 ## 30 dienų marketingo ritmas
-- 2 kokybiški socialiniai įrašai per savaitę, o ne kasdienis nuorodų spam.
-- Vienas įrašas pateikia konkretų patarimą be būtinybės paspausti nuorodą; antras gali pristatyti naują arba atnaujintą gidą.
-- Pirmiausia tikrinti vietinių Facebook grupių taisykles; neplatinti vienodo įrašo masiškai.
-- Kreiptis į vietines klinikas, gyvūnų kirpyklas, parduotuves ir gyvūnų globėjus dėl faktų patikros, naudingų nuorodų ir galimos bendros edukacijos. Jokio tariamo bendradarbiavimo be sutikimo.
-- Mokamos reklamos nepradėti, kol nėra konversijų matavimo ir aiškaus biudžeto. Pirmiausia išmatuoti organinį srautą.
+- Du naudingi socialiniai įrašai per savaitę: vienas edukacinis, kitas – švelniai pristatantis aktualią ARO Vet prekių kategoriją ar patikrintą produktą.
+- Produkto kortelėje naudoti tik tikrą ARO Vet produkto nuotrauką, tikslų pavadinimą, tiesioginę pirkimo nuorodą ir tuo metu patikrintą kainą. Kainą žymėti kaip patikrinimo dienos kainą; automatizuoti jos atnaujinimą arba rodyti „žiūrėti kainą parduotuvėje“.
+- Nerašyti gydomųjų pažadų, nenurodyti dozavimo ar vaistų vartojimo rekomendacijų be patvirtinto oficialaus šaltinio.
+- ARO Vet prekes pristatyti draugiškai ir praktiškai: kokiai kasdienei situacijai prekė skirta, kokiam gyvūnui tinka, ką būtina patikrinti prieš perkant.
+- Aiškiai atskirti redakcinį patarimą nuo reklaminės / partnerystės nuorodos. Nesiųsti laiškų ar nepublikuoti išoriniuose kanaluose be atskiro leidimo.
+- Kitų vietinių įmonių reklaminio turinio nekurti.
 
 ## Matavimas
 Savaitinė ataskaita:
