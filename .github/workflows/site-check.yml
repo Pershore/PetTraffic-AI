@@ -1,4 +1,4 @@
-name: PetTraffic AI site checks
+name: Pet traffic site checks
 
 on:
   pull_request:
