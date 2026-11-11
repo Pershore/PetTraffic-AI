@@ -16,7 +16,7 @@ Vieną kartą reikia:
    - Secret: `GOOGLE_SERVICE_ACCOUNT_JSON` – visas paslaugos paskyros JSON turinys.
    - GA4 nuosavybės ID `563539278` ir svetainės adresas `https://pettraffic-ai.pages.dev/` jau įrašyti kaip saugūs numatytieji nustatymai darbo eigoje; jų GitHub Variables kurti nereikia. Jei ateityje keisis GA4 nuosavybė ar Search Console adresas, juos galima perrašyti per `GA4_PROPERTY_ID` ir `GSC_SITE_URL` kintamuosius.
 
-Darbo eiga renka tik agreguotus skaičius: aktyvius naudotojus, sesijas, puslapių peržiūras ir Search Console užklausų paspaudimus / parodymus. Ji neidentifikuoja atskirų lankytojų. Jei nustatymų nėra, ataskaita aiškiai pažymi, kad duomenys neprijungti.
+Darbo eiga renka tik agreguotus skaičius: aktyvius naudotojus, bendras sesijas, sesijas pagal numatytąjį kanalą (įskaitant atskirai „Organic Search“), puslapių peržiūras ir Search Console užklausų bei puslapių paspaudimus / parodymus. Ji neidentifikuoja atskirų lankytojų. Jei nustatymų nėra, ataskaita aiškiai pažymi, kad duomenys neprijungti.
 
 ## 3. Temų tyrimas ir straipsnių rengimas
 
