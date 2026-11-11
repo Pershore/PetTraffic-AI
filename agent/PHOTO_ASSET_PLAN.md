@@ -8,7 +8,7 @@ Auditas atliktas 2026-11-11 pagal pagrindinės šakos HTML failus.
 - Straipsnių puslapiuose nerasta nė vienos nuotraukos.
 - Nė viename iš patikrintų puslapių nerasta Open Graph `og:image` ar Twitter Card vaizdo metaduomenų.
 - Visuose pagrindiniuose puslapiuose yra title, meta description, canonical ir vienas H1; patikrintose vidinėse nuorodose klaidų nerasta.
-- Mobilusis CSS turi 900 px, 680 px ir 390 px lūžio taškus; naujam Gargždų gidui pridėtos mobiliesiems pritaikytos kortelės ir paspaudžiami telefono numeriai.
+- Mobilusis CSS turi 900 px, 680 px ir 390 px lūžio taškus; straipsnių puslapiams naudojami bendri mobiliesiems pritaikyti komponentai.
 
 ## Vaizdų prioritetai
 
