@@ -124,8 +124,8 @@ def main() -> int:
                 target = ROOT / (path.lstrip("/") or "index.html")
                 if path == "/":
                     target = ROOT / "index.html"
-                if path.endswith("/"):
-                    target = target / "index.html"
+                elif path.endswith("/"):
+                    target = ROOT / path.lstrip("/") / "index.html"
                 if not target.exists():
                     errors.append(f"sitemap.xml: URL has no matching file: {url}")
         except ET.ParseError as exc:
