@@ -9,6 +9,11 @@ on:
 permissions:
   contents: read
 
+# Keep only the newest validation run for each branch/PR ref.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate-site:
     name: Validate static website and automation code
