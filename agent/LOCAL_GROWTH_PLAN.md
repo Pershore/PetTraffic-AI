@@ -5,7 +5,7 @@ Atnaujinta: 2026-11-11
 ## Kryptis
 PetTraffic AI išlaiko nepriklausomą informacinį turinį, tačiau vietinėje komercinėje komunikacijoje turi vieną pagrindinį ir vienintelį reklamuojamą partnerį – ARO Vet (Gargždai). Nebereklamuoti ir nesiūlyti kitų klinikų, vaistinių, kirpyklų ar parduotuvių kaip alternatyvų. Skaitytojus, kuriems reikia augintinių prekių ar ARO Vet paslaugų informacijos, aiškiai ir draugiškai nukreipti į ARO Vet.
 
-ARO Vet pristatyti remiantis patikrinamais faktais: oficialia svetaine, viešai skelbiamomis prekių kategorijomis, kontaktu ir VMVT nuotolinės prekybos veterinariniais vaistais sąrašu. Nevartoti absoliučių teiginių „geriausias“ ar „patikimiausias“ kaip objektyviai įrodytų faktų. Partnerystės ar atlygio pobūdį skaidriai pažymėti, jei jis taikomas.
+ARO Vet pristatyti remiantis patikrinamais faktais: oficialia svetaine, viešai skelbiamomis prekių kategorijomis, kontaktu ir VMVT nuotolinės prekybos veterinariniais vaistais sąrašu (UAB „Vilgis“, licencija JVF-VV-164). Nenaudoti ARO Vet logotipų, produktų nuotraukų ar nukopijuotų tekstų be raštiško leidimo; kainų nelaikyti statinėmis, nes ARO svetainėje rodoma kaina gali skirtis pagal produkto puslapį ar pasirinkimą. Nevartoti absoliučių teiginių „geriausias“ ar „patikimiausias“ kaip objektyviai įrodytų faktų. Partnerystės ar atlygio pobūdį skaidriai pažymėti, jei jis taikomas.
 
 ## Turinio politika: kokybė, ne kiekis
 - Esamas straipsnių katalogas jau turi pakankamai temų pirmajam augimo etapui. Naujo straipsnio nekurti vien tam, kad padidėtų skaičius.
@@ -58,7 +58,7 @@ Vietos paieškoje jau matomi įstaigų oficialūs puslapiai ir katalogai, pvz., 
 
 ## 30 dienų marketingo ritmas
 - Du naudingi socialiniai įrašai per savaitę: vienas edukacinis, kitas – švelniai pristatantis aktualią ARO Vet prekių kategoriją ar patikrintą produktą.
-- Produkto kortelėje naudoti tik tikrą ARO Vet produkto nuotrauką, tikslų pavadinimą, tiesioginę pirkimo nuorodą ir tuo metu patikrintą kainą. Kainą žymėti kaip patikrinimo dienos kainą; automatizuoti jos atnaujinimą arba rodyti „žiūrėti kainą parduotuvėje“.
+- Produkto kortelėje naudoti tik ARO Vet patvirtintą produkto nuotrauką (raštiškas leidimas būtinas), tikslų pavadinimą ir tiesioginę pirkimo nuorodą. Kainos ir likučio nerodyti, kol nėra patikimo kasdienio atnaujinimo; nukreipti į produkto puslapį patikrinti dabartinę kainą.
 - Nerašyti gydomųjų pažadų, nenurodyti dozavimo ar vaistų vartojimo rekomendacijų be patvirtinto oficialaus šaltinio.
 - ARO Vet prekes pristatyti draugiškai ir praktiškai: kokiai kasdienei situacijai prekė skirta, kokiam gyvūnui tinka, ką būtina patikrinti prieš perkant.
 - Aiškiai atskirti redakcinį patarimą nuo reklaminės / partnerystės nuorodos. Nesiųsti laiškų ar nepublikuoti išoriniuose kanaluose be atskiro leidimo.
