@@ -1,4 +1,4 @@
-# PetTraffic AI: realistiškas lankytojų pritraukimo planas
+# Pet traffic: realistiškas lankytojų pritraukimo planas
 
 Atnaujinta: 2026-11-11
 
@@ -13,8 +13,8 @@ Auginti tikrus Lietuvos šunų ir kačių šeimininkų apsilankymus, jų pasitik
 - Svetainė turi 11 straipsnių HTML failų, bet ankstesniame sitemap buvo tik 9 URL įrašai ir trūko kelių jau publikuotų straipsnių.
 - Pradinis puslapis buvo labiau vizitinė kortelė: bendros frazės, iliustracijų kortelės ir nepakankamai aiškus kelias nuo konkretaus klausimo iki atsakymo.
 - Buvo daug bendrų navigacijos ir straipsnių nuorodų, tačiau nebuvo paieškos ar teminių filtrų.
-- Svetainės komercinė kryptis nustatyta į vienintelę vietinę rekomendaciją – ARO Vet. Produktų rekomendacijos turi būti aiškiai pažymėtos, tikrinti nuorodas, nenaudoti kainų ir likučių be patikimo atnaujinimo.
-- Apie projektą puslapis turi išlikti skaidrus: PetTraffic AI nėra klinika, o ekspertų peržiūra negali būti deklaruojama, kol ji realiai nevyksta.
+- Projektas yra nepriklausomas informacinis leidinys. Komercinis turinys galimas tik atskirai įvertinus jo naudą, patikimumą ir skaidrų reklamos ar partnerystės žymėjimą.
+- Apie projektą puslapis turi išlikti skaidrus: Pet traffic nėra klinika, o ekspertų peržiūra negali būti deklaruojama, kol ji realiai nevyksta.
 - Paskelbtų straipsnių temos daugiausia apima pradedančiojo lygio klausimus. Reikia gilinti geriausius turinio klasterius, o ne masiškai gaminti panašius tekstus.
 
 ## Prioritetinė auditorija
@@ -24,8 +24,7 @@ Auginti tikrus Lietuvos šunų ir kačių šeimininkų apsilankymus, jų pasitik
 3. Šeimininkai, ieškantys sprendimo dabar: kada skubiai kreiptis į veterinarą, ką daryti po procedūros, kaip atpažinti pavojingus požymius.
 4. Šeimininkai, lyginantys priežiūros produktus: tik po to, kai turinys turi realią naudą ir komercinis ryšys aiškiai atskleistas.
 
-## ARO Vet komercinės komunikacijos taisyklės\n\n- Vienintelis reklamuojamas vietinis pardavėjas – ARO Vet. Kitų klinikų, vaistinių, parduotuvių ar kirpyklų nesiūlyti kaip reklaminių alternatyvų.\n- ARO Vet pristatyti šiltai, bet faktus grįsti oficialia svetaine ir VMVT įrašu.
-- Kontekstines nuorodas į ARO Vet įterpti tik teminiuose straipsniuose: mitybos, kasdienės priežiūros ir pooperacinės priežiūros puslapiuose. Skubios pagalbos straipsniuose aiškiai pasakyti, kad ARO Vet vaistinė nėra skubios pagalbos klinika, ir nenukreipti skubaus atvejo į pirkimą.\n- ARO Vet įtraukimas į VMVT nuotolinės prekybos sąrašą reiškia teisę prekiauti nereceptiniais veterinariniais vaistais nuotoliniu būdu; tai nėra nepriklausomas visų prekių kokybės įvertinimas.\n- Nenaudoti logotipo, produktų nuotraukų ar nukopijuotų aprašymų be raštiško leidimo.\n- Nerodyti kainų ir likučių be patikimo atnaujinimo.\n- Nevadinti PetTraffic AI oficialiu ARO Vet puslapiu ar partneriu, kol nėra sudaryto susitarimo.\n\n## Augimo kanalai – prioritetų tvarka
+## Augimo kanalai – prioritetų tvarka
 
 ### 1. Google organinė paieška
 
@@ -162,7 +161,7 @@ LRT 2024 m. rugpjūčio publikacijoje pažymima, kad registras neparodo viso rea
 ## Socialinių įrašų pavyzdžiai
 
 ### Pavyzdys: katės transportavimo dėžė
-„Ar jūsų katė pamato transportavimo dėžę ir iškart pasislepia? Pratinti geriausia ne vizito dieną: palikite dėžę atvirą namuose, įdėkite pažįstamą pledą, leiskite katei pačiai ją tyrinėti ir apdovanokite ramų priėjimą. Neskubinkite ir neverskite. Išsamų žingsnių planą rasite PetTraffic AI straipsnyje: [įrašyti tiesioginę straipsnio nuorodą].“
+„Ar jūsų katė pamato transportavimo dėžę ir iškart pasislepia? Pratinti geriausia ne vizito dieną: palikite dėžę atvirą namuose, įdėkite pažįstamą pledą, leiskite katei pačiai ją tyrinėti ir apdovanokite ramų priėjimą. Neskubinkite ir neverskite. Išsamų žingsnių planą rasite Pet traffic straipsnyje: [įrašyti tiesioginę straipsnio nuorodą].“
 
 ### Pavyzdys: šuns pašaro etiketė
 „Renkantis pašarą neapsiribokite gražia pakuote. Pirmiausia patikrinkite, ar jis visavertis, kokiam gyvenimo etapui skirtas ir kokios šėrimo rekomendacijos nurodytos. Jei augintinis turi sveikatos problemų, mitybos pasirinkimą aptarkite su veterinarijos gydytoju. Daugiau – mūsų pašaro etikečių gide: [įrašyti tiesioginę straipsnio nuorodą].“
