@@ -39,7 +39,7 @@ def fetch(topic: str) -> list[dict[str, str]]:
         "https://news.google.com/rss/search?q=" + quote(topic)
         + "+when%3A30d&hl=lt&gl=LT&ceid=LT%3Alt"
     )
-    request = Request(url, headers={"User-Agent": "PetTrafficAI-TopicRadar/1.0"})
+    request = Request(url, headers={"User-Agent": "PetTraffic-TopicRadar/1.0"})
     try:
         with urlopen(request, timeout=20) as response:
             payload = response.read()
@@ -81,7 +81,7 @@ def main() -> int:
     OUT.parent.mkdir(parents=True, exist_ok=True)
     generated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     sections = [
-        "# PetTraffic AI – kasdienių temų radaras",
+        "# Pet traffic – kasdienių temų radaras",
         "",
         f"Atnaujinta: {generated}",
         "",
@@ -150,7 +150,7 @@ def main() -> int:
         "1. Ieškoti temų, kurios pasikartoja keliose paieškose, bet nelaikyti to paieškų paklausos matu.",
         "2. Pirmenybę teikti temoms, kurios sprendžia konkretų augintinio šeimininko klausimą.",
         "3. Pirminius veterinarinius teiginius tikrinti pagal klinikines gaires ir patikimus veterinarijos šaltinius.",
-        "4. Prieš rengiant turinį patikrinti, ar tema jau nėra išsamiai aprašyta PetTraffic AI svetainėje.",
+        "4. Prieš rengiant turinį patikrinti, ar tema jau nėra išsamiai aprašyta Pet traffic svetainėje.",
         "5. Prieš publikuojant redaguoti tekstą, patikrinti faktus, šaltinius ir nuorodas.",
         "",
         "Pastaba: antraščių skaičius nėra Google paieškų apimtis, lankytojų skaičius ar komercinio susidomėjimo įrodymas.",
