@@ -4,6 +4,13 @@ Atnaujinta: 2026-11-11
 
 **Svarbu:** žemiau pateiktos frazės yra paieškos ketinimo hipotezės, o ne patikrinti mėnesio paieškų kiekiai. Tikruosius parodymus ir užklausas tikrinti Google Search Console.
 
+## Šunų sveikata, mityba ir priežiūra
+
+| Paieškos frazės hipotezė | Ketinimas | Esamas puslapis |
+|---|---|---|
+| šuo viduriuoja ką daryti | Įvertinti požymius ir saugius pirmuosius veiksmus | /articles/suo-viduriuoja-ka-daryti.html |
+| šuns viduriavimas kada kreiptis į veterinarą | Atpažinti skubios pagalbos požymius | /articles/suo-viduriuoja-ka-daryti.html |
+
 ## Šunų mityba ir priežiūra
 
 | Paieškos frazės hipotezė | Ketinimas | Esamas puslapis |
