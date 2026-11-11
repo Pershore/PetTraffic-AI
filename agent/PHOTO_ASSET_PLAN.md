@@ -37,6 +37,7 @@ Vaizdus kurti pagal konkretų puslapio tikslą, o ne dėti vieną bendrą šuns 
 - Pirmo ekrano pagrindinį vaizdą krauti prioritetiškai; kitus – su `loading="lazy"`.
 - Alt tekstas turi aprašyti konkrečią nuotrauką ir jos kontekstą, o ne kartoti raktažodžius.
 - Nenaudoti klinikų, prieglaudų ar kitų įstaigų nuotraukų ir logotipų be leidimo.
+- ARO Vet produktų nuotraukoms, logotipui ir prekių aprašymams taip pat būtinas raštiškas naudojimo leidimas; iki tol rodyti savo sukurtas iliustracijas ir tiesiogines nuorodas į oficialius produktų puslapius.
 - Nenaudoti dirbtinai sugeneruotų vaizdų taip, kad jie atrodytų kaip tikri pacientai, veterinarai ar realios procedūros.
 
 ## Failų struktūros pasiūlymas
