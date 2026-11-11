@@ -10,9 +10,9 @@ Auginti tikrus Lietuvos šunų ir kačių šeimininkų apsilankymus, jų pasitik
 
 ## Dabartinės būklės auditas
 
-- Svetainė turi 11 straipsnių HTML failų, bet ankstesniame sitemap buvo tik 9 URL įrašai ir trūko kelių jau publikuotų straipsnių.
-- Pradinis puslapis buvo labiau vizitinė kortelė: bendros frazės, iliustracijų kortelės ir nepakankamai aiškus kelias nuo konkretaus klausimo iki atsakymo.
-- Buvo daug bendrų navigacijos ir straipsnių nuorodų, tačiau nebuvo paieškos ar teminių filtrų.
+- Svetainėje yra 11 straipsnių HTML failų; dabartiniame sitemap įtraukti visi 11 straipsnių URL.
+- Pradinis puslapis turi temų pasirinkimą, straipsnių paiešką ir filtrus; toliau gerinti kelią nuo konkretaus klausimo iki tinkamo atsakymo.
+- Pagrindiniame puslapyje jau yra paieška ir teminiai filtrai; tikrinti jų naudojamumą mobiliuosiuose įrenginiuose.
 - Projektas yra nepriklausomas informacinis leidinys. Komercinis turinys galimas tik atskirai įvertinus jo naudą, patikimumą ir skaidrų reklamos ar partnerystės žymėjimą.
 - Apie projektą puslapis turi išlikti skaidrus: Pet traffic nėra klinika, o ekspertų peržiūra negali būti deklaruojama, kol ji realiai nevyksta.
 - Paskelbtų straipsnių temos daugiausia apima pradedančiojo lygio klausimus. Reikia gilinti geriausius turinio klasterius, o ne masiškai gaminti panašius tekstus.
