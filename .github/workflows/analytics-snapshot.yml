@@ -28,9 +28,18 @@ jobs:
           GSC_SITE_URL: ${{ vars.GSC_SITE_URL || 'https://pettraffic-ai.pages.dev/' }}
         run: python agent/analytics_report.py
       - name: Upload analytics report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: pettraffic-analytics-7d
           path: reports/analytics-7d.md
           if-no-files-found: error
           retention-days: 30
+      - name: Add report to job summary
+        if: always()
+        run: |
+          if [ -f reports/analytics-7d.md ]; then
+            cat reports/analytics-7d.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'Analitikos ataskaita nesukurta; patikrink ankstesnių žingsnių žurnalus.' >> "$GITHUB_STEP_SUMMARY"
+          fi
