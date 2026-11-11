@@ -1,4 +1,4 @@
-# PetTraffic AI automatizavimo prijungimas
+# Pet traffic automatizavimo prijungimas
 
 Šiame faile aprašyti tik tie prisijungimai, kurių negalima saugiai sukurti vien iš GitHub kodo. Niekada nedėkite slaptažodžių, API raktų ar JSON raktų į Git failus.
 
@@ -24,27 +24,6 @@ Darbo eiga renka tik agreguotus skaičius: aktyvius naudotojus, sesijas, puslapi
 
 Svarbu: naujienų antraštės nėra Google paieškų apimtys. Straipsnio publikavimui būtina patikrinti pirminius veterinarinius šaltinius ir faktus. Visiškai automatinis AI straipsnių generavimas per API neįjungtas, nes tam reikėtų papildomo mokamo modelio API rakto ir atskiro biudžeto patvirtinimo.
 
-## 4. Aro Vet reklama ir matavimas
+## 4. Turinio ir reklamos skaidrumas
 
-Svetainėje esančios nuorodos pažymėtos kaip reklama. `site/assets/site.js` registruoja agreguotą `ad_click` įvykį GA4 tik tada, kai lankytojas sutiko su analitika.
-
-Šis įvykis rodo paspaudimus, o ne pardavimus ar pajamas. Komisiniai, partnerystė, nuolaidos ir prekių likučiai negali būti teigiami, kol nėra atskiro patvirtinto susitarimo ar patikimų duomenų.
-
-## 5. Cloudflare Pages publikavimas – patikrinta
-
-2026-11-11 vartotojo pateikta Cloudflare Pages ekrano nuotrauka patvirtino:
-- Cloudflare Pages GitHub integracija veikia.
-- Automatic deployments yra įjungti.
-- Production šaka yra `main`.
-- Gamybinis domenas: `pettraffic-ai.pages.dev`.
-- Projekto pakeitimų šakos kuriamos kaip Preview deploy.
-
-Todėl atskiro Wrangler Direct Upload ar antro publikavimo mechanizmo kurti nereikia. Pakeitimai šakoje `content/nov-2026-articles-ads` skirti peržiūrai; jie nepakeičia Production, kol nesujungiami į `main`.
-
-Statinio projekto build output katalogas turi būti `site`; build command gali būti tuščias, jei Cloudflare projekto nustatymuose tai jau patvirtinta.
-
-## Sauga
-
-- Niekada neįkelti Google JSON rakto, Cloudflare API tokeno ar kitų paslapčių į repo.
-- Analitikos prieigos yra tik skaitymo.
-- Į `main` sujungti pakeitimus ir publikuoti produkcijoje tik po PR peržiūros.
+Svetainė yra nepriklausomas informacinis projektas. Bet kokia būsima reklama, partnerystė ar komercinė nuoroda turi būti aiškiai pažymėta ir patikrinta prieš publikavimą.
