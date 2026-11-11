@@ -49,8 +49,32 @@ def main() -> int:
         vals = data.get("rows", [{}])[0].get("metricValues", [])
         totals = dict(zip(names, [v.get("value","0") for v in vals]))
         lines += [f"- Aktyvūs naudotojai: {totals.get('activeUsers','0')}",
-                  f"- Sesijos: {totals.get('sessions','0')}",
-                  f"- Puslapių peržiūros: {totals.get('screenPageViews','0')}", "",
+                  f"- Sesijos iš visų kanalų: {totals.get('sessions','0')}",
+                  f"- Puslapių peržiūros: {totals.get('screenPageViews','0')}", ""]
+
+        channel_body = {
+            "dateRanges":[{"startDate":start_s,"endDate":end_s}],
+            "dimensions":[{"name":"sessionDefaultChannelGroup"}],
+            "metrics":[{"name":"sessions"}],
+            "orderBys":[{"metric":{"metricName":"sessions"},"desc":True}],
+            "limit":10
+        }
+        channels = session.post(ga_url, json=channel_body, timeout=30)
+        channels.raise_for_status()
+        channel_rows = channels.json().get("rows", [])
+        organic_sessions = 0
+        lines += ["### Sesijos pagal kanalą", "",
+                  "| Kanalas | Sesijos |", "|---|---:|"]
+        if channel_rows:
+            for row in channel_rows:
+                channel = row.get("dimensionValues",[{}])[0].get("value","Nežinomas")
+                sessions = row.get("metricValues",[{}])[0].get("value","0")
+                lines.append(f"| {channel} | {sessions} |")
+                if channel == "Organic Search":
+                    organic_sessions = int(float(sessions))
+        else:
+            lines.append("| Duomenų nėra | 0 |")
+        lines += [f"", f"Organinės paieškos sesijos: {organic_sessions}", "",
                   "### Daugiausia peržiūrėti puslapiai", ""]
         page_body = {"dateRanges":[{"startDate":start_s,"endDate":end_s}],
                      "dimensions":[{"name":"pagePath"}],
