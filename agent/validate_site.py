@@ -72,7 +72,7 @@ def main() -> int:
         print(f"ERROR: site directory not found: {ROOT}")
         return 1
 
-    pages = sorted(ROOT.rglob("*.html"))
+    pages = sorted(p for p in ROOT.rglob("*.html") if "assets" not in p.relative_to(ROOT).parts)
     if not pages:
         errors.append("No HTML pages found under site/")
 
@@ -122,6 +122,8 @@ def main() -> int:
                     continue
                 path = unquote(urlparse(url).path)
                 target = ROOT / (path.lstrip("/") or "index.html")
+                if path == "/":
+                    target = ROOT / "index.html"
                 if path.endswith("/"):
                     target = target / "index.html"
                 if not target.exists():
