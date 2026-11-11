@@ -28,9 +28,63 @@
 
   if (menuButton && nav) {
     menuButton.addEventListener('click', () => {
-      nav.classList.toggle('open');
+      const isOpen = nav.classList.toggle('open');
+      menuButton.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    nav.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        nav.classList.remove('open');
+        menuButton.setAttribute('aria-expanded', 'false');
+      });
     });
   }
+
+  // Straipsnių paieška ir teminiai filtrai pagrindiniame puslapyje
+  const articleSearch = document.querySelector('#article-search');
+  const articleCards = Array.from(document.querySelectorAll('#article-grid .article-card'));
+  const filterButtons = Array.from(document.querySelectorAll('[data-filter]'));
+  const noResults = document.querySelector('#no-results');
+  let activeFilter = 'visi';
+
+  function filterArticles() {
+    if (!articleCards.length) return;
+    const query = articleSearch ? articleSearch.value.trim().toLocaleLowerCase('lt-LT') : '';
+    let visibleCount = 0;
+
+    articleCards.forEach((card) => {
+      const categories = (card.dataset.category || '').split(/\\s+/);
+      const matchesCategory = activeFilter === 'visi' || categories.includes(activeFilter);
+      const matchesText = !query || card.textContent.toLocaleLowerCase('lt-LT').includes(query);
+      const visible = matchesCategory && matchesText;
+      card.hidden = !visible;
+      if (visible) visibleCount += 1;
+    });
+
+    if (noResults) noResults.hidden = visibleCount > 0;
+  }
+
+  filterButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      activeFilter = button.dataset.filter || 'visi';
+      filterButtons.forEach((item) => {
+        const active = item === button;
+        item.classList.toggle('active', active);
+        item.setAttribute('aria-pressed', String(active));
+      });
+      filterArticles();
+    });
+  });
+
+  if (articleSearch) articleSearch.addEventListener('input', filterArticles);
+
+  document.querySelectorAll('[data-topic-link]').forEach((link) => {
+    link.addEventListener('click', () => {
+      const topic = link.dataset.topicLink;
+      const matchingButton = filterButtons.find((button) => button.dataset.filter === topic);
+      if (matchingButton) matchingButton.click();
+    });
+  });
 
   // Reklaminių nuorodų paspaudimų agreguota apskaita (tik po analitikos sutikimo).
   document.querySelectorAll('#arovet-reklama a[href]').forEach((link) => {
