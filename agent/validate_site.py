@@ -5,6 +5,7 @@ from __future__ import annotations
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlparse
+import re
 import sys
 import xml.etree.ElementTree as ET
 
@@ -94,8 +95,10 @@ def main() -> int:
             errors.append(f"{rel}: expected exactly one H1, found {parser.h1_count}")
         if not parser.descriptions or not parser.descriptions[0]:
             errors.append(f"{rel}: missing meta description")
-        if len(parser.canonicals) != 1 or not parser.canonicals[0].startswith(BASE_URL):
-            errors.append(f"{rel}: expected one canonical URL under {BASE_URL}")
+        if len(parser.canonicals) != 1:
+            errors.append(f"{rel}: expected exactly one canonical URL")
+        elif urlparse(parser.canonicals[0]).scheme != "https" or urlparse(parser.canonicals[0]).netloc != urlparse(BASE_URL).netloc:
+            errors.append(f"{rel}: canonical URL must use {BASE_URL}")
 
     for page, parser in parsed_pages.items():
         for link in parser.links:
@@ -108,6 +111,25 @@ def main() -> int:
                 if target_parser and unquote(parsed.fragment) not in target_parser.ids:
                     errors.append(f"{page.relative_to(ROOT)}: missing fragment #{parsed.fragment} in {target.relative_to(ROOT)}")
 
+    # Guard against retired public branding and partner tracking returning.
+    forbidden_patterns = {
+        r"\bAI\b": "standalone AI label",
+        r"ARO\s*Vet|arovetvaistine": "retired partner name",
+        r"data-partner|partner_outbound_click": "retired partner tracking",
+        r"aro-vet\.html|gargzdai-augintiniams": "retired partner page",
+    }
+    for public_file in ROOT.rglob("*"):
+        if public_file.is_file() and public_file.suffix.lower() in {".html", ".js", ".css", ".svg", ".xml", ".txt"}:
+            try:
+                content = public_file.read_text(encoding="utf-8")
+            except (OSError, UnicodeError) as exc:
+                errors.append(f"{public_file.relative_to(ROOT)}: cannot inspect public file: {exc}")
+                continue
+            for pattern, label in forbidden_patterns.items():
+                if re.search(pattern, content):
+                    errors.append(f"{public_file.relative_to(ROOT)}: contains forbidden {label}")
+
+    sitemap_urls: set[str] = set()
     sitemap = ROOT / "sitemap.xml"
     if not sitemap.exists():
         errors.append("Missing site/sitemap.xml")
@@ -120,6 +142,7 @@ def main() -> int:
                 if not url.startswith(BASE_URL):
                     errors.append(f"sitemap.xml: URL outside canonical site: {url}")
                     continue
+                sitemap_urls.add(url)
                 path = unquote(urlparse(url).path)
                 target = ROOT / (path.lstrip("/") or "index.html")
                 if path == "/":
@@ -130,6 +153,10 @@ def main() -> int:
                     errors.append(f"sitemap.xml: URL has no matching file: {url}")
         except ET.ParseError as exc:
             errors.append(f"sitemap.xml: invalid XML: {exc}")
+
+    for page, parser in parsed_pages.items():
+        if parser.canonicals and parser.canonicals[0] not in sitemap_urls:
+            errors.append(f"{page.relative_to(ROOT)}: canonical URL is missing from sitemap.xml")
 
     robots = ROOT / "robots.txt"
     if not robots.exists() or "sitemap.xml" not in robots.read_text(encoding="utf-8").lower():
