@@ -13,7 +13,7 @@ Auginti tikrus Lietuvos šunų ir kačių šeimininkų apsilankymus, jų pasitik
 - Svetainė turi 11 straipsnių HTML failų, bet ankstesniame sitemap buvo tik 9 URL įrašai ir trūko kelių jau publikuotų straipsnių.
 - Pradinis puslapis buvo labiau vizitinė kortelė: bendros frazės, iliustracijų kortelės ir nepakankamai aiškus kelias nuo konkretaus klausimo iki atsakymo.
 - Buvo daug bendrų navigacijos ir straipsnių nuorodų, tačiau nebuvo paieškos ar teminių filtrų.
-- Svetainės reklamos zona buvo pernelyg anksti matoma ir nepakankamai paremta skaitytojo užduotimi; ji pakeista į aiškiai pažymėtų rekomendacijų ruošimo vietą, kol nėra patikrintų produktų ir sąlygų.
+- Svetainės komercinė kryptis nustatyta į vienintelę vietinę rekomendaciją – ARO Vet. Produktų rekomendacijos turi būti aiškiai pažymėtos, tikrinti nuorodas, nenaudoti kainų ir likučių be patikimo atnaujinimo.
 - Apie projektą puslapis turi išlikti skaidrus: PetTraffic AI nėra klinika, o ekspertų peržiūra negali būti deklaruojama, kol ji realiai nevyksta.
 - Paskelbtų straipsnių temos daugiausia apima pradedančiojo lygio klausimus. Reikia gilinti geriausius turinio klasterius, o ne masiškai gaminti panašius tekstus.
 
@@ -24,7 +24,7 @@ Auginti tikrus Lietuvos šunų ir kačių šeimininkų apsilankymus, jų pasitik
 3. Šeimininkai, ieškantys sprendimo dabar: kada skubiai kreiptis į veterinarą, ką daryti po procedūros, kaip atpažinti pavojingus požymius.
 4. Šeimininkai, lyginantys priežiūros produktus: tik po to, kai turinys turi realią naudą ir komercinis ryšys aiškiai atskleistas.
 
-## Augimo kanalai – prioritetų tvarka
+## ARO Vet komercinės komunikacijos taisyklės\n\n- Vienintelis reklamuojamas vietinis pardavėjas – ARO Vet. Kitų klinikų, vaistinių, parduotuvių ar kirpyklų nesiūlyti kaip reklaminių alternatyvų.\n- ARO Vet pristatyti šiltai, bet faktus grįsti oficialia svetaine ir VMVT įrašu.\n- ARO Vet įtraukimas į VMVT nuotolinės prekybos sąrašą reiškia teisę prekiauti nereceptiniais veterinariniais vaistais nuotoliniu būdu; tai nėra nepriklausomas visų prekių kokybės įvertinimas.\n- Nenaudoti logotipo, produktų nuotraukų ar nukopijuotų aprašymų be raštiško leidimo.\n- Nerodyti kainų ir likučių be patikimo atnaujinimo.\n- Nevadinti PetTraffic AI oficialiu ARO Vet puslapiu ar partneriu, kol nėra sudaryto susitarimo.\n\n## Augimo kanalai – prioritetų tvarka
 
 ### 1. Google organinė paieška
 
