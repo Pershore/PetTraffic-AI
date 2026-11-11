@@ -30,8 +30,13 @@ Leidžiama teigti, kad UAB „Vilgis“ / arovetvaistine.lt įtraukta į VMVT sk
 - Neteigti, kad PetTraffic AI yra oficialus ARO Vet puslapis, įgaliotas atstovas ar partneris, kol nėra raštiško susitarimo.
 - Jei vėliau atsiranda atlygis ar komisiniai, aiškiai ir matomai atskleisti komercinį ryšį.
 
-## Dabartinė produkto rekomendacija
-Pripučiama apsauginė apykaklė „Flamingo“:
+## Dabartinės produktų rekomendacijos
+Guminis ovalus šepetys šunims ir katėms:
+- Oficialus produkto puslapis: https://arovetvaistine.lt/products/sepetys-guminisovalus-juodas/
+- Pagal parduotuvės aprašymą, skirtas švelniai kailio priežiūrai ir gali būti naudojamas maudynių metu paskirstant šampūną.
+- Nerašyti gydomųjų ar parazitų kontrolės pažadų. Nerodyti statinės kainos ar likučio.
+
+Pripučiama apsauginė apykaklė „Flamingo":
 - Produkto paskirtis pagal ARO Vet puslapį: padėti apsaugoti pooperacines žaizdas nuo laižymo arba intensyvaus kasymosi.
 - Tinkamumą, dydį ir naudojimą konkrečiam gyvūnui turi patvirtinti veterinarijos gydytojas.
 - Kainos nereklamuoti kaip pastovios; rodyti mygtuką „Peržiūrėti prekę ARO Vet“ ir nukreipti į dabartinį produkto puslapį.
