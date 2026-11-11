@@ -20,3 +20,7 @@ footer{max-width:1200px;margin:auto;border-top:1px solid var(--line);padding:25p
 .local-guide section a[href^="tel:"]{display:inline-block;padding:6px 11px;border-radius:8px;background:var(--green-pale);text-decoration:none;font-weight:800;white-space:nowrap}
 .local-guide section a[href^="tel:"]:hover{background:#dfe9df}
 @media(max-width:680px){.local-guide section[aria-labelledby]{padding:15px 14px}.local-guide section h3{font-size:17px}}
+
+.breadcrumbs{display:flex;gap:9px;align-items:center;margin:0 0 18px;font-size:12px;color:var(--muted)}
+.breadcrumbs a{font-weight:700;text-decoration:none}
+.breadcrumbs [aria-current="page"]{color:var(--ink)}
