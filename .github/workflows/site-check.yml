@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   validate-site:
-    name: Validate static website
+    name: Validate static website and automation code
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -22,3 +22,7 @@ jobs:
           python-version: "3.x"
       - name: Validate HTML, links, SEO and sitemap
         run: python agent/validate_site.py
+      - name: Compile automation scripts
+        run: python -m compileall -q agent
+      - name: Test topic radar parsing and error handling
+        run: python -m unittest discover -s agent -p 'test_*.py' -v
