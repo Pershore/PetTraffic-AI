@@ -15,7 +15,7 @@ ARO Vet. Vaistinė yra įkvėpimo pavyzdys aiškiai navigacijai, augintinių kat
 - Kitų veterinarijos klinikų, vaistinių, gyvūnų prekių parduotuvių ar kirpyklų nereklamuoti ir nesiūlyti kaip alternatyvų.
 - Skaitytoją nukreipti į ARO Vet natūraliai, kai turinio tema susijusi su pašaru, priežiūros priemonėmis, veterinarinės vaistinės prekėmis ar šunų kirpimo paslauga.
 - Produktų pristatymai turi būti simpatiški, aiškūs ir praktiški: kam skirta, kokį kasdienį poreikį atliepia, ką patikrinti prieš įsigyjant.
-- Naudoti tik ARO Vet svetainėje patikrintus produktų pavadinimus, nuotraukas, aprašymus, kainas ir pirkimo URL. Jei kaina nepatikrinta tą pačią dieną, jos nerodyti.
+- Naudoti tik ARO Vet svetainėje patikrintus produktų pavadinimus, aprašymų faktus ir pirkimo URL. Produktų nuotraukas, logotipus ar nukopijuotus aprašymus naudoti tik gavus raštišką leidimą. Kainų ir likučių nerodyti be patikimo atnaujinimo; pateikti nuorodą į prekės puslapį.
 - Nenaudoti nepagrįstų superliatyvų („geriausias“, „patikimiausias“) kaip objektyvaus fakto. Pasitikėjimą grįsti patikrinamais faktais, pvz., viešu VMVT sąrašu.
 - Reklamą, partnerystės ar komisinius ryšius aiškiai atskirti ir pažymėti pagal realų susitarimą.
 - Veterinarinių vaistų ar papildų nerekomenduoti gydymui, nenurodyti dozavimo ir nežadėti poveikio. Dėl gydymo – veterinarijos gydytojas.
