@@ -1,4 +1,4 @@
-name: PetTraffic AI daily topic radar
+name: Pet traffic daily topic radar
 
 on:
   schedule:
