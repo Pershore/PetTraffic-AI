@@ -32,6 +32,20 @@
     });
   }
 
+  // Reklaminių nuorodų paspaudimų agreguota apskaita (tik po analitikos sutikimo).
+  document.querySelectorAll('#arovet-reklama a[href]').forEach((link) => {
+    link.addEventListener('click', () => {
+      if (typeof window.gtag === 'function') {
+        window.gtag('event', 'ad_click', {
+          event_category: 'advertising',
+          link_url: link.href,
+          link_text: (link.textContent || '').trim(),
+          transport_type: 'beacon'
+        });
+      }
+    });
+  });
+
   // Google Analytics paleidžiamas tik gavus sutikimą
   function enableAnalytics() {
     if (window.petTrafficAnalyticsLoaded) return;
