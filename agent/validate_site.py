@@ -139,11 +139,12 @@ def main() -> int:
             ns = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
             for loc in root.findall(".//sm:loc", ns):
                 url = (loc.text or "").strip()
-                if not url.startswith(BASE_URL):
+                parsed_url = urlparse(url)
+                if parsed_url.scheme != "https" or parsed_url.netloc != urlparse(BASE_URL).netloc:
                     errors.append(f"sitemap.xml: URL outside canonical site: {url}")
                     continue
                 sitemap_urls.add(url)
-                path = unquote(urlparse(url).path)
+                path = unquote(parsed_url.path)
                 target = ROOT / (path.lstrip("/") or "index.html")
                 if path == "/":
                     target = ROOT / "index.html"
