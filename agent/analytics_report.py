@@ -58,10 +58,36 @@ def main() -> int:
                      "orderBys":[{"metric":{"metricName":"screenPageViews"},"desc":True}],
                      "limit":10}
         pages = session.post(ga_url, json=page_body, timeout=30); pages.raise_for_status()
-        for row in pages.json().get("rows", []):
-            path = row.get("dimensionValues",[{}])[0].get("value","/")
-            views = row.get("metricValues",[{}])[0].get("value","0")
-            lines.append(f"- {path} – {views} peržiūrų")
+        page_rows = pages.json().get("rows", [])
+        if page_rows:
+            for row in page_rows:
+                path = row.get("dimensionValues",[{}])[0].get("value","/")
+                views = row.get("metricValues",[{}])[0].get("value","0")
+                lines.append(f"- {path} – {views} peržiūrų")
+        else:
+            lines.append("_Šiam laikotarpiui GA4 puslapių peržiūrų eilučių nepateikė._")
+
+        lines += ["", "## Reklamos nuorodų paspaudimai", ""]
+        ad_body = {
+            "dateRanges":[{"startDate":start_s,"endDate":end_s}],
+            "dimensions":[{"name":"eventName"}],
+            "metrics":[{"name":"eventCount"}],
+            "dimensionFilter":{"filter":{
+                "fieldName":"eventName",
+                "stringFilter":{"matchType":"EXACT","value":"ad_click"}
+            }},
+            "limit":1
+        }
+        ad_resp = session.post(ga_url, json=ad_body, timeout=30)
+        ad_resp.raise_for_status()
+        ad_rows = ad_resp.json().get("rows", [])
+        ad_clicks = (
+            ad_rows[0].get("metricValues",[{}])[0].get("value","0")
+            if ad_rows else "0"
+        )
+        lines.append(f"- Aro Vet reklamos nuorodų paspaudimai: {ad_clicks}")
+        lines.append("_Paspaudimai nėra pardavimų ar komisinių pajamų įrodymas._")
+
         lines += ["", "## Google Search Console – paieškos užklausos", ""]
         gsc_url = "https://searchconsole.googleapis.com/webmasters/v3/sites/" + quote(gsc_site, safe="") + "/searchAnalytics/query"
         gsc_body = {"startDate":start_s,"endDate":end_s,"dimensions":["query"],"rowLimit":10}
