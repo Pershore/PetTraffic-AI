@@ -118,3 +118,61 @@ Pirmas 30 dienų laikotarpis – bazinis matavimas. Tik po jo verta nustatyti re
 ## Esminė taisyklė
 
 Kiekvienas naujas darbas turi atsakyti į klausimą: kokią realią šeimininko problemą sprendžiame, kuo mūsų puslapis naudingesnis už jau esančius rezultatus ir kaip pamatuosime, ar jis padėjo?
+
+## Konkretus temų backlogas (hipotezės, ne paieškų apimtys)
+
+Toliau pateiktos temos atrinktos pagal matomą Lietuvos augintinių turinio pasiūlą, šeimininkų praktinius klausimus ir galimą naudą. Tai nėra patvirtintas raktažodžių populiarumo reitingas – prioritetus būtina tikslinti pagal Search Console užklausas.
+
+| Prioritetas | Tema / paieškos klausimas | Kodėl verta | Koks turi būti išskirtinis naudingumas |
+|---|---|---|---|
+| 1 | Katė dažnai eina į kraiko dėžę, bet nesišlapina – ką daryti? | Aiški, didelės svarbos problema | Skubumo požymiai, ypač patinams, ko nedaryti ir kaip saugiai vykti į kliniką |
+| 2 | Kiek kartų per minutę turi kvėpuoti katė ramybės būsenoje? | Konkretus, pamatuojamas klausimas | Kaip skaičiuoti miegant, kada kartoti, kada skambinti veterinarui; remtis klinikiniais šaltiniais |
+| 3 | Šuo viduriuoja – ką stebėti ir kada kreiptis į veterinarą? | Dažna šeimininkų situacija | Skubūs požymiai, vanduo, galimi rizikos veiksniai, šuniukų ir senjorų atsargumas |
+| 4 | Kaip suprasti, ar šuo turi antsvorio? | Ilgalaikė kasdienė problema | Kūno būklės vertinimo schema, svorio stebėjimas, kada tartis dėl raciono |
+| 5 | Kiek vandens turi išgerti šuo ar katė? | Lengvai pritaikomas kasdienis klausimas | Matavimo būdas, kas keičia poreikį, kada padidėjęs troškulys svarbus |
+| 6 | Kaip išmokyti katę naudotis kraiko dėžute? | Aiški elgesio ir namų aplinkos užduotis | Dėžučių vieta, kiekis, kraiko tipas, valymas ir kada atmesti sveikatos priežastį |
+| 7 | Kaip pripratinti šuniuką likti vieną namuose? | Praktinis naujų šeimininkų klausimas | Palaipsnis planas, streso požymiai, vengti bausmių ir staigių ilgo palikimo bandymų |
+| 8 | Kaip saugiai pakeisti šuns ar katės pašarą? | Susiję su esamu mitybos klasteriu | Perėjimo planas, išimtys, kada sustoti ir kreiptis į specialistą |
+
+### Siūlomas 4 savaičių leidybos ritmas
+
+- 1 savaitė: katės šlapinimosi sutrikimų skubumo gidas (tiksliai patikrinti su veterinariniais šaltiniais).
+- 2 savaitė: katės kvėpavimo stebėjimo praktinis vadovas.
+- 3 savaitė: šuns viduriavimo stebėjimo ir skubumo gidas.
+- 4 savaitė: katės kraiko dėžės elgesio ir aplinkos vadovas.
+
+Kiekvieną temą prieš publikavimą patikrinti pagal patikimus pirminius šaltinius. Jei neįmanoma pagrįsti klinikinio teiginio, jo nerašyti. Geriau vienas tikslus, išsamus straipsnis nei keli panašūs trumpi tekstai.
+
+## Konkurencinės aplinkos pastabos
+
+Viešoje Lietuvos paieškoje matyti, kad atsakymus apie mitybą ir veterinarinę pagalbą jau teikia klinikos, veterinarinės informacijos portalai ir žiniasklaida. Pavyzdžiai:
+- DR.VET DUK: https://drvet.lt/patarimai/dazniausi-klausimai/
+- InfoVet: https://infovet.lt/
+- LRT publikacija apie beglobius gyvūnus ir registrą: https://www.lrt.lt/naujienos/lietuvoje/2/2318853/beglobiai-sunys-ir-kaciu-kolonijos-kiek-augintiniu-gyvena-lietuvoje
+
+Išvada: vien bendrų patarimų nepakaks. PetTraffic turi laimėti aiškumu, praktiškais veiksmais, atsakingu šaltinių pateikimu, vietos Lietuvos kontekstu ir geresniu teminių straipsnių sujungimu. Konkurentų tekstų ar vaizdų nekopijuoti.
+
+## Lietuvos auditorijos kontekstas
+
+2024 m. Vilniaus duomenų apžvalgoje, remiantis Gyvūnų augintinių registro duomenimis, buvo nurodyta 46 515 registruotų šunų ir 35 841 katė Vilniuje (2024-01-01). Tai senesnis registruotų gyvūnų pjūvis, o ne dabartinis visų augintinių skaičius ar rinkos dydžio įrodymas. Šaltinis: https://www.duomenugalia.lt/duomenys-apie-vilniu/naminiai-gyvunai-vilniuje
+
+LRT 2024 m. rugpjūčio publikacijoje pažymima, kad registras neparodo viso realaus augintinių skaičiaus. Todėl nenaudoti registro skaičių kaip bendros rinkos dydžio ar svetainės pasiekiamos auditorijos įverčio.
+
+## Socialinių įrašų pavyzdžiai
+
+### Pavyzdys: katės transportavimo dėžė
+„Ar jūsų katė pamato transportavimo dėžę ir iškart pasislepia? Pratinti geriausia ne vizito dieną: palikite dėžę atvirą namuose, įdėkite pažįstamą pledą, leiskite katei pačiai ją tyrinėti ir apdovanokite ramų priėjimą. Neskubinkite ir neverskite. Išsamų žingsnių planą rasite PetTraffic AI straipsnyje: [įrašyti tiesioginę straipsnio nuorodą].“
+
+### Pavyzdys: šuns pašaro etiketė
+„Renkantis pašarą neapsiribokite gražia pakuote. Pirmiausia patikrinkite, ar jis visavertis, kokiam gyvenimo etapui skirtas ir kokios šėrimo rekomendacijos nurodytos. Jei augintinis turi sveikatos problemų, mitybos pasirinkimą aptarkite su veterinarijos gydytoju. Daugiau – mūsų pašaro etikečių gide: [įrašyti tiesioginę straipsnio nuorodą].“
+
+### Pavyzdys: šuns dantys
+„Nemalonus kvapas iš šuns ar katės burnos nėra vien kosmetinė smulkmena. Stebėkite dantų apnašas, dantenų paraudimą, seilėtekį ir kramtymo pokyčius. Jei gyvūnui skauda ar sunku ėsti, reikalinga veterinaro apžiūra. Praktiniai burnos priežiūros pagrindai: [įrašyti tiesioginę straipsnio nuorodą].“
+
+## Ką būtina patikrinti prieš skelbiant socialiniuose tinkluose
+
+- Ar grupės taisyklės leidžia nuorodas ir savireklamą?
+- Ar įrašas pateikia vertę ir be paspaudimo?
+- Ar nuoroda veda tiesiai į konkretų atsakymą?
+- Ar medicininis teiginys tikslus ir nekuria klaidingo saugumo jausmo?
+- Ar įrašas neskelbiamas identiškai daugelyje grupių?
