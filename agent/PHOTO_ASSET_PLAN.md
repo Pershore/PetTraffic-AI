@@ -1,4 +1,4 @@
-# PetTraffic AI – nuotraukų ir socialinių vaizdų planas
+# Pet traffic – nuotraukų ir socialinių vaizdų planas
 
 Auditas atliktas 2026-11-11 pagal pagrindinės šakos HTML failus.
 
@@ -13,7 +13,7 @@ Auditas atliktas 2026-11-11 pagal pagrindinės šakos HTML failus.
 ## Vaizdų prioritetai
 
 ### 1 etapas – dalijimosi vaizdas
-Sukurti originalų 1200×630 socialinio dalijimosi vaizdą su PetTraffic AI identitetu, aiškiu pavadinimu ir viena autentiška augintinio nuotrauka. Pridėti `og:image`, `og:image:alt`, `twitter:card` ir Twitter image metaduomenis pagrindiniam puslapiui bei vietiniam gidui.
+Sukurti originalų 1200×630 socialinio dalijimosi vaizdą su Pet traffic identitetu, aiškiu pavadinimu ir viena autentiška augintinio nuotrauka. Pridėti `og:image`, `og:image:alt`, `twitter:card` ir Twitter image metaduomenis pagrindiniam puslapiui bei vietiniam gidui.
 
 ### 2 etapas – pagrindinis puslapis
 Pakeisti arba papildyti abstrakčią SVG hero iliustraciją licencijuota, natūralia šuns ir katės nuotrauka namų aplinkoje. Išlaikyti pakankamą kontrastą, aiškų fokusą ir mobiliajame ekrane neiškirpti gyvūnų.
@@ -37,7 +37,7 @@ Vaizdus kurti pagal konkretų puslapio tikslą, o ne dėti vieną bendrą šuns 
 - Pirmo ekrano pagrindinį vaizdą krauti prioritetiškai; kitus – su `loading="lazy"`.
 - Alt tekstas turi aprašyti konkrečią nuotrauką ir jos kontekstą, o ne kartoti raktažodžius.
 - Nenaudoti klinikų, prieglaudų ar kitų įstaigų nuotraukų ir logotipų be leidimo.
-- ARO Vet produktų nuotraukoms, logotipui ir prekių aprašymams taip pat būtinas raštiškas naudojimo leidimas; iki tol rodyti savo sukurtas iliustracijas ir tiesiogines nuorodas į oficialius produktų puslapius.
+- iki tol rodyti savo sukurtas iliustracijas ir tiesiogines nuorodas į oficialius produktų puslapius.
 - Nenaudoti dirbtinai sugeneruotų vaizdų taip, kad jie atrodytų kaip tikri pacientai, veterinarai ar realios procedūros.
 
 ## Failų struktūros pasiūlymas
