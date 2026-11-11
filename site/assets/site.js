@@ -109,18 +109,6 @@
     document.head.appendChild(script);
   }
 
-  // Partnerio nuorodų paspaudimų matavimas tik po analitikos sutikimo
-  document.addEventListener('click', (event) => {
-    const link = event.target.closest('a[data-partner="aro-vet"]');
-    if (!link || typeof window.gtag !== 'function') return;
-
-    window.gtag('event', 'partner_outbound_click', {
-      partner: 'aro_vet',
-      link_url: link.href,
-      placement: link.dataset.placement || 'unknown'
-    });
-  });
-
   // Google Analytics slapukų šalinimas
   function removeAnalyticsCookies() {
     const names = document.cookie
