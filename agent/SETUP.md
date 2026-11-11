@@ -31,15 +31,18 @@ Svetainėje esančios nuorodos pažymėtos kaip reklama. `site/assets/site.js` r
 
 Šis įvykis rodo paspaudimus, o ne pardavimus ar pajamas. Komisiniai, partnerystė, nuolaidos ir prekių likučiai negali būti teigiami, kol nėra atskiro patvirtinto susitarimo ar patikimų duomenų.
 
-## 5. Cloudflare Pages publikavimas
+## 5. Cloudflare Pages publikavimas – patikrinta
 
-Rekomenduojamas kelias šiam statiniam projektui – Cloudflare Pages Git integracija su GitHub:
-- Repository: `Pershore/PetTraffic-AI`
-- Production branch: `main`
-- Build command: tuščias (statiniam HTML projektui build žingsnio nereikia)
-- Build output directory: `site`
+2026-11-11 vartotojo pateikta Cloudflare Pages ekrano nuotrauka patvirtino:
+- Cloudflare Pages GitHub integracija veikia.
+- Automatic deployments yra įjungti.
+- Production šaka yra `main`.
+- Gamybinis domenas: `pettraffic-ai.pages.dev`.
+- Projekto pakeitimų šakos kuriamos kaip Preview deploy.
 
-Jei Git integracija jau įjungta, Cloudflare automatiškai sukuria preview deploy kitoms šakoms ir production deploy po pakeitimų `main`. Jei integracija dar neįjungta, ją reikia vieną kartą susieti Cloudflare dashboarde. Nenaudokite Wrangler Direct Upload workflow nepatikrinę projekto tipo: Git-integrated Pages projektas ir Direct Upload turi skirtingą diegimo kelią.
+Todėl atskiro Wrangler Direct Upload ar antro publikavimo mechanizmo kurti nereikia. Pakeitimai šakoje `content/nov-2026-articles-ads` skirti peržiūrai; jie nepakeičia Production, kol nesujungiami į `main`.
+
+Statinio projekto build output katalogas turi būti `site`; build command gali būti tuščias, jei Cloudflare projekto nustatymuose tai jau patvirtinta.
 
 ## Sauga
 
