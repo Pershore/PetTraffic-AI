@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - 'agent/analytics_report.py'
+      - 'agent/aro_vet_analytics.py'
+      - 'agent/test_aro_vet_analytics.py'
       - '.github/workflows/analytics-snapshot.yml'
   schedule:
     - cron: "43 6 * * *"
