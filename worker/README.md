@@ -77,3 +77,16 @@ Five bounded inference calls are used per daily run: four read-only specialist r
 The existing public `/v1/tasks*` routes remain disabled. Agent execution is internal to the scheduled Worker, so the analytics-only GitHub OIDC identity is not widened. All recommendations are advisory and require human approval. The content reviewer flags claims needing source verification; it does not certify veterinary facts. No paid API key, content publishing, site editing, DNS editing, or arbitrary command execution is enabled.
 
 Model: `@cf/openai/gpt-oss-20b`. Recheck model availability and pricing before future model changes.
+
+
+## Separate AI control core (implementation branch)
+
+The control core is a deterministic governance and memory layer separate from the specialist prompts:
+- src/control-core.mjs converts coordinator output into a bounded decision and applies a fixed read-only policy. Model output cannot add permissions or actions.
+- Migration 0003_control_core.sql stores the daily decision and a compact latest-state memory in D1. It stores aggregate project operational context only.
+- The daily orchestrator persists the decision and compact memory after specialist synthesis. A persistence failure marks the orchestration run failed rather than reporting success.
+- The core records recommendations and evidence gaps; it does not execute model-generated actions.
+- Publication, live-site edits, DNS changes, ARO Vet changes, spending, Cloudflare permission changes and arbitrary code execution remain blocked. Production-impacting actions require separate explicit approval.
+- Tests cover bounded decisions, malformed/model-supplied actions, D1 persistence and missing database handling.
+
+This is a proposed change until its GitHub Actions checks pass, the PR is reviewed/merged, D1 migration is applied, and a live Cloudflare smoke check confirms the deployed version.
