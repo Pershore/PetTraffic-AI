@@ -14,3 +14,8 @@ ALLOWED_ORIGIN = "https://pettraffic-ai.pages.dev"
 
 [observability]
 enabled = true
+
+
+# Lightweight 24/7 operational heartbeat; UTC, every 15 minutes.
+[triggers]
+crons = ["*/15 * * * *"]
