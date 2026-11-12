@@ -134,14 +134,14 @@ def main() -> int:
             "Pastaba: Search Console parodymai yra pasirodymai Google paieškoje, "
             "o ne apsilankymai svetainėje. Ataskaita naudoja tik agreguotus duomenis.",
         ]
-        OUT.write_text("\\n".join(lines) + "\\n", encoding="utf-8")
+        OUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
         print(f"ARO Vet Search Console report created: {OUT}")
         return 0
     except Exception as exc:
         OUT.write_text(
             "# ARO Vet – Google Search Console ataskaita\\n\\n"
             "## Būsena: klaida\\n\\n"
-            f"Google Search Console užklausa nepavyko: {type(exc).__name__}: {exc}\\n",
+            f"Google Search Console užklausa nepavyko: {type(exc).__name__}: {exc}\n",
             encoding="utf-8",
         )
         print(f"ARO Vet Search Console error: {type(exc).__name__}: {exc}", file=sys.stderr)
