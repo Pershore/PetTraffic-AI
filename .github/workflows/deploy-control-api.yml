@@ -161,3 +161,31 @@ jobs:
           PY
           npx --yes wrangler@4 d1 migrations apply pettraffic-control --remote
           npx --yes wrangler@4 deploy
+      - name: Verify deployed Worker health and authentication boundary
+        env:
+          API_URL: ${{ vars.PETTRAFFIC_CONTROL_API_URL || 'https://pettraffic-control-api.pauliusgrubliauskis.workers.dev' }}
+        run: |
+          set -euo pipefail
+          API_URL="${API_URL%/}"
+          health_file="$(mktemp)"
+          trap 'rm -f "$health_file"' EXIT
+          healthy=false
+          for attempt in 1 2 3 4 5 6; do
+            if curl --fail --silent --show-error "$API_URL/health" --output "$health_file"; then
+              healthy=true
+              break
+            fi
+            sleep 5
+          done
+          test "$healthy" = true || (echo "Worker health endpoint did not become ready." && exit 1)
+          python - "$health_file" <<'PY'
+          import json, sys
+          with open(sys.argv[1], encoding="utf-8") as stream:
+              payload = json.load(stream)
+          if payload.get("ok") is not True or payload.get("database") != "connected":
+              raise SystemExit("Worker health check did not confirm a connected database.")
+          print("OK: deployed Worker and D1 health verified.")
+          PY
+          status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' "$API_URL/v1/events")"
+          test "$status" = "401" || (echo "Expected unauthenticated API request to return HTTP 401; got $status." && exit 1)
+          echo "OK: protected API rejects unauthenticated requests."
