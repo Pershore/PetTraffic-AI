@@ -28,9 +28,76 @@ jobs:
       - run: npm test
       - run: PYTHONPATH=.. python -m unittest discover -s test -p '*_test.py' -v
 
+  validate-cloudflare:
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      D1_DATABASE_ID: ${{ vars.PETTRAFFIC_D1_DATABASE_ID }}
+    steps:
+      - name: Validate Cloudflare token and deployment resources without exposing credentials
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import sys
+          import urllib.error
+          import urllib.request
+
+          token = os.environ.get("CLOUDFLARE_API_TOKEN", "")
+          account = os.environ.get("CLOUDFLARE_ACCOUNT_ID", "")
+          database = os.environ.get("D1_DATABASE_ID", "")
+
+          if not token:
+              print("BLOCKED: GitHub secret CLOUDFLARE_API_TOKEN is missing.")
+              sys.exit(1)
+          if not account:
+              print("BLOCKED: GitHub variable CLOUDFLARE_ACCOUNT_ID is missing.")
+              sys.exit(1)
+
+          def get(path, label):
+              request = urllib.request.Request(
+                  "https://api.cloudflare.com/client/v4" + path,
+                  headers={"Authorization": "Bearer " + token},
+              )
+              try:
+                  with urllib.request.urlopen(request, timeout=20) as response:
+                      payload = json.loads(response.read())
+              except urllib.error.HTTPError as exc:
+                  print(f"BLOCKED: {label} API check returned HTTP {exc.code}; verify token scope and resource.")
+                  sys.exit(1)
+              except Exception:
+                  print(f"BLOCKED: {label} API check could not complete.")
+                  sys.exit(1)
+              if not payload.get("success"):
+                  print(f"BLOCKED: {label} API check was rejected by Cloudflare.")
+                  sys.exit(1)
+              print(f"OK: {label} verified.")
+              return payload
+
+          get("/user/tokens/verify", "Cloudflare API token")
+
+          if not database:
+              listing = get(f"/accounts/{account}/d1/database", "D1 database discovery")
+              matches = [item for item in listing.get("result", []) if item.get("name") == "pettraffic-control"]
+              if not matches:
+                  print("BLOCKED: D1 database 'pettraffic-control' was not found in this Cloudflare account.")
+                  sys.exit(1)
+              database = matches[0].get("uuid") or matches[0].get("id")
+              if not database:
+                  print("BLOCKED: Cloudflare returned the D1 database but no database ID.")
+                  sys.exit(1)
+              print("OK: D1 database ID discovered automatically (value not displayed).")
+
+          get(f"/accounts/{account}/d1/database/{database}", "D1 database access")
+          get(f"/accounts/{account}/workers/scripts/pettraffic-control-api/settings", "Worker access")
+          print("READY: Cloudflare token, account, D1 database and Worker are reachable.")
+          PY
+
   deploy:
     if: github.event_name == 'workflow_dispatch'
-    needs: test
+    needs: [test, validate-cloudflare]
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -39,6 +106,7 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
       D1_DATABASE_ID: ${{ vars.PETTRAFFIC_D1_DATABASE_ID }}
+      PETTRAFFIC_CONTROL_API_TOKEN: ${{ secrets.PETTRAFFIC_CONTROL_API_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -48,17 +116,50 @@ jobs:
         run: |
           test -n "$CLOUDFLARE_API_TOKEN" || (echo "Missing CLOUDFLARE_API_TOKEN secret" && exit 1)
           test -n "$CLOUDFLARE_ACCOUNT_ID" || (echo "Missing CLOUDFLARE_ACCOUNT_ID repository variable" && exit 1)
-          test -n "$D1_DATABASE_ID" || (echo "Missing PETTRAFFIC_D1_DATABASE_ID repository variable" && exit 1)
       - name: Apply D1 migrations and deploy Worker
         run: |
           python - <<'PY'
+          import json
           import os
+          import sys
+          import urllib.request
           from pathlib import Path
+
+          account = os.environ["CLOUDFLARE_ACCOUNT_ID"]
+          database = os.environ.get("D1_DATABASE_ID", "")
+          token = os.environ["CLOUDFLARE_API_TOKEN"]
+
+          if not database:
+              request = urllib.request.Request(
+                  f"https://api.cloudflare.com/client/v4/accounts/{account}/d1/database",
+                  headers={"Authorization": "Bearer " + token},
+              )
+              with urllib.request.urlopen(request, timeout=20) as response:
+                  payload = json.loads(response.read())
+              if not payload.get("success"):
+                  print("Unable to discover D1 database ID.")
+                  sys.exit(1)
+              matches = [item for item in payload.get("result", []) if item.get("name") == "pettraffic-control"]
+              if not matches:
+                  print("D1 database pettraffic-control was not found.")
+                  sys.exit(1)
+              database = matches[0].get("uuid") or matches[0].get("id")
+              if not database:
+                  print("Cloudflare did not return a D1 database ID.")
+                  sys.exit(1)
+
           path = Path("wrangler.toml")
           text = path.read_text()
-          text = text.replace("REPLACE_WITH_CLOUDFLARE_ACCOUNT_ID", os.environ["CLOUDFLARE_ACCOUNT_ID"])
-          text = text.replace("REPLACE_WITH_D1_DATABASE_ID", os.environ["D1_DATABASE_ID"])
+          text = text.replace("REPLACE_WITH_CLOUDFLARE_ACCOUNT_ID", account)
+          text = text.replace("REPLACE_WITH_D1_DATABASE_ID", database)
           path.write_text(text)
+          print("Deployment configuration prepared; identifiers were not displayed.")
           PY
           npx --yes wrangler@4 d1 migrations apply pettraffic-control --remote
           npx --yes wrangler@4 deploy
+      - name: Configure Worker API authentication
+        if: env.PETTRAFFIC_CONTROL_API_TOKEN != ''
+        run: printf '%s' "$PETTRAFFIC_CONTROL_API_TOKEN" | npx --yes wrangler@4 secret put API_TOKEN
+      - name: Keep API authentication pending until its dedicated secret is added
+        if: env.PETTRAFFIC_CONTROL_API_TOKEN == ''
+        run: echo "Worker deployed and health-checkable; add PETTRAFFIC_CONTROL_API_TOKEN to enable authenticated API routes."
