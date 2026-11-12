@@ -1,0 +1,16 @@
+name = "pettraffic-control-api"
+main = "src/index.mjs"
+compatibility_date = "2026-11-12"
+account_id = "REPLACE_WITH_CLOUDFLARE_ACCOUNT_ID"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "pettraffic-control"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+migrations_dir = "migrations"
+
+[vars]
+ALLOWED_ORIGIN = "https://pettraffic-ai.pages.dev"
+
+[observability]
+enabled = true
