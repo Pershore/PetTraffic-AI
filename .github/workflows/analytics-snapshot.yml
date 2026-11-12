@@ -36,6 +36,27 @@ jobs:
           GA4_PROPERTY_ID: ${{ vars.GA4_PROPERTY_ID || '563539278' }}
           GSC_SITE_URL: ${{ vars.GSC_SITE_URL || 'https://pettraffic-ai.pages.dev/' }}
         run: python agent/analytics_report.py
+      - name: Fetch ARO Vet aggregated GA4 metrics
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          ARO_VET_GA4_PROPERTY_ID: ${{ vars.ARO_VET_GA4_PROPERTY_ID || '488044446' }}
+        run: python agent/aro_vet_analytics.py
+      - name: Upload ARO Vet analytics report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aro-vet-analytics-7d
+          path: reports/aro-vet-analytics-7d.md
+          if-no-files-found: error
+          retention-days: 30
+      - name: Add ARO Vet report to job summary
+        if: always()
+        run: |
+          if [ -f reports/aro-vet-analytics-7d.md ]; then
+            cat reports/aro-vet-analytics-7d.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'ARO Vet analitikos ataskaita nesukurta; patikrink ankstesnių žingsnių žurnalus.' >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: Upload analytics report
         if: always()
         uses: actions/upload-artifact@v4
