@@ -172,85 +172,98 @@ def main() -> int:
         else:
             lines.append("_GA4 puslapių duomenų šiam laikotarpiui nėra._")
 
-        # Search Console uses its own, deliberately delayed reporting window.
-        gsc_current = gsc_query(session, gsc_url, gsc_start, gsc_end)
-        gsc_previous = gsc_query(session, gsc_url, gsc_prev_start, gsc_prev_end)
-        gsc_now = (gsc_current.get("rows") or [{}])[0]
-        gsc_old = (gsc_previous.get("rows") or [{}])[0]
-        lines += [
-            "",
-            "## Google paieška (Search Console)",
-            "",
-            f"Laikotarpis: {gsc_start} – {gsc_end} (duomenys gali vėluoti kelias dienas).",
-            "",
-            "| Rodiklis | Paskutinės 7 d. | Pokytis prieš ankstesnes 7 d. |",
-            "|---|---:|---:|",
-        ]
-        for key, label in (
-            ("impressions", "Paieškos parodymai"),
-            ("clicks", "Paspaudimai"),
-        ):
-            now_value = float(gsc_now.get(key, 0))
-            old_value = float(gsc_old.get(key, 0))
-            lines.append(f"| {label} | {fmt(now_value)} | {delta(now_value, old_value)} |")
-        now_ctr = float(gsc_now.get("ctr", 0))
-        old_ctr = float(gsc_old.get("ctr", 0))
-        now_pos = float(gsc_now.get("position", 0))
-        old_pos = float(gsc_old.get("position", 0))
-        lines += [
-            f"| CTR | {now_ctr:.1%} | {((now_ctr-old_ctr)*100):+.2f} proc. punkto |",
-            f"| Vidutinė pozicija | {now_pos:.1f} | {now_pos-old_pos:+.1f} poz. |",
-            "",
-            "### Populiariausios Google paieškos užklausos",
-            "",
-        ]
-
-        queries = gsc_query(session, gsc_url, gsc_start, gsc_end, ["query"], 10)
-        if queries.get("rows"):
+        # Search Console is optional: a permissions/API issue must not discard valid GA4 data.
+        try:
+            # Search Console uses its own, deliberately delayed reporting window.
+            gsc_current = gsc_query(session, gsc_url, gsc_start, gsc_end)
+            gsc_previous = gsc_query(session, gsc_url, gsc_prev_start, gsc_prev_end)
+            gsc_now = (gsc_current.get("rows") or [{}])[0]
+            gsc_old = (gsc_previous.get("rows") or [{}])[0]
             lines += [
-                "| Užklausa | Paspaudimai | Parodymai | CTR | Pozicija |",
-                "|---|---:|---:|---:|---:|",
+                "",
+                "## Google paieška (Search Console)",
+                "",
+                f"Laikotarpis: {gsc_start} – {gsc_end} (duomenys gali vėluoti kelias dienas).",
+                "",
+                "| Rodiklis | Paskutinės 7 d. | Pokytis prieš ankstesnes 7 d. |",
+                "|---|---:|---:|",
             ]
-            for row in queries["rows"]:
-                query = row.get("keys", [""])[0].replace("|", "\\|")
-                lines.append(
-                    f"| {query} | {fmt(float(row.get('clicks', 0)))} | "
-                    f"{fmt(float(row.get('impressions', 0)))} | "
-                    f"{float(row.get('ctr', 0)):.1%} | {float(row.get('position', 0)):.1f} |"
-                )
-        else:
-            lines.append("_Search Console užklausų eilučių nepateikė._")
-
-        lines += ["", "### Puslapiai Google paieškoje", ""]
-        pages = gsc_query(session, gsc_url, gsc_start, gsc_end, ["page"], 10)
-        if pages.get("rows"):
+            for key, label in (
+                ("impressions", "Paieškos parodymai"),
+                ("clicks", "Paspaudimai"),
+            ):
+                now_value = float(gsc_now.get(key, 0))
+                old_value = float(gsc_old.get(key, 0))
+                lines.append(f"| {label} | {fmt(now_value)} | {delta(now_value, old_value)} |")
+            now_ctr = float(gsc_now.get("ctr", 0))
+            old_ctr = float(gsc_old.get("ctr", 0))
+            now_pos = float(gsc_now.get("position", 0))
+            old_pos = float(gsc_old.get("position", 0))
             lines += [
-                "| Puslapis | Paspaudimai | Parodymai | CTR | Pozicija |",
-                "|---|---:|---:|---:|---:|",
+                f"| CTR | {now_ctr:.1%} | {((now_ctr-old_ctr)*100):+.2f} proc. punkto |",
+                f"| Vidutinė pozicija | {now_pos:.1f} | {now_pos-old_pos:+.1f} poz. |",
+                "",
+                "### Populiariausios Google paieškos užklausos",
+                "",
             ]
-            for row in pages["rows"]:
-                page_url = row.get("keys", [""])[0].replace("|", "%7C")
-                lines.append(
-                    f"| {page_url} | {fmt(float(row.get('clicks', 0)))} | "
-                    f"{fmt(float(row.get('impressions', 0)))} | "
-                    f"{float(row.get('ctr', 0)):.1%} | {float(row.get('position', 0)):.1f} |"
-                )
-        else:
-            lines.append("_Search Console puslapių eilučių nepateikė._")
 
-        lines += [
-            "",
-            "## Mokama reklama",
-            "",
-            "Mokamų reklamų parodymai ir paspaudimai: **nėra duomenų – Google Ads / Meta Ads paskyra neprijungta**.",
-            "Google paieškos parodymai aukščiau nėra mokamų reklamų parodymai.",
-            "",
-            "Pastaba: aktyvūs naudotojai apytikriai rodo unikalius lankytojus, sesijos – apsilankymus, "
-            "o puslapių peržiūros – atvertų puslapių skaičių. Search Console parodymai reiškia "
-            "pasirodymus Google paieškos rezultatuose, ne apsilankymus svetainėje.",
-            "",
-            "Ataskaita naudoja tik agreguotus duomenis; atskiri lankytojai neidentifikuojami.",
-        ]
+            queries = gsc_query(session, gsc_url, gsc_start, gsc_end, ["query"], 10)
+            if queries.get("rows"):
+                lines += [
+                    "| Užklausa | Paspaudimai | Parodymai | CTR | Pozicija |",
+                    "|---|---:|---:|---:|---:|",
+                ]
+                for row in queries["rows"]:
+                    query = row.get("keys", [""])[0].replace("|", "\\|")
+                    lines.append(
+                        f"| {query} | {fmt(float(row.get('clicks', 0)))} | "
+                        f"{fmt(float(row.get('impressions', 0)))} | "
+                        f"{float(row.get('ctr', 0)):.1%} | {float(row.get('position', 0)):.1f} |"
+                    )
+            else:
+                lines.append("_Search Console užklausų eilučių nepateikė._")
+
+            lines += ["", "### Puslapiai Google paieškoje", ""]
+            pages = gsc_query(session, gsc_url, gsc_start, gsc_end, ["page"], 10)
+            if pages.get("rows"):
+                lines += [
+                    "| Puslapis | Paspaudimai | Parodymai | CTR | Pozicija |",
+                    "|---|---:|---:|---:|---:|",
+                ]
+                for row in pages["rows"]:
+                    page_url = row.get("keys", [""])[0].replace("|", "%7C")
+                    lines.append(
+                        f"| {page_url} | {fmt(float(row.get('clicks', 0)))} | "
+                        f"{fmt(float(row.get('impressions', 0)))} | "
+                        f"{float(row.get('ctr', 0)):.1%} | {float(row.get('position', 0)):.1f} |"
+                    )
+            else:
+                lines.append("_Search Console puslapių eilučių nepateikė._")
+
+            lines += [
+                "",
+                "## Mokama reklama",
+                "",
+                "Mokamų reklamų parodymai ir paspaudimai: **nėra duomenų – Google Ads / Meta Ads paskyra neprijungta**.",
+                "Google paieškos parodymai aukščiau nėra mokamų reklamų parodymai.",
+                "",
+                "Pastaba: aktyvūs naudotojai apytikriai rodo unikalius lankytojus, sesijos – apsilankymus, "
+                "o puslapių peržiūros – atvertų puslapių skaičių. Search Console parodymai reiškia "
+                "pasirodymus Google paieškos rezultatuose, ne apsilankymus svetainėje.",
+                "",
+                "Ataskaita naudoja tik agreguotus duomenis; atskiri lankytojai neidentifikuojami.",
+            ]
+        except Exception as gsc_exc:
+            lines += [
+                "",
+                "## Google paieška (Search Console)",
+                "",
+                "Duomenų gauti nepavyko. GA4 ataskaita pateikta atskirai.",
+                f"Techninė priežastis: {type(gsc_exc).__name__}: {gsc_exc}",
+                "Patikrinkite, ar Search Console API įjungta Google Cloud projekte ir ar paslaugos paskyra turi prieigą prie tikslios svetainės nuosavybės.",
+            ]
+            print(f"WARNING: Search Console unavailable: {type(gsc_exc).__name__}: {gsc_exc}", file=sys.stderr)
+
         OUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
         print(f"Analytics report created: {OUT}")
         return 0
