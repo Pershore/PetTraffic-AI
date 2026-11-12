@@ -70,7 +70,7 @@ The GitHub PR workflow runs these tests. The deploy workflow runs only when manu
 
 ## Free-plan AI agent orchestration (proposed in PR)
 
-The internal daily orchestrator uses Cloudflare Workers AI and D1. It runs at 08:20 UTC, after the scheduled analytics/topic/health snapshots.
+The internal daily orchestrator uses Cloudflare Workers AI and D1. It is configured for 10:20 Europe/Vilnius year-round: cron triggers at 07:20 and 08:20 UTC, and an IANA timezone gate allows exactly one invocation after the scheduled analytics/topic/health snapshots.
 
 Five bounded inference calls are used per daily run: four read-only specialist reviews (analytics, topics, technical SEO, content review) and one coordinator synthesis. The report is stored in `agent_runs`. The run is idempotent per UTC day and has a hard application cap of five AI calls/day, with a maximum of 192 generated tokens per call and bounded input text. Cloudflare Workers Free enforces its own daily Workers AI allocation; once exhausted, further requests fail instead of continuing on the Free plan.
 
@@ -79,7 +79,7 @@ The existing public `/v1/tasks*` routes remain disabled. Agent execution is inte
 Model: `@cf/openai/gpt-oss-20b`. Recheck model availability and pricing before future model changes.
 
 
-## Separate AI control core (implementation branch)
+## Separate AI control core (merged to main)
 
 The control core is a deterministic governance and memory layer separate from the specialist prompts:
 - src/control-core.mjs converts coordinator output into a bounded decision and applies a fixed read-only policy. Model output cannot add permissions or actions.
@@ -89,4 +89,4 @@ The control core is a deterministic governance and memory layer separate from th
 - Publication, live-site edits, DNS changes, ARO Vet changes, spending, Cloudflare permission changes and arbitrary code execution remain blocked. Production-impacting actions require separate explicit approval.
 - Tests cover bounded decisions, malformed/model-supplied actions, D1 persistence and missing database handling.
 
-This is a proposed change until its GitHub Actions checks pass, the PR is reviewed/merged, D1 migration is applied, and a live Cloudflare smoke check confirms the deployed version.
+The implementation and tests are merged to main. The PR test workflow passed, including the Worker Node.js and Python test suites. The Worker deployment workflow is manual-dispatch only; therefore the new Worker code and D1 migration 0003 are not confirmed live until that workflow is run successfully and post-deployment /health plus protected API smoke checks pass. Do not report the control core as active in production before those checks.
