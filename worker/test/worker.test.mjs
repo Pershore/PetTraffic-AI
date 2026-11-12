@@ -59,6 +59,7 @@ test("health endpoint confirms database connectivity without exposing secrets", 
     ok: true,
     service: "pettraffic-control-api",
     database: "connected",
+    control_core_schema: "connected",
     heartbeat: null,
   });
 });
@@ -320,4 +321,25 @@ test("scheduled health check records site and D1 status", async () => {
   }
   assert.ok(statements.some(sql => sql.includes("SELECT 1 AS ok")));
   assert.ok(statements.some(sql => sql.includes("INSERT INTO system_heartbeats")));
+});
+
+test("health endpoint fails closed when control-core D1 migrations are missing", async () => {
+  const brokenEnv = {
+    ...env,
+    DB: {
+      prepare(sql) {
+        return {
+          first: async () => {
+            if (sql.includes("control_core_runs") || sql.includes("control_core_memory")) {
+              throw new Error("no such table");
+            }
+            return sql.includes("system_heartbeats") ? null : ({ ok: 1 });
+          },
+        };
+      },
+    },
+  };
+  const response = await worker.fetch(new Request("https://api.example/health"), brokenEnv);
+  assert.equal(response.status, 503);
+  assert.deepEqual(await response.json(), { ok: false, error: "database_unavailable" });
 });
