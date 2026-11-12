@@ -23,6 +23,7 @@ Sujungti esamas automatizacijas į vieną valdymo sluoksnį, kuris parodo sistem
 
 - Pradinis istorijos sluoksnis: valdymo centro paleidimų ir automatizacijų būsenų JSON archyvas `automation-history` šakoje.
 - Agreguoti GA4 / Search Console 7 dienų rodikliai kasdien išsaugomi atskirais JSON įrašais; saugomi tik aktyvūs / nauji naudotojai, sesijos, puslapių peržiūros, patvirtintos organinės sesijos, paieškos parodymai, paspaudimai, CTR ir vidutinė pozicija.
+- Temų radaras kasdien archyvuoja temų pavadinimų antraščių skaičius, unikalių nuorodų skaičių ir tuščių RSS temų užklausų skaičių; pačios antraštės ir nuorodos į istoriją nekopijuojamos.
 - Search Console užklausų tekstai, puslapių detalios eilutės ir kiti nereikalingi duomenys į ilgalaikį archyvą nekopijuojami.
 - Toliau šiame etape bus pridėtas rekomendacijų registras ir pakeitimų rezultatų palyginimas.
 - Archyvas laikomas atskiroje šakoje, kad istorijos įrašai nekeistų `main` svetainės šaltinių ir nekeltų nereikalingų Cloudflare Pages publikavimų.
