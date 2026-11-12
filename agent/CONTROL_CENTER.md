@@ -22,7 +22,9 @@ Sujungti esamas automatizacijas į vieną valdymo sluoksnį, kuris parodo sistem
 ### 2 etapas – ilgalaikė atmintis
 
 - Pradinis istorijos sluoksnis: valdymo centro paleidimų ir automatizacijų būsenų JSON archyvas `automation-history` šakoje.
-- Kitas šio etapo plėtinys: agreguotų GA4 / Search Console rodiklių savaitiniai įrašai, techninių klaidų pasikartojimo istorija, rekomendacijų registras ir pakeitimų rezultatų palyginimas.
+- Agreguoti GA4 / Search Console 7 dienų rodikliai kasdien išsaugomi atskirais JSON įrašais; saugomi tik aktyvūs / nauji naudotojai, sesijos, puslapių peržiūros, patvirtintos organinės sesijos, paieškos parodymai, paspaudimai, CTR ir vidutinė pozicija.
+- Search Console užklausų tekstai, puslapių detalios eilutės ir kiti nereikalingi duomenys į ilgalaikį archyvą nekopijuojami.
+- Toliau šiame etape bus pridėtas rekomendacijų registras ir pakeitimų rezultatų palyginimas.
 - Archyvas laikomas atskiroje šakoje, kad istorijos įrašai nekeistų `main` svetainės šaltinių ir nekeltų nereikalingų Cloudflare Pages publikavimų.
 - Istorijoje nerenkami atskirų lankytojų duomenys, paieškos užklausų tekstai ar paslaptys.
 
