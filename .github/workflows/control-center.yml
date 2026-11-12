@@ -18,6 +18,8 @@ on:
       - "tests/test_topic_history.py"
       - "tests/test_recommendations.py"
       - ".github/workflows/control-center.yml"
+      - ".github/workflows/analytics-snapshot.yml"
+      - ".github/workflows/daily-topic-radar.yml"
 
 permissions:
   contents: write
