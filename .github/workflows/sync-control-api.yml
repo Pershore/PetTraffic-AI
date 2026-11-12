@@ -78,6 +78,7 @@ jobs:
           API_TOKEN: ${{ secrets.PETTRAFFIC_CONTROL_API_TOKEN }}
         run: |
           set -euo pipefail
+          API_URL="${API_URL%/}"
           for file in events/*.json; do
             curl --fail-with-body --silent --show-error \
               --request POST "$API_URL/v1/events" \
