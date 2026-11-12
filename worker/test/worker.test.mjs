@@ -116,7 +116,7 @@ test("potential personal data and secrets are rejected from event payloads", asy
   assert.equal(response.status, 400);
 });
 
-test("task creation accepts only the read-only task catalogue", async () => {
+test("task API remains disabled until a dedicated agent identity is configured", async () => {
   const response = await worker.fetch(new Request("https://api.example/v1/tasks", {
     method: "POST",
     headers: { authorization: "Bearer " + oidcToken(), "content-type": "application/json" },
@@ -127,17 +127,18 @@ test("task creation accepts only the read-only task catalogue", async () => {
       payload: { target: "sitemap" },
     }),
   }), env);
-  assert.equal(response.status, 202);
-  assert.equal((await response.json()).status, "queued");
+  assert.equal(response.status, 503);
+  assert.deepEqual(await response.json(), { error: "task_api_not_enabled" });
 });
 
-test("task creation rejects unknown task types", async () => {
-  const response = await worker.fetch(new Request("https://api.example/v1/tasks", {
+test("task claim route is unavailable to the snapshot sync identity", async () => {
+  const response = await worker.fetch(new Request("https://api.example/v1/tasks/claim", {
     method: "POST",
     headers: { authorization: "Bearer " + oidcToken(), "content-type": "application/json" },
-    body: JSON.stringify({ type: "publish_article", agent: "content-review", payload: {} }),
+    body: JSON.stringify({ agent: "coordinator" }),
   }), env);
-  assert.equal(response.status, 400);
+  assert.equal(response.status, 503);
+  assert.deepEqual(await response.json(), { error: "task_api_not_enabled" });
 });
 
 test("CORS rejects origins other than the PetTraffic site", async () => {
