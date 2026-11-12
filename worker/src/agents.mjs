@@ -1,3 +1,13 @@
+export function isVilniusAgentRunTime(date = new Date()) {
+  const localTime = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Vilnius",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).format(date);
+  return localTime === "10:20";
+}
+
 const MODEL = "@cf/openai/gpt-oss-20b";
 const MAX_DAILY_CALLS = 5;
 const MAX_INPUT_CHARS = 6000;
