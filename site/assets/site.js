@@ -45,6 +45,7 @@
   const articleCards = Array.from(document.querySelectorAll('#article-grid .article-card'));
   const filterButtons = Array.from(document.querySelectorAll('[data-filter]'));
   const noResults = document.querySelector('#no-results');
+  const resultsStatus = document.querySelector('#article-results-status');
   let activeFilter = 'visi';
 
   function filterArticles() {
@@ -62,6 +63,9 @@
     });
 
     if (noResults) noResults.hidden = visibleCount > 0;
+    if (resultsStatus) {
+      resultsStatus.textContent = 'Rodoma ' + visibleCount + ' iš ' + articleCards.length + ' straipsnių.';
+    }
   }
 
   filterButtons.forEach((button) => {
