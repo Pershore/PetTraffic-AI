@@ -24,7 +24,8 @@ def api_post(session, url: str, body: dict) -> dict:
 
 
 def ga_rows(session, url: str, start: date, end: date, metrics: list[str],
-            dimensions: list[str] | None = None, limit: int = 10) -> dict:
+            dimensions: list[str] | None = None, limit: int = 10,
+            metric_aggregations: list[str] | None = None) -> dict:
     body = {
         "dateRanges": [{"startDate": start.isoformat(), "endDate": end.isoformat()}],
         "metrics": [{"name": name} for name in metrics],
@@ -34,6 +35,8 @@ def ga_rows(session, url: str, start: date, end: date, metrics: list[str],
         body["dimensions"] = [{"name": name} for name in dimensions]
     if dimensions and metrics:
         body["orderBys"] = [{"metric": {"metricName": metrics[-1]}, "desc": True}]
+    if metric_aggregations:
+        body["metricAggregations"] = metric_aggregations
     return api_post(session, url, body)
 
 
@@ -42,6 +45,24 @@ def metric_totals(data: dict) -> dict[str, float]:
     rows = data.get("rows", [])
     values = rows[0].get("metricValues", []) if rows else []
     return {name: float(value.get("value", "0")) for name, value in zip(headers, values)}
+
+
+def metric_aggregation_total(data: dict, metric_name: str) -> float | None:
+    """Read GA4's explicit TOTAL aggregation, not a separately queried total."""
+    rows = data.get("totals") or []
+    if not rows:
+        rows = [
+            row for row in data.get("rows", [])
+            if any(
+                str(value.get("value", "")).startswith("RESERVED_TOTAL")
+                for value in row.get("dimensionValues", [])
+            )
+        ]
+    values = metric_totals({
+        "metricHeaders": data.get("metricHeaders", []),
+        "rows": rows[:1],
+    })
+    return values.get(metric_name)
 
 
 def gsc_query(session, url: str, start: date, end: date,
@@ -203,7 +224,7 @@ def main() -> int:
 
         channels = ga_rows(
             session, ga_url, ga_start, ga_end, ["sessions"],
-            ["sessionDefaultChannelGroup"], limit=50,
+            ["sessionDefaultChannelGroup"], limit=50, metric_aggregations=["TOTAL"],
         )
         lines += ["", "### Sesijos pagal kanalą", "", "| Kanalas | Sesijos |", "|---|---:|"]
         if channels.get("metadata", {}).get("dataLossFromOtherRow"):
@@ -223,11 +244,24 @@ def main() -> int:
             lines.append("| Duomenų nėra | – |")
         lines += ["", f"Organinės paieškos sesijos: **{fmt(organic_sessions)}**", ""]
         total_sessions = current.get("sessions", 0.0)
-        if abs(channel_sessions_total - total_sessions) > 0.01:
+        channel_api_total = metric_aggregation_total(channels, "sessions")
+        if channel_api_total is not None:
+            if abs(channel_sessions_total - channel_api_total) > 0.01:
+                lines.append(
+                    f"Duomenų patikra: kanalų eilučių suma ({fmt(channel_sessions_total)}) "
+                    f"nesutampa su tos pačios GA4 užklausos TOTAL ({fmt(channel_api_total)})."
+                )
+            if abs(channel_api_total - total_sessions) > 0.01:
+                lines.append(
+                    f"GA4 neatitikimas: kanalų užklausos TOTAL ({fmt(channel_api_total)}) "
+                    f"skiriasi nuo bendros sesijų užklausos ({fmt(total_sessions)}). "
+                    "Kanalų pasiskirstymą laikykite preliminariu, kol skirtumas paaiškintas."
+                )
+            lines.append("")
+        else:
             lines.append(
-                f"Duomenų patikra: kanalų eilučių suma ({fmt(channel_sessions_total)}) "
-                f"nesutampa su bendru sesijų skaičiumi ({fmt(total_sessions)}); "
-                "kanalų pasiskirstymą laikykite preliminariu."
+                "Duomenų patikra: GA4 šiai kanalų užklausai nepateikė TOTAL agregato; "
+                "bendro sesijų skaičiaus palyginimas nėra nepriklausomai patvirtintas."
             )
             lines.append("")
 

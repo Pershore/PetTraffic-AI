@@ -1,6 +1,6 @@
 import unittest
 
-from analytics_report import delta, fmt_gsc, gsc_metric
+from analytics_report import delta, fmt_gsc, gsc_metric, metric_aggregation_total
 
 
 class AnalyticsReportTests(unittest.TestCase):
@@ -16,6 +16,27 @@ class AnalyticsReportTests(unittest.TestCase):
         data = {"rows": [{"clicks": 3, "impressions": 12, "ctr": 0.25}]}
         self.assertEqual(gsc_metric(data, "clicks"), 3.0)
         self.assertEqual(gsc_metric(data, "ctr"), 0.25)
+
+    def test_ga4_total_aggregation_is_read_from_totals(self):
+        data = {
+            "metricHeaders": [{"name": "sessions"}],
+            "totals": [{"metricValues": [{"value": "14"}]}],
+            "rows": [],
+        }
+        self.assertEqual(metric_aggregation_total(data, "sessions"), 14.0)
+
+    def test_ga4_total_aggregation_reads_reserved_total_row(self):
+        data = {
+            "metricHeaders": [{"name": "sessions"}],
+            "rows": [
+                {"dimensionValues": [{"value": "Direct"}], "metricValues": [{"value": "13"}]},
+                {"dimensionValues": [{"value": "RESERVED_TOTAL"}], "metricValues": [{"value": "14"}]},
+            ],
+        }
+        self.assertEqual(metric_aggregation_total(data, "sessions"), 14.0)
+
+    def test_ga4_total_aggregation_missing_is_none(self):
+        self.assertIsNone(metric_aggregation_total({"rows": []}, "sessions"))
 
     def test_delta_handles_zero_baseline(self):
         self.assertEqual(delta(0, 0), "nėra palyginimo bazės")
