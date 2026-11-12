@@ -9,6 +9,7 @@ on:
     paths:
       - "agent/control_center.py"
       - "agent/history_store.py"
+      - "agent/analytics_history.py"
       - "tests/test_control_center.py"
       - "tests/test_history_store.py"
       - ".github/workflows/control-center.yml"
@@ -130,6 +131,7 @@ jobs:
           git add reports/history/control-center
           if ! git diff --cached --quiet; then
             git commit -m "chore: archive control-center history"
+            git pull --rebase origin automation-history
             git push origin automation-history
           else
             echo "No new history snapshot to archive."
