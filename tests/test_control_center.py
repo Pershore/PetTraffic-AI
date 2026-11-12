@@ -1,6 +1,6 @@
 import unittest
 from datetime import datetime, timezone, timedelta
-from agent.control_center import evaluate_workflow, needs_attention, render
+from agent.control_center import evaluate_workflow, evaluate_worker_health, needs_attention, render
 
 class ControlCenterTests(unittest.TestCase):
     def setUp(self):
@@ -9,6 +9,19 @@ class ControlCenterTests(unittest.TestCase):
     def run_item(self, status="completed", conclusion="success", age_hours=2):
         created = self.now - timedelta(hours=age_hours)
         return {"created_at": created.isoformat().replace("+00:00", "Z"), "status": status, "conclusion": conclusion, "html_url": "https://github.com/example/run/1"}
+
+    def test_worker_health_success_requires_connected_database(self):
+        result = evaluate_worker_health({"ok": True, "database": "connected"})
+        self.assertEqual(result["state"], "success")
+
+    def test_worker_health_detects_disconnected_database(self):
+        result = evaluate_worker_health({"ok": False, "database": "unavailable"})
+        self.assertEqual(result["state"], "failure")
+
+    def test_worker_health_detects_http_errors(self):
+        result = evaluate_worker_health({}, status_code=503)
+        self.assertEqual(result["state"], "failure")
+        self.assertIn("503", result["detail"])
 
     def test_successful_recent_run(self):
         self.assertEqual(evaluate_workflow("Analytics", [self.run_item()], self.now, 36)["state"], "success")
