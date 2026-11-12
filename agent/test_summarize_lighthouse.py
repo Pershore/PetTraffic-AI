@@ -44,7 +44,7 @@ class LighthouseSummaryTests(unittest.TestCase):
         summary = build_summary([("home-mobile", data)])
         self.assertIn("| home-mobile | 80 | 100 | 100 | 100 |", summary)
         self.assertIn("TBT: 850 ms", summary)
-        self.assertIn("LCP elementas: Hero heading", summary)
+        self.assertIn("LCP elementas:** Hero heading", summary)
         self.assertIn("Style & Layout 620 ms", summary)
         self.assertIn("110 ms", summary)
         self.assertIn("nepriskirta", summary)
