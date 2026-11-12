@@ -22,28 +22,52 @@ jobs:
       - name: Wait for Cloudflare Pages deployment
         run: sleep 90
 
-      - name: Submit sitemap URLs to IndexNow
+      - name: Validate key and submit sitemap URLs to IndexNow
         env:
           INDEXNOW_API_KEY: ${{ secrets.INDEXNOW_API_KEY }}
         run: |
           python - <<'PY'
           import os
-          import xml.etree.ElementTree as ET
-          import urllib.request
-          import json
           import sys
+          import json
+          import urllib.request
+          import urllib.error
+          import xml.etree.ElementTree as ET
+          from urllib.parse import urlparse
 
           key = os.environ.get("INDEXNOW_API_KEY", "").strip()
           if not key:
-              print("INDEXNOW_API_KEY secret is missing.")
+              print("ERROR: INDEXNOW_API_KEY secret is missing or empty.")
               sys.exit(1)
 
           base = "https://pettraffic-ai.pages.dev"
-          sitemap_url = base + "/sitemap.xml"
-          key_location = base + "/" + key + ".txt"
+          host = "pettraffic-ai.pages.dev"
+          key_location = f"{base}/{key}.txt"
+          sitemap_url = f"{base}/sitemap.xml"
 
-          with urllib.request.urlopen(sitemap_url, timeout=30) as response:
-              root = ET.fromstring(response.read())
+          # IndexNow requires the public key file to contain exactly the secret key.
+          try:
+              with urllib.request.urlopen(key_location, timeout=30) as response:
+                  public_key = response.read().decode("utf-8-sig").strip()
+                  print(f"Key file check: HTTP {response.status}; content match: {public_key == key}")
+          except urllib.error.HTTPError as error:
+              print(f"ERROR: Key file could not be fetched: HTTP {error.code}")
+              sys.exit(1)
+          except Exception as error:
+              print(f"ERROR: Key file check failed ({type(error).__name__}).")
+              sys.exit(1)
+
+          if public_key != key:
+              print("ERROR: The public key file content does not match INDEXNOW_API_KEY.")
+              print("Check that the filename is <key>.txt and the file contains only the same key.")
+              sys.exit(1)
+
+          try:
+              with urllib.request.urlopen(sitemap_url, timeout=30) as response:
+                  root = ET.fromstring(response.read())
+          except Exception as error:
+              print(f"ERROR: Sitemap could not be fetched or parsed ({type(error).__name__}).")
+              sys.exit(1)
 
           urls = [
               element.text.strip()
@@ -51,14 +75,20 @@ jobs:
               if element.tag.endswith("loc") and element.text
           ]
           if not urls:
-              print("No URLs found in sitemap.")
+              print("ERROR: No URLs found in sitemap.")
               sys.exit(1)
 
+          invalid_urls = [url for url in urls if urlparse(url).netloc.lower() != host]
+          if invalid_urls:
+              print(f"ERROR: Sitemap contains {len(invalid_urls)} URL(s) outside {host}.")
+              sys.exit(1)
+
+          submitted_urls = urls[:10000]
           payload = json.dumps({
-              "host": "pettraffic-ai.pages.dev",
+              "host": host,
               "key": key,
               "keyLocation": key_location,
-              "urlList": urls[:10000],
+              "urlList": submitted_urls,
           }).encode("utf-8")
 
           request = urllib.request.Request(
@@ -70,8 +100,9 @@ jobs:
           try:
               with urllib.request.urlopen(request, timeout=30) as response:
                   print(f"IndexNow response: HTTP {response.status}")
-                  print(f"Submitted {len(urls[:10000])} URLs.")
+                  print(f"Submitted {len(submitted_urls)} sitemap URL(s).")
           except urllib.error.HTTPError as error:
-              print(f"IndexNow returned HTTP {error.code}: {error.read().decode('utf-8', 'replace')}")
+              print(f"ERROR: IndexNow rejected the request: HTTP {error.code}.")
+              print(error.read().decode("utf-8", "replace")[:1000])
               raise
           PY
