@@ -21,4 +21,4 @@ enabled = true
 
 # Lightweight 24/7 operational heartbeat; UTC, every 15 minutes.
 [triggers]
-crons = ["*/15 * * * *", "20 8 * * *"]
+crons = ["*/15 * * * *", "20 7,8 * * *"]
