@@ -62,6 +62,39 @@ def fetch_runs(workflow_file: str) -> list[dict]:
     with urlopen(request, timeout=20) as response:
         return json.loads(response.read().decode("utf-8")).get("workflow_runs", [])
 
+def evaluate_worker_health(payload: dict, status_code: int = 200, url: str | None = None) -> dict:
+    """Evaluate the dedicated control Worker and its D1 health response."""
+    base = {"name": "Cloudflare Worker + D1", "url": url, "created_at": None}
+    if status_code != 200:
+        return {**base, "state": "failure", "detail": f"Worker health endpoint returned HTTP {status_code}."}
+    if payload.get("ok") is not True or payload.get("database") != "connected":
+        return {**base, "state": "failure", "detail": "Worker or D1 health check did not confirm a connected database."}
+    return {**base, "state": "success", "detail": "Worker API pasiekiamas, D1 duomenų bazė prijungta."}
+
+
+def fetch_worker_health() -> dict:
+    api_url = os.environ.get(
+        "PETTRAFFIC_CONTROL_API_URL",
+        "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev",
+    ).rstrip("/")
+    health_url = api_url + "/health"
+    request = Request(health_url, headers={"Accept": "application/json", "User-Agent": "PetTraffic-ControlCenter/1.0"})
+    try:
+        with urlopen(request, timeout=15) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+            return evaluate_worker_health(payload, response.status, health_url)
+    except HTTPError as exc:
+        return evaluate_worker_health({}, exc.code, health_url)
+    except (URLError, TimeoutError, OSError, ValueError) as exc:
+        return {
+            "name": "Cloudflare Worker + D1",
+            "state": "api_error",
+            "detail": f"Worker health patikra nepavyko ({type(exc).__name__}).",
+            "url": health_url,
+            "created_at": None,
+        }
+
+
 def needs_attention(results: list[dict]) -> bool:
     """Only actionable failures and stale/uncertain checks create an alert."""
     return any(item["state"] in ("failure", "api_error", "stale", "warning", "unknown") for item in results)
@@ -111,6 +144,7 @@ def main() -> int:
         except (HTTPError, URLError, TimeoutError, OSError, ValueError) as exc:
             item = {"name":label,"state":"api_error","detail":f"GitHub API patikra nepavyko ({type(exc).__name__}).","url":None,"created_at":None}
         results.append(item)
+    results.append(fetch_worker_health())
     report = render(results, now)
     OUT.write_text(report, encoding="utf-8")
     OUT_JSON.write_text(json.dumps({"generated_at": now.isoformat(), "needs_attention": needs_attention(results), "results": results}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
