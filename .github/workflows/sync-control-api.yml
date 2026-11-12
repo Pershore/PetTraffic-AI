@@ -89,33 +89,6 @@ jobs:
             "$ACTIONS_ID_TOKEN_REQUEST_URL")"
           API_TOKEN="$(python -c 'import json,sys; print(json.load(sys.stdin)["value"])' <<< "$oidc_response")"
           unset oidc_response
-          # Print only non-secret identity claims to diagnose strict Worker authorization.
-          python - "$API_TOKEN" <<'PY'
-          import base64, json, sys
-          token = sys.argv[1]
-          parts = token.split(".")
-          if len(parts) != 3:
-              raise SystemExit("OIDC token has an invalid JWT structure.")
-          payload = parts[1]
-          payload += "=" * ((4 - len(payload) % 4) % 4)
-          claims = json.loads(base64.urlsafe_b64decode(payload))
-          expected = {
-              "iss": "https://token.actions.githubusercontent.com",
-              "aud": "pettraffic-control-api",
-              "sub": "repo:Pershore@124571174/PetTraffic-AI@1452256714:ref:refs/heads/main",
-              "repository": "Pershore/PetTraffic-AI",
-              "repository_owner_id": "124571174",
-              "repository_id": "1452256714",
-              "ref": "refs/heads/main",
-              "workflow_ref": "Pershore/PetTraffic-AI/.github/workflows/sync-control-api.yml@refs/heads/main",
-              "event_name": "workflow_run",
-          }
-          for key, wanted in expected.items():
-              actual = claims.get(key)
-              matches = str(actual) == wanted if key.endswith("_id") else actual == wanted
-              print(f"OIDC claim {key}: {actual!r}; expected {wanted!r}; match={matches}")
-          print("OIDC token time claims: exp=", claims.get("exp"), "nbf=", claims.get("nbf"))
-          PY
           status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' \
             --header "Authorization: Bearer $API_TOKEN" "$API_URL/v1/events")"
           if [ "$status" != "200" ]; then
@@ -123,11 +96,25 @@ jobs:
             exit 1
           fi
           for file in events/*.json; do
-            curl --fail-with-body --silent --show-error \
+            response="$(curl --fail-with-body --silent --show-error \
               --request POST "$API_URL/v1/events" \
               --header "Authorization: Bearer $API_TOKEN" \
               --header "Content-Type: application/json" \
-              --data-binary "@$file"
+              --data-binary "@$file")"
+            event_id="$(python -c 'import json,sys; print(json.load(sys.stdin)["id"])' <<< "$response")"
+            kind="$(python -c 'import json,sys; print(json.load(sys.stdin)["kind"])' < "$file")"
+            readback="$(curl --fail-with-body --silent --show-error --get "$API_URL/v1/events" \
+              --data-urlencode "kind=$kind" \
+              --header "Authorization: Bearer $API_TOKEN")"
+            READBACK_JSON="$readback" python - "$event_id" <<'PY'
+          import json, os, sys
+          payload = json.loads(os.environ["READBACK_JSON"])
+          expected_id = sys.argv[1]
+          if not any(str(item.get("id")) == expected_id for item in payload.get("events", [])):
+              raise SystemExit("Snapshot was accepted but could not be read back from D1.")
+          print("OK: D1 snapshot write/read verified.")
+          PY
+            unset response event_id kind readback
           done
           unset API_TOKEN
-          echo "Privacy-filtered snapshots published using short-lived GitHub OIDC identity."
+          echo "Privacy-filtered snapshots published and read back using short-lived GitHub OIDC identity."
