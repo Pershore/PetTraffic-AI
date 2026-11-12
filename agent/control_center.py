@@ -1,0 +1,114 @@
+#!/usr/bin/env python3
+"""Read-only daily control center for Pet traffic GitHub Actions."""
+from __future__ import annotations
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from urllib.error import HTTPError, URLError
+from urllib.parse import quote
+from urllib.request import Request, urlopen
+import json, os
+
+OUT = Path("reports/control-center.md")
+REPO = os.environ.get("GITHUB_REPOSITORY", "Pershore/PetTraffic-AI")
+TOKEN = os.environ.get("GITHUB_TOKEN", "").strip()
+WORKFLOWS = [
+    ("analytics-snapshot.yml", "GA4 ir Search Console", 36),
+    ("daily-topic-radar.yml", "Temų radaras", 36),
+    ("live-site-monitor.yml", "Svetainės stebėjimas", 36),
+    ("lighthouse-audit.yml", "Lighthouse auditas", 9 * 24),
+]
+
+def parse_time(value: str) -> datetime:
+    parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    return (parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)).astimezone(timezone.utc)
+
+def evaluate_workflow(name: str, runs: list[dict], now: datetime, max_age_hours: int) -> dict:
+    if not runs:
+        return {"name": name, "state": "missing", "detail": "Nerasta nė vieno paleidimo.", "url": None, "created_at": None}
+    latest = max(runs, key=lambda item: item.get("created_at", ""))
+    created_raw = latest.get("created_at", "")
+    try:
+        created = parse_time(created_raw)
+    except (TypeError, ValueError):
+        return {"name": name, "state": "unknown", "detail": "Naujausio paleidimo data neatpažinta.", "url": latest.get("html_url"), "created_at": created_raw}
+    status, conclusion = latest.get("status"), latest.get("conclusion")
+    base = {"name": name, "url": latest.get("html_url"), "created_at": created_raw}
+    age = now.astimezone(timezone.utc) - created
+    if status in ("queued", "in_progress", "waiting", "pending"):
+        return {**base, "state": "running", "detail": f"Vyksta ({status})."}
+    if status != "completed":
+        return {**base, "state": "unknown", "detail": f"Nežinoma būsena: {status}."}
+    if conclusion == "failure":
+        return {**base, "state": "failure", "detail": "Paskutinis paleidimas nepavyko."}
+    if conclusion in ("cancelled", "timed_out", "action_required", "startup_failure"):
+        return {**base, "state": "warning", "detail": f"Paskutinio paleidimo rezultatas: {conclusion}."}
+    if conclusion not in ("success", "neutral", "skipped"):
+        return {**base, "state": "unknown", "detail": f"Nežinoma išvada: {conclusion}."}
+    if age > timedelta(hours=max_age_hours):
+        hours = int(age.total_seconds() // 3600)
+        return {**base, "state": "stale", "detail": f"Paskutinis sėkmingas paleidimas prieš {hours} val.; tikėtasi per {max_age_hours} val."}
+    return {**base, "state": "success", "detail": "Paskutinis paleidimas sėkmingas."}
+
+def fetch_runs(workflow_file: str) -> list[dict]:
+    endpoint = f"https://api.github.com/repos/{REPO}/actions/workflows/{quote(workflow_file, safe='')}/runs?branch=main&per_page=5"
+    request = Request(endpoint, headers={
+        "Accept": "application/vnd.github+json",
+        "Authorization": f"Bearer {TOKEN}",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "User-Agent": "PetTraffic-ControlCenter/1.0",
+    })
+    with urlopen(request, timeout=20) as response:
+        return json.loads(response.read().decode("utf-8")).get("workflow_runs", [])
+
+def render(results: list[dict], generated: datetime) -> str:
+    labels = {"success":"GERAI","failure":"KLAIDA","warning":"ĮSPĖJIMAS","stale":"PASENĘ","missing":"NĖRA PALEIDIMŲ","running":"VYKDOMA","unknown":"NEAIŠKU","api_error":"API KLAIDA"}
+    lines = [
+        "# Pet traffic – centrinis valdymo skydelis", "",
+        f"Atnaujinta: {generated.astimezone(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}",
+        "", "> Tik skaitymo režimo GitHub Actions būklės suvestinė. Ji nekeičia svetainės, kodų, nustatymų ar paslapčių.",
+        "", "## Automatizacijų būklė", "",
+        "| Modulis | Būsena | Pastaba |", "|---|---|---|",
+    ]
+    for item in results:
+        note = item["detail"]
+        if item.get("url"):
+            note += f" [Paleidimas]({item['url']})"
+        lines.append(f"| {item['name']} | **{labels.get(item['state'], item['state'].upper())}** | {note} |")
+    failures = [x for x in results if x["state"] in ("failure", "api_error")]
+    warnings = [x for x in results if x["state"] in ("warning", "stale", "missing", "unknown")]
+    running = [x for x in results if x["state"] == "running"]
+    lines += ["", "## Prioritetai", ""]
+    if failures: lines.append("1. **Skubu:** patikrinti nepavykusius modulius: " + ", ".join(x["name"] for x in failures) + ".")
+    if warnings: lines.append(("2. " if failures else "1. ") + "**Patikrinti:** " + ", ".join(x["name"] for x in warnings) + ".")
+    if running: lines.append("**Vykdoma:** " + ", ".join(x["name"] for x in running) + ".")
+    if not failures and not warnings and not running: lines.append("Nerasta veiksmų reikalaujančių būsenų.")
+    lines += [
+        "", "## Saugumo ribos", "",
+        "- Naudojamos tik GitHub Actions skaitymo teisės.",
+        "- Neskaitomi ir nerodomi slapti raktai ar lankytojų asmens duomenys.",
+        "- Modulis pats netaiso ir nepublikuoja pakeitimų.",
+        "- IndexNow ir PR testai yra įvykiais paleidžiami procesai, todėl nevertinami kaip kasdieniai darbai.", "",
+    ]
+    return "\n".join(lines)
+
+def main() -> int:
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    if not TOKEN:
+        OUT.write_text("# Pet traffic – centrinis valdymo skydelis\n\nKlaida: trūksta GITHUB_TOKEN.\n", encoding="utf-8")
+        print("GITHUB_TOKEN is missing.")
+        return 2
+    now = datetime.now(timezone.utc)
+    results = []
+    for filename, label, max_age in WORKFLOWS:
+        try:
+            item = evaluate_workflow(label, fetch_runs(filename), now, max_age)
+        except (HTTPError, URLError, TimeoutError, OSError, ValueError) as exc:
+            item = {"name":label,"state":"api_error","detail":f"GitHub API patikra nepavyko ({type(exc).__name__}).","url":None,"created_at":None}
+        results.append(item)
+    report = render(results, now)
+    OUT.write_text(report, encoding="utf-8")
+    print(report)
+    return 1 if any(x["state"] in ("failure", "api_error") for x in results) else 0
+
+if __name__ == "__main__":
+    raise SystemExit(main())
