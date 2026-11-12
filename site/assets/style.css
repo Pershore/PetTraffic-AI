@@ -56,27 +56,3 @@ body{background:#fffdfa}
 .article-cover{display:block;width:100%;max-height:390px;object-fit:cover;border-radius:24px;margin:0 auto 30px;background:#f1eee7}
 .article{max-width:900px}.article h1{font-size:clamp(34px,4vw,48px);line-height:1.14;letter-spacing:-1.6px}
 @media(max-width:600px){.article-cover{border-radius:16px;margin-bottom:22px}}
-
-/* ARO Vet blog-inspired editorial details and original partner cards */
-:root{--partner-yellow:#ffcd29;--partner-yellow-soft:#fff5cf}
-.article h1,.article h2,.article h3,.section-heading h2{font-family:"Plus Jakarta Sans",Inter,ui-sans-serif,system-ui,sans-serif}
-.article-kicker{display:inline-flex;align-items:center;padding:5px 9px;border-radius:999px;background:var(--partner-yellow-soft);color:#765b12}
-.partner-section{margin-top:68px;padding:36px 30px;background:#faf8f2;border:1px solid #eee8dc;border-radius:24px}
-.partner-product-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
-.partner-product-card{min-width:0;padding:20px 17px 18px;background:#fff;border:1px solid #e8e5de;border-radius:16px;display:flex;flex-direction:column;align-items:flex-start;box-shadow:0 5px 18px #26352d08}
-.partner-product-icon{width:48px;height:48px;display:grid;place-items:center;border-radius:14px;background:var(--partner-yellow-soft);font-size:25px;margin-bottom:15px}
-.partner-product-rank{margin:0 0 7px!important;font-size:9px!important;letter-spacing:1.15px;font-weight:850;color:#98741b!important}
-.partner-product-card h3{font-size:15px;line-height:1.35;margin:0 0 9px;letter-spacing:-.2px}
-.partner-product-card>p:not(.partner-product-rank){font-size:12px;line-height:1.55;color:#69786f;margin:0 0 17px}
-.partner-product-card a{margin-top:auto;display:inline-flex;align-items:center;gap:6px;padding:9px 13px;border-radius:999px;background:var(--partner-yellow);color:#17221b;text-decoration:none;font-size:11px;font-weight:850}
-.partner-product-card a:hover{background:#f3bd13}
-.partner-disclosure{margin:19px 0 0;color:#69786f;font-size:11px;line-height:1.6}
-.partner-disclosure a{font-weight:750}
-.partner-page-intro{padding:30px;background:linear-gradient(120deg,#faf8f2,#f2f4ed);border-radius:22px;margin:22px 0}
-.partner-page-products{margin:30px 0}
-.partner-page-products .partner-product-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
-.article-partner-note{margin-top:34px;border:1px solid #eee8dc}
-.article-partner-note h2{font-size:22px}
-@media(max-width:1000px){.partner-product-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(max-width:680px){.partner-section{padding:25px 17px;margin-inline:10px}.partner-product-grid,.partner-page-products .partner-product-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.partner-product-card{padding:15px 12px}.partner-product-card h3{font-size:14px}}
-@media(max-width:390px){.partner-product-grid,.partner-page-products .partner-product-grid{grid-template-columns:1fr}}
