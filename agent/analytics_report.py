@@ -14,7 +14,11 @@ OUT = Path("reports/analytics-7d.md")
 
 def api_post(session, url: str, body: dict) -> dict:
     response = session.post(url, json=body, timeout=30)
-    response.raise_for_status()
+    if not response.ok:
+        # Google APIs include a structured reason/message in the response body.
+        # Keep it in the report so permission and API-activation failures can be distinguished.
+        detail = response.text[:1200].replace("\\n", " ")
+        raise RuntimeError(f"Google API HTTP {response.status_code}: {detail}")
     return response.json()
 
 
