@@ -145,6 +145,7 @@ jobs:
           mkdir -p /tmp/pettraffic-history
           cp -R reports/history/control-center /tmp/pettraffic-history/
           cp -R reports/history/recommendations /tmp/pettraffic-history/
+          rm -rf reports/history
           git fetch origin automation-history
           git checkout -B automation-history origin/automation-history
           mkdir -p reports/history
