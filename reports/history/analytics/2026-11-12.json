@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-12",
+  "snapshots": [
+    {
+      "run_id": "43274061578",
+      "generated_at": "2026-11-12T17:53:54.423418+00:00",
+      "ga4_status": "available",
+      "ga4_period": "2026-11-05 – 2026-11-11",
+      "search_console_status": "available",
+      "search_console_period": "2026-11-03 – 2026-11-09 (duomenys gali vėluoti kelias dienas).",
+      "metrics": {
+        "active_users": 7.0,
+        "new_users": 7.0,
+        "sessions": 14.0,
+        "page_views": 67.0,
+        "organic_sessions_verified": null,
+        "search_impressions": 0.0,
+        "search_clicks": 0.0,
+        "search_ctr": 0.0,
+        "average_position": 0.0
+      }
+    }
+  ]
+}
