@@ -48,7 +48,11 @@ function safeObject(value, depth = 0) {
 const GITHUB_OIDC_ISSUER = "https://token.actions.githubusercontent.com";
 const GITHUB_OIDC_AUDIENCE = "pettraffic-control-api";
 const GITHUB_REPOSITORY = "Pershore/PetTraffic-AI";
+const GITHUB_REPOSITORY_OWNER_ID = "124571174";
+const GITHUB_REPOSITORY_ID = "1452256714";
 const GITHUB_REF = "refs/heads/main";
+// GitHub repositories created after 2026-07-15 use immutable owner/repository IDs in sub.
+const GITHUB_SUBJECT = `repo:Pershore@${GITHUB_REPOSITORY_OWNER_ID}/PetTraffic-AI@${GITHUB_REPOSITORY_ID}:ref:${GITHUB_REF}`;
 const GITHUB_WORKFLOW_REF = "Pershore/PetTraffic-AI/.github/workflows/sync-control-api.yml@refs/heads/main";
 
 function decodeBase64Url(value) {
@@ -81,8 +85,10 @@ async function authorized(request) {
   if (
     claims.iss !== GITHUB_OIDC_ISSUER ||
     !audienceValid ||
-    claims.sub !== `repo:${GITHUB_REPOSITORY}:ref:${GITHUB_REF}` ||
+    claims.sub !== GITHUB_SUBJECT ||
     claims.repository !== GITHUB_REPOSITORY ||
+    String(claims.repository_owner_id) !== GITHUB_REPOSITORY_OWNER_ID ||
+    String(claims.repository_id) !== GITHUB_REPOSITORY_ID ||
     claims.ref !== GITHUB_REF ||
     claims.workflow_ref !== GITHUB_WORKFLOW_REF ||
     claims.event_name !== "workflow_run" ||
