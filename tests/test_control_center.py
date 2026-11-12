@@ -1,6 +1,6 @@
 import unittest
 from datetime import datetime, timezone, timedelta
-from agent.control_center import evaluate_workflow, evaluate_worker_health, needs_attention, render
+from agent.control_center import WORKFLOWS, evaluate_workflow, evaluate_worker_health, needs_attention, render
 
 class ControlCenterTests(unittest.TestCase):
     def setUp(self):
@@ -22,6 +22,9 @@ class ControlCenterTests(unittest.TestCase):
         result = evaluate_worker_health({}, status_code=503)
         self.assertEqual(result["state"], "failure")
         self.assertIn("503", result["detail"])
+
+    def test_control_api_sync_is_monitored(self):
+        self.assertIn("sync-control-api.yml", [item[0] for item in WORKFLOWS])
 
     def test_successful_recent_run(self):
         self.assertEqual(evaluate_workflow("Analytics", [self.run_item()], self.now, 36)["state"], "success")
