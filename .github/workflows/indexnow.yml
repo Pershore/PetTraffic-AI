@@ -1,0 +1,77 @@
+name: IndexNow URL submission
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - ".github/workflows/indexnow.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: indexnow-submit
+  cancel-in-progress: false
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for Cloudflare Pages deployment
+        run: sleep 90
+
+      - name: Submit sitemap URLs to IndexNow
+        env:
+          INDEXNOW_API_KEY: ${{ secrets.INDEXNOW_API_KEY }}
+        run: |
+          python - <<'PY'
+          import os
+          import xml.etree.ElementTree as ET
+          import urllib.request
+          import json
+          import sys
+
+          key = os.environ.get("INDEXNOW_API_KEY", "").strip()
+          if not key:
+              print("INDEXNOW_API_KEY secret is missing.")
+              sys.exit(1)
+
+          base = "https://pettraffic-ai.pages.dev"
+          sitemap_url = base + "/sitemap.xml"
+          key_location = base + "/" + key + ".txt"
+
+          with urllib.request.urlopen(sitemap_url, timeout=30) as response:
+              root = ET.fromstring(response.read())
+
+          urls = [
+              element.text.strip()
+              for element in root.iter()
+              if element.tag.endswith("loc") and element.text
+          ]
+          if not urls:
+              print("No URLs found in sitemap.")
+              sys.exit(1)
+
+          payload = json.dumps({
+              "host": "pettraffic-ai.pages.dev",
+              "key": key,
+              "keyLocation": key_location,
+              "urlList": urls[:10000],
+          }).encode("utf-8")
+
+          request = urllib.request.Request(
+              "https://api.indexnow.org/indexnow",
+              data=payload,
+              headers={"Content-Type": "application/json; charset=utf-8"},
+              method="POST",
+          )
+          try:
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  print(f"IndexNow response: HTTP {response.status}")
+                  print(f"Submitted {len(urls[:10000])} URLs.")
+          except urllib.error.HTTPError as error:
+              print(f"IndexNow returned HTTP {error.code}: {error.read().decode('utf-8', 'replace')}")
+              raise
+          PY
