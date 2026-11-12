@@ -1,0 +1,87 @@
+name: Sync PetTraffic snapshots to central API
+
+on:
+  workflow_run:
+    workflows:
+      - "Pet traffic analytics snapshot"
+      - "Pet traffic daily topic radar"
+      - "Pet traffic central control center"
+    types: [completed]
+    branches: [main]
+  pull_request:
+    branches: [main]
+    paths:
+      - "worker/scripts/**"
+      - "worker/test/**"
+      - ".github/workflows/sync-control-api.yml"
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  test:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Test event payload builder
+        run: python -m unittest discover -s worker/test -p '*_test.py' -v
+
+  sync:
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Check whether central API is configured
+        id: config
+        env:
+          API_URL: ${{ vars.PETTRAFFIC_CONTROL_API_URL }}
+          API_TOKEN: ${{ secrets.PETTRAFFIC_CONTROL_API_TOKEN }}
+        run: |
+          if [ -n "$API_URL" ] && [ -n "$API_TOKEN" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "Central API not configured; GitHub history remains the source of truth."
+          fi
+      - name: Download source workflow artifact
+        if: steps.config.outputs.enabled == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ github.event.workflow_run.name == 'Pet traffic analytics snapshot' && 'pettraffic-analytics-7d' || github.event.workflow_run.name == 'Pet traffic daily topic radar' && 'pettraffic-topic-radar' || 'pettraffic-control-center' }}
+          path: artifacts
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Prepare privacy-filtered event payloads
+        if: steps.config.outputs.enabled == 'true'
+        env:
+          WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          python worker/scripts/build_event.py \
+            --workflow-name "$WORKFLOW_NAME" \
+            --artifact-dir artifacts \
+            --output-dir events \
+            --run-id "$SOURCE_RUN_ID"
+      - name: Publish snapshots to central API
+        if: steps.config.outputs.enabled == 'true'
+        env:
+          API_URL: ${{ vars.PETTRAFFIC_CONTROL_API_URL }}
+          API_TOKEN: ${{ secrets.PETTRAFFIC_CONTROL_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          for file in events/*.json; do
+            curl --fail-with-body --silent --show-error \
+              --request POST "$API_URL/v1/events" \
+              --header "Authorization: Bearer $API_TOKEN" \
+              --header "Content-Type: application/json" \
+              --data-binary "@$file"
+          done
