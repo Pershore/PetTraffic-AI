@@ -9,6 +9,7 @@ from urllib.request import Request, urlopen
 import json, os
 
 OUT = Path("reports/control-center.md")
+OUT_JSON = Path("reports/control-center.json")
 REPO = os.environ.get("GITHUB_REPOSITORY", "Pershore/PetTraffic-AI")
 TOKEN = os.environ.get("GITHUB_TOKEN", "").strip()
 WORKFLOWS = [
@@ -60,6 +61,10 @@ def fetch_runs(workflow_file: str) -> list[dict]:
     with urlopen(request, timeout=20) as response:
         return json.loads(response.read().decode("utf-8")).get("workflow_runs", [])
 
+def needs_attention(results: list[dict]) -> bool:
+    """Only actionable failures and stale/uncertain checks create an alert."""
+    return any(item["state"] in ("failure", "api_error", "stale", "warning", "unknown") for item in results)
+
 def render(results: list[dict], generated: datetime) -> str:
     labels = {"success":"GERAI","failure":"KLAIDA","warning":"ĮSPĖJIMAS","stale":"PASENĘ","missing":"NĖRA PALEIDIMŲ","running":"VYKDOMA","unknown":"NEAIŠKU","api_error":"API KLAIDA"}
     lines = [
@@ -107,6 +112,7 @@ def main() -> int:
         results.append(item)
     report = render(results, now)
     OUT.write_text(report, encoding="utf-8")
+    OUT_JSON.write_text(json.dumps({"generated_at": now.isoformat(), "needs_attention": needs_attention(results), "results": results}, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
     print(report)
     return 1 if any(x["state"] in ("failure", "api_error") for x in results) else 0
 
