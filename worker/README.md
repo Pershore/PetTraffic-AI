@@ -29,7 +29,7 @@ Task types are deliberately read-only. There is no article publishing, website e
 
 ## One-time Cloudflare setup
 
-Deployment is intentionally manual until the owner creates the D1 database and configures the least-privilege credentials.
+The D1 database, Worker, and least-privilege Cloudflare deployment credentials have already been provisioned and validated. Pull requests run tests and configuration checks; merging Worker changes into `main` triggers deployment automatically. The workflow applies D1 migrations, deploys the Worker, and runs post-deployment health/authentication smoke checks. Manual dispatch remains available for recovery.
 
 1. In Cloudflare Dashboard, open **Storage & databases → D1 SQL Database** and create a database named `pettraffic-control`.
 2. Copy its database ID.
@@ -39,7 +39,7 @@ Deployment is intentionally manual until the owner creates the D1 database and c
    - Secret `CLOUDFLARE_API_TOKEN`
    - Variable `CLOUDFLARE_ACCOUNT_ID`
    - Variable `PETTRAFFIC_D1_DATABASE_ID`
-6. Run **Actions → Deploy PetTraffic control API → Run workflow**. The workflow applies the D1 migration and deploys only this separate Worker.
+6. For the initial bootstrap, run **Actions → Deploy PetTraffic control API → Run workflow**. For normal updates, merge a tested pull request touching `worker/**`; deployment starts automatically on `main`.
 
 The Worker has no production route/custom domain configured in this phase. It uses the default `.workers.dev` address if enabled for the account. Existing Pages deployment and DNS remain untouched. No separate Worker API token setup is needed; GitHub Actions authenticates with short-lived OIDC tokens.
 
