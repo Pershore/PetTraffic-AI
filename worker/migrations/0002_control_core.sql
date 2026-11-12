@@ -1,2 +1,0 @@
--- Superseded: control-core schema is created by 0003_control_core.sql.
--- Kept as a no-op migration to preserve applied migration history on test databases.
