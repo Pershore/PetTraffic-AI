@@ -10,8 +10,11 @@ on:
       - "agent/control_center.py"
       - "agent/history_store.py"
       - "agent/analytics_history.py"
+      - "agent/topic_history.py"
       - "tests/test_control_center.py"
       - "tests/test_history_store.py"
+      - "tests/test_analytics_history.py"
+      - "tests/test_topic_history.py"
       - ".github/workflows/control-center.yml"
 
 permissions:
@@ -39,6 +42,8 @@ jobs:
         run: |
           python -m unittest discover -s tests -p 'test_control_center.py' -v
           python -m unittest discover -s tests -p 'test_history_store.py' -v
+          python -m unittest discover -s tests -p 'test_analytics_history.py' -v
+          python -m unittest discover -s tests -p 'test_topic_history.py' -v
       - name: Build central status report
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
