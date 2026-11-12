@@ -66,3 +66,14 @@ npm test
 ```
 
 The GitHub PR workflow runs these tests. The deploy workflow runs only when manually dispatched.
+
+
+## Free-plan AI agent orchestration (proposed in PR)
+
+The internal daily orchestrator uses Cloudflare Workers AI and D1. It runs at 08:20 UTC, after the scheduled analytics/topic/health snapshots.
+
+Five bounded inference calls are used per daily run: four read-only specialist reviews (analytics, topics, technical SEO, content review) and one coordinator synthesis. The report is stored in `agent_runs`. The run is idempotent per UTC day and has a hard application cap of five AI calls/day, with a maximum of 192 generated tokens per call and bounded input text. Cloudflare Workers Free enforces its own daily Workers AI allocation; once exhausted, further requests fail instead of continuing on the Free plan.
+
+The existing public `/v1/tasks*` routes remain disabled. Agent execution is internal to the scheduled Worker, so the analytics-only GitHub OIDC identity is not widened. All recommendations are advisory and require human approval. The content reviewer flags claims needing source verification; it does not certify veterinary facts. No paid API key, content publishing, site editing, DNS editing, or arbitrary command execution is enabled.
+
+Model: `@cf/openai/gpt-oss-20b`. Recheck model availability and pricing before future model changes.
