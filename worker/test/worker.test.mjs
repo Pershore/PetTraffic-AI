@@ -110,7 +110,7 @@ test("unknown event kinds are rejected", async () => {
 test("potential personal data and secrets are rejected from event payloads", async () => {
   const response = await worker.fetch(new Request("https://api.example/v1/events", {
     method: "POST",
-    headers: { authorization: "Bearer test-secret", "content-type": "application/json" },
+    headers: { authorization: "Bearer " + oidcToken(), "content-type": "application/json" },
     body: JSON.stringify({ kind: "analytics_snapshot", payload: { user_id: "visitor-1" } }),
   }), env);
   assert.equal(response.status, 400);
@@ -119,7 +119,7 @@ test("potential personal data and secrets are rejected from event payloads", asy
 test("task creation accepts only the read-only task catalogue", async () => {
   const response = await worker.fetch(new Request("https://api.example/v1/tasks", {
     method: "POST",
-    headers: { authorization: "Bearer test-secret", "content-type": "application/json" },
+    headers: { authorization: "Bearer " + oidcToken(), "content-type": "application/json" },
     body: JSON.stringify({
       type: "check_site",
       agent: "technical-seo",
@@ -134,7 +134,7 @@ test("task creation accepts only the read-only task catalogue", async () => {
 test("task creation rejects unknown task types", async () => {
   const response = await worker.fetch(new Request("https://api.example/v1/tasks", {
     method: "POST",
-    headers: { authorization: "Bearer test-secret", "content-type": "application/json" },
+    headers: { authorization: "Bearer " + oidcToken(), "content-type": "application/json" },
     body: JSON.stringify({ type: "publish_article", agent: "content-review", payload: {} }),
   }), env);
   assert.equal(response.status, 400);
