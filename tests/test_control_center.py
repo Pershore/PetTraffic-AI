@@ -10,9 +10,54 @@ class ControlCenterTests(unittest.TestCase):
         created = self.now - timedelta(hours=age_hours)
         return {"created_at": created.isoformat().replace("+00:00", "Z"), "status": status, "conclusion": conclusion, "html_url": "https://github.com/example/run/1"}
 
-    def test_worker_health_success_requires_connected_database(self):
-        result = evaluate_worker_health({"ok": True, "database": "connected"})
+    def test_worker_health_success_requires_recent_site_and_database_heartbeat(self):
+        result = evaluate_worker_health({
+            "ok": True,
+            "database": "connected",
+            "heartbeat": {
+                "checked_at": self.now.isoformat(),
+                "site_ok": True,
+                "site_status": 200,
+                "database_ok": True,
+            },
+        }, now=self.now)
         self.assertEqual(result["state"], "success")
+        self.assertIn("heartbeat sėkmingas", result["detail"])
+
+    def test_worker_health_warns_if_first_heartbeat_is_pending(self):
+        result = evaluate_worker_health({
+            "ok": True, "database": "connected", "heartbeat": None
+        }, now=self.now)
+        self.assertEqual(result["state"], "warning")
+
+    def test_worker_health_detects_stale_heartbeat(self):
+        stale = (self.now - timedelta(minutes=46)).isoformat()
+        result = evaluate_worker_health({
+            "ok": True,
+            "database": "connected",
+            "heartbeat": {
+                "checked_at": stale,
+                "site_ok": True,
+                "site_status": 200,
+                "database_ok": True,
+            },
+        }, now=self.now)
+        self.assertEqual(result["state"], "failure")
+        self.assertIn("stale", result["detail"])
+
+    def test_worker_health_detects_failed_site_heartbeat(self):
+        result = evaluate_worker_health({
+            "ok": True,
+            "database": "connected",
+            "heartbeat": {
+                "checked_at": self.now.isoformat(),
+                "site_ok": False,
+                "site_status": 503,
+                "database_ok": True,
+            },
+        }, now=self.now)
+        self.assertEqual(result["state"], "failure")
+        self.assertIn("503", result["detail"])
 
     def test_worker_health_detects_disconnected_database(self):
         result = evaluate_worker_health({"ok": False, "database": "unavailable"})
