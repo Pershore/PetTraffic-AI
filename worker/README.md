@@ -8,9 +8,7 @@ The API provides:
 - `GET /health` – verifies the Worker can query D1.
 - `POST /v1/events` – stores allow-listed aggregate snapshots.
 - `GET /v1/events` – reads the latest 100 aggregate events (optionally filtered by kind).
-- `POST /v1/tasks` – queues an allow-listed read-only task.
-- `POST /v1/tasks/claim` – atomically claims the next task for a specialist.
-- `POST /v1/tasks/{id}/complete` – records a task result for the claiming specialist.
+- `POST /v1/tasks`, `POST /v1/tasks/claim`, and `POST /v1/tasks/{id}/complete` – scaffolded for future agents; intentionally return `503 task_api_not_enabled` until a separate agent identity and authorization policy are implemented.
 
 Specialist names: `coordinator`, `analytics`, `topics`, `technical-seo`, `content-review`.
 
@@ -20,6 +18,7 @@ Task types are deliberately read-only. There is no article publishing, website e
 
 - All `/v1/*` routes require a short-lived GitHub Actions OIDC JWT.
 - The Worker verifies the JWT signature against GitHub's published JWKS and validates issuer, audience, expiry, repository, main-branch ref, exact workflow path, and `workflow_run` event.
+- The current sync identity is restricted to `/v1/events`; task queue routes remain disabled until separate agent authentication is configured.
 - No long-lived PetTraffic API bearer token or `API_TOKEN` Worker secret is required.
 - Only the trusted sync job receives `id-token: write`; pull-request test jobs do not.
 - Request bodies are size-limited; payloads reject keys resembling personal identifiers, search query text, credentials, or cookies.
