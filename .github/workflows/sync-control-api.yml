@@ -18,6 +18,7 @@ on:
 permissions:
   actions: read
   contents: read
+  id-token: write
 
 jobs:
   test:
@@ -43,48 +44,13 @@ jobs:
         id: config
         env:
           API_URL: ${{ vars.PETTRAFFIC_CONTROL_API_URL || 'https://pettraffic-control-api.pauliusgrubliauskis.workers.dev' }}
-          API_TOKEN: ${{ secrets.PETTRAFFIC_CONTROL_API_TOKEN }}
         run: |
-          if [ -n "$API_URL" ] && [ -n "$API_TOKEN" ]; then
+          if [ -n "$API_URL" ]; then
             echo "enabled=true" >> "$GITHUB_OUTPUT"
           else
             echo "enabled=false" >> "$GITHUB_OUTPUT"
-            echo "Central API not configured; GitHub history remains the source of truth."
+            echo "Central API URL is missing; GitHub history remains the source of truth."
           fi
-      - name: Set up Node.js for Worker secret management
-        if: steps.config.outputs.enabled == 'true'
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-      - name: Ensure the Worker accepts the configured API token
-        if: steps.config.outputs.enabled == 'true'
-        env:
-          API_URL: ${{ vars.PETTRAFFIC_CONTROL_API_URL || 'https://pettraffic-control-api.pauliusgrubliauskis.workers.dev' }}
-          API_TOKEN: ${{ secrets.PETTRAFFIC_CONTROL_API_TOKEN }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          set -euo pipefail
-          API_URL="${API_URL%/}"
-          status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' \
-            --header "Authorization: Bearer $API_TOKEN" "$API_URL/v1/events")"
-          if [ "$status" = "200" ]; then
-            echo "Worker API authentication is already configured."
-            exit 0
-          fi
-          test -n "$CLOUDFLARE_API_TOKEN" || (echo "Missing CLOUDFLARE_API_TOKEN secret" && exit 1)
-          test -n "$CLOUDFLARE_ACCOUNT_ID" || (echo "Missing CLOUDFLARE_ACCOUNT_ID repository variable" && exit 1)
-          cat > worker/.wrangler-secret.toml <<EOF
-          name = "pettraffic-control-api"
-          main = "src/index.mjs"
-          account_id = "$CLOUDFLARE_ACCOUNT_ID"
-          compatibility_date = "2026-11-12"
-          EOF
-          printf '%s' "$API_TOKEN" | npx --yes wrangler@4 secret put API_TOKEN --config worker/.wrangler-secret.toml
-          rm -f worker/.wrangler-secret.toml
-          curl --fail --silent --show-error --output /dev/null \
-            --header "Authorization: Bearer $API_TOKEN" "$API_URL/v1/events"
-          echo "Worker API authentication configured and verified."
       - name: Download source workflow artifact
         if: steps.config.outputs.enabled == 'true'
         uses: actions/download-artifact@v4
@@ -105,14 +71,29 @@ jobs:
             --artifact-dir artifacts \
             --output-dir events \
             --run-id "$SOURCE_RUN_ID"
-      - name: Publish snapshots to central API
+      - name: Authenticate with short-lived GitHub OIDC and publish snapshots
         if: steps.config.outputs.enabled == 'true'
         env:
           API_URL: ${{ vars.PETTRAFFIC_CONTROL_API_URL || 'https://pettraffic-control-api.pauliusgrubliauskis.workers.dev' }}
-          API_TOKEN: ${{ secrets.PETTRAFFIC_CONTROL_API_TOKEN }}
+          ACTIONS_ID_TOKEN_REQUEST_URL: ${{ env.ACTIONS_ID_TOKEN_REQUEST_URL }}
+          ACTIONS_ID_TOKEN_REQUEST_TOKEN: ${{ env.ACTIONS_ID_TOKEN_REQUEST_TOKEN }}
         run: |
           set -euo pipefail
           API_URL="${API_URL%/}"
+          test -n "$ACTIONS_ID_TOKEN_REQUEST_URL"
+          test -n "$ACTIONS_ID_TOKEN_REQUEST_TOKEN"
+          oidc_response="$(curl --fail --silent --show-error --get \
+            --data-urlencode "audience=pettraffic-control-api" \
+            --header "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL")"
+          API_TOKEN="$(python -c 'import json,sys; print(json.load(sys.stdin)["value"])' <<< "$oidc_response")"
+          unset oidc_response
+          status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' \
+            --header "Authorization: Bearer $API_TOKEN" "$API_URL/v1/events")"
+          if [ "$status" != "200" ]; then
+            echo "GitHub OIDC authentication was rejected by the control API (HTTP $status)."
+            exit 1
+          fi
           for file in events/*.json; do
             curl --fail-with-body --silent --show-error \
               --request POST "$API_URL/v1/events" \
@@ -120,3 +101,5 @@ jobs:
               --header "Content-Type: application/json" \
               --data-binary "@$file"
           done
+          unset API_TOKEN
+          echo "Privacy-filtered snapshots published using short-lived GitHub OIDC identity."
