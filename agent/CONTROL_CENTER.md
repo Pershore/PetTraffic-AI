@@ -25,7 +25,9 @@ Sujungti esamas automatizacijas į vieną valdymo sluoksnį, kuris parodo sistem
 - Agreguoti GA4 / Search Console 7 dienų rodikliai kasdien išsaugomi atskirais JSON įrašais; saugomi tik aktyvūs / nauji naudotojai, sesijos, puslapių peržiūros, patvirtintos organinės sesijos, paieškos parodymai, paspaudimai, CTR ir vidutinė pozicija.
 - Temų radaras kasdien archyvuoja temų pavadinimų antraščių skaičius, unikalių nuorodų skaičių ir tuščių RSS temų užklausų skaičių; pačios antraštės ir nuorodos į istoriją nekopijuojamos.
 - Search Console užklausų tekstai, puslapių detalios eilutės ir kiti nereikalingi duomenys į ilgalaikį archyvą nekopijuojami.
-- Toliau šiame etape bus pridėtas rekomendacijų registras ir pakeitimų rezultatų palyginimas.
+- Centrinis valdymo centras pagal šią istoriją kasdien generuoja įrodymais pagrįstas rekomendacijas, nurodo prioritetą, duomenų pagrindą ir kitą veiksmą; jos išsaugomos `automation-history` šakoje.
+- Rekomendacijų variklis yra tik patariamasis: jis neperrašo svetainės, nepublikuoja straipsnių ir neįjungia mokamų paslaugų.
+- Pakeitimų poveikio palyginimui reikės kelių užbaigtų laikotarpių po konkretaus pakeitimo; kol jų nėra, sistema aiškiai žymi, kad įrodymų nepakanka.
 - Archyvas laikomas atskiroje šakoje, kad istorijos įrašai nekeistų `main` svetainės šaltinių ir nekeltų nereikalingų Cloudflare Pages publikavimų.
 - Istorijoje nerenkami atskirų lankytojų duomenys, paieškos užklausų tekstai ar paslaptys.
 

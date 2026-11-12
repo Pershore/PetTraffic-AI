@@ -9,12 +9,14 @@ on:
     paths:
       - "agent/control_center.py"
       - "agent/history_store.py"
+      - "agent/recommendations.py"
       - "agent/analytics_history.py"
       - "agent/topic_history.py"
       - "tests/test_control_center.py"
       - "tests/test_history_store.py"
       - "tests/test_analytics_history.py"
       - "tests/test_topic_history.py"
+      - "tests/test_recommendations.py"
       - ".github/workflows/control-center.yml"
 
 permissions:
@@ -44,11 +46,22 @@ jobs:
           python -m unittest discover -s tests -p 'test_history_store.py' -v
           python -m unittest discover -s tests -p 'test_analytics_history.py' -v
           python -m unittest discover -s tests -p 'test_topic_history.py' -v
+          python -m unittest discover -s tests -p 'test_recommendations.py' -v
       - name: Build central status report
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: python agent/control_center.py
+        continue-on-error: ${{ github.event_name == 'pull_request' }}
+      - name: Load history and generate recommendations
+        if: success() && github.event_name != 'pull_request'
+        env:
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          git fetch origin automation-history
+          git archive origin/automation-history reports/history | tar -x -C .
+          python agent/history_store.py
+          python agent/recommendations.py
       - name: Add report to job summary
         if: always()
         run: |
@@ -56,6 +69,10 @@ jobs:
             cat reports/control-center.md >> "$GITHUB_STEP_SUMMARY"
           else
             echo "Centrinio valdymo ataskaita nesukurta." >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [ -f reports/recommendations.md ]; then
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            cat reports/recommendations.md >> "$GITHUB_STEP_SUMMARY"
           fi
       - name: Notify on actionable automation problems
         if: always() && github.event_name != 'pull_request'
@@ -115,7 +132,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pettraffic-control-center
-          path: reports/control-center.*
+          path: |
+            reports/control-center.*
+            reports/recommendations.*
           if-no-files-found: error
           retention-days: 90
 
@@ -124,16 +143,18 @@ jobs:
         env:
           GITHUB_RUN_ID: ${{ github.run_id }}
         run: |
-          python agent/history_store.py
           mkdir -p /tmp/pettraffic-history
           cp -R reports/history/control-center /tmp/pettraffic-history/
+          cp -R reports/history/recommendations /tmp/pettraffic-history/
+          rm -rf reports/history
           git fetch origin automation-history
           git checkout -B automation-history origin/automation-history
           mkdir -p reports/history
           cp -R /tmp/pettraffic-history/control-center reports/history/
+          cp -R /tmp/pettraffic-history/recommendations reports/history/
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add reports/history/control-center
+          git add reports/history/control-center reports/history/recommendations
           if ! git diff --cached --quiet; then
             git commit -m "chore: archive control-center history"
             git pull --rebase origin automation-history

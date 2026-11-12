@@ -1,0 +1,69 @@
+import json
+import tempfile
+import unittest
+from pathlib import Path
+
+from agent.recommendations import build_recommendations
+
+
+def save(root: Path, category: str, day: str, snapshots: list[dict]) -> None:
+    folder = root / category
+    folder.mkdir(parents=True, exist_ok=True)
+    (folder / f"{day}.json").write_text(
+        json.dumps({"date": day, "snapshots": snapshots}), encoding="utf-8"
+    )
+
+
+class RecommendationTests(unittest.TestCase):
+    def analytics(self, run_id: str, impressions: int = 0, clicks: int = 0) -> dict:
+        return {
+            "run_id": run_id,
+            "generated_at": f"2026-11-{int(run_id[-1]) + 10:02d}T08:00:00Z",
+            "ga4_status": "available",
+            "search_console_status": "available",
+            "metrics": {
+                "sessions": 12,
+                "organic_sessions_verified": None,
+                "search_impressions": impressions,
+                "search_clicks": clicks,
+            },
+        }
+
+    def test_one_zero_period_is_only_a_baseline_observation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            save(root, "analytics", "2026-11-11", [self.analytics("run-1")])
+            items = build_recommendations(root)
+            self.assertIn("search-visibility-baseline", [x["id"] for x in items])
+            self.assertNotIn("search-visibility", [x["id"] for x in items])
+
+    def test_two_zero_periods_create_visibility_recommendation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            save(root, "analytics", "2026-11-11", [self.analytics("run-1")])
+            save(root, "analytics", "2026-11-12", [self.analytics("run-2")])
+            items = build_recommendations(root)
+            self.assertIn("search-visibility", [x["id"] for x in items])
+
+    def test_automation_failure_creates_high_priority_recommendation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            save(root, "control-center", "2026-11-12", [{
+                "run_id": "run-1",
+                "generated_at": "2026-11-12T10:00:00Z",
+                "results": [{"name": "Analytics", "state": "failure"}],
+            }])
+            items = build_recommendations(root)
+            problem = next(x for x in items if x["id"] == "automation-health")
+            self.assertEqual(problem["priority"], "high")
+
+    def test_missing_history_produces_baseline_not_claims(self):
+        with tempfile.TemporaryDirectory() as directory:
+            items = build_recommendations(Path(directory))
+            ids = [x["id"] for x in items]
+            self.assertIn("analytics-baseline", ids)
+            self.assertIn("topic-baseline", ids)
+
+
+if __name__ == "__main__":
+    unittest.main()
