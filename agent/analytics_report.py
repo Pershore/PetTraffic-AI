@@ -195,15 +195,25 @@ def main() -> int:
         )
         lines += ["", "### Sesijos pagal kanalą", "", "| Kanalas | Sesijos |", "|---|---:|"]
         organic_sessions = 0.0
+        channel_sessions_total = 0.0
         for row in channels.get("rows", []):
             channel = row.get("dimensionValues", [{}])[0].get("value", "Nežinomas")
             value = float(row.get("metricValues", [{}])[0].get("value", "0"))
             lines.append(f"| {channel} | {fmt(value)} |")
+            channel_sessions_total += value
             if channel == "Organic Search":
                 organic_sessions = value
         if not channels.get("rows"):
             lines.append("| Duomenų nėra | – |")
         lines += ["", f"Organinės paieškos sesijos: **{fmt(organic_sessions)}**", ""]
+        total_sessions = current.get("sessions", 0.0)
+        if abs(channel_sessions_total - total_sessions) > 0.01:
+            lines.append(
+                f"Duomenų patikra: kanalų eilučių suma ({fmt(channel_sessions_total)}) "
+                f"nesutampa su bendru sesijų skaičiumi ({fmt(total_sessions)}); "
+                "kanalų pasiskirstymą laikykite preliminariu."
+            )
+            lines.append("")
 
         top_pages = ga_rows(
             session, ga_url, ga_start, ga_end, ["screenPageViews"], ["pagePath"], limit=10,
@@ -296,12 +306,15 @@ def main() -> int:
                 if matching:
                     item = matching[0]
                     contents = item.get("contents", [])
-                    submitted_count = sum(int(part.get("submitted", 0)) for part in contents)
-                    indexed_count = sum(int(part.get("indexed", 0)) for part in contents)
                     lines.append(f"- Būsena: **pateiktas** ({item.get('path', expected_sitemap)})")
                     lines.append(f"- Paskutinį kartą pateiktas: {item.get('lastSubmitted', 'nenurodyta')}")
                     lines.append(f"- Google paskutinį kartą atsisiuntė: {item.get('lastDownloaded', 'dar nenurodyta')}")
-                    lines.append(f"- URL pateikta / indeksuota: {submitted_count} / {indexed_count}")
+                    if contents:
+                        submitted_count = sum(int(part.get("submitted", 0)) for part in contents)
+                        indexed_count = sum(int(part.get("indexed", 0)) for part in contents)
+                        lines.append(f"- URL pateikta / indeksuota: {submitted_count} / {indexed_count}")
+                    else:
+                        lines.append("- URL pateikimo / indeksavimo skaičių Google dar nepateikė.")
                     lines.append(f"- Laukia apdorojimo: {'taip' if item.get('isPending') else 'ne'}")
                 else:
                     lines.append(
