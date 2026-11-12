@@ -1,5 +1,0 @@
-# Konfigūracijos pavyzdys. Pradiniam Git integracijos diegimui
-# Cloudflare Pages Build output directory nustatykite į: site
-name = "pettraffic-ai"
-compatibility_date = "2026-11-09"
-pages_build_output_dir = "./site"
