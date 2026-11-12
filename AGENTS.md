@@ -24,9 +24,23 @@ Build Pet traffic into a useful, trustworthy Lithuanian pet-care information web
   - python -m unittest discover -s agent -p 'test_*.py' -v
 - Add tests for new automation logic and regressions.
 - After merge, verify the GitHub Actions run and the live Cloudflare Pages site before claiming a change is published.
-- Keep a concise changelog/report of what changed, files touched, checks run, results, remaining risks, and next highest-value tasks.
-- If a command or check fails, inspect the error, retry once when safe, then report the actual blocker. Do not silently skip failed checks.
+- Keep the work trace in commit messages, PR descriptions, test results, and workflow artifacts; do not send routine progress reports to the user.
+- If a command or check fails, inspect the error, retry once when safe, and preserve the exact blocker in the PR or workflow log. Notify the user only when their action, approval, or a security decision is required.
 - Do not claim background work continues after the Codex process exits. Use scheduled GitHub Actions for work that must happen unattended.
+
+## Agent orchestration and automation
+- Use one primary daily maintenance agent to coordinate the project; do not create duplicate ChatGPT maintenance automations.
+- The primary agent runs daily at 09:45 Europe/Vilnius, after the scheduled GitHub Actions jobs, and should inspect their completed results before deciding on new work.
+- GitHub Actions are the specialist workers:
+  - site validation: daily 05:37 UTC and on pushes / pull requests;
+  - topic radar: daily 06:17 UTC;
+  - GA4 / Search Console snapshot: daily 06:43 UTC;
+  - production health monitor: daily 07:05 UTC;
+  - Lighthouse mobile / desktop audits: weekly Monday 07:20 UTC and after relevant site changes.
+- Treat workflow schedules as intended cadence, not proof of execution. Verify actual run history, job completion, artifacts, and deployment results.
+- Do not start overlapping duplicate checks when a workflow is already queued or running. Recheck it later and consume its artifact or job summary.
+- Keep routine agent work silent for the user. Surface only critical failures, security risks, or actions requiring user approval.
+- Use existing free GitHub Actions and Python standard-library tooling where practical. Do not introduce paid services or additional dependencies without approval.
 
 ## Research and veterinary accuracy
 - Prefer authoritative veterinary organizations, veterinary schools, peer-reviewed research, and official public guidance.
