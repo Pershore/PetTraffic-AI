@@ -47,7 +47,15 @@ Check current Cloudflare plan limits and D1/Workers usage in the account before 
 
 After the Worker is deployed, the `sync-control-api.yml` workflow requests a short-lived GitHub OIDC token at runtime and sends privacy-filtered aggregate snapshots. The Worker accepts only tokens issued to this repository's main-branch sync workflow. No `PETTRAFFIC_CONTROL_API_TOKEN` GitHub secret is needed. The optional `PETTRAFFIC_CONTROL_API_URL` variable may override the default Worker URL.
 
-GitHub's `automation-history` branch remains the source of truth; D1 is an additional aggregate event store, not a replacement. The first post-deployment scheduled snapshot sync is still required to verify live OIDC-authenticated event write/read. Task enqueue/claim/complete remain deliberately disabled until a separate agent identity is implemented and tested. No workflow currently switches history storage from GitHub to D1.
+GitHub's `automation-history` branch remains the source of truth; D1 is an additional aggregate event store, not a replacement.
+
+As of 2026-11-12, the live integration has been verified end-to-end:
+- GitHub Actions OIDC authentication succeeds using the immutable owner/repository subject and IDs.
+- Privacy-filtered analytics, control-center, and recommendation snapshots are accepted by the Worker.
+- The sync workflow reads each newly written event back from D1 and fails if the event ID is not present.
+- GitHub history remains the durable source of truth; no workflow has switched history storage to D1.
+
+Task enqueue/claim/complete remain deliberately disabled until a separate agent identity and authorization policy are implemented and tested.
 
 ## Local tests
 
