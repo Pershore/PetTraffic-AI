@@ -106,7 +106,6 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
       D1_DATABASE_ID: ${{ vars.PETTRAFFIC_D1_DATABASE_ID }}
-      PETTRAFFIC_CONTROL_API_TOKEN: ${{ secrets.PETTRAFFIC_CONTROL_API_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -157,9 +156,3 @@ jobs:
           PY
           npx --yes wrangler@4 d1 migrations apply pettraffic-control --remote
           npx --yes wrangler@4 deploy
-      - name: Configure Worker API authentication
-        if: env.PETTRAFFIC_CONTROL_API_TOKEN != ''
-        run: printf '%s' "$PETTRAFFIC_CONTROL_API_TOKEN" | npx --yes wrangler@4 secret put API_TOKEN
-      - name: Keep API authentication pending until its dedicated secret is added
-        if: env.PETTRAFFIC_CONTROL_API_TOKEN == ''
-        run: echo "Worker deployed and health-checkable; add PETTRAFFIC_CONTROL_API_TOKEN to enable authenticated API routes."
