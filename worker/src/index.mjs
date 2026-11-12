@@ -269,6 +269,42 @@ async function handle(request, env) {
   return response({ error: "not_found" }, 404, origin);
 }
 
+async function runScheduledHealthCheck(env) {
+  const checkedAt = new Date().toISOString();
+  let siteStatus = 0;
+  let siteOk = 0;
+  try {
+    const siteResponse = await fetch("https://pettraffic-ai.pages.dev/", {
+      method: "GET",
+      redirect: "follow",
+      headers: { "user-agent": "PetTraffic-ControlCenter/1.0" },
+    });
+    siteStatus = siteResponse.status;
+    siteOk = siteResponse.ok ? 1 : 0;
+  } catch {
+    siteStatus = 0;
+    siteOk = 0;
+  }
+
+  let databaseOk = 0;
+  try {
+    await env.DB.prepare("SELECT 1 AS ok").first();
+    databaseOk = 1;
+    await env.DB.prepare(
+      "INSERT INTO system_heartbeats (checked_at, site_ok, site_status, database_ok) VALUES (?, ?, ?, ?)"
+    ).bind(checkedAt, siteOk, siteStatus, databaseOk).run();
+
+    // Keep a rolling 30-day operational heartbeat history.
+    if (new Date().getUTCHours() === 0 && new Date().getUTCMinutes() < 15) {
+      await env.DB.prepare(
+        "DELETE FROM system_heartbeats WHERE checked_at < ?"
+      ).bind(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()).run();
+    }
+  } catch (error) {
+    console.error("PetTraffic scheduled health check could not write heartbeat:", error);
+  }
+}
+
 export default {
   async fetch(request, env) {
     try {
@@ -276,5 +312,8 @@ export default {
     } catch {
       return response({ error: "internal_error" }, 500);
     }
+  },
+  async scheduled(controller, env, ctx) {
+    ctx.waitUntil(runScheduledHealthCheck(env));
   },
 };
