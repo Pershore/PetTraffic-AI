@@ -55,9 +55,6 @@ jobs:
           if not account:
               print("BLOCKED: GitHub variable CLOUDFLARE_ACCOUNT_ID is missing.")
               sys.exit(1)
-          if not database:
-              print("BLOCKED: GitHub variable PETTRAFFIC_D1_DATABASE_ID is missing.")
-              sys.exit(1)
 
           def get(path, label):
               request = urllib.request.Request(
@@ -79,6 +76,11 @@ jobs:
               print(f"OK: {label} verified.")
 
           get("/user/tokens/verify", "Cloudflare API token")
+
+          if not database:
+              print("BLOCKED: GitHub variable PETTRAFFIC_D1_DATABASE_ID is missing; the new token itself is valid.")
+              sys.exit(1)
+
           get(f"/accounts/{account}/d1/database/{database}", "D1 database access")
           get(f"/accounts/{account}/workers/scripts/pettraffic-control-api", "Worker access")
           print("READY: Cloudflare token, account variables, D1 database and Worker are reachable.")
