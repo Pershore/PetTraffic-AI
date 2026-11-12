@@ -75,7 +75,7 @@ jobs:
               "",
               "This issue is updated on subsequent checks and closed automatically after recovery."
             ];
-            const body = lines.join("\\n");
+            const body = lines.join("\n");
             const { data: openIssues } = await github.rest.issues.listForRepo({
               owner, repo, state: "open", per_page: 100
             });
