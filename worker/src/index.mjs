@@ -45,20 +45,72 @@ function safeObject(value, depth = 0) {
   return true;
 }
 
-async function authorized(request, env) {
-  const expected = env.API_TOKEN;
-  const supplied = (request.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
-  if (!expected) return false;
-  const encoder = new TextEncoder();
-  const [a, b] = await Promise.all([
-    crypto.subtle.digest("SHA-256", encoder.encode(expected)),
-    crypto.subtle.digest("SHA-256", encoder.encode(supplied)),
-  ]);
-  const left = new Uint8Array(a);
-  const right = new Uint8Array(b);
-  let difference = 0;
-  for (let i = 0; i < left.length; i++) difference |= left[i] ^ right[i];
-  return difference === 0 && supplied.length > 0;
+const GITHUB_OIDC_ISSUER = "https://token.actions.githubusercontent.com";
+const GITHUB_OIDC_AUDIENCE = "pettraffic-control-api";
+const GITHUB_REPOSITORY = "Pershore/PetTraffic-AI";
+const GITHUB_REF = "refs/heads/main";
+const GITHUB_WORKFLOW_REF = "Pershore/PetTraffic-AI/.github/workflows/sync-control-api.yml@refs/heads/main";
+
+function decodeBase64Url(value) {
+  const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
+  const binary = atob(normalized + "=".repeat((4 - normalized.length % 4) % 4));
+  return Uint8Array.from(binary, character => character.charCodeAt(0));
+}
+
+async function authorized(request) {
+  const authorization = request.headers.get("authorization") || "";
+  const match = authorization.match(/^Bearer\s+([A-Za-z0-9._~-]+)$/i);
+  if (!match) return false;
+
+  const parts = match[1].split(".");
+  if (parts.length !== 3) return false;
+
+  let header;
+  let claims;
+  try {
+    header = JSON.parse(new TextDecoder().decode(decodeBase64Url(parts[0])));
+    claims = JSON.parse(new TextDecoder().decode(decodeBase64Url(parts[1])));
+  } catch {
+    return false;
+  }
+
+  if (header.alg !== "RS256" || typeof header.kid !== "string") return false;
+  const now = Math.floor(Date.now() / 1000);
+  const audienceValid = claims.aud === GITHUB_OIDC_AUDIENCE ||
+    (Array.isArray(claims.aud) && claims.aud.includes(GITHUB_OIDC_AUDIENCE));
+  if (
+    claims.iss !== GITHUB_OIDC_ISSUER ||
+    !audienceValid ||
+    claims.sub !== `repo:${GITHUB_REPOSITORY}:ref:${GITHUB_REF}` ||
+    claims.repository !== GITHUB_REPOSITORY ||
+    claims.ref !== GITHUB_REF ||
+    claims.workflow_ref !== GITHUB_WORKFLOW_REF ||
+    claims.event_name !== "workflow_run" ||
+    !Number.isFinite(claims.exp) || claims.exp <= now ||
+    (Number.isFinite(claims.nbf) && claims.nbf > now + 30)
+  ) return false;
+
+  try {
+    const jwksResponse = await fetch(`${GITHUB_OIDC_ISSUER}/.well-known/jwks`, {
+      headers: { accept: "application/json" },
+      cf: { cacheTtl: 300, cacheEverything: true },
+    });
+    if (!jwksResponse.ok) return false;
+    const jwks = await jwksResponse.json();
+    const jwk = jwks.keys?.find(key => key.kid === header.kid && key.kty === "RSA" && key.use === "sig");
+    if (!jwk) return false;
+    const publicKey = await crypto.subtle.importKey(
+      "jwk", jwk, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["verify"]
+    );
+    return await crypto.subtle.verify(
+      "RSASSA-PKCS1-v1_5",
+      publicKey,
+      decodeBase64Url(parts[2]),
+      new TextEncoder().encode(`${parts[0]}.${parts[1]}`)
+    );
+  } catch {
+    return false;
+  }
 }
 
 async function readJson(request) {
@@ -108,8 +160,7 @@ async function handle(request, env) {
 
   if (!url.pathname.startsWith("/v1/")) return response({ error: "not_found" }, 404, origin);
   if (!env.DB) return response({ error: "database_not_bound" }, 503, origin);
-  if (!env.API_TOKEN) return response({ error: "api_token_not_configured" }, 503, origin);
-  if (!(await authorized(request, env))) return response({ error: "unauthorized" }, 401, origin);
+  if (!(await authorized(request))) return response({ error: "unauthorized" }, 401, origin);
 
   if (url.pathname === "/v1/events" && request.method === "GET") {
     const kind = url.searchParams.get("kind");

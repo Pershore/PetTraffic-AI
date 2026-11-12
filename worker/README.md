@@ -18,8 +18,10 @@ Task types are deliberately read-only. There is no article publishing, website e
 
 ## Privacy and security
 
-- All `/v1/*` routes require a bearer token stored as the Worker secret `API_TOKEN`.
-- The token is compared using SHA-256 digests and a constant-time byte comparison.
+- All `/v1/*` routes require a short-lived GitHub Actions OIDC JWT.
+- The Worker verifies the JWT signature against GitHub's published JWKS and validates issuer, audience, expiry, repository, main-branch ref, exact workflow path, and `workflow_run` event.
+- No long-lived PetTraffic API bearer token or `API_TOKEN` Worker secret is required.
+- Only the trusted sync job receives `id-token: write`; pull-request test jobs do not.
 - Request bodies are size-limited; payloads reject keys resembling personal identifiers, search query text, credentials, or cookies.
 - SQL values are parameterized.
 - CORS is restricted to the PetTraffic Pages origin; server-to-server GitHub Actions calls do not need CORS.
@@ -39,7 +41,7 @@ Deployment is intentionally manual until the owner creates the D1 database and c
    - Variable `PETTRAFFIC_D1_DATABASE_ID`
 6. Run **Actions → Deploy PetTraffic control API → Run workflow**. The workflow applies the D1 migration and deploys only this separate Worker.
 
-The Worker has no production route/custom domain configured in this phase. It uses the default `.workers.dev` address if enabled for the account. Existing Pages deployment and DNS remain untouched. After deployment, add the Worker secret `API_TOKEN` in its Cloudflare settings with a new long random value; never paste it into chat or commit it.
+The Worker has no production route/custom domain configured in this phase. It uses the default `.workers.dev` address if enabled for the account. Existing Pages deployment and DNS remain untouched. No separate Worker API token setup is needed; GitHub Actions authenticates with short-lived OIDC tokens.
 
 ## Cost and rollout
 
@@ -47,15 +49,11 @@ Check current Cloudflare plan limits and D1/Workers usage in the account before 
 
 ## Automatic GitHub Actions sync
 
-After the Worker is deployed and authenticated:
-- Add the same newly generated Worker API token as GitHub Actions secret `PETTRAFFIC_CONTROL_API_TOKEN`.
-- Add repository variable `PETTRAFFIC_CONTROL_API_URL` with the Worker base URL, without a trailing slash.
-- The `sync-control-api.yml` workflow will send aggregate analytics, topic-radar, control-center and recommendation snapshots after successful main-branch runs.
-- If these two settings are absent, the sync workflow exits safely without sending anything; GitHub history remains the source of truth.
+After the Worker is deployed, the `sync-control-api.yml` workflow requests a short-lived GitHub OIDC token at runtime and sends privacy-filtered aggregate snapshots. The Worker accepts only tokens issued to this repository's main-branch sync workflow. No `PETTRAFFIC_CONTROL_API_TOKEN` GitHub secret is needed. The optional `PETTRAFFIC_CONTROL_API_URL` variable may override the default Worker URL.
 
 The existing GitHub history remains the source of truth during the first rollout. Do not switch existing workflows to D1 until:
 1. the Worker health endpoint passes;
-2. authenticated event write/read checks pass;
+2. OIDC-authenticated event write/read checks pass;
 3. task enqueue/claim/complete checks pass;
 4. backup/export and recovery are tested.
 
