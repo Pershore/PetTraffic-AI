@@ -2,6 +2,11 @@ name: Deploy PetTraffic control API
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "worker/**"
+      - ".github/workflows/deploy-control-api.yml"
   pull_request:
     branches: [main]
     paths:
@@ -29,7 +34,7 @@ jobs:
       - run: PYTHONPATH=.. python -m unittest discover -s test -p '*_test.py' -v
 
   validate-cloudflare:
-    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
     runs-on: ubuntu-latest
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -96,7 +101,7 @@ jobs:
           PY
 
   deploy:
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push'
     needs: [test, validate-cloudflare]
     runs-on: ubuntu-latest
     defaults:
