@@ -120,11 +120,11 @@ def main() -> int:
         if rel.as_posix() == "index.html" and "article-results-status" not in parser.live_status_ids:
             errors.append(f"{rel}: article search needs a polite live status region")
         related_blocks = re.findall(
-            r'<div class="notice">\\s*<strong>Susiję straipsniai:</strong>(.*?)</div>',
+            r'<div class="notice">\s*<strong>Susiję straipsniai:</strong>(.*?)</div>',
             page_text, flags=re.IGNORECASE | re.DOTALL,
         )
         for block in related_blocks:
-            related_hrefs = re.findall(r'\\bhref=["\\']([^"\\']+)["\\']', block, flags=re.IGNORECASE)
+            related_hrefs = re.findall(r"""\bhref=["']([^"']+)["']""", block, flags=re.IGNORECASE)
             if len(related_hrefs) != len(set(related_hrefs)):
                 errors.append(f"{rel}: related-article block contains duplicate destinations")
         if parser.image_errors:
