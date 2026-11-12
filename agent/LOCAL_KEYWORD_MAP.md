@@ -1,75 +1,47 @@
-# Pet traffic – lietuviškų paieškos temų žemėlapis
+# Pet traffic – lietuviškų paieškos ketinimų žemėlapis
 
-Atnaujinta: 2026-11-11
+Atnaujinta: 2026-11-12
 
-**Svarbu:** žemiau pateiktos frazės yra paieškos ketinimo hipotezės, o ne patikrinti mėnesio paieškų kiekiai. Tikruosius parodymus ir užklausas tikrinti Google Search Console.
+**Svarbu:** frazės šiame faile yra paieškos ketinimo hipotezės, o ne patikrinti mėnesio paieškų kiekiai. Tikrus parodymus, užklausas ir paspaudimus tikrinti Search Console. Naujienų antraštės nėra paieškos apimties įrodymas.
 
-## Šunų sveikata, mityba ir priežiūra
+## Keturi esami pagrindiniai gidai
 
-| Paieškos frazės hipotezė | Ketinimas | Esamas puslapis |
+| Puslapis | Pagrindinis klausimas / ketinimas | Ką turi atsakyti |
 |---|---|---|
-| šuo viduriuoja ką daryti | Įvertinti požymius ir saugius pirmuosius veiksmus | /articles/suo-viduriuoja-ka-daryti.html |
-| šuns viduriavimas kada kreiptis į veterinarą | Atpažinti skubios pagalbos požymius | /articles/suo-viduriuoja-ka-daryti.html |
+| `/articles/kate-negali-pasislapinti-skubi-pagalba.html` | Katė stanginasi, bet nepasišlapina | Skubumo požymiai, kodėl negalima laukti, saugus veiksmas – nedelsiant kreiptis į veterinarą |
+| `/articles/kate-viduriuoja-ka-daryti.html` | Katė viduriuoja – ką daryti | Ką stebėti, vanduo, pavojaus ženklai ir kada kreiptis į veterinarą |
+| `/articles/suo-viduriuoja-ka-daryti.html` | Šuo viduriuoja – ką daryti | Ką stebėti, saugi priežiūra, pavojaus ženklai ir veterinaro pagalba |
+| `/articles/kada-kreiptis-i-veterinara.html` | Kada augintinį būtina vežti pas veterinarą | Skubūs požymiai, planinės konsultacijos ir pasiruošimas vizitui |
 
-## Šunų mityba ir priežiūra
+## Užklausų grupės, kurias verta stebėti
 
-| Paieškos frazės hipotezė | Ketinimas | Esamas puslapis |
-|---|---|---|
-| kuo maitinti šunį | Suprasti kasdienį šėrimą | /articles/kaip-maitinti-suni.html |
-| kiek maisto duoti šuniui | Apskaičiuoti porciją | /articles/kaip-maitinti-suni.html |
-| kaip išsirinkti šunų maistą | Palyginti pašaro pasirinkimo kriterijus | /articles/kaip-issirinkti-gyvuno-maista.html |
-| kaip valyti šuns dantis | Sužinoti priežiūros veiksmus | /articles/suns-ir-kates-dantu-prieziura.html |
-| kaip išmokyti šunį komandų | Pradėti dresūrą | /articles/suns-pagrindines-komandos.html |
+- Katė negali pasišlapinti; katė dažnai eina į kraiko dėžę; katė stanginasi šlapindamasi.
+- Katė viduriuoja; katė viduriuoja ir vemia; kada katės viduriavimas pavojingas.
+- Šuo viduriuoja; šuo viduriuoja ir vemia; kada dėl šuns viduriavimo vykti pas veterinarą.
+- Kada šunį ar katę reikia skubiai vežti pas veterinarą; kokie simptomai yra pavojingi.
 
-## Kačių priežiūra ir sveikata
+Šios frazės skirtos tik Search Console duomenims grupuoti ir esamų gidų kokybei vertinti. Jos nėra naujų straipsnių užduotys.
 
-| Paieškos frazės hipotezė | Ketinimas | Esamas puslapis |
-|---|---|---|
-| kaip prižiūrėti katę namuose | Kasdienė priežiūra | /articles/kates-prieziura-namuose.html |
-| kaip pripratinti katę prie transportavimo dėžės | Pasiruošti kelionei | /articles/kaip-pripratinti-kate-prie-transportavimo-dezes.html |
-| katė greitai kvėpuoja miegodama | Įvertinti požymius | /articles/kates-kvepavimas-miegant.html |
-| katė negali pasišlapinti ką daryti | Skubi pagalba | /articles/kate-negali-pasislapinti-skubi-pagalba.html |
-| kaip paruošti namus kačiukui | Pasiruošti naujam augintiniui | /articles/kaip-paruosti-namus-kaciukui.html |
+## Galimos ateities spragos – tik patikrai, ne publikavimui
 
-## Bendros ir pooperacinės temos
+- Šuns vėmimas ir dehidratacijos požymiai.
+- Katės kvėpavimo sunkumai.
+- Šuns ar katės šlubavimas.
+- Parazitų prevencija pagal gyvūno amžių ir gyvenimo būdą.
 
-| Paieškos frazės hipotezė | Ketinimas | Esamas puslapis |
-|---|---|---|
-| kaip išsirinkti maistą šuniui ar katei | Pašaro pasirinkimo kriterijai | /articles/kaip-issirinkti-gyvuno-maista.html |
-| augintinio priežiūra po operacijos | Saugus laikotarpis po procedūros | /articles/augintinio-prieziura-po-operacijos.html |
-| kada kreiptis į veterinarą | Atpažinti pavojingus požymius | /articles/kada-kreiptis-i-veterinara.html |
+Prieš svarstant atskirą puslapį būtina:
+1. Patikrinti, ar Search Console rodo realų susidomėjimą.
+2. Įsitikinti, kad esamas gidas neatsako į tą patį klausimą.
+3. Surinkti autoritetingus pirminius veterinarinius šaltinius.
+4. Įvertinti, ar tema reikalauja atskiro atsakymo, o ne trumpo esamo gido papildymo.
 
-## Kaip tikrinti
-1. Search Console → Performance → Search results: peržiūrėti realias užklausas ir puslapius.
-2. Palyginti parodymus, paspaudimus, CTR ir vidutinę poziciją.
-3. Pirmiausia gerinti puslapius, kurie jau gauna parodymų, bet turi mažą CTR arba nepakankamą atsakymą.
-4. Jei duomenų nėra, patikrinti indeksavimą ir turinio kokybę. Neprikurti daug panašių puslapių.
+## Seni URL ir kanoninės nuorodos
 
+Ankstesnių straipsnių URL nukreipiami per `site/_redirects`. Nenaudoti jų kaip dabartinių nukreipimo puslapių, negrąžinti pašalintų straipsnių ir nekurti naujų vidinių nuorodų į senus adresus. Sitemap turi tik pradžią, apie, privatumo puslapį ir keturis pagrindinius gidus.
 
-## Konkurentų turinio spragos – 2026-11-11
+## Patikros taisyklės
 
-Greita viešų Lietuvos augintinių turinio svetainių peržiūra parodė, kad kiti leidėjai ir klinikos aktyviai publikuoja temas apie parazitus, keliones, fejerverkų keliamą stresą, odos niežulį, šlubavimą, skiepus ir vyresnių gyvūnų priežiūrą. Tai yra turinio spragų kandidatai, o ne įrodymas apie konkrečią paieškų apimtį.
-
-| Kandidatinė tema | Kodėl verta svarstyti | Prioritetas |
-|---|---|---|
-| Šuns ir katės apsauga nuo erkių | Sezoninė, praktiška ir abiem augintiniams aktuali | Aukštas prieš pavasarį |
-| Šuo vemia automobilyje / kelionės su augintiniu | Konkretus šeimininko klausimas, kurio esamas transportavimo straipsnis neapima | Vidutinis |
-| Šuns ar katės odos niežulys | Dažnas požymis, reikalaujantis aiškaus skirtumo tarp priežasčių ir veterinaro apžiūros | Vidutinis |
-| Šlubavimas šuniui ar katei | Praktinis sveikatos klausimas su aiškiais skubumo požymiais | Vidutinis |
-| Fejerverkų ir garsų baimė | Sezoninė tema prieš šventes, tinkama trumpiems vaizdo įrašams | Aukštas prieš gruodį |
-| Kaip dažnai vežti katę / šunį profilaktinei apžiūrai | Profilaktikos klasterio spraga | Vidutinis |
-| Vyresnio augintinio priežiūra | Ilgalaikė, plati tema, galima susieti su mityba ir sveikata | Žemesnis |
-
-**Konkurentų pavyzdžiai, peržiūrėti tik kaip temų signalai:** InfoVet, DR.VET, Purina Lietuva ir Vilniaus veterinarijos gydykla. Jų turinio struktūros ar tekstų nekopijuoti. Prieš kuriant naują straipsnį patikrinti Search Console užklausas ir surinkti pirminius veterinarinius šaltinius.
-
-
-
-## Sezoninė tema: fejerverkų baimė
-
-| Paieškos frazės hipotezė | Ketinimas | Puslapis |
-|---|---|---|
-| šuo bijo fejerverkų ką daryti | Sumažinti baimę ir pabėgimo riziką | /articles/augintiniai-ir-fejerverkai-kaip-padeti.html |
-| katė bijo fejerverkų | Paruošti saugią vietą namuose | /articles/augintiniai-ir-fejerverkai-kaip-padeti.html |
-| kaip nuraminti šunį per fejerverkus | Suprasti saugius veiksmus ir kada tartis su veterinaru | /articles/augintiniai-ir-fejerverkai-kaip-padeti.html |
-
-Šios frazės yra intencijos hipotezės, ne patikrinti paieškų kiekiai. Prieš kuriant papildomą turinį, patikrinti Search Console užklausas ir įvertinti, ar atskiras puslapis nesidubliuotų su esamu vadovu.
+- Nevadinti konkurentų straipsnių turinio ar naujienų antraščių paieškų apimtimis.
+- Nekopijuoti konkurentų tekstų, struktūros ar vaizdų.
+- Pirmenybę teikti klausimams, kuriuos galima atsakyti tiksliai, saugiai ir su patikimais šaltiniais.
+- Naujų straipsnių kiekis nėra sėkmės rodiklis.

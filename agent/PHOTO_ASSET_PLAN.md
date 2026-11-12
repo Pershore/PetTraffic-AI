@@ -1,51 +1,35 @@
-# Pet traffic – nuotraukų ir socialinių vaizdų planas
+# Pet traffic – vaizdų ir socialinių peržiūrų planas
 
-Auditas atliktas 2026-11-11 pagal pagrindinės šakos HTML failus.
+Atnaujinta: 2026-11-12
 
-## Dabartinė būklė
-- Patikrinta 16 HTML failų (įskaitant techninį reklamos fragmentą).
-- Pagrindiniame puslapyje yra viena SVG hero iliustracija.
-- Straipsnių puslapiuose nerasta nė vienos nuotraukos.
-- Nė viename iš patikrintų puslapių nerasta Open Graph `og:image` ar Twitter Card vaizdo metaduomenų.
-- Visuose pagrindiniuose puslapiuose yra title, meta description, canonical ir vienas H1; patikrintose vidinėse nuorodose klaidų nerasta.
-- Mobilusis CSS turi 900 px, 680 px ir 390 px lūžio taškus; straipsnių puslapiams naudojami bendri mobiliesiems pritaikyti komponentai.
+## Dabartiniai vaizdai
 
-## Vaizdų prioritetai
+Svetainėje naudojamos originalios SVG iliustracijos:
+- `site/assets/pets-hero.svg` – pagrindinio puslapio hero vaizdas.
+- `site/assets/cat-urgent.svg` – skubios kačių priežiūros gidas.
+- `site/assets/cat-care.svg` – kačių viduriavimo gidas.
+- `site/assets/dog-care.svg` – šunų viduriavimo gidas.
+- `site/assets/vet-care.svg` – bendras veterinarinės priežiūros gidas.
 
-### 1 etapas – dalijimosi vaizdas
-Sukurti originalų 1200×630 socialinio dalijimosi vaizdą su Pet traffic identitetu, aiškiu pavadinimu ir viena autentiška augintinio nuotrauka. Pridėti `og:image`, `og:image:alt`, `twitter:card` ir Twitter image metaduomenis pagrindiniam puslapiui bei vietiniam gidui.
+Tai originalios vektorinės iliustracijos, ne fotografijos. Neteigti, kad jos vaizduoja tikrus pacientus, veterinarus ar procedūras. Visos prasmingos pagrindinio puslapio ir gidų nuotraukų žymos turi aprašomuosius `alt` tekstus.
 
-### 2 etapas – pagrindinis puslapis
-Pakeisti arba papildyti abstrakčią SVG hero iliustraciją licencijuota, natūralia šuns ir katės nuotrauka namų aplinkoje. Išlaikyti pakankamą kontrastą, aiškų fokusą ir mobiliajame ekrane neiškirpti gyvūnų.
+## Socialinių peržiūrų būklė
 
-### 3 etapas – svarbiausi straipsniai
-Pirmiausia parinkti vaizdus šioms temoms:
-1. Katės kvėpavimas miegant – ramiai miegančios katės nuotrauka, ne medicininis simptomas.
-2. Katė negali pasišlapinti – neutrali katės ir kraiko dėžės aplinka, be bauginančio ar klaidinančio vaizdo.
-3. Kada kreiptis į veterinarą – ramus veterinaro konsultacijos vaizdas, tik su tinkama licencija.
-4. Kaip pripratinti katę prie transportavimo dėžės – katė savanoriškai įsitaisiusi atviroje dėžėje.
-5. Šuns mityba – šuo prie maisto dubenėlio, aiškus ir natūralus kadras.
+- Pagrindinis puslapis turi Open Graph ir Twitter Card vaizdo metaduomenis.
+- Keturi pagrindiniai gidai turi turėti savo temą atitinkantį `og:image`, `og:image:alt` ir Twitter vaizdą.
+- Socialinių platformų suderinamumui dar trūksta atskiro originalaus 1200×630 PNG arba WebP dalijimosi vaizdo. SVG palaikymas skirtingose platformose gali skirtis.
 
-### 4 etapas – likę straipsniai
-Vaizdus kurti pagal konkretų puslapio tikslą, o ne dėti vieną bendrą šuns ar katės nuotrauką į visus puslapius. Jei vaizdas nieko nepaaiškina ir nesuteikia emocinio ar praktinio konteksto, geriau jo nedėti.
+## Kiti prioritetai
 
-## Techniniai reikalavimai
-- Pirmenybė originalioms nuotraukoms arba aiškiai licencijuotam turiniui.
-- Kiekvienam failui saugoti šaltinį, autorių, licenciją, įsigijimo datą ir leidžiamą naudojimo būdą.
-- Naudoti WebP arba AVIF, kai tai palaikoma, ir pateikti tinkamus dydžius per `srcset`.
-- Nurodyti vaizdo `width` ir `height`, kad sumažėtų layout shift.
-- Pirmo ekrano pagrindinį vaizdą krauti prioritetiškai; kitus – su `loading="lazy"`.
-- Alt tekstas turi aprašyti konkrečią nuotrauką ir jos kontekstą, o ne kartoti raktažodžius.
-- Nenaudoti klinikų, prieglaudų ar kitų įstaigų nuotraukų ir logotipų be leidimo.
-- iki tol rodyti savo sukurtas iliustracijas ir tiesiogines nuorodas į oficialius produktų puslapius.
-- Nenaudoti dirbtinai sugeneruotų vaizdų taip, kad jie atrodytų kaip tikri pacientai, veterinarai ar realios procedūros.
+1. Sukurti vieną originalų 1200×630 socialinio dalijimosi vaizdą su „Pet traffic“ identitetu ir aiškia augintinių priežiūros tema.
+2. Jei vėliau pasirenkamos fotografijos, naudoti tik savo nuotraukas arba aiškiai licencijuotus failus. Saugoti šaltinį, autorių, licenciją, įsigijimo datą ir leidžiamą naudojimo būdą.
+3. Vaizdų failus optimizuoti WebP arba AVIF formatu, kai tai praktiška.
+4. Kiekvienam vaizdui nurodyti tinkamą `width`, `height`, prasmingą `alt`; pirmo ekrano hero krauti prioritetiškai, žemiau esančius vaizdus – su `loading="lazy"`.
+5. Mobiliuosiuose ekranuose tikrinti, ar gyvūnai nėra nukerpami ir ar vaizdai neužima per daug vietos prieš pagrindinį atsakymą.
 
-## Failų struktūros pasiūlymas
-`site/assets/images/` – optimizuoti vaizdai.
-`agent/ASSET_LICENSES.md` – kiekvieno naudojamo vaizdo šaltinis, licencija ir leidimo įrodymas.
+## Ko nedaryti
 
-## Sėkmės matavimas
-- Socialinių tinklų nuorodų peržiūra ir paspaudimai (kai GA4/UTM matavimas veikia).
-- Puslapio greitis ir Core Web Vitals prieš/po vaizdų įkėlimo.
-- Search Console vaizdų paieškos parodymai ir paspaudimai, jei pateikiami.
-- Nenaudoti vien nuotraukų skaičiaus kaip sėkmės rodiklio.
+- Nekopijuoti kitų vaistinių, klinikų ar leidėjų logotipų, nuotraukų ar iliustracijų.
+- Nenaudoti vandens ženklais pažymėtų, neaiškios licencijos ar klaidinančių nuotraukų.
+- Nenaudoti vieno bendro gyvūno vaizdo kiekviename straipsnyje, jei jis nepadeda suprasti konkrečios temos.
+- Nelaikyti nuotraukų skaičiaus sėkmės rodikliu. Vertinti skaitymo aiškumą, įkėlimo greitį ir realų naudojimą.
