@@ -115,7 +115,9 @@ def main() -> int:
     OUT.write_text(report, encoding="utf-8")
     OUT_JSON.write_text(json.dumps({"generated_at": now.isoformat(), "needs_attention": needs_attention(results), "results": results}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(report)
-    return 1 if any(x["state"] in ("failure", "api_error") for x in results) else 0
+    # Monitored workflow incidents are report data handled by the GitHub issue alert.
+    # The control-center job itself succeeded if it fetched, evaluated and wrote the report.
+    return 0
 
 if __name__ == "__main__":
     raise SystemExit(main())

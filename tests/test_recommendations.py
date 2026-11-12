@@ -21,6 +21,7 @@ class RecommendationTests(unittest.TestCase):
             "generated_at": f"2026-11-{int(run_id[-1]) + 10:02d}T08:00:00Z",
             "ga4_status": "available",
             "search_console_status": "available",
+            "search_console_period": f"2026-11-{int(run_id[-1]) + 1:02d} – 2026-11-{int(run_id[-1]) + 7:02d}",
             "metrics": {
                 "sessions": 12,
                 "organic_sessions_verified": None,
@@ -44,6 +45,18 @@ class RecommendationTests(unittest.TestCase):
             save(root, "analytics", "2026-11-12", [self.analytics("run-2")])
             items = build_recommendations(root)
             self.assertIn("search-visibility", [x["id"] for x in items])
+
+
+    def test_repeated_runs_for_same_reporting_period_are_not_independent(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            first = self.analytics("run-1")
+            second = self.analytics("run-2")
+            second["search_console_period"] = first["search_console_period"]
+            save(root, "analytics", "2026-11-11", [first])
+            save(root, "analytics", "2026-11-12", [second])
+            items = build_recommendations(root)
+            self.assertNotIn("search-visibility", [x["id"] for x in items])
 
     def test_automation_failure_creates_high_priority_recommendation(self):
         with tempfile.TemporaryDirectory() as directory:
