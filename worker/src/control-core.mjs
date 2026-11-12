@@ -67,7 +67,7 @@ export function buildControlDecision(report) {
 /** Persist a compact, privacy-filtered control decision and rolling memory in D1. */
 export async function persistControlDecision(env, decision) {
   if (!env?.DB) throw new Error("control_core_database_missing");
-  if (!decision?.run_date || !/^\\d{4}-\\d{2}-\\d{2}$/.test(decision.run_date)) throw new Error("control_core_run_date_invalid");
+  if (!decision?.run_date || !/^\d{4}-\d{2}-\d{2}$/.test(decision.run_date)) throw new Error("control_core_run_date_invalid");
   if (!Array.isArray(decision.recommendations) || !Array.isArray(decision.evidence_gaps)) throw new Error("control_core_decision_invalid");
 
   const createdAt = new Date().toISOString();
