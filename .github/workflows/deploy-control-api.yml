@@ -28,7 +28,6 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     needs: test
     runs-on: ubuntu-latest
-    environment: cloudflare-control-api
     defaults:
       run:
         working-directory: worker
@@ -41,9 +40,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-          cache: npm
-          cache-dependency-path: worker/package-lock.json
-      - run: npm ci
       - name: Validate deployment configuration
         run: |
           test -n "$CLOUDFLARE_API_TOKEN" || (echo "Missing CLOUDFLARE_API_TOKEN secret" && exit 1)
@@ -60,5 +56,5 @@ jobs:
           text = text.replace("REPLACE_WITH_D1_DATABASE_ID", os.environ["D1_DATABASE_ID"])
           path.write_text(text)
           PY
-          npx wrangler d1 migrations apply pettraffic-control --remote
-          npx wrangler deploy
+          npx --yes wrangler@4 d1 migrations apply pettraffic-control --remote
+          npx --yes wrangler@4 deploy
