@@ -46,6 +46,18 @@ class RecommendationTests(unittest.TestCase):
             items = build_recommendations(root)
             self.assertIn("search-visibility", [x["id"] for x in items])
 
+
+    def test_repeated_runs_for_same_reporting_period_are_not_independent(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            first = self.analytics("run-1")
+            second = self.analytics("run-2")
+            second["search_console_period"] = first["search_console_period"]
+            save(root, "analytics", "2026-11-11", [first])
+            save(root, "analytics", "2026-11-12", [second])
+            items = build_recommendations(root)
+            self.assertNotIn("search-visibility", [x["id"] for x in items])
+
     def test_automation_failure_creates_high_priority_recommendation(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
