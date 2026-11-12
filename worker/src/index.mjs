@@ -207,11 +207,21 @@ async function handle(request, env) {
     if (!body || !ALLOWED_EVENT_KINDS.has(body.kind) || !safeObject(body.payload)) {
       return response({ error: "invalid_event_payload" }, 400, origin);
     }
+    const sourceRunId = typeof body.payload.run_id === "string" ? body.payload.run_id.trim() : "";
+    if (sourceRunId) {
+      const existing = await env.DB.prepare(
+        "SELECT id FROM events WHERE kind = ? AND json_extract(payload_json, '$.run_id') = ? ORDER BY created_at ASC LIMIT 1"
+      ).bind(body.kind, sourceRunId).first();
+      if (existing?.id) {
+        return response({ accepted: true, id: existing.id, deduplicated: true }, 202, origin);
+      }
+    }
+
     const id = crypto.randomUUID();
     await env.DB.prepare(
       "INSERT INTO events (id, kind, payload_json, created_at) VALUES (?, ?, ?, ?)"
     ).bind(id, body.kind, JSON.stringify(body.payload), new Date().toISOString()).run();
-    return response({ accepted: true, id }, 202, origin);
+    return response({ accepted: true, id, deduplicated: false }, 202, origin);
   }
 
   if (url.pathname === "/v1/tasks" && request.method === "POST") {
