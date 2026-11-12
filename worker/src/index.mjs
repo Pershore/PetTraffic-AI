@@ -167,11 +167,19 @@ async function handle(request, env) {
     if (parsed.error) return response({ error: parsed.error }, 413, origin);
     const agent = parsed.value?.agent;
     if (!ALLOWED_AGENTS.has(agent)) return response({ error: "invalid_agent" }, 400, origin);
+    const now = new Date().toISOString();
+    const expiredBefore = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+    await env.DB.prepare(
+      "UPDATE tasks SET status = 'failed', completed_at = ? " +
+      "WHERE status = 'running' AND claimed_at < ? AND attempt_count >= 3"
+    ).bind(now, expiredBefore).run();
     const task = await env.DB.prepare(
       "UPDATE tasks SET status = 'running', claimed_by = ?, claimed_at = ?, attempt_count = attempt_count + 1 " +
-      "WHERE id = (SELECT id FROM tasks WHERE (status = 'queued' OR (status = 'running' AND claimed_at < ?)) AND assigned_agent IN (?, 'coordinator') " +
-      "ORDER BY priority DESC, created_at ASC LIMIT 1) RETURNING id, task_type, assigned_agent, priority, payload_json, created_at"
-    ).bind(agent, new Date().toISOString(), new Date(Date.now() - 30 * 60 * 1000).toISOString(), agent).first();
+      "WHERE id = (SELECT id FROM tasks WHERE (status = 'queued' OR (status = 'running' AND claimed_at < ?)) " +
+      "AND attempt_count < 3 AND assigned_agent IN (?, 'coordinator') " +
+      "ORDER BY priority DESC, created_at ASC LIMIT 1) " +
+      "RETURNING id, task_type, assigned_agent, priority, payload_json, created_at"
+    ).bind(agent, now, expiredBefore, agent).first();
     if (!task) return response({ task: null }, 200, origin);
     return response({
       task: {
