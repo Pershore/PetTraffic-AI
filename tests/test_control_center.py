@@ -18,6 +18,11 @@ class ControlCenterTests(unittest.TestCase):
         result = evaluate_worker_health({"ok": False, "database": "unavailable"})
         self.assertEqual(result["state"], "failure")
 
+    def test_worker_health_rejects_non_object_json(self):
+        result = evaluate_worker_health(["unexpected", "array"])
+        self.assertEqual(result["state"], "failure")
+        self.assertIn("invalid JSON", result["detail"])
+
     def test_worker_health_detects_http_errors(self):
         result = evaluate_worker_health({}, status_code=503)
         self.assertEqual(result["state"], "failure")
