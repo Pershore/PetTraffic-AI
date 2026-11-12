@@ -63,8 +63,13 @@ def fetch_runs(workflow_file: str) -> list[dict]:
     with urlopen(request, timeout=20) as response:
         return json.loads(response.read().decode("utf-8")).get("workflow_runs", [])
 
-def evaluate_worker_health(payload: dict, status_code: int = 200, url: str | None = None) -> dict:
-    """Evaluate the dedicated control Worker and its D1 health response."""
+def evaluate_worker_health(
+    payload: dict,
+    status_code: int = 200,
+    url: str | None = None,
+    now: datetime | None = None,
+) -> dict:
+    """Evaluate Worker/D1 connectivity and the latest 15-minute site heartbeat."""
     base = {"name": "Cloudflare Worker + D1", "url": url, "created_at": None}
     if status_code != 200:
         return {**base, "state": "failure", "detail": f"Worker health endpoint returned HTTP {status_code}."}
@@ -72,7 +77,33 @@ def evaluate_worker_health(payload: dict, status_code: int = 200, url: str | Non
         return {**base, "state": "failure", "detail": "Worker health endpoint returned an invalid JSON structure."}
     if payload.get("ok") is not True or payload.get("database") != "connected":
         return {**base, "state": "failure", "detail": "Worker or D1 health check did not confirm a connected database."}
-    return {**base, "state": "success", "detail": "Worker API pasiekiamas, D1 duomenų bazė prijungta."}
+
+    heartbeat = payload.get("heartbeat")
+    if heartbeat is None:
+        return {**base, "state": "warning", "detail": "Worker ir D1 pasiekiami, tačiau dar nėra išsaugoto periodinio heartbeat įrašo."}
+    if not isinstance(heartbeat, dict) or not isinstance(heartbeat.get("checked_at"), str):
+        return {**base, "state": "failure", "detail": "Worker returned an invalid scheduled-heartbeat record."}
+    try:
+        checked_at = datetime.fromisoformat(heartbeat["checked_at"].replace("Z", "+00:00"))
+        if checked_at.tzinfo is None:
+            checked_at = checked_at.replace(tzinfo=timezone.utc)
+    except ValueError:
+        return {**base, "state": "failure", "detail": "Worker returned an invalid heartbeat timestamp."}
+
+    current = now or datetime.now(timezone.utc)
+    age = current - checked_at.astimezone(timezone.utc)
+    if age < timedelta(minutes=-5):
+        return {**base, "state": "failure", "detail": "Worker heartbeat timestamp is unexpectedly in the future."}
+    if age > timedelta(minutes=45):
+        minutes = int(age.total_seconds() // 60)
+        return {**base, "state": "failure", "detail": f"Worker heartbeat is stale ({minutes} min); expected a check every 15 min."}
+    if heartbeat.get("site_ok") is not True:
+        return {**base, "state": "failure", "detail": f"Scheduled site check failed (HTTP {heartbeat.get('site_status', 'unknown')})."}
+    if heartbeat.get("database_ok") is not True:
+        return {**base, "state": "failure", "detail": "Scheduled heartbeat could not confirm D1 database connectivity."}
+
+    minutes = max(0, int(age.total_seconds() // 60))
+    return {**base, "state": "success", "detail": f"Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš {minutes} min."}
 
 
 def fetch_worker_health() -> dict:
