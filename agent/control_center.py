@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only daily control center for Pet traffic GitHub Actions."""
+"""Read-only daily control center for PetTraffic GitHub Actions and Cloudflare Worker/D1."""
 from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -104,7 +104,7 @@ def render(results: list[dict], generated: datetime) -> str:
     lines = [
         "# Pet traffic – centrinis valdymo skydelis", "",
         f"Atnaujinta: {generated.astimezone(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}",
-        "", "> Tik skaitymo režimo GitHub Actions būklės suvestinė. Ji nekeičia svetainės, kodų, nustatymų ar paslapčių.",
+        "", "> Tik skaitymo režimo GitHub Actions ir Cloudflare Worker/D1 būklės suvestinė. Ji nekeičia svetainės, kodų, nustatymų ar paslapčių.",
         "", "## Automatizacijų būklė", "",
         "| Modulis | Būsena | Pastaba |", "|---|---|---|",
     ]
@@ -123,7 +123,7 @@ def render(results: list[dict], generated: datetime) -> str:
     if not failures and not warnings and not running: lines.append("Nerasta veiksmų reikalaujančių būsenų.")
     lines += [
         "", "## Saugumo ribos", "",
-        "- GitHub Actions gali skaityti darbo eigų būsenas ir kurti / uždaryti vieną techninį įspėjimo issue; svetainės failų keitimo teisės nesuteiktos.",
+        "- GitHub Actions gali skaityti darbo eigų ir Worker/D1 sveikatos būsenas bei kurti / uždaryti vieną techninį įspėjimo issue; svetainės failų keitimo teisės nesuteiktos.",
         "- Neskaitomi ir nerodomi slapti raktai ar lankytojų asmens duomenys.",
         "- Modulis pats netaiso ir nepublikuoja pakeitimų.",
         "- IndexNow ir PR testai yra įvykiais paleidžiami procesai, todėl nevertinami kaip kasdieniai darbai.", "",
