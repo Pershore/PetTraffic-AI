@@ -188,9 +188,9 @@ jobs:
           import json, sys
           with open(sys.argv[1], encoding="utf-8") as stream:
               payload = json.load(stream)
-          if payload.get("ok") is not True or payload.get("database") != "connected":
-              raise SystemExit("Worker health check did not confirm a connected database.")
-          print("OK: deployed Worker and D1 health verified.")
+          if payload.get("ok") is not True or payload.get("database") != "connected" or payload.get("control_core_schema") != "connected":
+              raise SystemExit("Worker health check did not confirm D1 and control-core schema connectivity.")
+          print("OK: deployed Worker, D1 and control-core schema verified.")
           PY
           status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' "$API_URL/v1/events")"
           test "$status" = "401" || (echo "Expected unauthenticated API request to return HTTP 401; got $status." && exit 1)
