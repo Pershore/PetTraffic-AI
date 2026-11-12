@@ -26,7 +26,7 @@ jobs:
         with:
           python-version: "3.x"
       - run: npm test
-      - run: python -m unittest discover -s test -p '*_test.py' -v
+      - run: PYTHONPATH=.. python -m unittest discover -s test -p '*_test.py' -v
 
   deploy:
     if: github.event_name == 'workflow_dispatch'
