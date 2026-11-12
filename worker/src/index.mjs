@@ -1,4 +1,4 @@
-import { runAgentOrchestration } from "./agents.mjs";
+import { runAgentOrchestration, isVilniusAgentRunTime } from "./agents.mjs";
 
 const MAX_BODY_BYTES = 32 * 1024;
 const ALLOWED_AGENTS = new Set(["coordinator", "analytics", "topics", "technical-seo", "content-review"]);
@@ -345,7 +345,7 @@ export default {
     }
   },
   async scheduled(controller, env, ctx) {
-    if (controller.cron === "20 8 * * *") {
+    if (controller.cron === "20 7,8 * * *" && isVilniusAgentRunTime()) {
       ctx.waitUntil(runAgentOrchestration(env));
       return;
     }
