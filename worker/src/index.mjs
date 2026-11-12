@@ -13,7 +13,7 @@ const ALLOWED_EVENT_KINDS = new Set([
   "control_center_snapshot",
   "recommendation_snapshot",
 ]);
-const FORBIDDEN_KEY = /(^|_)(email|ip|ip_address|user_id|client_id|search_query|query_text|token|secret|password|authorization|cookie)(_|$)/i;
+const FORBIDDEN_KEY = /(^|_)(email|ip|ip_address|user_id|client_id|search_query|query_text|query|queries|token|secret|password|authorization|cookie)(_|$)/i;
 
 function response(data, status = 200, origin = null) {
   const headers = {
@@ -129,7 +129,7 @@ async function handle(request, env) {
 
   if (url.pathname === "/v1/events" && request.method === "POST") {
     const parsed = await readJson(request);
-    if (parsed.error) return response({ error: parsed.error }, 413, origin);
+    if (parsed.error) return response({ error: parsed.error }, parsed.error === "request_too_large" ? 413 : 400, origin);
     const body = parsed.value;
     if (!body || !ALLOWED_EVENT_KINDS.has(body.kind) || !safeObject(body.payload)) {
       return response({ error: "invalid_event_payload" }, 400, origin);
@@ -143,7 +143,7 @@ async function handle(request, env) {
 
   if (url.pathname === "/v1/tasks" && request.method === "POST") {
     const parsed = await readJson(request);
-    if (parsed.error) return response({ error: parsed.error }, 413, origin);
+    if (parsed.error) return response({ error: parsed.error }, parsed.error === "request_too_large" ? 413 : 400, origin);
     const body = parsed.value;
     const priority = Number(body?.priority ?? 3);
     if (
@@ -164,7 +164,7 @@ async function handle(request, env) {
 
   if (url.pathname === "/v1/tasks/claim" && request.method === "POST") {
     const parsed = await readJson(request);
-    if (parsed.error) return response({ error: parsed.error }, 413, origin);
+    if (parsed.error) return response({ error: parsed.error }, parsed.error === "request_too_large" ? 413 : 400, origin);
     const agent = parsed.value?.agent;
     if (!ALLOWED_AGENTS.has(agent)) return response({ error: "invalid_agent" }, 400, origin);
     const now = new Date().toISOString();
@@ -196,7 +196,7 @@ async function handle(request, env) {
   const completion = url.pathname.match(/^\/v1\/tasks\/([a-f0-9-]+)\/complete$/i);
   if (completion && request.method === "POST") {
     const parsed = await readJson(request);
-    if (parsed.error) return response({ error: parsed.error }, 413, origin);
+    if (parsed.error) return response({ error: parsed.error }, parsed.error === "request_too_large" ? 413 : 400, origin);
     const body = parsed.value;
     if (
       !body ||
