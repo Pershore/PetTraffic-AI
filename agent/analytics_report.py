@@ -64,6 +64,23 @@ def metric_aggregation_total(data: dict, metric_name: str) -> float | None:
     })
     return values.get(metric_name)
 
+def channel_breakdown_status(channel_sum: float, api_total: float | None,
+                             overall_total: float) -> tuple[bool, str]:
+    """Only trust channel-level metrics when both GA4 totals reconcile."""
+    if api_total is None:
+        return False, "GA4 nepateikė kanalų užklausos TOTAL agregato."
+    if abs(channel_sum - api_total) > 0.01:
+        return False, (
+            f"kanalų eilučių suma ({fmt(channel_sum)}) nesutampa su "
+            f"tos pačios užklausos TOTAL ({fmt(api_total)})"
+        )
+    if abs(api_total - overall_total) > 0.01:
+        return False, (
+            f"kanalų užklausos TOTAL ({fmt(api_total)}) skiriasi nuo "
+            f"bendros sesijų užklausos ({fmt(overall_total)})"
+        )
+    return True, "kanalų suma sutampa su bendru GA4 sesijų skaičiumi."
+
 
 def gsc_query(session, url: str, start: date, end: date,
               dimensions: list[str] | None = None, limit: int = 10) -> dict:
@@ -242,28 +259,21 @@ def main() -> int:
                 organic_sessions = value
         if not channels.get("rows"):
             lines.append("| Duomenų nėra | – |")
-        lines += ["", f"Organinės paieškos sesijos: **{fmt(organic_sessions)}**", ""]
         total_sessions = current.get("sessions", 0.0)
         channel_api_total = metric_aggregation_total(channels, "sessions")
-        if channel_api_total is not None:
-            if abs(channel_sessions_total - channel_api_total) > 0.01:
-                lines.append(
-                    f"Duomenų patikra: kanalų eilučių suma ({fmt(channel_sessions_total)}) "
-                    f"nesutampa su tos pačios GA4 užklausos TOTAL ({fmt(channel_api_total)})."
-                )
-            if abs(channel_api_total - total_sessions) > 0.01:
-                lines.append(
-                    f"GA4 neatitikimas: kanalų užklausos TOTAL ({fmt(channel_api_total)}) "
-                    f"skiriasi nuo bendros sesijų užklausos ({fmt(total_sessions)}). "
-                    "Kanalų pasiskirstymą laikykite preliminariu, kol skirtumas paaiškintas."
-                )
-            lines.append("")
+        channel_verified, channel_note = channel_breakdown_status(
+            channel_sessions_total, channel_api_total, total_sessions
+        )
+        if channel_verified:
+            lines += ["", f"Organinės paieškos sesijos: **{fmt(organic_sessions)}**", ""]
         else:
-            lines.append(
-                "Duomenų patikra: GA4 šiai kanalų užklausai nepateikė TOTAL agregato; "
-                "bendro sesijų skaičiaus palyginimas nėra nepriklausomai patvirtintas."
-            )
-            lines.append("")
+            lines += [
+                "",
+                "Organinės paieškos sesijos: **nepatvirtinta** – kanalų išklotinė nesutampa su bendru GA4 sesijų skaičiumi.",
+                f"Duomenų patikra: {channel_note}.",
+                "Kanalų lentelė ir organinės paieškos skaičius yra preliminarūs; jų nenaudokite kaip patvirtinto pasiskirstymo.",
+                "",
+            ]
 
         top_pages = ga_rows(
             session, ga_url, ga_start, ga_end, ["screenPageViews"], ["pagePath"], limit=10,
