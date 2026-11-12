@@ -155,15 +155,18 @@ def main() -> int:
             errors.append(f"{rel}: expected exactly one H1, found {parser.h1_count}")
         if not parser.descriptions or not parser.descriptions[0]:
             errors.append(f"{rel}: missing meta description")
-        if len(parser.canonicals) != 1:
-            errors.append(f"{rel}: expected exactly one canonical URL")
-        elif urlparse(parser.canonicals[0]).scheme != "https" or urlparse(parser.canonicals[0]).netloc != urlparse(BASE_URL).netloc:
-            errors.append(f"{rel}: canonical URL must use {BASE_URL}")
-        else:
-            expected_path = "/" if rel.as_posix() == "index.html" else "/" + rel.as_posix()
-            expected_canonical = BASE_URL + expected_path
-            if parser.canonicals[0] != expected_canonical:
-                errors.append(f"{rel}: canonical URL should be {expected_canonical}")
+        # A not-found page is intentionally noindex and should not declare a canonical URL.
+        # Canonicals on 404 responses can create conflicting indexing signals.
+        if rel.as_posix() != "404.html":
+            if len(parser.canonicals) != 1:
+                errors.append(f"{rel}: expected exactly one canonical URL")
+            elif urlparse(parser.canonicals[0]).scheme != "https" or urlparse(parser.canonicals[0]).netloc != urlparse(BASE_URL).netloc:
+                errors.append(f"{rel}: canonical URL must use {BASE_URL}")
+            else:
+                expected_path = "/" if rel.as_posix() == "index.html" else "/" + rel.as_posix()
+                expected_canonical = BASE_URL + expected_path
+                if parser.canonicals[0] != expected_canonical:
+                    errors.append(f"{rel}: canonical URL should be {expected_canonical}")
 
         if rel.as_posix() == "index.html" or "articles" in rel.parts:
             for property_name in ("og:title", "og:description", "og:url", "og:image", "og:image:alt"):
