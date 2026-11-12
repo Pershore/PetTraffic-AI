@@ -52,6 +52,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: python agent/control_center.py
+        continue-on-error: ${{ github.event_name == 'pull_request' }}
       - name: Load history and generate recommendations
         if: success() && github.event_name != 'pull_request'
         env:
