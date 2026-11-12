@@ -1,0 +1,56 @@
+name: Pet traffic central control center
+
+on:
+  schedule:
+    - cron: "0 8 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "agent/control_center.py"
+      - "tests/test_control_center.py"
+      - ".github/workflows/control-center.yml"
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: pettraffic-control-center
+  cancel-in-progress: true
+
+jobs:
+  control-center:
+    name: Read-only automation health and priorities
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Run control-center unit tests
+        run: python -m unittest tests.test_control_center -v
+      - name: Build central status report
+        env:
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: \${{ github.repository }}
+        run: python agent/control_center.py
+      - name: Add report to job summary
+        if: always()
+        run: |
+          if [ -f reports/control-center.md ]; then
+            cat reports/control-center.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Centrinio valdymo ataskaita nesukurta." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Upload central status report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pettraffic-control-center
+          path: reports/control-center.md
+          if-no-files-found: error
+          retention-days: 90
