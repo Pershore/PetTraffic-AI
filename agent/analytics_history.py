@@ -96,11 +96,11 @@ def parse_sitemap_details(report: str) -> dict:
     else:
         status = "unknown"
 
-    path_match = re.search(r"(?:Būsena: \\*\\*pateiktas\\*\\*|\\*\\*Nepateiktas\\*\\*):? ?\\(([^)]+)\\)", section)
-    submitted_match = re.search(r"Paskutinį kartą pateiktas:\\s*([^\\n]+)", section)
-    downloaded_match = re.search(r"Google paskutinį kartą atsisiuntė:\\s*([^\\n]+)", section)
-    counts_match = re.search(r"URL pateikta / indeksuota:\\s*(\\d+)\\s*/\\s*(\\d+)", section)
-    pending_match = re.search(r"Laukia apdorojimo:\\s*(taip|ne)", section, re.IGNORECASE)
+    path_match = re.search(r"(?:Būsena: \*\*pateiktas\*\*|\*\*Nepateiktas\*\*):? ?\(([^)]+)\)", section)
+    submitted_match = re.search(r"Paskutinį kartą pateiktas:\s*([^\n]+)", section)
+    downloaded_match = re.search(r"Google paskutinį kartą atsisiuntė:\s*([^\n]+)", section)
+    counts_match = re.search(r"URL pateikta / indeksuota:\s*(\d+)\s*/\s*(\d+)", section)
+    pending_match = re.search(r"Laukia apdorojimo:\s*(taip|ne)", section, re.IGNORECASE)
     return {
         "status": status,
         "path": path_match.group(1).strip() if path_match else None,
