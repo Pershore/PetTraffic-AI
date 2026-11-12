@@ -89,7 +89,7 @@ def render(results: list[dict], generated: datetime) -> str:
     if not failures and not warnings and not running: lines.append("Nerasta veiksmų reikalaujančių būsenų.")
     lines += [
         "", "## Saugumo ribos", "",
-        "- Naudojamos tik GitHub Actions skaitymo teisės.",
+        "- GitHub Actions gali skaityti darbo eigų būsenas ir kurti / uždaryti vieną techninį įspėjimo issue; svetainės failų keitimo teisės nesuteiktos.",
         "- Neskaitomi ir nerodomi slapti raktai ar lankytojų asmens duomenys.",
         "- Modulis pats netaiso ir nepublikuoja pakeitimų.",
         "- IndexNow ir PR testai yra įvykiais paleidžiami procesai, todėl nevertinami kaip kasdieniai darbai.", "",
@@ -112,7 +112,7 @@ def main() -> int:
         results.append(item)
     report = render(results, now)
     OUT.write_text(report, encoding="utf-8")
-    OUT_JSON.write_text(json.dumps({"generated_at": now.isoformat(), "needs_attention": needs_attention(results), "results": results}, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+    OUT_JSON.write_text(json.dumps({"generated_at": now.isoformat(), "needs_attention": needs_attention(results), "results": results}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(report)
     return 1 if any(x["state"] in ("failure", "api_error") for x in results) else 0
 
