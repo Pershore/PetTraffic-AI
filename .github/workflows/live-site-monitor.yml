@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  issues: write
 
 concurrency:
   group: pettraffic-live-monitor
@@ -26,3 +27,54 @@ jobs:
           python-version: "3.x"
       - name: Check production website
         run: python agent/check_live_site.py
+      - name: Open or refresh one issue when the live check fails
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const title = "PetTraffic: production health check failed";
+            const body = [
+              "The automated production-site monitor detected a problem.",
+              "",
+              "Review the failing run and its logs:",
+              context.serverUrl + "/" + owner + "/" + repo + "/actions/runs/" + context.runId,
+              "",
+              "The monitor checks published pages, internal links, sitemap.xml, robots.txt and the custom 404 response. External-source failures are warnings and do not fail the check.",
+              "",
+              "This issue is refreshed rather than duplicated on subsequent failing runs. It will be closed automatically after a successful recovery check."
+            ].join("\n");
+            const { data: openIssues } = await github.rest.issues.listForRepo({
+              owner, repo, state: "open", per_page: 100
+            });
+            const existing = openIssues.find(issue => issue.title === title && !issue.pull_request);
+            if (existing) {
+              await github.rest.issues.update({ owner, repo, issue_number: existing.number, body });
+              core.info("Refreshed existing site-health issue #" + existing.number);
+            } else {
+              const created = await github.rest.issues.create({ owner, repo, title, body });
+              core.info("Created site-health issue #" + created.data.number);
+            }
+      - name: Close the site-health issue after recovery
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const title = "PetTraffic: production health check failed";
+            const { data: openIssues } = await github.rest.issues.listForRepo({
+              owner, repo, state: "open", per_page: 100
+            });
+            const existing = openIssues.find(issue => issue.title === title && !issue.pull_request);
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner, repo, issue_number: existing.number,
+                body: "The production health check passed again. The issue is being closed automatically. Latest successful run: " + context.serverUrl + "/" + owner + "/" + repo + "/actions/runs/" + context.runId
+              });
+              await github.rest.issues.update({
+                owner, repo, issue_number: existing.number, state: "closed", state_reason: "completed"
+              });
+              core.info("Closed recovered site-health issue #" + existing.number);
+            } else {
+              core.info("No open site-health issue to close.");
+            }
