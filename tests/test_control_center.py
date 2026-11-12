@@ -104,6 +104,14 @@ class ControlCenterTests(unittest.TestCase):
     def test_missing_first_run_does_not_create_false_alarm(self):
         self.assertFalse(needs_attention([{"state": "missing"}]))
 
+    def test_missing_first_run_is_waiting_not_a_priority(self):
+        result = evaluate_workflow("Temų radaras", [], self.now, 36)
+        report = render([result], self.now)
+        self.assertEqual(result["state"], "missing")
+        self.assertIn("LAUKIAMA PIRMŲ CIKLŲ", report)
+        self.assertNotIn("**Patikrinti:** Temų radaras", report)
+        self.assertIn("Nerasta veiksmų reikalaujančių būsenų.", report)
+
     def test_success_and_running_do_not_alert(self):
         self.assertFalse(needs_attention([{"state": "success"}, {"state": "running"}]))
 

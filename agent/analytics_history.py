@@ -73,8 +73,67 @@ def parse_report(report: str, run_id: str, generated_at: str | None = None) -> d
         "ga4_period": ga_period.group(1).strip() if ga_period else None,
         "search_console_status": gsc_status,
         "search_console_period": gsc_period.group(1).strip() if gsc_period else None,
+        "search_console_details": {
+            "sitemap": parse_sitemap_details(report),
+            "priority_url_inspections": parse_priority_url_inspections(report),
+        },
         "metrics": metrics,
     }
+
+
+def parse_sitemap_details(report: str) -> dict:
+    """Extract only aggregate sitemap processing metadata from the report."""
+    marker = "### Svetainės žemėlapis (Search Console)"
+    if marker not in report:
+        return {"status": "unknown"}
+    section = report.split(marker, 1)[1].split("### Google indekso būklė", 1)[0]
+    if "**Nepateiktas:**" in section:
+        status = "not_submitted"
+    elif "Būsena: **pateiktas**" in section:
+        status = "submitted"
+    elif "Pateikimo būsenos patikrinti nepavyko" in section:
+        status = "error"
+    else:
+        status = "unknown"
+
+    path_match = re.search(r"(?:Būsena: \*\*pateiktas\*\*|\*\*Nepateiktas\*\*):? ?\(([^)]+)\)", section)
+    submitted_match = re.search(r"Paskutinį kartą pateiktas:\s*([^\n]+)", section)
+    downloaded_match = re.search(r"Google paskutinį kartą atsisiuntė:\s*([^\n]+)", section)
+    counts_match = re.search(r"URL pateikta / indeksuota:\s*(\d+)\s*/\s*(\d+)", section)
+    pending_match = re.search(r"Laukia apdorojimo:\s*(taip|ne)", section, re.IGNORECASE)
+    return {
+        "status": status,
+        "path": path_match.group(1).strip() if path_match else None,
+        "last_submitted": submitted_match.group(1).strip() if submitted_match else None,
+        "last_downloaded": downloaded_match.group(1).strip() if downloaded_match else None,
+        "submitted_urls": int(counts_match.group(1)) if counts_match else None,
+        "indexed_urls": int(counts_match.group(2)) if counts_match else None,
+        "is_pending": pending_match.group(1).lower() == "taip" if pending_match else None,
+    }
+
+
+def parse_priority_url_inspections(report: str) -> list[dict]:
+    """Extract the small allow-listed priority URL index-state table."""
+    marker = "### Google indekso būklė (svarbiausi puslapiai)"
+    if marker not in report:
+        return []
+    section = report.split(marker, 1)[1].split("## Mokama reklama", 1)[0]
+    inspections = []
+    for line in section.splitlines():
+        if not line.strip().startswith("|"):
+            continue
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        if len(cells) != 6 or cells[0] in {"Puslapis", "---"} or all(set(cell) <= {"-", ":"} for cell in cells):
+            continue
+        inspections.append({
+            "url_path": cells[0],
+            "verdict": cells[1],
+            "coverage": cells[2],
+            "robots_txt_state": cells[3],
+            "indexing_state": cells[4],
+            "last_crawl": cells[5],
+        })
+    return inspections
 
 
 def store_snapshot(snapshot: dict, history_root: Path = HISTORY_ROOT) -> Path:

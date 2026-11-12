@@ -26,6 +26,21 @@ Laikotarpis: 2026-11-03 – 2026-11-09
 | Paspaudimai | 123 | +5 |
 | CTR | 4.9% | +0.2 |
 | Vidutinė pozicija | 10.7 | -1 |
+
+### Svetainės žemėlapis (Search Console)
+- Būsena: **pateiktas** (https://pettraffic-ai.pages.dev/sitemap.xml)
+- Paskutinį kartą pateiktas: 2026-11-12T08:00:00Z
+- Google paskutinį kartą atsisiuntė: 2026-11-12T08:10:00Z
+- URL pateikta / indeksuota: 7 / 4
+- Laukia apdorojimo: ne
+
+### Google indekso būklė (svarbiausi puslapiai)
+| Puslapis | Būsena | Google paaiškinimas | Robots.txt | Indeksavimas | Paskutinis tikrinimas |
+|---|---|---|---|---|---|
+| / | PASS | URL is on Google | ALLOWED | INDEXED | 2026-11-11T10:00:00Z |
+| /articles/example.html | FAIL | Crawled - currently not indexed | ALLOWED | NOT_INDEXED | 2026-11-11T10:05:00Z |
+
+## Mokama reklama
 """
 
 
@@ -39,12 +54,19 @@ class AnalyticsHistoryTests(unittest.TestCase):
         self.assertEqual(item["metrics"]["search_clicks"], 123)
         self.assertAlmostEqual(item["metrics"]["search_ctr"], 0.049)
         self.assertEqual(item["metrics"]["organic_sessions_verified"], 3)
+        self.assertEqual(item["search_console_details"]["sitemap"]["status"], "submitted")
+        self.assertEqual(item["search_console_details"]["sitemap"]["submitted_urls"], 7)
+        self.assertEqual(item["search_console_details"]["sitemap"]["indexed_urls"], 4)
+        self.assertEqual(len(item["search_console_details"]["priority_url_inspections"]), 2)
+        self.assertEqual(item["search_console_details"]["priority_url_inspections"][1]["indexing_state"], "NOT_INDEXED")
         self.assertNotIn("query", json.dumps(item).lower())
 
     def test_marks_missing_metrics_as_null(self):
         item = parse_report("# Pet traffic\nBūsena: neprijungta", "run-2", "2026-11-12T08:00:00Z")
         self.assertEqual(item["ga4_status"], "not_connected")
         self.assertIsNone(item["metrics"]["sessions"])
+        self.assertEqual(item["search_console_details"]["sitemap"]["status"], "unknown")
+        self.assertEqual(item["search_console_details"]["priority_url_inspections"], [])
 
     def test_stores_and_deduplicates_run(self):
         with tempfile.TemporaryDirectory() as directory:

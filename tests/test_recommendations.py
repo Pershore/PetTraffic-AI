@@ -77,6 +77,52 @@ class RecommendationTests(unittest.TestCase):
             self.assertIn("analytics-baseline", ids)
             self.assertIn("topic-baseline", ids)
 
+    def test_unsubmitted_sitemap_creates_high_priority_recommendation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            item = self.analytics("run-1", impressions=4, clicks=0)
+            item["search_console_details"] = {
+                "sitemap": {"status": "not_submitted"},
+                "priority_url_inspections": [],
+            }
+            save(root, "analytics", "2026-11-11", [item])
+            recommendations = build_recommendations(root)
+            sitemap = next(x for x in recommendations if x["id"] == "sitemap-not-submitted")
+            self.assertEqual(sitemap["priority"], "high")
+
+    def test_sitemap_indexing_gap_creates_medium_recommendation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            item = self.analytics("run-1", impressions=4, clicks=0)
+            item["search_console_details"] = {
+                "sitemap": {"status": "submitted", "submitted_urls": 7, "indexed_urls": 4},
+                "priority_url_inspections": [],
+            }
+            save(root, "analytics", "2026-11-11", [item])
+            recommendations = build_recommendations(root)
+            gap = next(x for x in recommendations if x["id"] == "sitemap-indexing-gap")
+            self.assertEqual(gap["priority"], "medium")
+
+    def test_blocked_priority_url_creates_high_priority_recommendation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            item = self.analytics("run-1", impressions=4, clicks=0)
+            item["search_console_details"] = {
+                "sitemap": {"status": "submitted"},
+                "priority_url_inspections": [{
+                    "url_path": "/important.html",
+                    "verdict": "FAIL",
+                    "coverage": "Blocked by robots.txt",
+                    "robots_txt_state": "DISALLOWED",
+                    "indexing_state": "BLOCKED_BY_ROBOTS_TXT",
+                    "last_crawl": "Never",
+                }],
+            }
+            save(root, "analytics", "2026-11-11", [item])
+            recommendations = build_recommendations(root)
+            blocked = next(x for x in recommendations if x["id"] == "priority-url-blocked")
+            self.assertEqual(blocked["priority"], "high")
+
 
 if __name__ == "__main__":
     unittest.main()
