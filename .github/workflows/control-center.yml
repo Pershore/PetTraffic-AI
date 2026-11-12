@@ -151,6 +151,8 @@ jobs:
           rm -rf reports/history
           git fetch origin automation-history
           git checkout -B automation-history origin/automation-history
+          # Keep this public branch limited to aggregate history, not stale site or source files.
+          git ls-files -z | python -c 'import sys; paths=sys.stdin.buffer.read().split(b"\\0"); [sys.stdout.buffer.write(p+b"\\0") for p in paths if p and not p.startswith(b"reports/history/")]' | xargs -0 -r git rm -f --
           mkdir -p reports/history
           cp -R /tmp/pettraffic-history/control-center reports/history/
           cp -R /tmp/pettraffic-history/recommendations reports/history/
