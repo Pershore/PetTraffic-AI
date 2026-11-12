@@ -48,3 +48,18 @@ test("control core persists decision and compact memory in D1", async () => {
 test("control core refuses persistence without D1", async () => {
   await assert.rejects(() => persistControlDecision({}, { run_date: "2026-11-13" }), /database_missing/);
 });
+
+test("specialist evidence gaps cannot be hidden by an empty coordinator response", () => {
+  const decision = buildControlDecision({
+    date_utc: "2026-11-13",
+    specialists: { analytics: { status: "needs_data", evidence_gaps: ["GA4 snapshot missing"] } },
+    coordinator: { findings: [], recommendations: [], evidence_gaps: [] },
+  });
+  assert.equal(decision.status, "needs_evidence");
+  assert.ok(decision.evidence_gaps.some(gap => gap.includes("GA4 snapshot missing")));
+});
+
+test("control core rejects invalid dates and malformed persistence payloads", async () => {
+  const decision = buildControlDecision({ date_utc: "not-a-date", coordinator: {} });
+  await assert.rejects(() => persistControlDecision({ DB: { prepare() { throw new Error("should_not_prepare"); } } }, decision), /run_date_invalid/);
+});
