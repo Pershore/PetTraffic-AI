@@ -92,6 +92,18 @@ def priority_urls(site_url: str) -> list[str]:
     return list(dict.fromkeys(urls))[:10]
 
 
+def gsc_metric(data: dict, key: str) -> float | None:
+    """Return a Search Console metric only when Google supplied an aggregate row."""
+    rows = data.get("rows") or []
+    if not rows:
+        return None
+    return float(rows[0].get(key, 0))
+
+
+def fmt_gsc(value: float | None) -> str:
+    return "Duomenų nėra" if value is None else fmt(value)
+
+
 def fmt(value: float) -> str:
     return f"{value:,.0f}".replace(",", " ")
 
@@ -191,9 +203,13 @@ def main() -> int:
 
         channels = ga_rows(
             session, ga_url, ga_start, ga_end, ["sessions"],
-            ["sessionDefaultChannelGroup"], limit=10,
+            ["sessionDefaultChannelGroup"], limit=50,
         )
         lines += ["", "### Sesijos pagal kanalą", "", "| Kanalas | Sesijos |", "|---|---:|"]
+        if channels.get("metadata", {}).get("dataLossFromOtherRow"):
+            lines.append("_Dalis kanalų sujungta į „(other)“ dėl didelio dimensijos reikšmių skaičiaus._")
+        if channels.get("metadata", {}).get("subjectToThresholding"):
+            lines.append("_Google taiko duomenų slenkstį; kanalų suma gali nesutapti su bendru rodikliu._")
         organic_sessions = 0.0
         channel_sessions_total = 0.0
         for row in channels.get("rows", []):
@@ -232,8 +248,10 @@ def main() -> int:
             # Search Console uses its own, deliberately delayed reporting window.
             gsc_current = gsc_query(session, gsc_url, gsc_start, gsc_end)
             gsc_previous = gsc_query(session, gsc_url, gsc_prev_start, gsc_prev_end)
-            gsc_now = (gsc_current.get("rows") or [{}])[0]
-            gsc_old = (gsc_previous.get("rows") or [{}])[0]
+            gsc_now = gsc_current.get("rows") or []
+            gsc_old = gsc_previous.get("rows") or []
+            gsc_now = gsc_now[0] if gsc_now else None
+            gsc_old = gsc_old[0] if gsc_old else None
             lines += [
                 "",
                 "## Google paieška (Search Console)",
@@ -247,16 +265,19 @@ def main() -> int:
                 ("impressions", "Paieškos parodymai"),
                 ("clicks", "Paspaudimai"),
             ):
-                now_value = float(gsc_now.get(key, 0))
-                old_value = float(gsc_old.get(key, 0))
-                lines.append(f"| {label} | {fmt(now_value)} | {delta(now_value, old_value)} |")
-            now_ctr = float(gsc_now.get("ctr", 0))
-            old_ctr = float(gsc_old.get("ctr", 0))
-            now_pos = float(gsc_now.get("position", 0))
-            old_pos = float(gsc_old.get("position", 0))
+                now_value = float(gsc_now.get(key, 0)) if gsc_now is not None else None
+                old_value = float(gsc_old.get(key, 0)) if gsc_old is not None else None
+                change = delta(now_value, old_value) if now_value is not None and old_value is not None else "nėra duomenų palyginimui"
+                lines.append(f"| {label} | {fmt_gsc(now_value)} | {change} |")
+            now_ctr = float(gsc_now.get("ctr", 0)) if gsc_now is not None else None
+            old_ctr = float(gsc_old.get("ctr", 0)) if gsc_old is not None else None
+            now_pos = float(gsc_now.get("position", 0)) if gsc_now is not None else None
+            old_pos = float(gsc_old.get("position", 0)) if gsc_old is not None else None
+            ctr_change = f"{((now_ctr-old_ctr)*100):+.2f} proc. punkto" if now_ctr is not None and old_ctr is not None else "nėra duomenų palyginimui"
+            pos_change = f"{now_pos-old_pos:+.1f} poz." if now_pos is not None and old_pos is not None else "nėra duomenų palyginimui"
             lines += [
-                f"| CTR | {now_ctr:.1%} | {((now_ctr-old_ctr)*100):+.2f} proc. punkto |",
-                f"| Vidutinė pozicija | {now_pos:.1f} | {now_pos-old_pos:+.1f} poz. |",
+                f"| CTR | {now_ctr:.1%} | {ctr_change} |" if now_ctr is not None else "| CTR | Duomenų nėra | nėra duomenų palyginimui |",
+                f"| Vidutinė pozicija | {now_pos:.1f} | {pos_change} |" if now_pos is not None else "| Vidutinė pozicija | Duomenų nėra | nėra duomenų palyginimui |",
                 "",
                 "### Populiariausios Google paieškos užklausos",
                 "",
