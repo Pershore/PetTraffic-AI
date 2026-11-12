@@ -248,10 +248,6 @@ def main() -> int:
             # Search Console uses its own, deliberately delayed reporting window.
             gsc_current = gsc_query(session, gsc_url, gsc_start, gsc_end)
             gsc_previous = gsc_query(session, gsc_url, gsc_prev_start, gsc_prev_end)
-            gsc_now = gsc_current.get("rows") or []
-            gsc_old = gsc_previous.get("rows") or []
-            gsc_now = gsc_now[0] if gsc_now else None
-            gsc_old = gsc_old[0] if gsc_old else None
             lines += [
                 "",
                 "## Google paieška (Search Console)",
@@ -265,14 +261,14 @@ def main() -> int:
                 ("impressions", "Paieškos parodymai"),
                 ("clicks", "Paspaudimai"),
             ):
-                now_value = float(gsc_now.get(key, 0)) if gsc_now is not None else None
-                old_value = float(gsc_old.get(key, 0)) if gsc_old is not None else None
+                now_value = gsc_metric(gsc_current, key)
+                old_value = gsc_metric(gsc_previous, key)
                 change = delta(now_value, old_value) if now_value is not None and old_value is not None else "nėra duomenų palyginimui"
                 lines.append(f"| {label} | {fmt_gsc(now_value)} | {change} |")
-            now_ctr = float(gsc_now.get("ctr", 0)) if gsc_now is not None else None
-            old_ctr = float(gsc_old.get("ctr", 0)) if gsc_old is not None else None
-            now_pos = float(gsc_now.get("position", 0)) if gsc_now is not None else None
-            old_pos = float(gsc_old.get("position", 0)) if gsc_old is not None else None
+            now_ctr = gsc_metric(gsc_current, "ctr")
+            old_ctr = gsc_metric(gsc_previous, "ctr")
+            now_pos = gsc_metric(gsc_current, "position")
+            old_pos = gsc_metric(gsc_previous, "position")
             ctr_change = f"{((now_ctr-old_ctr)*100):+.2f} proc. punkto" if now_ctr is not None and old_ctr is not None else "nėra duomenų palyginimui"
             pos_change = f"{now_pos-old_pos:+.1f} poz." if now_pos is not None and old_pos is not None else "nėra duomenų palyginimui"
             lines += [
