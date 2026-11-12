@@ -15,11 +15,16 @@ Sujungti esamas automatizacijas į vieną valdymo sluoksnį, kuris parodo sistem
 - Aptikus klaidą, pasenusį ar neaiškų procesą sukuriamas arba atnaujinamas vienas GitHub įspėjimas; po atsistatymo jis automatiškai uždaromas.
 - Pirmo paleidimo būsena „nėra paleidimų“ pati savaime nesukuria klaidingo įspėjimo.
 - Ataskaita išsaugoma GitHub Actions artefakte 90 dienų.
+- Kiekvieno suplanuoto paleidimo agreguota būklė archyvuojama atskiroje `automation-history` šakoje (`reports/history/control-center/YYYY-MM-DD.json`); keli tos pačios dienos paleidimai išsaugomi, pakartotinis tas pats paleidimas nedubliuojamas.
+- Istorijoje saugomi tik darbo eigų pavadinimai, būsenos, techninės pastabos, paleidimų nuorodos ir datos; lankytojų duomenys bei paslaptys nerenkami.
 - Jokie pakeitimai svetainėje ar main šakoje neatliekami.
 
 ### 2 etapas – ilgalaikė atmintis
 
-Kai patvirtinsime, kad pirmasis etapas patikimai veikia, pridėsime struktūruotą istoriją: datą, rodiklius, klaidas, pasiūlymus, pakeitimus ir vėlesnius rezultatus. Pradžioje galima naudoti GitHub artefaktus / versijuojamus JSON išrašus; istorinių duomenų apimtį ir saugojimo trukmę reikės sąmoningai valdyti.
+- Pradinis istorijos sluoksnis: valdymo centro paleidimų ir automatizacijų būsenų JSON archyvas `automation-history` šakoje.
+- Kitas šio etapo plėtinys: agreguotų GA4 / Search Console rodiklių savaitiniai įrašai, techninių klaidų pasikartojimo istorija, rekomendacijų registras ir pakeitimų rezultatų palyginimas.
+- Archyvas laikomas atskiroje šakoje, kad istorijos įrašai nekeistų `main` svetainės šaltinių ir nekeltų nereikalingų Cloudflare Pages publikavimų.
+- Istorijoje nerenkami atskirų lankytojų duomenys, paieškos užklausų tekstai ar paslaptys.
 
 ### 3 etapas – Cloudflare Worker + D1
 
