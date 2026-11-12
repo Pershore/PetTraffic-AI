@@ -3,6 +3,31 @@ name: Pet traffic central control center
 on:
   schedule:
     - cron: "0 8 * * *"
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - "agent/control_center.py"
+      - "agent/history_store.py"
+      - "agent/recommendations.py"
+      - "agent/analytics_history.py"
+      - "agent/topic_history.py"
+      - "agent/topic_radar.py"
+      - "agent/site_monitor.py"
+      - "agent/summarize_lighthouse.py"
+      - "worker/**"
+      - "tests/test_control_center.py"
+      - "tests/test_history_store.py"
+      - "tests/test_analytics_history.py"
+      - "tests/test_topic_history.py"
+      - "tests/test_recommendations.py"
+      - ".github/workflows/control-center.yml"
+      - ".github/workflows/analytics-snapshot.yml"
+      - ".github/workflows/daily-topic-radar.yml"
+      - ".github/workflows/live-site-monitor.yml"
+      - ".github/workflows/lighthouse-audit.yml"
+      - ".github/workflows/sync-control-api.yml"
+      - ".github/workflows/deploy-control-api.yml"
   workflow_dispatch:
   pull_request:
     branches: [main]
