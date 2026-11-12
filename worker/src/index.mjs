@@ -111,6 +111,22 @@ async function handle(request, env) {
   if (!env.API_TOKEN) return response({ error: "api_token_not_configured" }, 503, origin);
   if (!(await authorized(request, env))) return response({ error: "unauthorized" }, 401, origin);
 
+  if (url.pathname === "/v1/events" && request.method === "GET") {
+    const kind = url.searchParams.get("kind");
+    if (kind && !ALLOWED_EVENT_KINDS.has(kind)) return response({ error: "invalid_event_kind" }, 400, origin);
+    const rows = await env.DB.prepare(
+      "SELECT id, kind, payload_json, created_at FROM events WHERE (? IS NULL OR kind = ?) ORDER BY created_at DESC LIMIT 100"
+    ).bind(kind, kind).all();
+    return response({
+      events: (rows.results || []).map(row => ({
+        id: row.id,
+        kind: row.kind,
+        payload: JSON.parse(row.payload_json),
+        created_at: row.created_at,
+      })),
+    }, 200, origin);
+  }
+
   if (url.pathname === "/v1/events" && request.method === "POST") {
     const parsed = await readJson(request);
     if (parsed.error) return response({ error: parsed.error }, 413, origin);
@@ -152,10 +168,10 @@ async function handle(request, env) {
     const agent = parsed.value?.agent;
     if (!ALLOWED_AGENTS.has(agent)) return response({ error: "invalid_agent" }, 400, origin);
     const task = await env.DB.prepare(
-      "UPDATE tasks SET status = 'running', claimed_by = ?, claimed_at = ? " +
-      "WHERE id = (SELECT id FROM tasks WHERE status = 'queued' AND assigned_agent IN (?, 'coordinator') " +
+      "UPDATE tasks SET status = 'running', claimed_by = ?, claimed_at = ?, attempt_count = attempt_count + 1 " +
+      "WHERE id = (SELECT id FROM tasks WHERE (status = 'queued' OR (status = 'running' AND claimed_at < ?)) AND assigned_agent IN (?, 'coordinator') " +
       "ORDER BY priority DESC, created_at ASC LIMIT 1) RETURNING id, task_type, assigned_agent, priority, payload_json, created_at"
-    ).bind(agent, new Date().toISOString(), agent).first();
+    ).bind(agent, new Date().toISOString(), new Date(Date.now() - 30 * 60 * 1000).toISOString(), agent).first();
     if (!task) return response({ task: null }, 200, origin);
     return response({
       task: {
