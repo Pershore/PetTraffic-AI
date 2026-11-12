@@ -2,7 +2,7 @@ name: Pet traffic analytics snapshot
 
 on:
   schedule:
-    - cron: "20 6 * * *"
+    - cron: "43 6 * * *"
   workflow_dispatch:
 
 permissions:
