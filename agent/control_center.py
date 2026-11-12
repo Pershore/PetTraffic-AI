@@ -14,6 +14,7 @@ REPO = os.environ.get("GITHUB_REPOSITORY", "Pershore/PetTraffic-AI")
 TOKEN = os.environ.get("GITHUB_TOKEN", "").strip()
 WORKFLOWS = [
     ("analytics-snapshot.yml", "GA4 ir Search Console", 36),
+    ("sync-control-api.yml", "Centrinės API sinchronizavimas", 36),
     ("daily-topic-radar.yml", "Temų radaras", 36),
     ("live-site-monitor.yml", "Svetainės stebėjimas", 36),
     ("lighthouse-audit.yml", "Lighthouse auditas", 9 * 24),
