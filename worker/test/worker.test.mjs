@@ -35,9 +35,9 @@ globalThis.fetch = async () => new Response(JSON.stringify({ keys: [jwk] }), { s
 const env = {
   ALLOWED_ORIGIN: "https://pettraffic-ai.pages.dev",
   DB: {
-    prepare() {
+    prepare(sql) {
       return {
-        first: async () => ({ ok: 1 }),
+        first: async () => sql.includes("system_heartbeats") ? null : ({ ok: 1 }),
         bind() {
           return {
             run: async () => ({ meta: { changes: 1 } }),
@@ -57,6 +57,34 @@ test("health endpoint confirms database connectivity without exposing secrets", 
     ok: true,
     service: "pettraffic-control-api",
     database: "connected",
+    heartbeat: null,
+  });
+});
+
+test("health endpoint exposes the latest scheduled heartbeat", async () => {
+  const heartbeat = {
+    checked_at: "2026-11-12T10:15:00.000Z",
+    site_ok: 1,
+    site_status: 200,
+    database_ok: 1,
+  };
+  const heartbeatEnv = {
+    ...env,
+    DB: {
+      prepare(sql) {
+        return {
+          first: async () => sql.includes("system_heartbeats") ? heartbeat : ({ ok: 1 }),
+        };
+      },
+    },
+  };
+  const response = await worker.fetch(new Request("https://api.example/health"), heartbeatEnv);
+  assert.equal(response.status, 200);
+  assert.deepEqual((await response.json()).heartbeat, {
+    checked_at: heartbeat.checked_at,
+    site_ok: true,
+    site_status: 200,
+    database_ok: true,
   });
 });
 
