@@ -9,6 +9,9 @@ database_name = "pettraffic-control"
 database_id = "REPLACE_WITH_D1_DATABASE_ID"
 migrations_dir = "migrations"
 
+[ai]
+binding = "AI"
+
 [vars]
 ALLOWED_ORIGIN = "https://pettraffic-ai.pages.dev"
 
@@ -18,4 +21,4 @@ enabled = true
 
 # Lightweight 24/7 operational heartbeat; UTC, every 15 minutes.
 [triggers]
-crons = ["*/15 * * * *"]
+crons = ["*/15 * * * *", "20 8 * * *"]
