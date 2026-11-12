@@ -58,7 +58,7 @@ def main() -> int:
                 body["dimensions"] = dimensions
             response = session.post(endpoint, json=body, timeout=30)
             if not response.ok:
-                detail = response.text[:1200].replace("\\n", " ")
+                detail = response.text[:1200].replace("\n", " ")
                 raise RuntimeError(
                     f"Search Console API HTTP {response.status_code}: {detail}"
                 )
@@ -139,8 +139,8 @@ def main() -> int:
         return 0
     except Exception as exc:
         OUT.write_text(
-            "# ARO Vet – Google Search Console ataskaita\\n\\n"
-            "## Būsena: klaida\\n\\n"
+            "# ARO Vet – Google Search Console ataskaita\n\n"
+            "## Būsena: klaida\n\n"
             f"Google Search Console užklausa nepavyko: {type(exc).__name__}: {exc}\n",
             encoding="utf-8",
         )
