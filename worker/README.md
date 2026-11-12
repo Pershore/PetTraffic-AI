@@ -7,6 +7,7 @@ This is an isolated Cloudflare Worker + D1 control API scaffold. It does not cha
 The API provides:
 - `GET /health` – verifies the Worker can query D1.
 - `POST /v1/events` – stores allow-listed aggregate snapshots.
+- `GET /v1/events` – reads the latest 100 aggregate events (optionally filtered by kind).
 - `POST /v1/tasks` – queues an allow-listed read-only task.
 - `POST /v1/tasks/claim` – atomically claims the next task for a specialist.
 - `POST /v1/tasks/{id}/complete` – records a task result for the claiming specialist.
@@ -35,10 +36,12 @@ Deployment is intentionally manual until the owner creates the D1 database and c
    - Secret `CLOUDFLARE_API_TOKEN`
    - Variable `CLOUDFLARE_ACCOUNT_ID`
    - Variable `PETTRAFFIC_D1_DATABASE_ID`
-5. In the Cloudflare Worker settings after first deploy, add secret `API_TOKEN` with a new long random value. Add it only after the Worker is deployed; never paste it into chat or commit it.
-6. Run **Actions → Deploy PetTraffic control API → Run workflow**. The workflow applies the D1 migration and deploys only this separate Worker.
+5. Create an empty Worker named `pettraffic-control-api` in the Cloudflare Dashboard first. This allows the deployment token to be scoped to this Worker rather than granting account-wide Worker creation rights.
+6. Create a custom API token scoped to the target account with **Workers Editor** for this Worker, **D1 Edit** for this database, and (only if Wrangler account discovery requires it) **Account Settings Read**. Do not grant Pages, DNS, Routes, or Global API Key access. Cloudflare documents Worker-scoped Editor access for deploying an existing Worker and D1 access for direct database operations. <https://developers.cloudflare.com/workers/authorization/> <https://developers.cloudflare.com/fundamentals/api/reference/permissions/>
+7. In GitHub repository **Settings → Secrets and variables → Actions**, add the secret and variables listed above.
+8. Run **Actions → Deploy PetTraffic control API → Run workflow**. The workflow applies the D1 migration and deploys only this separate Worker.
 
-The Worker has no production route/custom domain configured in this phase. After deployment, it receives the default `.workers.dev` address. Existing Pages deployment and DNS remain untouched.
+The Worker has no production route/custom domain configured in this phase. It uses the default `.workers.dev` address if enabled for the account. Existing Pages deployment and DNS remain untouched. After deployment, add the Worker secret `API_TOKEN` in its Cloudflare settings with a new long random value; never paste it into chat or commit it.
 
 ## Cost and rollout
 
