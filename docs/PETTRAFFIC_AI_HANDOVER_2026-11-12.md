@@ -1,9 +1,9 @@
 # PetTraffic AI — techninė perdavimo būsena
 
-**Atnaujinta:** 2026-11-13 01:10 Europe/Vilnius  
+**Atnaujinta:** 2026-11-13 01:20 Europe/Vilnius  
 **Saugykla:** `Pershore/PetTraffic-AI`  
 **Pagrindinė šaka:** `main`  
-**Paskutinis žinomas commit:** `fba60e6` (pilnas SHA: `fba60e6fb09c40c43fe5a5c1a2147efa862b0477`)
+**Paskutinis žinomas commit:** `2cdd79c` (pilnas SHA: `2cdd79c51cf15bf1ccef715d48884ce20332debd`)
 
 ## Nekintančios saugumo taisyklės
 
@@ -114,6 +114,34 @@
 ### Dar nepatvirtinta gyvoje Cloudflare aplinkoje
 
 - PR patikros tyčia praleido Worker deploy darbą (deploy job: skipped). Pakeitimų sujungimas į `main` turėtų sukelti automatinį deploy pagal `.github/workflows/deploy-control-api.yml`, nes pakeisti Worker kodas ir migracijos.
-- Šio tęsinio metu negautas patikimas post-merge deploy run rezultatas, todėl **nežymėti D1 migracijos 0003 ar naujo Worker kodo kaip gyvai aktyvuotų**.
-- Privaloma patvirtinti deploy sėkmę, `GET /health` atsakymą su `database: connected`, neautentifikuoto `/v1/events` HTTP 401 ir pirmą realų suplanuotą AI vykdymą su įrašais abiejose control-core D1 lentelėse.
+- PR #110 sujungtas; post-merge deploy workflow #50 (`43326328356`) sėkmingai įvykdė testus, Cloudflare prieigos validaciją, D1 migracijas ir Worker diegimą.
+- Gyvas `GET /health` patvirtintas HTTP 200 su `database: connected` ir `control_core_schema: connected`; gyvas neautentifikuotas `/v1/events` grąžina HTTP 401. D1 migracija 0003 ir naujas Worker kodas laikomi aktyvuotais.
+- Dar reikia sulaukti pirmo 10:20 Europe/Vilnius suplanuoto AI vykdymo ir patikrinti, kad `control_core_runs` bei `control_core_memory` gavo realius įrašus.
 - Task API lieka išjungta; atskiras agentų OIDC identitetas, agentų užduočių claim/complete ir platesnės autonominės teisės dar neįjungti.
+
+
+### Papildomas patikimumo patobulinimas — PR #110
+
+- PR #110 sujungtas: https://github.com/Pershore/PetTraffic-AI/pull/110
+- `GET /health` dabar tikrina ne tik D1 ryšį, bet ir abi valdymo branduolio lenteles (`control_core_runs`, `control_core_memory`). Trūkstant migracijų, sveikatos patikra grąžina HTTP 503.
+- Diegimo smoke testas reikalauja `control_core_schema: connected`; taip ateityje negalėsime klaidingai paskelbti Worker sveiku, jei trūktų naujos schemos.
+- PR #110 Node.js testai, Python testai ir Cloudflare validacija praėjo. Post-merge Worker deploy run #50: test, validate-cloudflare ir deploy — visi `success`.
+- Gyvas Worker patikrintas po diegimo: `/health` HTTP 200, `database=connected`, `control_core_schema=connected`; `/v1/events` be OIDC — HTTP 401.
+
+## Dabartinis statusas 2026-11-13
+
+**Atlikta ir patikrinta**
+- Atskiras AI valdymo branduolys sujungtas į `main` (PR #108) ir įdiegtas į Cloudflare Worker.
+- D1 migracija 0003 pritaikyta; gyvas health endpoint patvirtina abi control-core lenteles.
+- 10:20 Europe/Vilnius grafiko logika sujungta į `main` (PR #109), testai apima žiemos ir vasaros laiką.
+- Health endpoint + deploy smoke testas sustiprinti (PR #110).
+- CI aptiko ir prieš sujungimą pataisė datos regex klaidą; vėlesni Worker Node.js/Python testai sėkmingi.
+
+**Paruošta, bet dar nepatvirtinta realiu ciklu**
+- Pirmas suplanuotas 10:20 agentų vykdymas pagal naują grafiką.
+- Realus įrašas į `control_core_runs` ir `control_core_memory` po AI analizės.
+- Agentų ataskaitos kokybė, realūs GA4/GSC duomenų pakankamumo vertinimai ir klaidų elgsena su tikrais Workers AI atsakymais.
+
+**Sąmoningai išjungta / neleidžiama**
+- Vieša task API, agentų užduočių claim/complete.
+- Automatinis turinio publikavimas, svetainės keitimas, DNS keitimas, ARO Vet pakeitimai, mokami API ir Cloudflare teisių keitimas.
