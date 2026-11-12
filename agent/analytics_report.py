@@ -8,6 +8,7 @@ from urllib.parse import quote
 import json
 import os
 import sys
+import xml.etree.ElementTree as ET
 
 OUT = Path("reports/analytics-7d.md")
 
@@ -49,6 +50,33 @@ def gsc_query(session, url: str, start: date, end: date,
     if dimensions:
         body["dimensions"] = dimensions
     return api_post(session, url, body)
+
+
+
+def gsc_inspect(session, url: str, site_url: str) -> dict:
+    endpoint = "https://searchconsole.googleapis.com/v1/urlInspection/index:inspect"
+    return api_post(session, endpoint, {
+        "inspectionUrl": url,
+        "siteUrl": site_url,
+        "languageCode": "lt",
+    })
+
+
+def priority_urls(site_url: str) -> list[str]:
+    sitemap = Path("site/sitemap.xml")
+    urls = [site_url]
+    if sitemap.exists():
+        try:
+            root = ET.parse(sitemap).getroot()
+            ns = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+            article_urls = [
+                node.text.strip() for node in root.findall("sm:url/sm:loc", ns)
+                if node.text and "/articles/" in node.text
+            ]
+            urls.extend(article_urls)
+        except (ET.ParseError, OSError):
+            pass
+    return list(dict.fromkeys(urls))[:10]
 
 
 def fmt(value: float) -> str:
@@ -243,6 +271,32 @@ def main() -> int:
                     )
             else:
                 lines.append("_Search Console puslapių eilučių nepateikė._")
+
+            lines += ["", "### Google indekso būklė (svarbiausi puslapiai)", ""]
+            lines += [
+                "| Puslapis | Būsena | Google paaiškinimas | Robots.txt | Indeksavimas | Paskutinis tikrinimas |",
+                "|---|---|---|---|---|---|",
+            ]
+            for inspected_url in priority_urls(gsc_site):
+                try:
+                    inspection = gsc_inspect(session, inspected_url, gsc_site).get("inspectionResult", {})
+                    status = inspection.get("indexStatusResult", {})
+                    path_label = inspected_url.replace(gsc_site.rstrip("/"), "") or "/"
+                    coverage = status.get("coverageState", "Google duomenų dar nėra")
+                    last_crawl = status.get("lastCrawlTime", "Dar netikrinta")
+                    canonical = status.get("googleCanonical", "")
+                    if canonical:
+                        coverage += f" (Google canonical: {canonical})"
+                    lines.append(
+                        f"| {path_label} | {status.get('verdict', 'UNKNOWN')} | "
+                        f"{coverage.replace('|', '/')} | {status.get('robotsTxtState', 'UNKNOWN')} | "
+                        f"{status.get('indexingState', 'UNKNOWN')} | {last_crawl} |"
+                    )
+                except Exception as inspect_exc:
+                    lines.append(
+                        f"| {inspected_url} | Nepavyko patikrinti | "
+                        f"{type(inspect_exc).__name__}: {str(inspect_exc)[:180].replace('|', '/')} | – | – | – |"
+                    )
 
             lines += [
                 "",
