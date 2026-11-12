@@ -160,6 +160,8 @@ async function handle(request, env) {
     if (!env.DB) return response({ ok: false, error: "database_not_bound" }, 503, origin);
     try {
       await env.DB.prepare("SELECT 1 AS ok").first();
+      await env.DB.prepare("SELECT 1 AS ok FROM control_core_runs LIMIT 1").first();
+      await env.DB.prepare("SELECT 1 AS ok FROM control_core_memory LIMIT 1").first();
       const heartbeat = await env.DB.prepare(
         "SELECT checked_at, site_ok, site_status, database_ok FROM system_heartbeats ORDER BY checked_at DESC LIMIT 1"
       ).first();
@@ -167,6 +169,7 @@ async function handle(request, env) {
         ok: true,
         service: "pettraffic-control-api",
         database: "connected",
+        control_core_schema: "connected",
         heartbeat: heartbeat ? {
           checked_at: heartbeat.checked_at,
           site_ok: Number(heartbeat.site_ok) === 1,
