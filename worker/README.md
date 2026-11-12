@@ -6,7 +6,7 @@ This is an isolated Cloudflare Worker + D1 control API scaffold. It does not cha
 
 The API provides:
 - `GET /health` – verifies the Worker can query D1 and returns the latest 15-minute site/D1 heartbeat (or `heartbeat: null` before the first scheduled check).
-- `POST /v1/events` – stores allow-listed aggregate snapshots.
+- `POST /v1/events` – stores allow-listed aggregate snapshots and deduplicates repeated submissions by event kind and source workflow run ID.
 - `GET /v1/events` – reads the latest 100 aggregate events (optionally filtered by kind).
 - `POST /v1/tasks`, `POST /v1/tasks/claim`, and `POST /v1/tasks/{id}/complete` – scaffolded for future agents; intentionally return `503 task_api_not_enabled` until a separate agent identity and authorization policy are implemented.
 
