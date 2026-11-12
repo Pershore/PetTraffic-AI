@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS tasks (
   status TEXT NOT NULL DEFAULT 'queued' CHECK (status IN ('queued', 'running', 'completed', 'failed')),
   claimed_by TEXT,
   claimed_at TEXT,
+  attempt_count INTEGER NOT NULL DEFAULT 0,
   result_json TEXT,
   created_at TEXT NOT NULL,
   completed_at TEXT
