@@ -27,7 +27,7 @@ def parse_time(value: str) -> datetime:
 
 def evaluate_workflow(name: str, runs: list[dict], now: datetime, max_age_hours: int) -> dict:
     if not runs:
-        return {"name": name, "state": "missing", "detail": "Nerasta nė vieno paleidimo.", "url": None, "created_at": None}
+        return {"name": name, "state": "missing", "detail": "Dar nėra pirmo užregistruoto paleidimo; laukiama artimiausio suplanuoto ciklo.", "url": None, "created_at": None}
     latest = max(runs, key=lambda item: item.get("created_at", ""))
     created_raw = latest.get("created_at", "")
     try:
@@ -134,7 +134,7 @@ def needs_attention(results: list[dict]) -> bool:
     return any(item["state"] in ("failure", "api_error", "stale", "warning", "unknown") for item in results)
 
 def render(results: list[dict], generated: datetime) -> str:
-    labels = {"success":"GERAI","failure":"KLAIDA","warning":"ĮSPĖJIMAS","stale":"PASENĘ","missing":"NĖRA PALEIDIMŲ","running":"VYKDOMA","unknown":"NEAIŠKU","api_error":"API KLAIDA"}
+    labels = {"success":"GERAI","failure":"KLAIDA","warning":"ĮSPĖJIMAS","stale":"PASENĘ","missing":"LAUKIAMA PIRMŲ CIKLŲ","running":"VYKDOMA","unknown":"NEAIŠKU","api_error":"API KLAIDA"}
     lines = [
         "# Pet traffic – centrinis valdymo skydelis", "",
         f"Atnaujinta: {generated.astimezone(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}",
@@ -148,7 +148,7 @@ def render(results: list[dict], generated: datetime) -> str:
             note += f" [Paleidimas]({item['url']})"
         lines.append(f"| {item['name']} | **{labels.get(item['state'], item['state'].upper())}** | {note} |")
     failures = [x for x in results if x["state"] in ("failure", "api_error")]
-    warnings = [x for x in results if x["state"] in ("warning", "stale", "missing", "unknown")]
+    warnings = [x for x in results if x["state"] in ("warning", "stale", "unknown")]
     running = [x for x in results if x["state"] == "running"]
     lines += ["", "## Prioritetai", ""]
     if failures: lines.append("1. **Skubu:** patikrinti nepavykusius modulius: " + ", ".join(x["name"] for x in failures) + ".")
