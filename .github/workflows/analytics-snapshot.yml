@@ -12,6 +12,11 @@ on:
 permissions:
   contents: read
 
+# Avoid overlapping snapshots when several analytics fixes land close together.
+concurrency:
+  group: pettraffic-analytics-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   analytics:
     runs-on: ubuntu-latest
