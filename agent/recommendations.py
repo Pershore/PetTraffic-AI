@@ -107,6 +107,70 @@ def build_recommendations(history_root: Path = HISTORY_ROOT) -> list[dict]:
                     "Palikti kasdienį rinkimą veikti ir palyginti kitą užbaigtą Search Console laikotarpį.",
                 )
 
+        details = latest.get("search_console_details", {})
+        sitemap = details.get("sitemap", {})
+        if sitemap.get("status") == "not_submitted":
+            add(
+                "sitemap-not-submitted",
+                "high",
+                "Pateikti svetainės žemėlapį Google",
+                "Search Console nuosavybėje nerastas svetainės sitemap.xml pateikimas.",
+                "Search Console pateikti https://pettraffic-ai.pages.dev/sitemap.xml ir kitame cikle patikrinti, ar Google jį atsisiuntė.",
+            )
+        elif sitemap.get("status") == "submitted":
+            submitted = sitemap.get("submitted_urls")
+            indexed = sitemap.get("indexed_urls")
+            if isinstance(submitted, int) and isinstance(indexed, int) and submitted > indexed:
+                add(
+                    "sitemap-indexing-gap",
+                    "medium",
+                    "Patikrinti dar neindeksuotus sitemap URL",
+                    f"Search Console nurodo {indexed} indeksuotų iš {submitted} pateiktų URL.",
+                    "Peržiūrėti prioritetinių URL patikros rezultatus, canonical ir noindex signalus; indeksavimo skirtumo nelaikyti automatine klaida.",
+                )
+            elif sitemap.get("is_pending") is True:
+                add(
+                    "sitemap-processing",
+                    "info",
+                    "Stebėti Google sitemap apdorojimą",
+                    "Search Console nurodo, kad sitemap dar laukia apdorojimo.",
+                    "Pakartotinai patikrinti kitame cikle; sitemap pakartotinai neteikti, jei jis jau pateiktas.",
+                )
+
+        inspections = details.get("priority_url_inspections", [])
+        if isinstance(inspections, list) and inspections:
+            blocked = [
+                item for item in inspections
+                if item.get("robots_txt_state") == "DISALLOWED"
+                or str(item.get("indexing_state", "")).startswith("BLOCKED_BY")
+            ]
+            not_indexed = [
+                item for item in inspections
+                if item not in blocked and (
+                    item.get("verdict") in {"FAIL", "PARTIAL"}
+                    or "currently not indexed" in str(item.get("coverage", "")).lower()
+                    or item.get("indexing_state") == "NOT_INDEXED"
+                )
+            ]
+            if blocked:
+                paths = ", ".join(str(item.get("url_path", "/")) for item in blocked)
+                add(
+                    "priority-url-blocked",
+                    "high",
+                    "Pašalinti svarbių puslapių indeksavimo blokavimą",
+                    f"Google patikroje blokuojami prioritetiniai URL: {paths}.",
+                    "Patikrinti robots.txt, meta robots ir X-Robots-Tag; pakeitimus atlikti tik patvirtinus, kad puslapiai turi būti indeksuojami.",
+                )
+            elif not_indexed:
+                paths = ", ".join(str(item.get("url_path", "/")) for item in not_indexed)
+                add(
+                    "priority-url-not-indexed",
+                    "medium",
+                    "Ištirti svarbius Google neindeksuojamus puslapius",
+                    f"Google patikroje neindeksuojami arba nepatvirtinti prioritetiniai URL: {paths}.",
+                    "Peržiūrėti puslapių turinio unikalumą, canonical, vidines nuorodas ir Search Console paaiškinimą; automatiškai nekeisti turinio.",
+                )
+
         metrics = latest.get("metrics", {})
         if (metrics.get("sessions") or 0) > 0 and metrics.get("organic_sessions_verified") is None:
             add(
