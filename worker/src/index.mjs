@@ -160,6 +160,9 @@ async function handle(request, env) {
 
   if (!url.pathname.startsWith("/v1/")) return response({ error: "not_found" }, 404, origin);
   if (!env.DB) return response({ error: "database_not_bound" }, 503, origin);
+  // The current GitHub OIDC identity is intentionally scoped to snapshot events only.
+  // Task execution needs a separate, dedicated agent identity before these routes can be enabled.
+  if (url.pathname.startsWith("/v1/tasks")) return response({ error: "task_api_not_enabled" }, 503, origin);
   if (!(await authorized(request))) return response({ error: "unauthorized" }, 401, origin);
 
   if (url.pathname === "/v1/events" && request.method === "GET") {
