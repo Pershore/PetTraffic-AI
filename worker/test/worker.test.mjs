@@ -183,3 +183,36 @@ test("CORS rejects origins other than the PetTraffic site", async () => {
   }), env);
   assert.equal(response.status, 403);
 });
+
+
+test("scheduled health check records site and D1 status", async () => {
+  const statements = [];
+  const scheduledEnv = {
+    DB: {
+      prepare(sql) {
+        statements.push(sql);
+        return {
+          first: async () => ({ ok: 1 }),
+          bind(...values) {
+            return { run: async () => ({ meta: { changes: 1 }, values }) };
+          },
+        };
+      },
+    },
+  };
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => new Response("ok", { status: 200 });
+  let scheduledPromise;
+  try {
+    await worker.scheduled(
+      { cron: "*/15 * * * *" },
+      scheduledEnv,
+      { waitUntil(promise) { scheduledPromise = promise; } },
+    );
+    await scheduledPromise;
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+  assert.ok(statements.some(sql => sql.includes("SELECT 1 AS ok")));
+  assert.ok(statements.some(sql => sql.includes("INSERT INTO system_heartbeats")));
+});
