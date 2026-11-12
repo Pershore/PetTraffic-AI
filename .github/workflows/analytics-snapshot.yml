@@ -63,6 +63,8 @@ jobs:
         env:
           GITHUB_RUN_ID: ${{ github.run_id }}
         run: |
+          git fetch origin automation-history
+          git archive origin/automation-history reports/history | tar -x -C .
           python agent/analytics_history.py
           mkdir -p /tmp/pettraffic-history
           cp -R reports/history/analytics /tmp/pettraffic-history/
