@@ -175,11 +175,62 @@ test("valid aggregate snapshots can be accepted using GitHub OIDC", async () => 
       headers: { authorization: "Bearer " + oidcToken(), "content-type": "application/json" },
       body: JSON.stringify({
         kind: "analytics_snapshot",
-        payload: { generated_at: "2026-11-12T10:00:00Z", metrics: { sessions: 4, active_users: 2 } },
+        payload: { run_id: "run-1", generated_at: "2026-11-12T10:00:00Z", metrics: { sessions: 4, active_users: 2 } },
       }),
     }), env);
     assert.equal(response.status, 202);
-    assert.equal((await response.json()).accepted, true);
+    const body = await response.json();
+    assert.equal(body.accepted, true);
+    assert.equal(body.deduplicated, false);
+  });
+});
+
+test("event ingestion deduplicates repeated attempts of the same source workflow run", async () => {
+  await withOidcJwks(async () => {
+    let storedId = null;
+    let writes = 0;
+    const idempotentEnv = {
+      ...env,
+      DB: {
+        prepare(sql) {
+          return {
+            first: async () => sql.includes("json_extract") ? (storedId ? { id: storedId } : null) : ({ ok: 1 }),
+            bind(...values) {
+              return {
+                first: async () => sql.includes("json_extract") ? (storedId ? { id: storedId } : null) : null,
+                run: async () => {
+                  if (sql.includes("INSERT INTO events")) {
+                    writes += 1;
+                    storedId = values[0];
+                  }
+                  return { meta: { changes: 1 } };
+                },
+                all: async () => ({ results: [] }),
+              };
+            },
+          };
+        },
+      },
+    };
+    const send = generatedAt => worker.fetch(new Request("https://api.example/v1/events", {
+      method: "POST",
+      headers: { authorization: "Bearer " + oidcToken(), "content-type": "application/json" },
+      body: JSON.stringify({
+        kind: "analytics_snapshot",
+        payload: { run_id: "same-source-run", generated_at: generatedAt, metrics: { sessions: 4 } },
+      }),
+    }), idempotentEnv);
+
+    const first = await send("2026-11-12T10:00:00Z");
+    const firstBody = await first.json();
+    const second = await send("2026-11-12T10:05:00Z");
+    const secondBody = await second.json();
+    assert.equal(first.status, 202);
+    assert.equal(second.status, 202);
+    assert.equal(firstBody.id, secondBody.id);
+    assert.equal(firstBody.deduplicated, false);
+    assert.equal(secondBody.deduplicated, true);
+    assert.equal(writes, 1);
   });
 });
 test("unknown event kinds are rejected", async () => {
