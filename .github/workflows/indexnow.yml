@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Wait for Cloudflare Pages deployment
-        run: sleep 90
+        run: sleep 45
 
       - name: Validate key and submit sitemap URLs to IndexNow
         env:
@@ -45,7 +45,6 @@ jobs:
           key_location = f"{base}/{key}.txt"
           sitemap_url = f"{base}/sitemap.xml"
 
-          # IndexNow requires the public key file to contain exactly the secret key.
           try:
               with urllib.request.urlopen(key_location, timeout=30) as response:
                   public_key = response.read().decode("utf-8-sig").strip()
