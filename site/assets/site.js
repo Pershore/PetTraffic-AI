@@ -336,9 +336,18 @@
     });
 
     reject.addEventListener('click', () => {
-      saveConsent('rejected');
+      const saved = saveConsent('rejected');
+      // Stop analytics immediately, including when browser storage is unavailable.
+      window['ga-disable-' + GA_ID] = true;
       removeAnalyticsCookies();
-      window.location.reload();
+
+      if (saved) {
+        window.location.reload();
+      } else {
+        // Avoid repeatedly reopening the consent dialog after a failed storage write.
+        box.remove();
+        settingsButton.focus();
+      }
     });
 
     box.append(heading, paragraph, accept, reject);
