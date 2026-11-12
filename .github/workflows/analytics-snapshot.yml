@@ -2,6 +2,7 @@ name: Pet traffic analytics snapshot
 
 on:
   push:
+    branches: [main]
     paths:
       - 'agent/analytics_report.py'
       - 'agent/analytics_history.py'
