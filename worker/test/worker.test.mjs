@@ -13,6 +13,7 @@ const env = {
           return {
             run: async () => ({ meta: { changes: 1 } }),
             first: async () => null,
+            all: async () => ({ results: [] }),
           };
         },
       };
@@ -47,6 +48,14 @@ test("versioned endpoints reject an unconfigured API token", async () => {
     body: JSON.stringify({ kind: "analytics_snapshot", payload: {} }),
   }), { ...env, API_TOKEN: undefined });
   assert.equal(response.status, 503);
+});
+
+test("event history can be read through the authenticated endpoint", async () => {
+  const response = await worker.fetch(new Request("https://api.example/v1/events", {
+    headers: { authorization: "Bearer test-secret" },
+  }), env);
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { events: [] });
 });
 
 test("valid aggregate snapshots can be accepted", async () => {
