@@ -102,15 +102,18 @@ jobs:
           expected = {
               "iss": "https://token.actions.githubusercontent.com",
               "aud": "pettraffic-control-api",
-              "sub": "repo:Pershore/PetTraffic-AI:ref:refs/heads/main",
+              "sub": "repo:Pershore@124571174/PetTraffic-AI@1452256714:ref:refs/heads/main",
               "repository": "Pershore/PetTraffic-AI",
+              "repository_owner_id": "124571174",
+              "repository_id": "1452256714",
               "ref": "refs/heads/main",
               "workflow_ref": "Pershore/PetTraffic-AI/.github/workflows/sync-control-api.yml@refs/heads/main",
               "event_name": "workflow_run",
           }
           for key, wanted in expected.items():
               actual = claims.get(key)
-              print(f"OIDC claim {key}: {actual!r}; expected {wanted!r}; match={actual == wanted}")
+              matches = str(actual) == wanted if key.endswith("_id") else actual == wanted
+              print(f"OIDC claim {key}: {actual!r}; expected {wanted!r}; match={matches}")
           print("OIDC token time claims: exp=", claims.get("exp"), "nbf=", claims.get("nbf"))
           PY
           status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' \
