@@ -30,6 +30,8 @@ async function withOidcJwks(callback) {
   globalThis.fetch = async () => new Response(JSON.stringify({ keys: [jwk] }), { status: 200 });
   try { return await callback(); } finally { globalThis.fetch = originalFetch; }
 }
+
+globalThis.fetch = async () => new Response(JSON.stringify({ keys: [jwk] }), { status: 200 });
 const env = {
   ALLOWED_ORIGIN: "https://pettraffic-ai.pages.dev",
   DB: {
