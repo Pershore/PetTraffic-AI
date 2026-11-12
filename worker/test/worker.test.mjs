@@ -96,7 +96,8 @@ test("versioned endpoints reject OIDC tokens from another workflow", async () =>
 test("versioned endpoints reject invalid JWT signatures", async () => {
   await withOidcJwks(async () => {
     const valid = oidcToken();
-    const tampered = valid.slice(0, -1) + (valid.endsWith("A") ? "B" : "A");
+    const index = Math.floor(valid.length / 2);
+    const tampered = valid.slice(0, index) + (valid[index] === "A" ? "B" : "A") + valid.slice(index + 1);
     const response = await worker.fetch(new Request("https://api.example/v1/events", {
       headers: { authorization: "Bearer " + tampered },
     }), env);
