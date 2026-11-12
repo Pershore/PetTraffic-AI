@@ -28,6 +28,62 @@ jobs:
       - run: npm test
       - run: PYTHONPATH=.. python -m unittest discover -s test -p '*_test.py' -v
 
+  validate-cloudflare:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      D1_DATABASE_ID: ${{ vars.PETTRAFFIC_D1_DATABASE_ID }}
+    steps:
+      - name: Validate Cloudflare token and deployment resources without exposing credentials
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import sys
+          import urllib.error
+          import urllib.request
+
+          token = os.environ.get("CLOUDFLARE_API_TOKEN", "")
+          account = os.environ.get("CLOUDFLARE_ACCOUNT_ID", "")
+          database = os.environ.get("D1_DATABASE_ID", "")
+
+          if not token:
+              print("BLOCKED: GitHub secret CLOUDFLARE_API_TOKEN is missing.")
+              sys.exit(1)
+          if not account:
+              print("BLOCKED: GitHub variable CLOUDFLARE_ACCOUNT_ID is missing.")
+              sys.exit(1)
+          if not database:
+              print("BLOCKED: GitHub variable PETTRAFFIC_D1_DATABASE_ID is missing.")
+              sys.exit(1)
+
+          def get(path, label):
+              request = urllib.request.Request(
+                  "https://api.cloudflare.com/client/v4" + path,
+                  headers={"Authorization": "Bearer " + token},
+              )
+              try:
+                  with urllib.request.urlopen(request, timeout=20) as response:
+                      payload = json.loads(response.read())
+              except urllib.error.HTTPError as exc:
+                  print(f"BLOCKED: {label} API check returned HTTP {exc.code}; verify token scope and resource.")
+                  sys.exit(1)
+              except Exception:
+                  print(f"BLOCKED: {label} API check could not complete.")
+                  sys.exit(1)
+              if not payload.get("success"):
+                  print(f"BLOCKED: {label} API check was rejected by Cloudflare.")
+                  sys.exit(1)
+              print(f"OK: {label} verified.")
+
+          get("/user/tokens/verify", "Cloudflare API token")
+          get(f"/accounts/{account}/d1/database/{database}", "D1 database access")
+          get(f"/accounts/{account}/workers/scripts/pettraffic-control-api", "Worker access")
+          print("READY: Cloudflare token, account variables, D1 database and Worker are reachable.")
+          PY
+
   deploy:
     if: github.event_name == 'workflow_dispatch'
     needs: test
