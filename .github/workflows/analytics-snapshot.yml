@@ -66,6 +66,7 @@ jobs:
           python agent/analytics_history.py
           mkdir -p /tmp/pettraffic-history
           cp -R reports/history/analytics /tmp/pettraffic-history/
+          rm -rf reports/history
           git fetch origin automation-history
           git checkout -B automation-history origin/automation-history
           mkdir -p reports/history
