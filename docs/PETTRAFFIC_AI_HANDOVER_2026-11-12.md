@@ -3,7 +3,7 @@
 **Atnaujinta:** 2026-11-12 20:43 Europe/Vilnius  
 **Saugykla:** `Pershore/PetTraffic-AI`  
 **Pagrindinė šaka:** `main`  
-**Paskutinis žinomas commit:** `fad6fa9` (pilnas SHA: `fad6fa9c82f032a7d0a0e1a4f35642f4eb4c0f5e`)
+**Paskutinis žinomas commit:** `81cfc8a` (pilnas SHA: `81cfc8a8f34fc97889898e19fcd8061e3c2a31a4`)
 
 ## Nekintančios saugumo taisyklės
 
@@ -24,6 +24,7 @@
 - `PETTRAFFIC_CONTROL_API_TOKEN` ir Worker `API_TOKEN` nebereikalingi.
 - Dabartinis OIDC identitetas apribotas tik `/v1/events` maršrutais. Užduočių API sąmoningai grąžina `503 task_api_not_enabled`, kol nebus atskiro agentų identiteto ir teisių politikos.
 - PR #91 sujungtas ir šis apribojimas patikrintas testais.
+- PR #93 sujungtas: papildomi testai patvirtina, kad neteisingos saugyklos, workflow arba pakeisto parašo OIDC žetonai atmetami.
 
 ### Worker diegimas ir stebėsena
 
