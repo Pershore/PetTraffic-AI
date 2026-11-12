@@ -21,6 +21,7 @@ class RecommendationTests(unittest.TestCase):
             "generated_at": f"2026-11-{int(run_id[-1]) + 10:02d}T08:00:00Z",
             "ga4_status": "available",
             "search_console_status": "available",
+            "search_console_period": f"2026-11-{int(run_id[-1]) + 1:02d} – 2026-11-{int(run_id[-1]) + 7:02d}",
             "metrics": {
                 "sessions": 12,
                 "organic_sessions_verified": None,
