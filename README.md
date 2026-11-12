@@ -6,7 +6,7 @@ Lietuviška informacinė svetainė šunų ir kačių šeimininkams. Svetainės f
 ```bash
 cd site
 python -m http.server 8000
-``
+```
 Naršyklėje atidarykite http://127.0.0.1:8000.
 
 ## Publikavimas
