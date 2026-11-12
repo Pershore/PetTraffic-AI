@@ -1,3 +1,4 @@
+import { buildControlDecision, persistControlDecision } from "./control-core.mjs";
 const MODEL = "@cf/openai/gpt-oss-20b";
 const MAX_DAILY_CALLS = 5;
 const MAX_INPUT_CHARS = 6000;
@@ -60,8 +61,10 @@ export async function runAgentOrchestration(env) {
   if(!(await reserveCall(env,date)))throw new Error("daily_ai_call_cap_reached");
   const coordinator=await callModel(env,"Tu esi Pet traffic centrinis koordinatorius. Sujunk keturių specialistų rezultatus į trumpą prioritetinę ataskaitą. Atsakyk tik validžiu JSON: {status:string,findings:string[],recommendations:string[],evidence_gaps:string[]}. Nespėliok. Jokio publikavimo, kodo keitimo ar infrastruktūros veiksmų; rekomendacijoms būtinas žmogaus patvirtinimas.",JSON.stringify({date_utc:date,specialist_results:specialists}));
   const report={date_utc:date,generated_at:new Date().toISOString(),model:MODEL,ai_calls:MAX_DAILY_CALLS,specialists,coordinator,read_only:true,publication_enabled:false};
-  await env.DB.prepare("UPDATE agent_runs SET status='completed',report_json=?,completed_at=? WHERE run_date=?").bind(JSON.stringify(report),new Date().toISOString(),date).run();
-  return {completed:true,run_date:date,ai_calls:MAX_DAILY_CALLS};
+  const decision=buildControlDecision(report);
+  await persistControlDecision(env,decision);
+  await env.DB.prepare("UPDATE agent_runs SET status='completed',report_json=?,completed_at=? WHERE run_date=?").bind(JSON.stringify({...report,control_decision:decision}),new Date().toISOString(),date).run();
+  return {completed:true,run_date:date,ai_calls:MAX_DAILY_CALLS,control_core_version:decision.core_version};
  } catch(error) {
   await env.DB.prepare("UPDATE agent_runs SET status='failed',error_code=?,completed_at=? WHERE run_date=?").bind(String(error?.message||"agent_run_failed").slice(0,80),new Date().toISOString(),date).run();
   return {completed:false,run_date:date,error:String(error?.message||"agent_run_failed").slice(0,80)};
