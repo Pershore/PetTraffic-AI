@@ -1,9 +1,9 @@
 # PetTraffic AI — techninė perdavimo būsena
 
-**Atnaujinta:** 2026-11-12 20:43 Europe/Vilnius  
+**Atnaujinta:** 2026-11-13 01:10 Europe/Vilnius  
 **Saugykla:** `Pershore/PetTraffic-AI`  
 **Pagrindinė šaka:** `main`  
-**Paskutinis žinomas commit:** `81cfc8a` (pilnas SHA: `81cfc8a8f34fc97889898e19fcd8061e3c2a31a4`)
+**Paskutinis žinomas commit:** `fba60e6` (pilnas SHA: `fba60e6fb09c40c43fe5a5c1a2147efa862b0477`)
 
 ## Nekintančios saugumo taisyklės
 
@@ -82,3 +82,38 @@
 2. Patikrinti kitą realų OIDC snapshot sync vykdymą; patvirtinti, kad `/v1/events` GET/POST veikia ir D1 gauna tik privatumo filtruotus agregatus.
 3. Patikrinti `automation-history` šakos failų struktūrą po pilno suplanuoto ciklo ir ar išsaugomi analytics, topic-radar, control-center bei recommendations snapshot'ai.
 4. Tik tada spręsti dėl atskiro agentų OIDC identiteto ir užduočių API aktyvavimo. Iki tol task queue lieka išjungta.
+
+
+## Tęsinio atnaujinimas — 2026-11-13
+
+### Atskiras AI valdymo branduolys — sujungta į main
+
+- PR #108 sujungtas į `main`: https://github.com/Pershore/PetTraffic-AI/pull/108
+- Įdiegtas `worker/src/control-core.mjs`: deterministinis valdymo ir saugumo politikos sluoksnis atskirtas nuo modelio promptų.
+- Keturios specialistų analizės ir koordinatorius lieka riboti iki penkių Workers AI kvietimų per dieną; branduolys pats neleidžia modelio išvestims suteikti naujų vykdymo teisių.
+- D1 migracija `0003_control_core.sql` sukuria `control_core_runs` ir `control_core_memory): saugomas dienos sprendimas ir kompaktiška paskutinės būsenos atmintis.
+- Specialisto trūkstami duomenys perduodami į bendrą sprendimą; koordinatorius negali jų paslėpti pateikdamas tuščią ataskaitą.
+- Publikavimas, gyvos svetainės keitimas, DNS, ARO Vet, išlaidos, Cloudflare teisių keitimas ir savavališko kodo vykdymas lieka blokuoti. Rekomendacijos yra patariamosios.
+- Projekto ilgalaikė istorija lieka GitHub; D1 atmintis yra operacinė santrauka, ne viso GitHub archyvo pakaitalas.
+
+### Grafikas — sujungta į main
+
+- PR #109 sujungtas: https://github.com/Pershore/PetTraffic-AI/pull/109
+- Dienos AI agentų paleidimo tikslas: 10:20 Europe/Vilnius visus metus.
+- Worker cron paleidžia 07:20 ir 08:20 UTC; IANA `Europe/Vilnius` laiko patikra leidžia tik tą kvietimą, kuris atitinka vietos 10:20. Taip išvengiama vasaros/žiemos laiko poslinkio ir dvigubo vykdymo.
+- Senasis konfliktavęs PR #107 uždarytas; jį pakeitė #109.
+
+### Testai ir rastų klaidų taisymas
+
+- PR #108 pirmas CI bandymas aptiko neteisingai escape'intą datos validavimo regex: galiojančią `YYYY-MM-DD` datą jis atmesdavo. Klaida pataisyta prieš sujungimą.
+- Po pataisymo GitHub Actions Worker testai (`npm test`) ir Python testai praėjo sėkmingai; Cloudflare išteklių/prieigos validacija taip pat praėjo.
+- PR #109 Node/Python testai, Cloudflare validacija ir svetainės statinės patikros praėjo.
+- Papildomai lokaliai patikrinti 9 Node testai (9/9) ir D1 migracijų SQL seka (0001, 0002_agent_runs, 0003_control_core) — sėkmingai.
+- Tai patvirtina šiuos testų rinkinius, bet negarantuoja, kad ateityje neatsiras naujų klaidų; reikalingas nuolatinis CI ir gyvos aplinkos stebėjimas.
+
+### Dar nepatvirtinta gyvoje Cloudflare aplinkoje
+
+- PR patikros tyčia praleido Worker deploy darbą (deploy job: skipped). Pakeitimų sujungimas į `main` turėtų sukelti automatinį deploy pagal `.github/workflows/deploy-control-api.yml`, nes pakeisti Worker kodas ir migracijos.
+- Šio tęsinio metu negautas patikimas post-merge deploy run rezultatas, todėl **nežymėti D1 migracijos 0003 ar naujo Worker kodo kaip gyvai aktyvuotų**.
+- Privaloma patvirtinti deploy sėkmę, `GET /health` atsakymą su `database: connected`, neautentifikuoto `/v1/events` HTTP 401 ir pirmą realų suplanuotą AI vykdymą su įrašais abiejose control-core D1 lentelėse.
+- Task API lieka išjungta; atskiras agentų OIDC identitetas, agentų užduočių claim/complete ir platesnės autonominės teisės dar neįjungti.
