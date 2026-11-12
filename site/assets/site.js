@@ -351,8 +351,21 @@
     });
 
     box.append(heading, paragraph, accept, reject);
-    document.body.appendChild(box);
 
+    // Keep keyboard focus inside the modal consent dialog.
+    box.addEventListener('keydown', (event) => {
+      if (event.key !== 'Tab') return;
+
+      if (event.shiftKey && document.activeElement === accept) {
+        event.preventDefault();
+        reject.focus();
+      } else if (!event.shiftKey && document.activeElement === reject) {
+        event.preventDefault();
+        accept.focus();
+      }
+    });
+
+    document.body.appendChild(box);
     accept.focus();
   }
 
