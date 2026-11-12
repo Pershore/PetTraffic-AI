@@ -68,6 +68,8 @@ def evaluate_worker_health(payload: dict, status_code: int = 200, url: str | Non
     base = {"name": "Cloudflare Worker + D1", "url": url, "created_at": None}
     if status_code != 200:
         return {**base, "state": "failure", "detail": f"Worker health endpoint returned HTTP {status_code}."}
+    if not isinstance(payload, dict):
+        return {**base, "state": "failure", "detail": "Worker health endpoint returned an invalid JSON structure."}
     if payload.get("ok") is not True or payload.get("database") != "connected":
         return {**base, "state": "failure", "detail": "Worker or D1 health check did not confirm a connected database."}
     return {**base, "state": "success", "detail": "Worker API pasiekiamas, D1 duomenų bazė prijungta."}
