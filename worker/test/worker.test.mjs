@@ -49,6 +49,19 @@ test("versioned endpoints reject an unconfigured API token", async () => {
   assert.equal(response.status, 503);
 });
 
+test("valid aggregate snapshots can be accepted", async () => {
+  const response = await worker.fetch(new Request("https://api.example/v1/events", {
+    method: "POST",
+    headers: { authorization: "Bearer test-secret", "content-type": "application/json" },
+    body: JSON.stringify({
+      kind: "analytics_snapshot",
+      payload: { generated_at: "2026-11-12T10:00:00Z", metrics: { sessions: 4, active_users: 2 } },
+    }),
+  }), env);
+  assert.equal(response.status, 202);
+  assert.equal((await response.json()).accepted, true);
+});
+
 test("unknown event kinds are rejected", async () => {
   const response = await worker.fetch(new Request("https://api.example/v1/events", {
     method: "POST",
@@ -65,6 +78,21 @@ test("potential personal data and secrets are rejected from event payloads", asy
     body: JSON.stringify({ kind: "analytics_snapshot", payload: { user_id: "visitor-1" } }),
   }), env);
   assert.equal(response.status, 400);
+});
+
+test("task creation accepts only the read-only task catalogue", async () => {
+  const response = await worker.fetch(new Request("https://api.example/v1/tasks", {
+    method: "POST",
+    headers: { authorization: "Bearer test-secret", "content-type": "application/json" },
+    body: JSON.stringify({
+      type: "check_site",
+      agent: "technical-seo",
+      priority: 4,
+      payload: { target: "sitemap" },
+    }),
+  }), env);
+  assert.equal(response.status, 202);
+  assert.equal((await response.json()).status, "queued");
 });
 
 test("task creation rejects unknown task types", async () => {
