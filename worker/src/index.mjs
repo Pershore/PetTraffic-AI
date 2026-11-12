@@ -1,3 +1,5 @@
+import { runAgentOrchestration } from "./agents.mjs";
+
 const MAX_BODY_BYTES = 32 * 1024;
 const ALLOWED_AGENTS = new Set(["coordinator", "analytics", "topics", "technical-seo", "content-review"]);
 const ALLOWED_TASK_TYPES = new Set([
@@ -343,6 +345,10 @@ export default {
     }
   },
   async scheduled(controller, env, ctx) {
+    if (controller.cron === "20 8 * * *") {
+      ctx.waitUntil(runAgentOrchestration(env));
+      return;
+    }
     ctx.waitUntil(runScheduledHealthCheck(env));
   },
 };
