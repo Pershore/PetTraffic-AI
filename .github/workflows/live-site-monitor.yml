@@ -1,0 +1,28 @@
+name: Pet traffic live-site monitor
+
+on:
+  schedule:
+    - cron: "5 7 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pettraffic-live-monitor
+  cancel-in-progress: true
+
+jobs:
+  live-check:
+    name: Check published site and internal links
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Check production website
+        run: python agent/check_live_site.py
