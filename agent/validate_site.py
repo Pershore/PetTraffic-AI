@@ -31,6 +31,7 @@ class PageParser(HTMLParser):
         self.in_jsonld = False
         self.current_jsonld: list[str] = []
         self.target_blank_errors: list[str] = []
+        self.live_status_ids: set[str] = set()
 
     def handle_starttag(self, tag: str, attrs) -> None:
         attrs = dict(attrs)
@@ -57,6 +58,8 @@ class PageParser(HTMLParser):
             self.canonicals.append(attrs.get("href", "").strip())
         if attrs.get("id"):
             self.ids.add(attrs["id"])
+            if attrs.get("role") == "status" and attrs.get("aria-live") == "polite":
+                self.live_status_ids.add(attrs["id"])
         if tag == "img" and not attrs.get("alt", "").strip():
             self.image_errors.append("image is missing a descriptive alt attribute")
         for key in ("href", "src"):
@@ -107,12 +110,23 @@ def main() -> int:
     for page in pages:
         parser = PageParser()
         try:
-            parser.feed(page.read_text(encoding="utf-8"))
+            page_text = page.read_text(encoding="utf-8")
+            parser.feed(page_text)
         except (OSError, UnicodeError) as exc:
             errors.append(f"{page.relative_to(ROOT)}: cannot read HTML: {exc}")
             continue
         parsed_pages[page.resolve()] = parser
         rel = page.relative_to(ROOT)
+        if rel.as_posix() == "index.html" and "article-results-status" not in parser.live_status_ids:
+            errors.append(f"{rel}: article search needs a polite live status region")
+        related_blocks = re.findall(
+            r'<div class="notice">\s*<strong>Susiję straipsniai:</strong>(.*?)</div>',
+            page_text, flags=re.IGNORECASE | re.DOTALL,
+        )
+        for block in related_blocks:
+            related_hrefs = re.findall(r"""\bhref=["']([^"']+)["']""", block, flags=re.IGNORECASE)
+            if len(related_hrefs) != len(set(related_hrefs)):
+                errors.append(f"{rel}: related-article block contains duplicate destinations")
         if parser.image_errors:
             errors.extend(f"{rel}: {message}" for message in parser.image_errors)
         if parser.target_blank_errors:
@@ -131,7 +145,7 @@ def main() -> int:
                 context = entry.get("@context")
                 if context not in ("https://schema.org", "http://schema.org") and not isinstance(context, (dict, list)):
                     errors.append(f"{rel}: JSON-LD block {index} is missing a valid schema.org @context")
-        if "__CARDS__" in page.read_text(encoding="utf-8"):
+        if "__CARDS__" in page_text:
             errors.append(f"{rel}: unresolved __CARDS__ template marker")
         if parser.lang != "lt":
             errors.append(f"{rel}: expected <html lang='lt'>")
