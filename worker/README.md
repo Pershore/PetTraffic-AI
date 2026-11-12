@@ -17,7 +17,7 @@ Task types are deliberately read-only. There is no article publishing, website e
 ## Privacy and security
 
 - All `/v1/*` routes require a short-lived GitHub Actions OIDC JWT.
-- The Worker verifies the JWT signature against GitHub's published JWKS and validates issuer, audience, expiry, repository, main-branch ref, exact workflow path, and `workflow_run` event.
+- The Worker verifies the JWT signature against GitHub's published JWKS and validates issuer, audience, expiry, repository name and immutable owner/repository IDs, main-branch ref, exact workflow path, and `workflow_run` event. This repository was created after GitHub's 2026-07-15 immutable-subject rollout, so the expected `sub` includes owner and repository IDs.
 - The current sync identity is restricted to `/v1/events`; task queue routes remain disabled until separate agent authentication is configured.
 - No long-lived PetTraffic API bearer token or `API_TOKEN` Worker secret is required.
 - Only the trusted sync job receives `id-token: write`; pull-request test jobs do not.
