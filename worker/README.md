@@ -5,7 +5,7 @@
 This is an isolated Cloudflare Worker + D1 control API scaffold. It does not change the Cloudflare Pages site, DNS, or the existing GitHub Actions schedules.
 
 The API provides:
-- `GET /health` – verifies the Worker can query D1.
+- `GET /health` – verifies the Worker can query D1 and returns the latest 15-minute site/D1 heartbeat (or `heartbeat: null` before the first scheduled check).
 - `POST /v1/events` – stores allow-listed aggregate snapshots.
 - `GET /v1/events` – reads the latest 100 aggregate events (optionally filtered by kind).
 - `POST /v1/tasks`, `POST /v1/tasks/claim`, and `POST /v1/tasks/{id}/complete` – scaffolded for future agents; intentionally return `503 task_api_not_enabled` until a separate agent identity and authorization policy are implemented.
@@ -26,21 +26,18 @@ Task types are deliberately read-only. There is no article publishing, website e
 - CORS is restricted to the PetTraffic Pages origin; server-to-server GitHub Actions calls do not need CORS.
 - D1 stores aggregate snapshots and task metadata only. Do not send visitor-level analytics, raw Search Console queries, credentials, or health-related personal data.
 
-## One-time Cloudflare setup
+## Cloudflare deployment status
 
-The D1 database, Worker, and least-privilege Cloudflare deployment credentials have already been provisioned and validated. Pull requests run tests and configuration checks; merging Worker changes into `main` triggers deployment automatically. The workflow applies D1 migrations, deploys the Worker, and runs post-deployment health/authentication smoke checks. Manual dispatch remains available for recovery.
+As of 2026-11-12, the Cloudflare Worker `pettraffic-control-api` and D1 database `pettraffic-control` have been provisioned and deployed by GitHub Actions. Deployment run #30 completed successfully, including:
+- Cloudflare API token, account, D1 database and Worker access validation.
+- Application of D1 migrations.
+- Worker deployment.
+- Post-deployment `GET /health` check confirming D1 connectivity.
+- Protected API smoke check confirming unauthenticated requests receive HTTP 401.
 
-1. In Cloudflare Dashboard, open **Storage & databases → D1 SQL Database** and create a database named `pettraffic-control`.
-2. Copy its database ID.
-3. Create an empty Worker named `pettraffic-control-api` in the Cloudflare Dashboard first. This allows deployment permissions to be scoped to that Worker instead of granting account-wide Worker creation rights.
-4. Create a custom API token with **Workers Editor** for this Worker, **D1 Edit** for this database, and (only if Wrangler account discovery requires it) **Account Settings Read**. Do not grant Pages, DNS, Routes, or Global API Key access. Cloudflare documents Worker-scoped Editor access for deploying an existing Worker and D1 permissions for direct database operations. <https://developers.cloudflare.com/workers/authorization/> <https://developers.cloudflare.com/fundamentals/api/reference/permissions/>
-5. In GitHub repository **Settings → Secrets and variables → Actions**, add:
-   - Secret `CLOUDFLARE_API_TOKEN`
-   - Variable `CLOUDFLARE_ACCOUNT_ID`
-   - Variable `PETTRAFFIC_D1_DATABASE_ID`
-6. For the initial bootstrap, run **Actions → Deploy PetTraffic control API → Run workflow**. For normal updates, merge a tested pull request touching `worker/**`; deployment starts automatically on `main`.
+The Worker uses its default `.workers.dev` URL. No custom domain, DNS change, Pages change, or ARO Vet change is required.
 
-The Worker has no production route/custom domain configured in this phase. It uses the default `.workers.dev` address if enabled for the account. Existing Pages deployment and DNS remain untouched. No separate Worker API token setup is needed; GitHub Actions authenticates with short-lived OIDC tokens.
+For recovery or future Worker changes, use **GitHub Actions → Deploy PetTraffic control API → Run workflow**. Normal Worker code changes are deployed automatically after a tested pull request is merged into `main`.
 
 ## Cost and rollout
 
@@ -50,11 +47,7 @@ Check current Cloudflare plan limits and D1/Workers usage in the account before 
 
 After the Worker is deployed, the `sync-control-api.yml` workflow requests a short-lived GitHub OIDC token at runtime and sends privacy-filtered aggregate snapshots. The Worker accepts only tokens issued to this repository's main-branch sync workflow. No `PETTRAFFIC_CONTROL_API_TOKEN` GitHub secret is needed. The optional `PETTRAFFIC_CONTROL_API_URL` variable may override the default Worker URL.
 
-The existing GitHub history remains the source of truth during the first rollout. Do not switch existing workflows to D1 until:
-1. the Worker health endpoint passes;
-2. OIDC-authenticated event write/read checks pass;
-3. task enqueue/claim/complete checks pass;
-4. backup/export and recovery are tested.
+GitHub's `automation-history` branch remains the source of truth; D1 is an additional aggregate event store, not a replacement. The first post-deployment scheduled snapshot sync is still required to verify live OIDC-authenticated event write/read. Task enqueue/claim/complete remain deliberately disabled until a separate agent identity is implemented and tested. No workflow currently switches history storage from GitHub to D1.
 
 ## Local tests
 
