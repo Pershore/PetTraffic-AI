@@ -1,6 +1,6 @@
 import unittest
 from datetime import datetime, timezone, timedelta
-from agent.control_center import evaluate_workflow, render
+from agent.control_center import evaluate_workflow, needs_attention, render
 
 class ControlCenterTests(unittest.TestCase):
     def setUp(self):
@@ -30,6 +30,16 @@ class ControlCenterTests(unittest.TestCase):
         report = render(results, self.now)
         self.assertIn("KLAIDA", report)
         self.assertIn("Skubu", report)
+
+    def test_actionable_state_needs_attention(self):
+        self.assertTrue(needs_attention([{"state": "failure"}]))
+        self.assertTrue(needs_attention([{"state": "stale"}]))
+
+    def test_missing_first_run_does_not_create_false_alarm(self):
+        self.assertFalse(needs_attention([{"state": "missing"}]))
+
+    def test_success_and_running_do_not_alert(self):
+        self.assertFalse(needs_attention([{"state": "success"}, {"state": "running"}]))
 
 if __name__ == "__main__":
     unittest.main()

@@ -11,6 +11,9 @@ Sujungti esamas automatizacijas į vieną valdymo sluoksnį, kuris parodo sistem
 - GitHub Actions vykdo esamas SEO, analitikos, temų, svetainės būklės ir Lighthouse užduotis.
 - agent/control_center.py tik skaitymo režimu patikrina naujausių suplanuotų darbo eigų būsenas.
 - Kasdienė suvestinė parodo klaidas, pasenusius paleidimus ir veiksmų prioritetus.
+- Mašininė JSON suvestinė leidžia automatizuotai įvertinti būseną.
+- Aptikus klaidą, pasenusį ar neaiškų procesą sukuriamas arba atnaujinamas vienas GitHub įspėjimas; po atsistatymo jis automatiškai uždaromas.
+- Pirmo paleidimo būsena „nėra paleidimų“ pati savaime nesukuria klaidingo įspėjimo.
 - Ataskaita išsaugoma GitHub Actions artefakte 90 dienų.
 - Jokie pakeitimai svetainėje ar main šakoje neatliekami.
 
@@ -41,5 +44,5 @@ Worker taps centrine API / įvykių priėmimo vieta, o D1 – ilgalaike duomenų
 
 - Kasdienė suvestinė teisingai atpažįsta sėkmingus, nepavykusius, vykdomus ir pasenusius darbus.
 - Klaidos turi tiesioginę nuorodą į GitHub Actions paleidimą.
-- Nėra rašymo teisių, kurios nereikalingos diagnostikai.
+- Rašymo teisės apribotos vieno techninio GitHub įspėjimo sukūrimui / uždarymui; svetainės ir kodo pakeitimams jos nenaudojamos.
 - Vėliau kiekvienas siūlomas SEO pakeitimas turi pradinį rodiklį ir po pakeitimo pamatuojamą rezultatą.
