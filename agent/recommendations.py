@@ -70,11 +70,17 @@ def build_recommendations(history_root: Path = HISTORY_ROOT) -> list[dict]:
                 "Patikrinti nuosavybės adresą, paslaugos paskyros teises ir Search Console API.",
             )
 
-        valid_gsc = [
-            item for item in analytics
-            if item.get("search_console_status") == "available"
-            and isinstance(item.get("metrics"), dict)
-        ]
+        # Repeated runs for the same Search Console reporting window are not
+        # independent evidence. Keep only the latest snapshot for each period.
+        valid_gsc_by_period = {}
+        for item in analytics:
+            if item.get("search_console_status") == "available" and isinstance(item.get("metrics"), dict):
+                period = item.get("search_console_period") or str(item.get("generated_at", ""))[:10]
+                valid_gsc_by_period[period] = item
+        valid_gsc = sorted(
+            valid_gsc_by_period.values(),
+            key=lambda item: str(item.get("generated_at", "")),
+        )
         if len(valid_gsc) >= 2:
             last_two = valid_gsc[-2:]
             zero_visibility = all(
