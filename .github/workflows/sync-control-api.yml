@@ -42,7 +42,7 @@ jobs:
       - name: Check whether central API is configured
         id: config
         env:
-          API_URL: ${{ vars.PETTRAFFIC_CONTROL_API_URL }}
+          API_URL: ${{ vars.PETTRAFFIC_CONTROL_API_URL || 'https://pettraffic-control-api.pauliusgrubliauskis.workers.dev' }}
           API_TOKEN: ${{ secrets.PETTRAFFIC_CONTROL_API_TOKEN }}
         run: |
           if [ -n "$API_URL" ] && [ -n "$API_TOKEN" ]; then
@@ -74,7 +74,7 @@ jobs:
       - name: Publish snapshots to central API
         if: steps.config.outputs.enabled == 'true'
         env:
-          API_URL: ${{ vars.PETTRAFFIC_CONTROL_API_URL }}
+          API_URL: ${{ vars.PETTRAFFIC_CONTROL_API_URL || 'https://pettraffic-control-api.pauliusgrubliauskis.workers.dev' }}
           API_TOKEN: ${{ secrets.PETTRAFFIC_CONTROL_API_TOKEN }}
         run: |
           set -euo pipefail
