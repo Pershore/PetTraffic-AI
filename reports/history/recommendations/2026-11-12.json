@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-12",
+  "snapshots": [
+    {
+      "generated_at": "2026-11-12T21:47:22.029818+00:00",
+      "run_id": "43313649409",
+      "recommendations": [
+        {
+          "id": "search-visibility-baseline",
+          "priority": "info",
+          "title": "Dar rinkti Google paieškos duomenis",
+          "evidence": "Viename Search Console laikotarpyje parodymai ir paspaudimai buvo nuliniai; vieno laikotarpio nepakanka tendencijai patvirtinti.",
+          "next_action": "Palikti kasdienį rinkimą veikti ir palyginti kitą užbaigtą Search Console laikotarpį.",
+          "status": "monitor"
+        },
+        {
+          "id": "sitemap-processing",
+          "priority": "info",
+          "title": "Stebėti Google sitemap apdorojimą",
+          "evidence": "Search Console nurodo, kad sitemap dar laukia apdorojimo.",
+          "next_action": "Pakartotinai patikrinti kitame cikle; sitemap pakartotinai neteikti, jei jis jau pateiktas.",
+          "status": "monitor"
+        },
+        {
+          "id": "organic-attribution",
+          "priority": "info",
+          "title": "Nežymėti organinių sesijų kaip patvirtintų",
+          "evidence": "GA4 kanalų išklotinė nepateikė patvirtintos sumos, todėl organinės sesijos nepatvirtintos.",
+          "next_action": "Naudoti bendrą sesijų skaičių; organinės paieškos dalį rodyti tik kai kanalų suma sutampa su GA4 TOTAL.",
+          "status": "monitor"
+        },
+        {
+          "id": "topic-baseline",
+          "priority": "info",
+          "title": "Sukaupti temų radaro bazę",
+          "evidence": "Dar nėra išsaugotų temų radaro įrašų.",
+          "next_action": "Palikti kasdienį RSS temų rinkimą veikti; antraščių skaičiaus nelaikyti paieškų paklausos matu.",
+          "status": "monitor"
+        }
+      ]
+    }
+  ]
+}
