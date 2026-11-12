@@ -17,6 +17,7 @@ WORKFLOWS = [
     ("daily-topic-radar.yml", "Temų radaras", 36),
     ("live-site-monitor.yml", "Svetainės stebėjimas", 36),
     ("lighthouse-audit.yml", "Lighthouse auditas", 9 * 24),
+    ("control-center.yml", "Centrinis valdymo centras", 36),
 ]
 
 def parse_time(value: str) -> datetime:

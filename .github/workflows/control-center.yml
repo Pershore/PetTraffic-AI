@@ -8,11 +8,17 @@ on:
     branches: [main]
     paths:
       - "agent/control_center.py"
+      - "agent/history_store.py"
+      - "agent/analytics_history.py"
+      - "agent/topic_history.py"
       - "tests/test_control_center.py"
+      - "tests/test_history_store.py"
+      - "tests/test_analytics_history.py"
+      - "tests/test_topic_history.py"
       - ".github/workflows/control-center.yml"
 
 permissions:
-  contents: read
+  contents: write
   actions: read
   issues: write
 
@@ -33,7 +39,11 @@ jobs:
         with:
           python-version: "3.x"
       - name: Run control-center unit tests
-        run: python -m unittest discover -s tests -p 'test_control_center.py' -v
+        run: |
+          python -m unittest discover -s tests -p 'test_control_center.py' -v
+          python -m unittest discover -s tests -p 'test_history_store.py' -v
+          python -m unittest discover -s tests -p 'test_analytics_history.py' -v
+          python -m unittest discover -s tests -p 'test_topic_history.py' -v
       - name: Build central status report
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -108,3 +118,26 @@ jobs:
           path: reports/control-center.*
           if-no-files-found: error
           retention-days: 90
+
+      - name: Archive durable control-center history
+        if: success() && github.event_name != 'pull_request'
+        env:
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          python agent/history_store.py
+          mkdir -p /tmp/pettraffic-history
+          cp -R reports/history/control-center /tmp/pettraffic-history/
+          git fetch origin automation-history
+          git checkout -B automation-history origin/automation-history
+          mkdir -p reports/history
+          cp -R /tmp/pettraffic-history/control-center reports/history/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reports/history/control-center
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: archive control-center history"
+            git pull --rebase origin automation-history
+            git push origin automation-history
+          else
+            echo "No new history snapshot to archive."
+          fi
