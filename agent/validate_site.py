@@ -118,10 +118,12 @@ def main() -> int:
                 if target_parser and unquote(parsed.fragment) not in target_parser.ids:
                     errors.append(f"{page.relative_to(ROOT)}: missing fragment #{parsed.fragment} in {target.relative_to(ROOT)}")
 
-    # Keep public branding independent and prevent unlicensed third-party assets.
+    # Guard against retired public branding and partner tracking returning.
     forbidden_patterns = {
-        r"\bPet traffic AI\b": "retired public brand",
-        r"https?://arovetvaistine\.lt/media/": "hotlinked ARO Vet image without usage permission",
+        r"\bAI\b": "standalone AI label",
+        r"ARO\s*Vet|arovetvaistine": "retired partner name",
+        r"data-partner|partner_outbound_click": "retired partner tracking",
+        r"aro-vet\.html|gargzdai-augintiniams": "retired partner page",
     }
     for public_file in ROOT.rglob("*"):
         if public_file.is_file() and public_file.suffix.lower() in {".html", ".js", ".css", ".svg", ".xml", ".txt"}:
