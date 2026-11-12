@@ -118,32 +118,3 @@ jobs:
           done
           unset API_TOKEN
           echo "Privacy-filtered snapshots published and read back using short-lived GitHub OIDC identity."
-          status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' \
-            --header "Authorization: Bearer $API_TOKEN" "$API_URL/v1/events")"
-          if [ "$status" != "200" ]; then
-            echo "GitHub OIDC authentication was rejected by the control API (HTTP $status)."
-            exit 1
-          fi
-          for file in events/*.json; do
-            response="$(curl --fail-with-body --silent --show-error \
-              --request POST "$API_URL/v1/events" \
-              --header "Authorization: Bearer $API_TOKEN" \
-              --header "Content-Type: application/json" \
-              --data-binary "@$file")"
-            event_id="$(python -c 'import json,sys; print(json.load(sys.stdin)["id"])' <<< "$response")"
-            kind="$(python -c 'import json,sys; print(json.load(sys.stdin)["kind"])' < "$file")"
-            readback="$(curl --fail-with-body --silent --show-error --get "$API_URL/v1/events" \
-              --data-urlencode "kind=$kind" \
-              --header "Authorization: Bearer $API_TOKEN")"
-            READBACK_JSON="$readback" python - "$event_id" <<'PY'
-          import json, os, sys
-          payload = json.loads(os.environ["READBACK_JSON"])
-          expected_id = sys.argv[1]
-          if not any(str(item.get("id")) == expected_id for item in payload.get("events", [])):
-              raise SystemExit("Snapshot was accepted but could not be read back from D1.")
-          print("OK: D1 snapshot write/read verified.")
-          PY
-            unset response event_id kind readback
-          done
-          unset API_TOKEN
-          echo "Privacy-filtered snapshots published and read back using short-lived GitHub OIDC identity."
