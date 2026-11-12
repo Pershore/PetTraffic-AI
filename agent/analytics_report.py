@@ -62,6 +62,19 @@ def gsc_inspect(session, url: str, site_url: str) -> dict:
     })
 
 
+def gsc_sitemaps(session, site_url: str) -> list[dict]:
+    endpoint = (
+        "https://searchconsole.googleapis.com/webmasters/v3/sites/"
+        + quote(site_url, safe="")
+        + "/sitemaps"
+    )
+    response = session.get(endpoint, timeout=30)
+    if not response.ok:
+        detail = response.text[:1200].replace("\\n", " ")
+        raise RuntimeError(f"Google API HTTP {response.status_code}: {detail}")
+    return response.json().get("sitemap", [])
+
+
 def priority_urls(site_url: str) -> list[str]:
     sitemap = Path("site/sitemap.xml")
     urls = [site_url]
@@ -271,6 +284,35 @@ def main() -> int:
                     )
             else:
                 lines.append("_Search Console puslapių eilučių nepateikė._")
+
+            lines += ["", "### Svetainės žemėlapis (Search Console)", ""]
+            expected_sitemap = f"{gsc_site.rstrip('/')}/sitemap.xml"
+            try:
+                submitted_sitemaps = gsc_sitemaps(session, gsc_site)
+                matching = [
+                    item for item in submitted_sitemaps
+                    if item.get("path", "").rstrip("/") == expected_sitemap.rstrip("/")
+                ]
+                if matching:
+                    item = matching[0]
+                    contents = item.get("contents", [])
+                    submitted_count = sum(int(part.get("submitted", 0)) for part in contents)
+                    indexed_count = sum(int(part.get("indexed", 0)) for part in contents)
+                    lines.append(f"- Būsena: **pateiktas** ({item.get('path', expected_sitemap)})")
+                    lines.append(f"- Paskutinį kartą pateiktas: {item.get('lastSubmitted', 'nenurodyta')}")
+                    lines.append(f"- Google paskutinį kartą atsisiuntė: {item.get('lastDownloaded', 'dar nenurodyta')}")
+                    lines.append(f"- URL pateikta / indeksuota: {submitted_count} / {indexed_count}")
+                    lines.append(f"- Laukia apdorojimo: {'taip' if item.get('isPending') else 'ne'}")
+                else:
+                    lines.append(
+                        f"- **Nepateiktas:** Search Console sąraše nerastas {expected_sitemap}"
+                    )
+                    lines.append("- Kitas veiksmas: pateikti šį sitemap Search Console sąsajoje.")
+            except Exception as sitemap_exc:
+                lines.append(
+                    f"- Pateikimo būsenos patikrinti nepavyko: "
+                    f"{type(sitemap_exc).__name__}: {str(sitemap_exc)[:180]}"
+                )
 
             lines += ["", "### Google indekso būklė (svarbiausi puslapiai)", ""]
             lines += [
