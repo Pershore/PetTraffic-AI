@@ -11,8 +11,10 @@ function oidcToken(overrides = {}) {
   const claims = base64url(JSON.stringify({
     iss: "https://token.actions.githubusercontent.com",
     aud: "pettraffic-control-api",
-    sub: "repo:Pershore/PetTraffic-AI:ref:refs/heads/main",
+    sub: "repo:Pershore@124571174/PetTraffic-AI@1452256714:ref:refs/heads/main",
     repository: "Pershore/PetTraffic-AI",
+    repository_owner_id: "124571174",
+    repository_id: "1452256714",
     ref: "refs/heads/main",
     workflow_ref: "Pershore/PetTraffic-AI/.github/workflows/sync-control-api.yml@refs/heads/main",
     event_name: "workflow_run",
@@ -107,6 +109,30 @@ test("versioned endpoints reject OIDC tokens from another repository", async () 
   await withOidcJwks(async () => {
     const response = await worker.fetch(new Request("https://api.example/v1/events", {
       headers: { authorization: "Bearer " + oidcToken({ repository: "someone/else" }) },
+    }), env);
+    assert.equal(response.status, 401);
+  });
+});
+
+test("versioned endpoints reject legacy mutable repository subjects", async () => {
+  await withOidcJwks(async () => {
+    const response = await worker.fetch(new Request("https://api.example/v1/events", {
+      headers: {
+        authorization: "Bearer " + oidcToken({
+          sub: "repo:Pershore/PetTraffic-AI:ref:refs/heads/main",
+        }),
+      },
+    }), env);
+    assert.equal(response.status, 401);
+  });
+});
+
+test("versioned endpoints reject mismatched immutable repository IDs", async () => {
+  await withOidcJwks(async () => {
+    const response = await worker.fetch(new Request("https://api.example/v1/events", {
+      headers: {
+        authorization: "Bearer " + oidcToken({ repository_id: "999999" }),
+      },
     }), env);
     assert.equal(response.status, 401);
   });
