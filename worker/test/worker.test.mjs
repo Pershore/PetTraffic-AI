@@ -75,6 +75,35 @@ test("versioned endpoints reject OIDC tokens with the wrong audience", async () 
     assert.equal(response.status, 401);
   });
 });
+test("versioned endpoints reject OIDC tokens from another repository", async () => {
+  await withOidcJwks(async () => {
+    const response = await worker.fetch(new Request("https://api.example/v1/events", {
+      headers: { authorization: "Bearer " + oidcToken({ repository: "someone/else" }) },
+    }), env);
+    assert.equal(response.status, 401);
+  });
+});
+
+test("versioned endpoints reject OIDC tokens from another workflow", async () => {
+  await withOidcJwks(async () => {
+    const response = await worker.fetch(new Request("https://api.example/v1/events", {
+      headers: { authorization: "Bearer " + oidcToken({ workflow_ref: "Pershore/PetTraffic-AI/.github/workflows/other.yml@refs/heads/main" }) },
+    }), env);
+    assert.equal(response.status, 401);
+  });
+});
+
+test("versioned endpoints reject invalid JWT signatures", async () => {
+  await withOidcJwks(async () => {
+    const valid = oidcToken();
+    const tampered = valid.slice(0, -1) + (valid.endsWith("A") ? "B" : "A");
+    const response = await worker.fetch(new Request("https://api.example/v1/events", {
+      headers: { authorization: "Bearer " + tampered },
+    }), env);
+    assert.equal(response.status, 401);
+  });
+});
+
 test("event history can be read using a verified GitHub OIDC identity", async () => {
   await withOidcJwks(async () => {
     const response = await worker.fetch(new Request("https://api.example/v1/events", {
