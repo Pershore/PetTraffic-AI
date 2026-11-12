@@ -260,7 +260,7 @@ def main() -> int:
                 "",
                 "Duomenų gauti nepavyko. GA4 ataskaita pateikta atskirai.",
                 f"Techninė priežastis: {type(gsc_exc).__name__}: {gsc_exc}",
-                "Patikrinkite, ar Search Console API įjungta Google Cloud projekte ir ar paslaugos paskyra turi prieigą prie tikslios svetainės nuosavybės.",
+                "403 dažniausiai reiškia, kad paslaugos paskyra neturi teisės skaityti nurodytos nuosavybės arba Search Console API / projekto prieiga dar nesutvarkyta. Patikrinkite, ar Search Console API įjungta tame pačiame Google Cloud projekte, ar paslaugos paskyra pridėta būtent prie šios nuosavybės, ir ar GSC_SITE_URL tiksliai sutampa su nuosavybės adresu.",
             ]
             print(f"WARNING: Search Console unavailable: {type(gsc_exc).__name__}: {gsc_exc}", file=sys.stderr)
 
