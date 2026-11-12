@@ -1,6 +1,10 @@
 name: Pet traffic analytics snapshot
 
 on:
+  push:
+    paths:
+      - 'agent/analytics_report.py'
+      - '.github/workflows/analytics-snapshot.yml'
   schedule:
     - cron: "43 6 * * *"
   workflow_dispatch:
