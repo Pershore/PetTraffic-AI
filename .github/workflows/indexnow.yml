@@ -45,12 +45,23 @@ jobs:
           key_location = f"{base}/{key}.txt"
           sitemap_url = f"{base}/sitemap.xml"
 
+          def fetch_public(url):
+              request = urllib.request.Request(
+                  url,
+                  headers={
+                      "User-Agent": "PetTrafficAI-IndexNow/1.0 (+https://pettraffic-ai.pages.dev)",
+                      "Accept": "text/plain, application/xml, application/rss+xml, */*",
+                  },
+              )
+              return urllib.request.urlopen(request, timeout=20)
+
           try:
-              with urllib.request.urlopen(key_location, timeout=30) as response:
+              with fetch_public(key_location) as response:
                   public_key = response.read().decode("utf-8-sig").strip()
                   print(f"Key file check: HTTP {response.status}; content match: {public_key == key}")
           except urllib.error.HTTPError as error:
               print(f"ERROR: Key file could not be fetched: HTTP {error.code}")
+              print(f"Server: {error.headers.get('server', 'unknown')}; CF-Ray: {error.headers.get('cf-ray', 'not provided')}")
               sys.exit(1)
           except Exception as error:
               print(f"ERROR: Key file check failed ({type(error).__name__}).")
@@ -62,7 +73,7 @@ jobs:
               sys.exit(1)
 
           try:
-              with urllib.request.urlopen(sitemap_url, timeout=30) as response:
+              with fetch_public(sitemap_url) as response:
                   root = ET.fromstring(response.read())
           except Exception as error:
               print(f"ERROR: Sitemap could not be fetched or parsed ({type(error).__name__}).")
