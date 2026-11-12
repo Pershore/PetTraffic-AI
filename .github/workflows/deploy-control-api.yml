@@ -22,7 +22,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
       - run: npm test
+      - run: PYTHONPATH=.. python -m unittest discover -s test -p '*_test.py' -v
 
   deploy:
     if: github.event_name == 'workflow_dispatch'

@@ -45,6 +45,14 @@ The Worker has no production route/custom domain configured in this phase. It us
 
 Check current Cloudflare plan limits and D1/Workers usage in the account before deployment. The scaffold itself is free to keep in GitHub; actual Cloudflare usage depends on plan limits and requests. No paid AI model is called.
 
+## Automatic GitHub Actions sync
+
+After the Worker is deployed and authenticated:
+- Add the same newly generated Worker API token as GitHub Actions secret `PETTRAFFIC_CONTROL_API_TOKEN`.
+- Add repository variable `PETTRAFFIC_CONTROL_API_URL` with the Worker base URL, without a trailing slash.
+- The `sync-control-api.yml` workflow will send aggregate analytics, topic-radar, control-center and recommendation snapshots after successful main-branch runs.
+- If these two settings are absent, the sync workflow exits safely without sending anything; GitHub history remains the source of truth.
+
 The existing GitHub history remains the source of truth during the first rollout. Do not switch existing workflows to D1 until:
 1. the Worker health endpoint passes;
 2. authenticated event write/read checks pass;
