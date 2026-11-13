@@ -5,6 +5,12 @@ from datetime import datetime, timezone, timedelta
 from agent.control_center import WORKFLOWS, evaluate_workflow, evaluate_worker_health, evaluate_agent_orchestration, fetch_workflow_metadata, needs_attention, render
 
 class ControlCenterTests(unittest.TestCase):
+    def test_control_center_rechecks_after_worker_deployment(self):
+        with open(".github/workflows/control-center.yml", encoding="utf-8") as stream:
+            workflow = stream.read()
+        self.assertIn('      - "Deploy PetTraffic control API"', workflow)
+        self.assertIn("workflow_run:", workflow)
+
     def setUp(self):
         self.now = datetime(2026, 11, 12, 10, 0, tzinfo=timezone.utc)
 
