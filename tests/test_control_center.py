@@ -127,6 +127,46 @@ class ControlCenterTests(unittest.TestCase):
         self.assertTrue(needs_attention([result]))
         self.assertIn("06:17 UTC", result["detail"])
 
+    def test_workflow_updated_after_daily_schedule_waits_for_next_cycle(self):
+        now = datetime(2026, 11, 13, 11, 40, tzinfo=timezone.utc)
+        schedule = {"frequency": "daily", "hour": 6, "minute": 43, "grace_minutes": 60}
+        result = evaluate_workflow(
+            "Analytics",
+            [self.run_item()],
+            now,
+            36,
+            schedule,
+            workflow_updated_at="2026-11-13T09:18:00Z",
+        )
+        self.assertEqual(result["state"], "waiting")
+        self.assertIn("po paskutinio suplanuoto laiko", result["detail"])
+        self.assertFalse(needs_attention([result]))
+
+    def test_workflow_updated_before_daily_schedule_still_requires_cycle(self):
+        now = datetime(2026, 11, 13, 8, 10, tzinfo=timezone.utc)
+        schedule = {"frequency": "daily", "hour": 6, "minute": 43, "grace_minutes": 60}
+        result = evaluate_workflow(
+            "Analytics",
+            [self.run_item()],
+            now,
+            36,
+            schedule,
+            workflow_updated_at="2026-11-13T05:00:00Z",
+        )
+        self.assertEqual(result["state"], "warning")
+        self.assertIn("2026-11-13 06:43 UTC", result["detail"])
+
+    def test_disabled_workflow_is_reported(self):
+        result = evaluate_workflow(
+            "Analytics",
+            [self.run_item()],
+            self.now,
+            36,
+            workflow_state="disabled_inactivity",
+        )
+        self.assertEqual(result["state"], "warning")
+        self.assertIn("disabled_inactivity", result["detail"])
+
     def test_previous_success_does_not_mask_a_missed_daily_cycle(self):
         now = datetime(2026, 11, 13, 8, 10, tzinfo=timezone.utc)
         previous = {
