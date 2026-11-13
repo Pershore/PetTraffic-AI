@@ -40,7 +40,7 @@ const env = {
   DB: {
     prepare(sql) {
       return {
-        first: async () => sql.includes("system_heartbeats") || sql.includes("agent_runs") ? null : ({ ok: 1 }),
+        first: async () => sql.includes("system_heartbeats") || sql.includes("agent_runs") || sql.includes("SELECT run_date, status, core_version") || sql.includes("WHERE memory_key = 'latest_control_decision'") ? null : ({ ok: 1 }),
         bind() {
           return {
             run: async () => ({ meta: { changes: 1 } }),
@@ -61,6 +61,7 @@ test("health endpoint confirms database connectivity without exposing secrets", 
     service: "pettraffic-control-api",
     database: "connected",
     control_core_schema: "connected",
+    control_core: { status: "not_started", memory_status: "missing", memory_updated_at: null },
     heartbeat: null,
     agent_orchestration: { status: "not_started" },
   });
@@ -78,7 +79,7 @@ test("health endpoint exposes the latest scheduled heartbeat", async () => {
     DB: {
       prepare(sql) {
         return {
-          first: async () => sql.includes("system_heartbeats") ? heartbeat : sql.includes("agent_runs") ? null : ({ ok: 1 }),
+          first: async () => sql.includes("system_heartbeats") ? heartbeat : sql.includes("agent_runs") || sql.includes("SELECT run_date, status, core_version") || sql.includes("WHERE memory_key = 'latest_control_decision'") ? null : ({ ok: 1 }),
         };
       },
     },
@@ -118,6 +119,48 @@ test("health endpoint exposes only aggregate AI orchestration execution metadata
     ...agentRun,
     error_code: "model_error__model_not_available",
   });
+});
+
+test("health endpoint reports control-core persistence without exposing decision text", async () => {
+  const coreRun = {
+    run_date: "2026-11-13",
+    status: "needs_evidence",
+    core_version: "1.0.0",
+    created_at: "2026-11-13T08:21:00.000Z",
+    decision_json: JSON.stringify({
+      recommendations: ["Review sitemap."],
+      evidence_gaps: ["GA4 unavailable"],
+    }),
+  };
+  const coreMemory = { updated_at: "2026-11-13T08:21:00.000Z" };
+  const coreEnv = {
+    ...env,
+    DB: {
+      prepare(sql) {
+        return {
+          first: async () => {
+            if (sql.includes("SELECT run_date, status, core_version")) return coreRun;
+            if (sql.includes("WHERE memory_key = 'latest_control_decision'")) return coreMemory;
+            return null;
+          },
+        };
+      },
+    },
+  };
+  const response = await worker.fetch(new Request("https://api.example/health"), coreEnv);
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.deepEqual(body.control_core, {
+    run_date: coreRun.run_date,
+    status: coreRun.status,
+    core_version: coreRun.core_version,
+    created_at: coreRun.created_at,
+    recommendation_count: 1,
+    evidence_gap_count: 1,
+    memory_status: "present",
+    memory_updated_at: coreMemory.updated_at,
+  });
+  assert.doesNotMatch(JSON.stringify(body), /Review sitemap|GA4 unavailable/);
 });
 
 test("versioned endpoints reject requests without GitHub OIDC identity", async () => {
