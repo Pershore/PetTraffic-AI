@@ -28,7 +28,8 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: "3.x"
+          # Keep diagnostics on the same stable runtime as the main analytics workflow.
+          python-version: "3.13"
       - name: Run connectivity unit tests
         run: python -m unittest discover -s tests -p 'test_analytics_connectivity.py' -v
       - name: Install Google API authentication
