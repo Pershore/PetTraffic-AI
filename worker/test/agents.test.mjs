@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { runAgentOrchestration, isVilniusAgentRunTime, parseResult, extractResponseText, callModel } from "../src/agents.mjs";
+import { runAgentOrchestration, isVilniusAgentRunTime, isAgentScheduledEvent, parseResult, extractResponseText, callModel } from "../src/agents.mjs";
 function mockEnv({ai=true,existingRun=false,reserveErrorAt=0,reserveErrorBeforeCommit=false,reserveReadbackError=false,invalidEventPayload=false,modelResponse=null}={}) {
  const state={inserted:false,aiCalls:0,updates:[],reservationErrorThrown:false};
  const env={FETCH:async()=>new Response("<html><body><p>Test content</p></body></html>",{status:200}),DB:{prepare(sql){return {
@@ -95,4 +95,18 @@ test("Workers AI receives enough output budget for the complete JSON response",a
  assert.equal(received.model,"@cf/openai/gpt-oss-20b");
  assert.equal(received.options.max_output_tokens,1024);
  assert.equal(received.options.reasoning.effort,"low");
+});
+
+
+test("agent cron uses Cloudflare scheduledTime even when invocation is delayed",()=>{
+ const controller={cron:"20 7,8 * * *",scheduledTime:Date.parse("2026-11-14T08:20:00.000Z")};
+ assert.equal(isAgentScheduledEvent(controller),true);
+});
+test("agent cron ignores the 09:20 Vilnius winter trigger",()=>{
+ const controller={cron:"20 7,8 * * *",scheduledTime:Date.parse("2026-11-14T07:20:00.000Z")};
+ assert.equal(isAgentScheduledEvent(controller),false);
+});
+test("agent cron ignores heartbeat events and missing scheduled timestamps",()=>{
+ assert.equal(isAgentScheduledEvent({cron:"*/15 * * * *",scheduledTime:Date.parse("2026-11-14T08:20:00.000Z")}),false);
+ assert.equal(isAgentScheduledEvent({cron:"20 7,8 * * *"}),false);
 });

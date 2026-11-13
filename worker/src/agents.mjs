@@ -1,6 +1,15 @@
+const AGENT_CRON = "20 7,8 * * *";
+
 export function isVilniusAgentRunTime(date = new Date()) {
   const localTime = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Vilnius", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(date);
   return localTime === "10:20";
+}
+
+export function isAgentScheduledEvent(controller) {
+  if (controller?.cron !== AGENT_CRON || !Number.isFinite(controller.scheduledTime)) return false;
+  // Cloudflare may deliver a cron event after its nominal minute. Evaluate the
+  // event's scheduled timestamp, not the wall-clock time when this handler runs.
+  return isVilniusAgentRunTime(new Date(controller.scheduledTime));
 }
 
 import { buildControlDecision, persistControlDecision } from "./control-core.mjs";
