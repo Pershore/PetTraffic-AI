@@ -34,7 +34,12 @@ gh auth setup-git
 if ! codex login status >/dev/null 2>&1; then
   echo
   echo "2/2 – Codex prisijungimas per ChatGPT:"
-  codex login --device-auth
+  if ! codex login --device-auth; then
+    echo "Codex įrenginio kodo prisijungimas nepavyko." >&2
+    echo "Patikrinkite ChatGPT Settings → Security → Device code login (beta)." >&2
+    echo "Jei naudojate valdomą darbo sritį, šį nustatymą turi įjungti administratorius." >&2
+    exit 1
+  fi
 fi
 
 WORKDIR="$HOME/PetTraffic-AI"
