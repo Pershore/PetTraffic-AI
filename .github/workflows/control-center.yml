@@ -53,7 +53,8 @@ permissions:
 
 concurrency:
   group: pettraffic-control-center
-  cancel-in-progress: true
+  # Queue newer checks instead of cancelling the active test run on each PR update.
+  cancel-in-progress: false
 
 jobs:
   control-center:

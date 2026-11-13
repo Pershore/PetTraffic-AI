@@ -12,21 +12,99 @@ OUT = Path("reports/control-center.md")
 OUT_JSON = Path("reports/control-center.json")
 REPO = os.environ.get("GITHUB_REPOSITORY", "Pershore/PetTraffic-AI")
 TOKEN = os.environ.get("GITHUB_TOKEN", "").strip()
+# GitHub Actions cron expressions use UTC. A 60-minute grace avoids alerting
+# on normal scheduler delays while still detecting a missed daily/weekly cycle.
 WORKFLOWS = [
-    ("analytics-snapshot.yml", "GA4 ir Search Console", 36),
-    ("sync-control-api.yml", "Centrinės API sinchronizavimas", 36),
-    ("daily-topic-radar.yml", "Temų radaras", 36),
-    ("live-site-monitor.yml", "Svetainės stebėjimas", 36),
-    ("lighthouse-audit.yml", "Lighthouse auditas", 9 * 24),
-    ("control-center.yml", "Centrinis valdymo centras", 36),
+    ("analytics-snapshot.yml", "GA4 ir Search Console", 36, {"frequency": "daily", "hour": 6, "minute": 43, "grace_minutes": 60}),
+    ("sync-control-api.yml", "Centrinės API sinchronizavimas", 36, None),
+    ("daily-topic-radar.yml", "Temų radaras", 36, {"frequency": "daily", "hour": 6, "minute": 17, "grace_minutes": 60}),
+    ("live-site-monitor.yml", "Svetainės stebėjimas", 36, {"frequency": "daily", "hour": 7, "minute": 5, "grace_minutes": 60}),
+    ("lighthouse-audit.yml", "Lighthouse auditas", 9 * 24, {"frequency": "weekly", "weekday": 0, "hour": 7, "minute": 20, "grace_minutes": 60}),
+    ("control-center.yml", "Centrinis valdymo centras", 36, {"frequency": "daily", "hour": 8, "minute": 0, "grace_minutes": 60}),
 ]
 
 def parse_time(value: str) -> datetime:
     parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
     return (parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)).astimezone(timezone.utc)
 
-def evaluate_workflow(name: str, runs: list[dict], now: datetime, max_age_hours: int) -> dict:
+def current_schedule_is_due(now: datetime, schedule: dict) -> bool:
+    """Return whether today's scheduled cycle has passed its grace window."""
+    current = now.astimezone(timezone.utc)
+    due = current.replace(
+        hour=int(schedule["hour"]),
+        minute=int(schedule["minute"]),
+        second=0,
+        microsecond=0,
+    )
+    grace = timedelta(minutes=int(schedule.get("grace_minutes", 60)))
+    frequency = schedule.get("frequency")
+    if frequency == "daily":
+        return current >= due + grace
+    if frequency == "weekly":
+        weekday = int(schedule["weekday"])
+        days_back = (current.weekday() - weekday) % 7
+        due = (current - timedelta(days=days_back)).replace(
+            hour=int(schedule["hour"]),
+            minute=int(schedule["minute"]),
+            second=0,
+            microsecond=0,
+        )
+        return current >= due + grace
+    raise ValueError(f"Unsupported schedule frequency: {frequency}")
+
+
+def latest_schedule_due(now: datetime, schedule: dict) -> datetime:
+    """Return the latest expected schedule time whose grace window has passed."""
+    current = now.astimezone(timezone.utc)
+    due = current.replace(
+        hour=int(schedule["hour"]),
+        minute=int(schedule["minute"]),
+        second=0,
+        microsecond=0,
+    )
+    grace = timedelta(minutes=int(schedule.get("grace_minutes", 60)))
+    frequency = schedule.get("frequency")
+    if frequency == "daily":
+        if current < due + grace:
+            due -= timedelta(days=1)
+        return due
+    if frequency == "weekly":
+        weekday = int(schedule["weekday"])
+        days_back = (current.weekday() - weekday) % 7
+        due = (current - timedelta(days=days_back)).replace(
+            hour=int(schedule["hour"]),
+            minute=int(schedule["minute"]),
+            second=0,
+            microsecond=0,
+        )
+        if current < due + grace:
+            due -= timedelta(days=7)
+        return due
+    raise ValueError(f"Unsupported schedule frequency: {frequency}")
+
+
+def evaluate_workflow(
+    name: str,
+    runs: list[dict],
+    now: datetime,
+    max_age_hours: int,
+    schedule: dict | None = None,
+) -> dict:
     if not runs:
+        if schedule and current_schedule_is_due(now, schedule):
+            due = now.astimezone(timezone.utc).replace(
+                hour=int(schedule["hour"]),
+                minute=int(schedule["minute"]),
+                second=0,
+                microsecond=0,
+            )
+            return {
+                "name": name,
+                "state": "warning",
+                "detail": f"Suplanuotas ciklas ({due.strftime('%H:%M')} UTC) praėjo su atsargos laiku, tačiau paleidimo nerasta.",
+                "url": None,
+                "created_at": None,
+            }
         return {"name": name, "state": "missing", "detail": "Dar nėra pirmo užregistruoto paleidimo; laukiama artimiausio suplanuoto ciklo.", "url": None, "created_at": None}
     latest = max(runs, key=lambda item: item.get("created_at", ""))
     created_raw = latest.get("created_at", "")
@@ -47,13 +125,63 @@ def evaluate_workflow(name: str, runs: list[dict], now: datetime, max_age_hours:
         return {**base, "state": "warning", "detail": f"Paskutinio paleidimo rezultatas: {conclusion}."}
     if conclusion not in ("success", "neutral", "skipped"):
         return {**base, "state": "unknown", "detail": f"Nežinoma išvada: {conclusion}."}
+    if schedule:
+        due = latest_schedule_due(now, schedule)
+        scheduled_runs = [item for item in runs if item.get("event") == "schedule"]
+        scheduled_latest = max(
+            scheduled_runs,
+            key=lambda item: item.get("created_at", ""),
+            default=None,
+        )
+        scheduled_created_raw = scheduled_latest.get("created_at", "") if scheduled_latest else ""
+        try:
+            scheduled_created = parse_time(scheduled_created_raw) if scheduled_latest else None
+        except (TypeError, ValueError):
+            return {
+                **base,
+                "state": "unknown",
+                "detail": "Suplanuoto paleidimo data neatpažinta.",
+            }
+        if scheduled_created is None or scheduled_created < due:
+            scheduled_detail = (
+                f"paskutinis suplanuotas paleidimas buvo {scheduled_created_raw}"
+                if scheduled_created_raw else "suplanuotų paleidimų istorijoje nėra"
+            )
+            return {
+                **base,
+                "state": "warning",
+                "detail": (
+                    f"Suplanuotas ciklas nuo {due.strftime('%Y-%m-%d %H:%M')} UTC dar neįvykdytas; "
+                    f"{scheduled_detail}. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia."
+                ),
+            }
+        scheduled_status = scheduled_latest.get("status")
+        scheduled_conclusion = scheduled_latest.get("conclusion")
+        if scheduled_status in ("queued", "in_progress", "waiting", "pending"):
+            return {
+                **base,
+                "state": "running",
+                "detail": f"Suplanuotas ciklas vykdomas ({scheduled_status}).",
+            }
+        if scheduled_conclusion == "failure":
+            return {
+                **base,
+                "state": "failure",
+                "detail": "Paskutinis suplanuotas ciklas nepavyko.",
+            }
+        if scheduled_conclusion not in ("success", "neutral", "skipped"):
+            return {
+                **base,
+                "state": "warning",
+                "detail": f"Suplanuoto ciklo išvada nepatvirtinta: {scheduled_conclusion}.",
+            }
     if age > timedelta(hours=max_age_hours):
         hours = int(age.total_seconds() // 3600)
         return {**base, "state": "stale", "detail": f"Paskutinis sėkmingas paleidimas prieš {hours} val.; tikėtasi per {max_age_hours} val."}
     return {**base, "state": "success", "detail": "Paskutinis paleidimas sėkmingas."}
 
 def fetch_runs(workflow_file: str) -> list[dict]:
-    endpoint = f"https://api.github.com/repos/{REPO}/actions/workflows/{quote(workflow_file, safe='')}/runs?branch=main&per_page=5"
+    endpoint = f"https://api.github.com/repos/{REPO}/actions/workflows/{quote(workflow_file, safe='')}/runs?branch=main&per_page=100"
     request = Request(endpoint, headers={
         "Accept": "application/vnd.github+json",
         "Authorization": f"Bearer {TOKEN}",
@@ -172,9 +300,9 @@ def main() -> int:
         return 2
     now = datetime.now(timezone.utc)
     results = []
-    for filename, label, max_age in WORKFLOWS:
+    for filename, label, max_age, schedule in WORKFLOWS:
         try:
-            item = evaluate_workflow(label, fetch_runs(filename), now, max_age)
+            item = evaluate_workflow(label, fetch_runs(filename), now, max_age, schedule)
         except (HTTPError, URLError, TimeoutError, OSError, ValueError) as exc:
             item = {"name":label,"state":"api_error","detail":f"GitHub API patikra nepavyko ({type(exc).__name__}).","url":None,"created_at":None}
         results.append(item)

@@ -112,6 +112,104 @@ class ControlCenterTests(unittest.TestCase):
         self.assertNotIn("**Patikrinti:** Temų radaras", report)
         self.assertIn("Nerasta veiksmų reikalaujančių būsenų.", report)
 
+    def test_missing_daily_first_run_before_schedule_grace_is_not_an_alert(self):
+        now = datetime(2026, 11, 13, 6, 30, tzinfo=timezone.utc)
+        schedule = {"frequency": "daily", "hour": 6, "minute": 17, "grace_minutes": 60}
+        result = evaluate_workflow("Temų radaras", [], now, 36, schedule)
+        self.assertEqual(result["state"], "missing")
+        self.assertFalse(needs_attention([result]))
+
+    def test_missing_daily_first_run_after_schedule_grace_is_an_alert(self):
+        now = datetime(2026, 11, 13, 8, 10, tzinfo=timezone.utc)
+        schedule = {"frequency": "daily", "hour": 6, "minute": 17, "grace_minutes": 60}
+        result = evaluate_workflow("Temų radaras", [], now, 36, schedule)
+        self.assertEqual(result["state"], "warning")
+        self.assertTrue(needs_attention([result]))
+        self.assertIn("06:17 UTC", result["detail"])
+
+    def test_previous_success_does_not_mask_a_missed_daily_cycle(self):
+        now = datetime(2026, 11, 13, 8, 10, tzinfo=timezone.utc)
+        previous = {
+            "created_at": "2026-11-12T21:37:08Z",
+            "event": "push",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/example/run/1",
+        }
+        schedule = {"frequency": "daily", "hour": 6, "minute": 43, "grace_minutes": 60}
+        result = evaluate_workflow("Analytics", [previous], now, 36, schedule)
+        self.assertEqual(result["state"], "warning")
+        self.assertIn("2026-11-13 06:43 UTC", result["detail"])
+
+    def test_recent_push_run_does_not_count_as_scheduled_cycle(self):
+        now = datetime(2026, 11, 13, 8, 10, tzinfo=timezone.utc)
+        pushed = {
+            "created_at": "2026-11-13T08:05:00Z",
+            "event": "push",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/example/run/push",
+        }
+        schedule = {"frequency": "daily", "hour": 6, "minute": 43, "grace_minutes": 60}
+        result = evaluate_workflow("Analytics", [pushed], now, 36, schedule)
+        self.assertEqual(result["state"], "warning")
+        self.assertIn("Kiti paleidimo tipai", result["detail"])
+
+    def test_current_schedule_run_counts_even_if_a_later_push_exists(self):
+        now = datetime(2026, 11, 13, 8, 10, tzinfo=timezone.utc)
+        scheduled = {
+            "created_at": "2026-11-13T07:50:00Z",
+            "event": "schedule",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/example/run/schedule",
+        }
+        pushed = {
+            "created_at": "2026-11-13T08:05:00Z",
+            "event": "push",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/example/run/push",
+        }
+        schedule = {"frequency": "daily", "hour": 6, "minute": 43, "grace_minutes": 60}
+        result = evaluate_workflow("Analytics", [scheduled, pushed], now, 36, schedule)
+        self.assertEqual(result["state"], "success")
+
+    def test_success_after_scheduled_cycle_grace_is_current(self):
+        now = datetime(2026, 11, 13, 8, 10, tzinfo=timezone.utc)
+        current = {
+            "created_at": "2026-11-13T07:50:00Z",
+            "event": "schedule",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/example/run/2",
+        }
+        schedule = {"frequency": "daily", "hour": 6, "minute": 43, "grace_minutes": 60}
+        result = evaluate_workflow("Analytics", [current], now, 36, schedule)
+        self.assertEqual(result["state"], "success")
+
+    def test_event_driven_workflow_missing_run_is_not_a_schedule_alert(self):
+        result = evaluate_workflow("Centrinės API sinchronizavimas", [], self.now, 36, None)
+        self.assertEqual(result["state"], "missing")
+        self.assertFalse(needs_attention([result]))
+
+    def test_weekly_missing_workflow_alerts_until_a_current_week_run_exists(self):
+        before_monday_schedule = datetime(2026, 11, 16, 7, 30, tzinfo=timezone.utc)
+        schedule = {"frequency": "weekly", "weekday": 0, "hour": 7, "minute": 20, "grace_minutes": 60}
+        result = evaluate_workflow("Lighthouse", [], before_monday_schedule, 9 * 24, schedule)
+        self.assertEqual(result["state"], "missing")
+        self.assertFalse(needs_attention([result]))
+
+        monday_after_grace = datetime(2026, 11, 16, 8, 30, tzinfo=timezone.utc)
+        result = evaluate_workflow("Lighthouse", [], monday_after_grace, 9 * 24, schedule)
+        self.assertEqual(result["state"], "warning")
+        self.assertTrue(needs_attention([result]))
+
+        friday = datetime(2026, 11, 20, 12, 0, tzinfo=timezone.utc)
+        result = evaluate_workflow("Lighthouse", [], friday, 9 * 24, schedule)
+        self.assertEqual(result["state"], "warning")
+        self.assertTrue(needs_attention([result]))
+
     def test_success_and_running_do_not_alert(self):
         self.assertFalse(needs_attention([{"state": "success"}, {"state": "running"}]))
 
