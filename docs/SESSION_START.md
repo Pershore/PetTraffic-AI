@@ -26,6 +26,16 @@ Atnaujinta: 2026-11-13
 - **NEBAIGTA / WAITING** — laukiama suplanuoto ciklo, vartotojo sprendimo ar trūkstamų įrodymų.
 - **PLANUOJAMA** — dar nepradėta; nevadinti įgyvendinta.
 
+## Naujausias tęstinumo taškas (2026-11-13 17:12 UTC)
+
+- PR #150, #151, #152 ir #153 sujungti. #151, #152 ir #153 site-check patikros – success; po sujungimų main site-check run 43469741292 – success.
+- Voice-first / zero-manual-work taisyklė įrašyta į AGENTS.md ir docs/SESSION_START.md; detali architektūra docs/VOICE_FIRST_AUTONOMY.md.
+- Pagrindinis kasdienis priežiūros agentas aktyvus, kitas vykdymas 2026-11-14 09:45 Europe/Vilnius. Vienkartinė AI atminties patikra suplanuota 10:35, po Worker agentų ciklo 10:20.
+- Naujausias analytics snapshot run 43443849180: GA4 ReadTimeout (15 s), Search Console API veikia, bet 2026-11-04–2026-11-10 rodikliai 0 parodymų / 0 paspaudimų; sitemap apdorojimas laukiamas, prioritetiniai URL Google dar nežinomi.
+- Peržiūrėjus 100 naujausių Actions vykdymų nerasta event=schedule. Cron YAML yra, bet tikroji Actions nustatymų priežastis nepatvirtinta; dabartinė GitHub jungtis neturi Actions settings skaitymo / keitimo funkcijos.
+- Kitas prioritetas: po 2026-11-14 10:20 ciklo įrodyti D1 AI atminties įrašymą arba taisyti pagal tikslų stage klaidos kodą. Tada tęsti schedule ir GA4 diagnostiką.
+- Žr. visą naujausią įrašą `docs/PETTRAFFIC_AI_HANDOVER_2026-11-13.md`, 9 skyrių.
+
 ## Paskutinis žinomas tęstinumo taškas (2026-11-13)
 
 - PR #147 tęstinumo ir automatinio darbo žurnalo pakeitimai sujungti.
