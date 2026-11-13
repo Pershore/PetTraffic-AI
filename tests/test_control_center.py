@@ -131,6 +131,7 @@ class ControlCenterTests(unittest.TestCase):
         now = datetime(2026, 11, 13, 8, 10, tzinfo=timezone.utc)
         previous = {
             "created_at": "2026-11-12T21:37:08Z",
+            "event": "push",
             "status": "completed",
             "conclusion": "success",
             "html_url": "https://github.com/example/run/1",
@@ -140,10 +141,45 @@ class ControlCenterTests(unittest.TestCase):
         self.assertEqual(result["state"], "warning")
         self.assertIn("2026-11-13 06:43 UTC", result["detail"])
 
+    def test_recent_push_run_does_not_count_as_scheduled_cycle(self):
+        now = datetime(2026, 11, 13, 8, 10, tzinfo=timezone.utc)
+        pushed = {
+            "created_at": "2026-11-13T08:05:00Z",
+            "event": "push",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/example/run/push",
+        }
+        schedule = {"frequency": "daily", "hour": 6, "minute": 43, "grace_minutes": 60}
+        result = evaluate_workflow("Analytics", [pushed], now, 36, schedule)
+        self.assertEqual(result["state"], "warning")
+        self.assertIn("Kiti paleidimo tipai", result["detail"])
+
+    def test_current_schedule_run_counts_even_if_a_later_push_exists(self):
+        now = datetime(2026, 11, 13, 8, 10, tzinfo=timezone.utc)
+        scheduled = {
+            "created_at": "2026-11-13T07:50:00Z",
+            "event": "schedule",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/example/run/schedule",
+        }
+        pushed = {
+            "created_at": "2026-11-13T08:05:00Z",
+            "event": "push",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/example/run/push",
+        }
+        schedule = {"frequency": "daily", "hour": 6, "minute": 43, "grace_minutes": 60}
+        result = evaluate_workflow("Analytics", [scheduled, pushed], now, 36, schedule)
+        self.assertEqual(result["state"], "success")
+
     def test_success_after_scheduled_cycle_grace_is_current(self):
         now = datetime(2026, 11, 13, 8, 10, tzinfo=timezone.utc)
         current = {
             "created_at": "2026-11-13T07:50:00Z",
+            "event": "schedule",
             "status": "completed",
             "conclusion": "success",
             "html_url": "https://github.com/example/run/2",
