@@ -165,6 +165,10 @@ async function handle(request, env) {
       const heartbeat = await env.DB.prepare(
         "SELECT checked_at, site_ok, site_status, database_ok FROM system_heartbeats ORDER BY checked_at DESC LIMIT 1"
       ).first();
+      // Expose only aggregate execution metadata; never return prompts, model output or stored reports.
+      const agentRun = await env.DB.prepare(
+        "SELECT run_date, status, ai_calls, started_at, completed_at FROM agent_runs ORDER BY run_date DESC LIMIT 1"
+      ).first();
       return response({
         ok: true,
         service: "pettraffic-control-api",
@@ -176,6 +180,13 @@ async function handle(request, env) {
           site_status: Number(heartbeat.site_status),
           database_ok: Number(heartbeat.database_ok) === 1,
         } : null,
+        agent_orchestration: agentRun ? {
+          run_date: agentRun.run_date,
+          status: agentRun.status,
+          ai_calls: Number(agentRun.ai_calls),
+          started_at: agentRun.started_at,
+          completed_at: agentRun.completed_at,
+        } : { status: "not_started" },
       }, 200, origin);
     } catch {
       return response({ ok: false, error: "database_unavailable" }, 503, origin);
