@@ -7,6 +7,7 @@ from pathlib import Path
 from urllib.parse import quote
 import json
 import os
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import sys
 import time
 import xml.etree.ElementTree as ET
@@ -120,7 +121,33 @@ def gsc_inspect(session, url: str, site_url: str) -> dict:
         "inspectionUrl": url,
         "siteUrl": site_url,
         "languageCode": "lt",
-    })
+    }, retry_read_timeout=False)
+
+
+def gsc_inspect_many(session_factory, urls: list[str], site_url: str) -> dict:
+    """Inspect priority URLs concurrently, isolating failures per URL."""
+    if not urls:
+        return {}
+
+    def inspect_one(url: str):
+        local_session = session_factory()
+        try:
+            return gsc_inspect(local_session, url, site_url)
+        finally:
+            close = getattr(local_session, "close", None)
+            if callable(close):
+                close()
+
+    results = {}
+    with ThreadPoolExecutor(max_workers=min(5, len(urls))) as executor:
+        futures = {executor.submit(inspect_one, url): url for url in urls}
+        for future in as_completed(futures):
+            url = futures[future]
+            try:
+                results[url] = future.result()
+            except Exception as exc:
+                results[url] = exc
+    return results
 
 
 def gsc_sitemaps(session, site_url: str) -> list[dict]:
@@ -438,9 +465,18 @@ def main() -> int:
                 "| Puslapis | Būsena | Google paaiškinimas | Robots.txt | Indeksavimas | Paskutinis tikrinimas |",
                 "|---|---|---|---|---|---|",
             ]
-            for inspected_url in priority_urls(gsc_site):
+            inspection_urls = priority_urls(gsc_site)
+            inspection_results = gsc_inspect_many(
+                lambda: AuthorizedSession(credentials),
+                inspection_urls,
+                gsc_site,
+            )
+            for inspected_url in inspection_urls:
                 try:
-                    inspection = gsc_inspect(session, inspected_url, gsc_site).get("inspectionResult", {})
+                    inspection_response = inspection_results[inspected_url]
+                    if isinstance(inspection_response, Exception):
+                        raise inspection_response
+                    inspection = inspection_response.get("inspectionResult", {})
                     status = inspection.get("indexStatusResult", {})
                     path_label = inspected_url.replace(gsc_site.rstrip("/"), "") or "/"
                     coverage = status.get("coverageState", "Google duomenų dar nėra")
