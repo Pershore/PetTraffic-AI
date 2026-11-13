@@ -48,9 +48,20 @@ jobs:
               with urllib.request.urlopen(request, timeout=20) as response:
                   return json.loads(response.read())
 
+          schedules = get_cloudflare(
+              f"https://api.cloudflare.com/client/v4/accounts/{account}/workers/scripts/pettraffic-control-api/schedules"
+          )
+          if not schedules.get("success"):
+              raise SystemExit("Cloudflare did not confirm Worker schedules.")
+          actual = sorted({item.get("cron") for item in schedules.get("result", {}).get("schedules", []) if item.get("cron")})
+          expected = {"*/15 * * * *", "20 7,8 * * *"}
+          missing = sorted(expected - set(actual))
+          print("Registered Worker schedules: " + ", ".join(actual))
+          if missing:
+              raise SystemExit("Expected schedules missing: " + ", ".join(missing))
+
           # The public Worker /health endpoint is verified independently by the browser.
           # This credentialed runner only calls Cloudflare's API and Wrangler.
-          print("Worker Cron schedules are registered; public /health is verified separately.")
           PY
 
       - name: Observe Worker invocations for one cron interval
