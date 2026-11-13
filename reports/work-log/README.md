@@ -50,6 +50,17 @@ Paskirtis: fiksuoti atliktus darbus, jų trukmę, patikrinimus ir sprendimus, ka
 | 2026-11-13 | Ilgalaikio projekto tęstinumo patikra: perskaityta projekto būsena, patikrintas main ir automation-history medžių turinys, darbo žurnalas, PR #131 ir control-center run #107 | Tikslūs sesijos pradžios/pabaigos laikai neišmatuoti | NEMATUOTA | NEMATUOTA | NEMATUOTA | NEAPSKAIČIUOTA | Patvirtinta: PR #131 sujungtas; deploy patikra #54 ir site checks #388 – success; control-center run #107 – success, bet jo ataskaitoje projekto būsena REIKIA DĖMESIO dėl „AI agentai + control-core atmintis“ klaidos „Unexpected_end_of_JSON_input“. automation-history šaka saugo tik reports/history agregatus; darbo žurnalas lieka main. Sukurtas tęstinumo perdavimo dokumento atnaujinimo PR; jokie production nustatymai ar ARO Vet pakeitimai neatlikti. |
 
 | 2026-11-13 | Voice-first taisyklės ir automatizacijų tvarkaraščių dokumentacijos atnaujinimas (PR #151, #152) | GitHub įvykiai 17:04–17:06 UTC; aktyvūs laikai neišmatuoti | NEMATUOTA | NEMATUOTA | NEMATUOTA | NEAPSKAIČIUOTA | PR #151 sujungtas commit 1f046bf; site-check run 43469054324 – success. PR #152 sujungtas commit 2f2abd7; site-check run 43469355419 – success. Atnaujinti AGENTS.md ir docs/SESSION_START.md, sukurtas docs/VOICE_FIRST_AUTONOMY.md; suderinti dokumentuoti cron laikai su workflow failais. Peržiūrėjus 100 naujausių Actions vykdymų nerasta event=schedule įrašų; cron konfigūracija yra, tačiau Actions nustatymų prieigos per dabartinę jungtį nėra. Jokių production, DNS, secrets ar ARO Vet pakeitimų. |
+## 2026-11-14 – sistemos auditas ir paieškos regresijos taisymas
+
+- Atlikta GitHub `main` ir `automation-history` būsenos, naujausių commit/PR, Actions vykdymų, Worker kodo, cron konfigūracijos ir darbo žurnalo patikra.
+- Gyvas Worker `/health`: HTTP 200; D1 ir control-core schema connected. Paskutinis heartbeat `2026-11-13T22:00:47.423Z`; AI run `2026-11-13 / failed / ai_calls=1 / Unexpected_end_of_JSON_input`; control-core `not_started`; memory `missing`. Tai patvirtina pasiekiamą API, bet ne periodinio cron ar AI atminties veikimą.
+- GitHub Actions API: nuo `2026-11-14T00:00:00Z` naujų run nerasta; Issue #145 tebėra open. YAML tvarkaraščiai egzistuoja, tačiau repository Actions settings per dabartinę jungtį neprieinami.
+- Vieši puslapiai: homepage, 4 pagrindiniai straipsniai, about, privacy, robots.txt ir sitemap.xml – HTTP 200.
+- Naršyklės testu nustatyta paieškos regresija: įvedus „šuo“, tik viena kortelė atitiko filtrą, bet likusios kortelės su `hidden=true` liko rodomos dėl `.article-card { display:flex }` CSS taisyklės. Pateikta pataisa `.article-card[hidden] { display:none!important }` ir regresijos testas atskirame PR.
+- GA4 paskutiniame turimame snapshot nepasiekiamas dėl `ReadTimeout`; Search Console API veikė atskirai. Naujo 2026-11-14 analytics snapshot nėra.
+- Firecrawl viešų puslapių patikra naudojo esamą kvotą; naujas mokamas planas ar API neaktyvuotas. ARO Vet, DNS, Worker/D1 production konfigūracija ir secrets nekeisti. Viešas turinys nepublikuotas.
+- Aktyvaus darbo ir įrankių laikas atskirai neišmatuoti; trukmės neišgalvotos.
+
 ## Automatinis darbo žurnalo papildymas
 
 - `.github/workflows/work-log.yml` po kiekvieno `main` šakos push automatiškai prideda GitHub commit įrašus į šią lentelę.

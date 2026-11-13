@@ -219,3 +219,6 @@ footer small{color:#65736a}
       color: #222;
       cursor: pointer;
     }
+
+/* The author display:flex rule must not override the HTML hidden attribute. */
+.article-card[hidden]{display:none!important}

@@ -1,8 +1,26 @@
 # PetTraffic AI — sesijos pradžios ir tęstinumo protokolas
 
-Atnaujinta: 2026-11-13
+Atnaujinta: 2026-11-14
 
 Šis failas skirtas ChatGPT, Codex, GitHub Copilot ir žmogui, kuris tęsia projektą po pertraukos.
+
+
+
+## Naujausias patikrintas tęstinumo taškas (2026-11-14)
+
+- Gyvas Worker `/health` atsakė HTTP 200; `database=connected`, `control_core_schema=connected`. Tačiau heartbeat paskutinis įrašas yra `2026-11-13T22:00:47.423Z`, todėl 15 min. periodinis vykdymas šiuo metu nepatvirtintas.
+- Tas pats /health rodo paskutinį AI agentų ciklą `2026-11-13 / failed`, `ai_calls=1`, `Unexpected_end_of_JSON_input`; control-core `not_started`, `memory_status=missing`. 2026-11-14 ciklo sėkmė nepatvirtinta.
+- GitHub Actions runs API užklausai nuo `2026-11-14T00:00:00Z` grąžino 0 vykdymų. YAML cron grafikai yra, bet šiandieninių schedule įvykių nėra; repository Actions settings per dabartinę integraciją nepasiekiami. Issue #145 liko open.
+- Gyvai patikrinti homepage, keturi pagrindiniai straipsniai, about, privacy, robots.txt ir sitemap.xml – visi HTTP 200. Paieškos regresija patvirtinta: įvedus „šuo“ liko viena atitinkanti kortelė, bet trys kortelės su `hidden=true` vis tiek turėjo `display:flex`; CSS taisymas ir regresijos testas pateikti PR.
+- GA4 paskutiniame turimame snapshot vis dar `ReadTimeout`; Search Console API atskirai veikė. Naujo 2026-11-14 snapshot nėra.
+- Termux/Codex telefone dar neįdiegtas ir tiesioginis ChatGPT→Termux kanalas neaktyvus. Dabartinė integracija nesuteikia tiesioginės Android shell ar Cloudflare paskyros/logų prieigos.
+- Nekeisti Cloudflare Worker/D1 production konfigūracijos, secrets, DNS ar ARO Vet. Jokių mokamų planų ar API nepirkti; turimas Firecrawl kvotinis limitas naudotas tik esamai viešų puslapių patikrai.
+- Naujausias perdavimas: `docs/PETTRAFFIC_AI_HANDOVER_2026-11-14.md`.
+
+### Kiti veiksmai
+1. Užbaigti paieškos CSS pataisą per PR, CI ir gyvą po-merge patikrą.
+2. Gauti read-only Cloudflare Worker cron/logų įrodymus ir nustatyti, kodėl heartbeat nuo 2026-11-13 neatsinaujino; nekartoti agentų ciklo rankiniu būdu ir nekeisti D1.
+3. Atkurti GitHub Actions schedule paleidimus, tada diagnozuoti GA4 timeout ir patvirtinti GSC nepriklausomą archyvavimą.
 
 ## Vienintelė teisinga darbo pradžios seka
 
