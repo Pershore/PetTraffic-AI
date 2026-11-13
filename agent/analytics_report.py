@@ -8,19 +8,38 @@ from urllib.parse import quote
 import json
 import os
 import sys
+import time
 import xml.etree.ElementTree as ET
 
 OUT = Path("reports/analytics-7d.md")
 
 
 def api_post(session, url: str, body: dict) -> dict:
-    response = session.post(url, json=body, timeout=30)
-    if not response.ok:
-        # Google APIs include a structured reason/message in the response body.
-        # Keep it in the report so permission and API-activation failures can be distinguished.
-        detail = response.text[:1200].replace("\\n", " ")
-        raise RuntimeError(f"Google API HTTP {response.status_code}: {detail}")
-    return response.json()
+    # Google APIs occasionally return transient 5xx/429 responses or slow reads.
+    # Retry once for those transport/server failures, but never retry permission errors.
+    for attempt in range(2):
+        try:
+            response = session.post(url, json=body, timeout=45)
+        except Exception as exc:
+            retryable = exc.__class__.__name__ in {
+                "ReadTimeout", "ConnectTimeout", "ConnectionError"
+            }
+            if retryable and attempt == 0:
+                print(f"Temporary Google API transport error ({type(exc).__name__}); retrying once.", file=sys.stderr)
+                time.sleep(3)
+                continue
+            raise
+        if response.status_code in (429, 500, 502, 503, 504) and attempt == 0:
+            print(f"Temporary Google API HTTP {response.status_code}; retrying once.", file=sys.stderr)
+            time.sleep(3)
+            continue
+        if not response.ok:
+            # Google APIs include a structured reason/message in the response body.
+            # Keep it in the report so permission and API-activation failures can be distinguished.
+            detail = response.text[:1200].replace("\\n", " ")
+            raise RuntimeError(f"Google API HTTP {response.status_code}: {detail}")
+        return response.json()
+    raise RuntimeError("Google API request failed after retry.")
 
 
 def ga_rows(session, url: str, start: date, end: date, metrics: list[str],
