@@ -133,3 +133,10 @@ GitHub dokumentai gali išsaugoti tęstinumo būseną, bet negali patys priverst
 - Termux/Codex dar neįdiegtas telefone. ChatGPT Remote localhost Offline nėra Termux ryšys; vietinio Android shell prieigos per dabartinius įrankius nėra.
 - Aktyvus kasdienis ChatGPT koordinatorius enabled; kitas vykdymas 2026-11-14 09:45 Europe/Vilnius. Vienkartinė D1 atminties patikra 10:35 Europe/Vilnius.
 - Kitas veiksmas: 10:20 agentų ciklo realus patvirtinimas; jei pavyksta – uždaryti central alert, jei ne – taisyti pagal naują klaidos etapą. Toliau GA4, GitHub Actions schedulerio ir Termux blokatoriai.
+
+
+## 2026-11-13 21:24 UTC – atminties patikros automatizacijos pataisa
+- Esama vienkartinė „Rytoj patikrinti PetTraffic AI atmintį“ automatizacija atnaujinta, nekurta dubliuojanti.
+- Ji skaito `reports/history/project-state/latest.md` iš `automation-history`, o `reports/work-log/README.md` iš `main`.
+- /health pateikiamą D1 atminties būseną aiškiai atskiria nuo tiesioginio D1 lentelių eilučių skaitymo; neleidžiama teigti daugiau, nei įrankiai patvirtina.
+- Išlieka enabled; numatytas laikas 2026-11-14 10:35 Europe/Vilnius, po Worker agentų 10:20 ciklo.

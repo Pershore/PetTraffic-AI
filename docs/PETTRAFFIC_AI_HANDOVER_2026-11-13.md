@@ -299,3 +299,12 @@ Vartotojui reikia įjungti ChatGPT Settings → Security → Device code login (
 - Worker / D1 veikia per esamus GitHub Actions ir Cloudflare credentials; šioje sesijoje nekeisti secrets, DNS, paskyros teisių ar D1 schemos.
 - ChatGPT GitHub jungtis nėra tiesioginis Cloudflare dashboard ar Android Termux shell valdymas. Vartotojo leidimas leidžia atlikti saugius darbus, bet pats nesukuria neegzistuojančio techninio kanalo.
 - Viešas prekės ženklas tik **Pet traffic**; ARO Vet neliečiamas; viešo turinio publikavimas lieka su patvirtinimo vartais; papildomas biudžetas 0 €/mėn.
+
+
+## 16. Vienkartinės D1 atminties patikros automatizacijos pataisa – 2026-11-13 21:24 UTC
+
+- Atnaujinta esama, jau suplanuota automatizacija „Rytoj patikrinti PetTraffic AI atmintį“; sukurta ne nauja, o pataisyta esama užduotis.
+- Ištaisyta šaltinių šakų klaida: `latest.md` skaitomas iš `automation-history`, o `reports/work-log/README.md` – iš `main`. Pastarojo failo nebuvimas `automation-history` yra tyčinis.
+- Patikros instrukcijoje aiškiai apribota įrodymų apimtis: viešas Worker `/health` pateikia D1/control-core būsenos agregatą, bet ne žalias D1 lentelių eilutes. Automatizacija nebegali teigti, kad tiesiogiai perskaitė `control_core_runs` ar `control_core_memory`, jei įrankis to nepateikė.
+- Išlaikytas esamas vienkartinis laikas: 2026-11-14 10:35 Europe/Vilnius. Ji tikrina po Worker agentų ciklo 10:20; nekeičia D1, neapeina kasdienio idempotentiškumo ir nesiunčia jokių paslapčių.
+- Automatizacija lieka enabled. Kitas žingsnis – realus 2026-11-14 10:20 Worker ciklas ir 10:35 atminties patikra.
