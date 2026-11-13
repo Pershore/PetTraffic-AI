@@ -2,7 +2,7 @@ name: Pet traffic live-site monitor
 
 on:
   schedule:
-    - cron: "5 7 * * *"
+    - cron: "11 7 * * *"
   workflow_dispatch:
   # Validate the production monitor whenever its checker or workflow changes.
   push:

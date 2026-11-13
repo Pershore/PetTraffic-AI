@@ -9,7 +9,7 @@ on:
       - 'tests/test_analytics_history.py'
       - '.github/workflows/analytics-snapshot.yml'
   schedule:
-    - cron: "43 6 * * *"
+    - cron: "47 6 * * *"
   workflow_dispatch:
 
 permissions:
