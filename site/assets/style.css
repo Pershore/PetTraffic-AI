@@ -221,7 +221,7 @@ footer small{color:#65736a}
     }
 
 
-/* Clearly disclosed ARO Vet partner product cards. */
+/* Clearly disclosed partner product cards. */
 .partner-products{margin-top:64px}
 .partner-disclosure{max-width:850px;margin:0 0 18px;padding:12px 15px;border:1px solid var(--line);border-radius:9px;background:#fafbf8;color:#526359;font-size:13px}
 .partner-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
