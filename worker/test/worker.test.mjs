@@ -512,7 +512,7 @@ test("GPT-OSS is called through Responses API with low reasoning and bounded out
     { role: "user", content: "source data" },
   ]);
   assert.deepEqual(request.reasoning, { effort: "low" });
-  assert.equal(request.max_output_tokens, 256);
+  assert.equal(request.max_output_tokens, 1024);
   assert.equal(result.status, "reviewed");
 });
 
