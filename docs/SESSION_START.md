@@ -8,12 +8,12 @@ Atnaujinta: 2026-11-14
 
 ## Naujausias patikrintas tęstinumo taškas (2026-11-14, 00:31 Europe/Vilnius)
 
-- GitHub PR #169–#173 sujungti; atvirų PR ir issue nėra. Issue #145 uždarytas automatiškai.
+- GitHub PR #169–#175 sujungti; atvirų PR ir issue nėra. Issue #145 uždarytas automatiškai.
 - Viešas Worker `/health` HTTP 200; D1 ir control-core schema connected. Heartbeat `2026-11-13T22:30:47.462Z` (00:30:47 vietos laiku), `site_ok=true`, `database_ok=true`; tai patvirtina 15 min. cron ir D1 heartbeat įrašymą.
 - Cloudflare API patvirtino grafikus `*/15 * * * *` ir `20 7,8 * * *`. Šiandienos AI ciklas dar laukia 10:20; atminties patikra 10:35, control-center 10:40. Ankstesnės dienos AI klaidos nelaikyti šiandienos nesėkme.
 - PR #169 sutaisė straipsnių filtrų CSS; gyvai patikrinta paieška „šuo“ 1/4, „katė“ 2/4, nerastas terminas 0/4 ir reset 4/4. Site-check praėjo 83 testus; Lighthouse 10 auditų našumas 98–100, SEO / Accessibility / Best Practices 100.
 - GA4 paskutiniame snapshot ReadTimeout; Search Console API veikė, bet 5 URL dar nežinomi Google indeksui, sitemap apdorojimas nepatvirtintas. Kitas analytics ciklas 08:47.
-- Naujas `worker-cron-diagnostic.yml` run #43518529439 šiuo metu vykdo 17 min. Wrangler tail stebėseną; rezultatas dar laukiamas.
+- Pirmasis Wrangler tail run #43518529439 baigė 17 min. stebėseną, bet parseris užstrigo ties string tipo `event` lauku. PR #175 išskyrė parserį į `tools/worker-tail/parse_logs.py` ir pridėjo 5 regresijos testus; naujas run #43521123258 šiuo metu vykdo stebėseną.
 - Saugumo veiksmas: pirmoji diagnostikos workflow versija nusiuntė `CLOUDFLARE_API_TOKEN` Authorization antraštę viešam Worker /health URL (atsakymas 403, reikšmė GitHub loguose nebuvo atspausdinta). Viešas probe pašalintas; žetoną laikyti galimai atskleistu, išrotuoti Cloudflare paskyroje ir atnaujinti GitHub secret `CLOUDFLARE_API_TOKEN`. Naujo rakto pokalbyje nesiųsti.
 - Termux/Codex telefone dar nesusieti; CI paruošimo patikros praėjo. ARO Vet, DNS, Worker/D1 production konfigūracija ir duomenys nekeisti; naujų mokamų paslaugų neįjungta.
 - Naujausias perdavimas: `docs/PETTRAFFIC_AI_HANDOVER_2026-11-14.md`.
