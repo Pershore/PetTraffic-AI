@@ -33,6 +33,8 @@ jobs:
       - name: Check safe setup invariants
         run: |
           grep -Fq 'codex login --device-auth' tools/termux/setup-debian.sh
+          grep -Fq 'Device code login' tools/termux/setup-debian.sh
+          grep -Fq 'Device code login' docs/TERMUX_CODEX_BRIDGE.md
           grep -Fq 'gh auth setup-git' tools/termux/setup-debian.sh
           grep -Fq 'proot-distro login debian' tools/termux/bootstrap.sh
           ! grep -Eiq '(OPENAI_API_KEY|CLOUDFLARE_API_TOKEN|CLOUDFLARE_GLOBAL_API_KEY)=' tools/termux/*.sh

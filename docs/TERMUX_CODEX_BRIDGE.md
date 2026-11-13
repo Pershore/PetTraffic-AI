@@ -20,6 +20,14 @@ Termux naudoja Android aplinką, o Codex CLI oficialiai skelbiamas Linux/macOS/W
 
 ## Vienkartinis diegimas
 
+### Prieš paleidžiant
+
+ChatGPT paskyros **Settings → Security** įjunkite **Device code login** (beta). Jei naudojama valdoma darbo sritis, šią galimybę turi įjungti jos administratorius. Be šio leidimo Codex įrenginio kodo prisijungimas gali būti neprieinamas.
+
+Kai `codex login --device-auth` prasidės, Termux terminalas pateiks vienkartinį patvirtinimo adresą ir kodą. Atidarykite adresą telefono naršyklėje, prisijunkite prie ChatGPT ir įveskite terminalo parodytą kodą. Kodo nesiųskite į pokalbį ir nedarykite jo ekrano nuotraukos.
+
+Jei Android automatiškai atidaro ChatGPT programėlę, bet nematote kodo įvedimo puslapio, grįžkite į Termux ir tą patį patvirtinimo adresą atidarykite Chrome arba kita naršykle.
+
 Po šio PR sujungimo paleisti Termux programoje:
 
 ```bash
