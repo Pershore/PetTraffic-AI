@@ -88,3 +88,14 @@ GitHub dokumentai gali išsaugoti tęstinumo būseną, bet negali patys priverst
 - Tai paruošia vietinį Codex ir GitHub CLI telefonui, bet dar nepatvirtina realaus diegimo Android įrenginyje ir nesukuria fone veikiančio užduočių pollerio.
 - ChatGPT tiesioginis valdymas per GitHub užduočių eilę ir automatinis Codex PR kūrimas – kitas atskiras etapas; Cloudflare Worker diegimai lieka esamuose GitHub Actions.
 - Nėra tiesioginės Termux prieigos iš ChatGPT. Kitas būtinas veiksmas: vieną kartą paleisti `docs/TERMUX_CODEX_BRIDGE.md` aprašytą bootstrap komandą Termux programoje ir atlikti oficialius GitHub / ChatGPT prisijungimus. Jokie slapti raktai pokalbyje neprašomi.
+
+
+## Naujausias patvirtintas tęstinumo taškas (2026-11-13 20:40 UTC)
+
+- PR #160 „Clarify Codex device-code sign-in on Android“ sujungtas commit `230ccd62f6ce6939381b8ddc3d494fdf07154bb5`.
+- PR patikros: bridge `43503585504` ir site checks `43503578139` – success. Po merge: bridge `43503672152`, site checks `43503671906` ir work-log `43503672813` – success.
+- Codex CLI device-code prisijungimui būtina ChatGPT Settings → Security → Device code login (beta); jei paskyra valdoma darbo srities, leidimą suteikia administratorius.
+- Termux setup dabar aiškiai paaiškina vienkartinio URL/kodo srautą ir pateikia diagnostikos žinutę, jei prisijungimas nepavyksta.
+- Termux bootstrap vartotojo telefone dar nepaleistas; vietinis Codex prisijungimas ir `codex doctor` dar nepatvirtinti. GitHub integracija šiame pokalbyje veikia atskirai.
+- Kitas būtinas vartotojo veiksmas: įjungti device-code prisijungimą ChatGPT Security nustatymuose ir vieną kartą paleisti Termux bootstrap iš `docs/TERMUX_CODEX_BRIDGE.md`. Po to atlikti read-only testą.
+- Kiti laukiantys darbai lieka: 2026-11-14 10:20 Worker AI agentų ciklo ir 10:35 ChatGPT atminties patikra; GA4 runReport timeout; GitHub Actions schedule paleidimų patikra. Esama kasdienė priežiūros automatizacija aktyvi, kitas vykdymas 2026-11-14 09:45 Europe/Vilnius.
