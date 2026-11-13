@@ -1512,6 +1512,62 @@
           "created_at": null
         }
       ]
+    },
+    {
+      "run_id": "43438404663",
+      "generated_at": "2026-11-13T13:58:55.193833+00:00",
+      "needs_attention": false,
+      "results": [
+        {
+          "name": "GA4 ir Search Console",
+          "state": "running",
+          "detail": "Vyksta (in_progress).",
+          "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43438404798",
+          "created_at": "2026-11-13T13:58:45Z"
+        },
+        {
+          "name": "Centrinės API sinchronizavimas",
+          "state": "success",
+          "detail": "Paskutinis paleidimas sėkmingas.",
+          "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43423449197",
+          "created_at": "2026-11-13T12:14:11Z"
+        },
+        {
+          "name": "Temų radaras",
+          "state": "waiting",
+          "detail": "Workflow atnaujintas 2026-11-13 12:09 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.",
+          "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43422828353",
+          "created_at": "2026-11-13T12:09:41Z"
+        },
+        {
+          "name": "Svetainės stebėjimas",
+          "state": "waiting",
+          "detail": "Workflow atnaujintas 2026-11-13 12:09 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.",
+          "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43422828198",
+          "created_at": "2026-11-13T12:09:41Z"
+        },
+        {
+          "name": "Lighthouse auditas",
+          "state": "waiting",
+          "detail": "Workflow atnaujintas 2026-11-13 12:09 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.",
+          "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43422828172",
+          "created_at": "2026-11-13T12:09:41Z"
+        },
+        {
+          "name": "Centrinis valdymo centras",
+          "state": "running",
+          "detail": "Vyksta (in_progress).",
+          "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43438404663",
+          "created_at": "2026-11-13T13:58:45Z"
+        },
+        {
+          "name": "Cloudflare Worker + D1",
+          "state": "success",
+          "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 13 min.",
+          "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
+          "created_at": null
+        }
+      ]
     }
   ]
 }
