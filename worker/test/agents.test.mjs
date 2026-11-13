@@ -39,6 +39,10 @@ test("orchestrator records the exact stage when a later AI reservation fails",as
  assert.match(result.error,/reserve_topics:Unexpected_end_of_JSON_input/);
  const failure=state.updates.find(x=>x.sql.includes("status='failed'"));
  assert.match(failure.values[0],/^reserve_topics:/);
+ assert.equal(result.memory_persisted,true);
+ const memory=state.updates.find(x=>x.sql.includes("control_core_memory"));
+ assert.ok(memory,"partial failed run should still persist long-term memory");
+ assert.match(memory.values[1],/partial/);
 });
 
 test("orchestrator skips malformed stored event JSON and preserves an evidence gap",async()=>{
