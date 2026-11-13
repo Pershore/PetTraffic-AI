@@ -65,3 +65,9 @@ Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (failure)
 - Viešos svetainės patikra: homepage, 4 pagrindiniai straipsniai, about, privacy, robots.txt, sitemap.xml ir custom 404 turinys pasiekiami; PR #167 dokumentacijos patikros ir Cloudflare Pages preview SUCCESS.
 - Termux/Codex telefone dar neįdiegtas; dabartinė integracija neturi vietinio Android shell kanalo. Aktyvus kasdienis ChatGPT koordinatorius enabled, kitas paleidimas 2026-11-14 09:45 Europe/Vilnius; vienkartinė D1 atminties patikra 10:35 Europe/Vilnius.
 - PR #167 sujungtas commit `035116d00bc8a05ae4a1dccf0ba22230f09eef84`, papildyti handover ir session-start dokumentai.
+
+
+## Rankinis sesijos papildymas – 2026-11-13 21:26 UTC
+
+- Esama vienkartinė ChatGPT automatizacija „Rytoj patikrinti PetTraffic AI atmintį“ atnaujinta ir palikta enabled; kitas paleidimas 2026-11-14 10:35 Europe/Vilnius. Ištaisyta jos šaltinių šakų nuoroda: latest.md iš automation-history, darbo žurnalas iš main. Patikros promptas apriboja D1 įrodymus iki realiai grąžinamų /health laukų ir draudžia apsimesti, kad perskaitytos žalios D1 lentelės.
+- PR #168 atidarytas dokumentacijos / darbo žurnalo įrašui. GitHub site-check ir Termux bridge patikros SUCCESS, tačiau Cloudflare Pages preview check dar IN_PROGRESS; pagal taisykles PR nesujungtas, kol visi check'ai nebaigti.
