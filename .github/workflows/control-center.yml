@@ -25,6 +25,7 @@ on:
       - ".github/workflows/analytics-snapshot.yml"
       - ".github/workflows/daily-topic-radar.yml"
       - ".github/workflows/live-site-monitor.yml"
+      - ".github/workflows/live-site-monitor.yml"
       - ".github/workflows/lighthouse-audit.yml"
       - ".github/workflows/sync-control-api.yml"
       - ".github/workflows/deploy-control-api.yml"
