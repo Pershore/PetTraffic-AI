@@ -23,6 +23,13 @@ Paskirtis: fiksuoti atliktus darbus, jų trukmę, patikrinimus ir sprendimus, ka
 | 2026-11-13 | Projekto būsenos perėmimas ir patikra: Worker/D1 deploy #50, OIDC event sync #40, automation-history archyvas; sujungtas dokumentacijos PR #105 | 07:23–07:24:59 Europe/Vilnius | NEATSKIRTA | NEATSKIRTA | 0 min. (šiame bloke nelaukta suplanuoto ciklo) | NEAPSKAIČIUOTA | Patvirtinta: deploy #50 visi darbai success; /health 200 su D1 ir control-core schema, neautentifikuotas /v1/events 401; sync #40 success su OIDC ir D1 write/readback; automation-history turi analytics, control-center ir recommendations JSON; PR #105 sujungtas commit c8939fe. Po sujungimo site-check #336 dar vyksta. |
 | 2026-11-13 | Ilgalaikio projekto tęstinumo patikra: perskaityta projekto būsena, patikrintas main ir automation-history medžių turinys, darbo žurnalas, PR #131 ir control-center run #107 | Tikslūs sesijos pradžios/pabaigos laikai neišmatuoti | NEMATUOTA | NEMATUOTA | NEMATUOTA | NEAPSKAIČIUOTA | Patvirtinta: PR #131 sujungtas; deploy patikra #54 ir site checks #388 – success; control-center run #107 – success, bet jo ataskaitoje projekto būsena REIKIA DĖMESIO dėl „AI agentai + control-core atmintis“ klaidos „Unexpected_end_of_JSON_input“. automation-history šaka saugo tik reports/history agregatus; darbo žurnalas lieka main. Sukurtas tęstinumo perdavimo dokumento atnaujinimo PR; jokie production nustatymai ar ARO Vet pakeitimai neatlikti. |
 
+## Automatinis darbo žurnalo papildymas
+
+- `.github/workflows/work-log.yml` po kiekvieno `main` šakos push automatiškai prideda GitHub commit įrašus į šią lentelę.
+- Įrašomi commit data/laikas, pavadinimas, SHA ir pakeistų failų santrauka; aktyvaus darbo, įrankių vykdymo, laukimo ir vartotojo laiko trukmės workflow nematuoja ir jų neišgalvoja.
+- Workflow neįsijungia vien dėl `reports/work-log/**` pakeitimo, todėl jo paties įrašas nesukuria begalinio ciklo.
+- Tai automatinis GitHub pakeitimų žurnalas, o ne pilnas pokalbių transkriptas. Ne GitHub veiksmai ir rankiniai patvirtinimai turi būti įrašomi atskirai, kai jie reikšmingi.
+
 ## Ilgalaikio tęstinumo šaltiniai
 
 - Projekto taisyklės, tikslai ir nekintamos saugumo ribos: `AGENTS.md` ir `docs/PETTRAFFIC_AI_HANDOVER_2026-11-12.md`.
