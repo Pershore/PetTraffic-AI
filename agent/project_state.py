@@ -164,7 +164,11 @@ def render_markdown(state: dict) -> str:
     return "\n".join(lines)
 
 
-def persist_state(state: dict, history_root: Path = HISTORY_ROOT) -> tuple[Path, Path, Path]:
+def persist_state(
+    state: dict,
+    history_root: Path = HISTORY_ROOT,
+    output_root: Path | None = None,
+) -> tuple[Path, Path, Path]:
     day = state["generated_at"][:10]
     if len(day) != 10 or day[4] != "-" or day[7] != "-":
         raise ValueError("generated_at must begin with an ISO date (YYYY-MM-DD)")
@@ -182,9 +186,11 @@ def persist_state(state: dict, history_root: Path = HISTORY_ROOT) -> tuple[Path,
     latest_md = history_root / "latest.md"
     latest_json.write_text(json.dumps(state, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     latest_md.write_text(render_markdown(state), encoding="utf-8")
-    OUT_JSON.parent.mkdir(parents=True, exist_ok=True)
-    OUT_JSON.write_text(json.dumps(state, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    OUT_MD.write_text(render_markdown(state), encoding="utf-8")
+    output_md = output_root / "project-state.md" if output_root else OUT_MD
+    output_json = output_root / "project-state.json" if output_root else OUT_JSON
+    output_json.parent.mkdir(parents=True, exist_ok=True)
+    output_json.write_text(json.dumps(state, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    output_md.write_text(render_markdown(state), encoding="utf-8")
     return history_file, latest_json, latest_md
 
 
