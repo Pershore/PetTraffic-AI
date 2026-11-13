@@ -43,8 +43,12 @@ class ProjectStateTests(unittest.TestCase):
             {"name": "Analytics", "state": "success", "detail": "OK"}
         ]), {"recommendations": []}, "run-5", "abc")
         with tempfile.TemporaryDirectory() as directory:
-            history, latest_json, latest_md = persist_state(state, Path(directory))
-            persist_state(state, Path(directory))
+            history_root = Path(directory) / "history"
+            output_root = Path(directory) / "output"
+            history, latest_json, latest_md = persist_state(state, history_root, output_root)
+            persist_state(state, history_root, output_root)
+            self.assertTrue((output_root / "project-state.json").exists())
+            self.assertTrue((output_root / "project-state.md").exists())
             data = json.loads(history.read_text(encoding="utf-8"))
             self.assertEqual(len(data["snapshots"]), 1)
             self.assertTrue(latest_json.exists())
