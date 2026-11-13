@@ -79,7 +79,7 @@ test("health endpoint exposes the latest scheduled heartbeat", async () => {
     DB: {
       prepare(sql) {
         return {
-          first: async () => sql.includes("system_heartbeats") ? heartbeat : sql.includes("agent_runs") ? null : ({ ok: 1 }),
+          first: async () => sql.includes("system_heartbeats") ? heartbeat : sql.includes("agent_runs") || sql.includes("SELECT run_date, status, core_version") || sql.includes("WHERE memory_key = 'latest_control_decision'") ? null : ({ ok: 1 }),
         };
       },
     },
