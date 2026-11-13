@@ -24,9 +24,9 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.x"
       - name: Run connectivity unit tests
@@ -41,7 +41,7 @@ jobs:
         run: python agent/analytics_connectivity.py
       - name: Upload connectivity report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pettraffic-google-api-connectivity
           path: reports/analytics-connectivity.md
