@@ -15,10 +15,10 @@ on:
 permissions:
   contents: write
 
-# Avoid overlapping snapshots when several analytics fixes land close together.
+# Keep scheduled and push-triggered snapshots queued rather than cancelling an active GA4/GSC collection.
 concurrency:
   group: pettraffic-analytics-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   analytics:
