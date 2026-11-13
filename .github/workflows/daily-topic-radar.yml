@@ -2,7 +2,7 @@ name: Pet traffic daily topic radar
 
 on:
   schedule:
-    - cron: "17 6 * * *"
+    - cron: "23 6 * * *"
   workflow_dispatch:
   # Also exercise the radar on relevant main-branch changes, not only cron.
   push:
