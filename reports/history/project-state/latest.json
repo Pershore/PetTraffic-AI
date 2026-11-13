@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "project": "PetTraffic AI",
-  "generated_at": "2026-11-13T22:11:06.476696+00:00",
-  "run_id": "43517122608",
-  "source_commit": "b466ab1c1ebed71575ae532cf92f63e011768691",
+  "generated_at": "2026-11-13T22:14:54.567409+00:00",
+  "run_id": "43517671633",
+  "source_commit": "dfdf9e6a589f82d2e10eb85fc01017676c5c9ff8",
   "overall_status": "in_progress",
   "last_verified_stage": "Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataskaitoje.",
   "next_action": "Tęsti laukiančių patikrų stebėseną: GA4 ir Search Console.",
@@ -12,13 +12,13 @@
       "name": "Centrinės API sinchronizavimas",
       "state": "success",
       "detail": "Paskutinis paleidimas sėkmingas.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43510070654",
-      "created_at": "2026-11-13T21:22:11Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43517198818",
+      "created_at": "2026-11-13T22:11:25Z"
     },
     {
       "name": "Cloudflare Worker + D1",
       "state": "success",
-      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 10 min.",
+      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 14 min.",
       "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
       "created_at": null
     }
@@ -48,8 +48,8 @@
     },
     {
       "name": "Lighthouse auditas",
-      "state": "running",
-      "detail": "Vyksta (in_progress).",
+      "state": "waiting",
+      "detail": "Workflow atnaujintas 2026-11-13 12:09 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.",
       "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43517122731",
       "created_at": "2026-11-13T22:10:53Z"
     },
@@ -57,8 +57,8 @@
       "name": "Centrinis valdymo centras",
       "state": "running",
       "detail": "Vyksta (in_progress).",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43517122608",
-      "created_at": "2026-11-13T22:10:53Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43517671633",
+      "created_at": "2026-11-13T22:14:45Z"
     },
     {
       "name": "AI agentai + control-core atmintis",
