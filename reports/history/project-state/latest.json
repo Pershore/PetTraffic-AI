@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "project": "PetTraffic AI",
-  "generated_at": "2026-11-13T16:03:32.973535+00:00",
-  "run_id": "43458770880",
-  "source_commit": "97551e833b2ae8a8494752595237688de1962bc9",
+  "generated_at": "2026-11-13T17:30:40.810344+00:00",
+  "run_id": "43473478811",
+  "source_commit": "f59bcd078b72673cf3676613b3da8470c43327cb",
   "overall_status": "needs_attention",
   "last_verified_stage": "Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataskaitoje.",
   "next_action": "Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (failure). AI agentų ciklas nepavyko (2026-11-13); AI kvietimų: 1; klaida: Unexpected_end_of_JSON_input.",
@@ -12,13 +12,13 @@
       "name": "Centrinės API sinchronizavimas",
       "state": "success",
       "detail": "Paskutinis paleidimas sėkmingas.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43456262058",
-      "created_at": "2026-11-13T15:48:17Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43458887565",
+      "created_at": "2026-11-13T16:03:55Z"
     },
     {
       "name": "Cloudflare Worker + D1",
       "state": "success",
-      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 2 min.",
+      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 0 min.",
       "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
       "created_at": null
     }
@@ -65,8 +65,8 @@
       "name": "Centrinis valdymo centras",
       "state": "running",
       "detail": "Vyksta (in_progress).",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43458770880",
-      "created_at": "2026-11-13T16:03:14Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43473478811",
+      "created_at": "2026-11-13T17:30:33Z"
     }
   ],
   "ai_agent_memory_check": {
