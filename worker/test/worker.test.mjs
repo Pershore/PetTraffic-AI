@@ -163,6 +163,36 @@ test("health endpoint reports control-core persistence without exposing decision
   assert.doesNotMatch(JSON.stringify(body), /Review sitemap|GA4 unavailable/);
 });
 
+test("health endpoint reports malformed persisted decision JSON without failing the whole health response", async () => {
+  const coreRun = {
+    run_date: "2026-11-13",
+    status: "needs_evidence",
+    core_version: "1.0.0",
+    created_at: "2026-11-13T08:21:00.000Z",
+    decision_json: '{"recommendations":',
+  };
+  const coreEnv = {
+    ...env,
+    DB: {
+      prepare(sql) {
+        return {
+          first: async () => {
+            if (sql.includes("SELECT run_date, status, core_version")) return coreRun;
+            if (sql.includes("WHERE memory_key = 'latest_control_decision'")) return { updated_at: "2026-11-13T08:21:00.000Z" };
+            return null;
+          },
+        };
+      },
+    },
+  };
+  const response = await worker.fetch(new Request("https://api.example/health"), coreEnv);
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.control_core.decision_json_status, "invalid_json");
+  assert.equal(body.control_core.recommendation_count, 0);
+  assert.equal(body.control_core.memory_status, "present");
+});
+
 test("versioned endpoints reject requests without GitHub OIDC identity", async () => {
   const response = await worker.fetch(new Request("https://api.example/v1/events", {
     method: "POST", headers: { "content-type": "application/json" },
