@@ -89,7 +89,17 @@ def evaluate_workflow(
     now: datetime,
     max_age_hours: int,
     schedule: dict | None = None,
+    workflow_updated_at: str | None = None,
+    workflow_state: str = "active",
 ) -> dict:
+    if workflow_state != "active":
+        return {
+            "name": name,
+            "state": "warning",
+            "detail": f"GitHub Actions workflow neaktyvus (state: {workflow_state}).",
+            "url": None,
+            "created_at": None,
+        }
     if not runs:
         if schedule and current_schedule_is_due(now, schedule):
             due = now.astimezone(timezone.utc).replace(
@@ -127,6 +137,26 @@ def evaluate_workflow(
         return {**base, "state": "unknown", "detail": f"Nežinoma išvada: {conclusion}."}
     if schedule:
         due = latest_schedule_due(now, schedule)
+        # A workflow created or edited after today's scheduled time cannot have
+        # run that earlier cycle. Wait for the first cycle after the latest edit.
+        if workflow_updated_at:
+            try:
+                workflow_updated = parse_time(workflow_updated_at)
+            except (TypeError, ValueError):
+                return {
+                    **base,
+                    "state": "unknown",
+                    "detail": "GitHub Actions workflow atnaujinimo data neatpažinta.",
+                }
+            if workflow_updated > due:
+                return {
+                    **base,
+                    "state": "waiting",
+                    "detail": (
+                        f"Workflow atnaujintas {workflow_updated.strftime('%Y-%m-%d %H:%M')} UTC "
+                        "po paskutinio suplanuoto laiko; laukiama kito ciklo."
+                    ),
+                }
         scheduled_runs = [item for item in runs if item.get("event") == "schedule"]
         scheduled_latest = max(
             scheduled_runs,
@@ -190,6 +220,28 @@ def fetch_runs(workflow_file: str) -> list[dict]:
     })
     with urlopen(request, timeout=20) as response:
         return json.loads(response.read().decode("utf-8")).get("workflow_runs", [])
+
+def fetch_workflow_metadata(workflow_file: str) -> dict:
+    """Read the workflow's activation state and last file update timestamp."""
+    endpoint = (
+        f"https://api.github.com/repos/{REPO}/actions/workflows/"
+        f"{quote(workflow_file, safe='')}"
+    )
+    request = Request(endpoint, headers={
+        "Accept": "application/vnd.github+json",
+        "Authorization": f"Bearer {TOKEN}",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "User-Agent": "PetTraffic-ControlCenter/1.0",
+    })
+    with urlopen(request, timeout=15) as response:
+        payload = json.loads(response.read().decode("utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError("GitHub workflow metadata response is not an object")
+    return {
+        "state": payload.get("state", "unknown"),
+        "updated_at": payload.get("updated_at"),
+    }
+
 
 def evaluate_worker_health(
     payload: dict,
@@ -262,7 +314,7 @@ def needs_attention(results: list[dict]) -> bool:
     return any(item["state"] in ("failure", "api_error", "stale", "warning", "unknown") for item in results)
 
 def render(results: list[dict], generated: datetime) -> str:
-    labels = {"success":"GERAI","failure":"KLAIDA","warning":"ĮSPĖJIMAS","stale":"PASENĘ","missing":"LAUKIAMA PIRMŲ CIKLŲ","running":"VYKDOMA","unknown":"NEAIŠKU","api_error":"API KLAIDA"}
+    labels = {"success":"GERAI","failure":"KLAIDA","warning":"ĮSPĖJIMAS","stale":"PASENĘ","missing":"LAUKIAMA PIRMŲ CIKLŲ","waiting":"LAUKIAMA KITO CIKLO","running":"VYKDOMA","unknown":"NEAIŠKU","api_error":"API KLAIDA"}
     lines = [
         "# Pet traffic – centrinis valdymo skydelis", "",
         f"Atnaujinta: {generated.astimezone(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}",
@@ -302,7 +354,16 @@ def main() -> int:
     results = []
     for filename, label, max_age, schedule in WORKFLOWS:
         try:
-            item = evaluate_workflow(label, fetch_runs(filename), now, max_age, schedule)
+            metadata = fetch_workflow_metadata(filename)
+            item = evaluate_workflow(
+                label,
+                fetch_runs(filename),
+                now,
+                max_age,
+                schedule,
+                workflow_updated_at=metadata.get("updated_at"),
+                workflow_state=metadata.get("state", "unknown"),
+            )
         except (HTTPError, URLError, TimeoutError, OSError, ValueError) as exc:
             item = {"name":label,"state":"api_error","detail":f"GitHub API patikra nepavyko ({type(exc).__name__}).","url":None,"created_at":None}
         results.append(item)
