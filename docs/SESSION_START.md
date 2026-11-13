@@ -6,21 +6,25 @@ Atnaujinta: 2026-11-14
 
 
 
-## Naujausias patikrintas tęstinumo taškas (2026-11-14)
+## Naujausias patikrintas tęstinumo taškas (2026-11-14, 00:31 Europe/Vilnius)
 
-- Gyvas Worker `/health` atsakė HTTP 200; `database=connected`, `control_core_schema=connected`. Tačiau heartbeat paskutinis įrašas yra `2026-11-13T22:00:47.423Z`, todėl 15 min. periodinis vykdymas šiuo metu nepatvirtintas.
-- Tas pats /health rodo paskutinį AI agentų ciklą `2026-11-13 / failed`, `ai_calls=1`, `Unexpected_end_of_JSON_input`; control-core `not_started`, `memory_status=missing`. 2026-11-14 ciklo sėkmė nepatvirtinta.
-- GitHub Actions runs API užklausai nuo `2026-11-14T00:00:00Z` grąžino 0 vykdymų. YAML cron grafikai yra, bet šiandieninių schedule įvykių nėra; repository Actions settings per dabartinę integraciją nepasiekiami. Issue #145 liko open.
-- Gyvai patikrinti homepage, keturi pagrindiniai straipsniai, about, privacy, robots.txt ir sitemap.xml – visi HTTP 200. Paieškos regresija patvirtinta: įvedus „šuo“ liko viena atitinkanti kortelė, bet trys kortelės su `hidden=true` vis tiek turėjo `display:flex`; CSS taisymas ir regresijos testas pateikti PR.
-- GA4 paskutiniame turimame snapshot vis dar `ReadTimeout`; Search Console API atskirai veikė. Naujo 2026-11-14 snapshot nėra.
-- Termux/Codex telefone dar neįdiegtas ir tiesioginis ChatGPT→Termux kanalas neaktyvus. Dabartinė integracija nesuteikia tiesioginės Android shell ar Cloudflare paskyros/logų prieigos.
-- Nekeisti Cloudflare Worker/D1 production konfigūracijos, secrets, DNS ar ARO Vet. Jokių mokamų planų ar API nepirkti; turimas Firecrawl kvotinis limitas naudotas tik esamai viešų puslapių patikrai.
+- GitHub PR #169–#173 sujungti; atvirų PR ir issue nėra. Issue #145 uždarytas automatiškai.
+- Viešas Worker `/health` HTTP 200; D1 ir control-core schema connected. Heartbeat `2026-11-13T22:30:47.462Z` (00:30:47 vietos laiku), `site_ok=true`, `database_ok=true`; tai patvirtina 15 min. cron ir D1 heartbeat įrašymą.
+- Cloudflare API patvirtino grafikus `*/15 * * * *` ir `20 7,8 * * *`. Šiandienos AI ciklas dar laukia 10:20; atminties patikra 10:35, control-center 10:40. Ankstesnės dienos AI klaidos nelaikyti šiandienos nesėkme.
+- PR #169 sutaisė straipsnių filtrų CSS; gyvai patikrinta paieška „šuo“ 1/4, „katė“ 2/4, nerastas terminas 0/4 ir reset 4/4. Site-check praėjo 83 testus; Lighthouse 10 auditų našumas 98–100, SEO / Accessibility / Best Practices 100.
+- GA4 paskutiniame snapshot ReadTimeout; Search Console API veikė, bet 5 URL dar nežinomi Google indeksui, sitemap apdorojimas nepatvirtintas. Kitas analytics ciklas 08:47.
+- Naujas `worker-cron-diagnostic.yml` run #43518529439 šiuo metu vykdo 17 min. Wrangler tail stebėseną; rezultatas dar laukiamas.
+- Saugumo veiksmas: pirmoji diagnostikos workflow versija nusiuntė `CLOUDFLARE_API_TOKEN` Authorization antraštę viešam Worker /health URL (atsakymas 403, reikšmė GitHub loguose nebuvo atspausdinta). Viešas probe pašalintas; žetoną laikyti galimai atskleistu, išrotuoti Cloudflare paskyroje ir atnaujinti GitHub secret `CLOUDFLARE_API_TOKEN`. Naujo rakto pokalbyje nesiųsti.
+- Termux/Codex telefone dar nesusieti; CI paruošimo patikros praėjo. ARO Vet, DNS, Worker/D1 production konfigūracija ir duomenys nekeisti; naujų mokamų paslaugų neįjungta.
 - Naujausias perdavimas: `docs/PETTRAFFIC_AI_HANDOVER_2026-11-14.md`.
 
 ### Kiti veiksmai
-1. Užbaigti paieškos CSS pataisą per PR, CI ir gyvą po-merge patikrą.
-2. Gauti read-only Cloudflare Worker cron/logų įrodymus ir nustatyti, kodėl heartbeat nuo 2026-11-13 neatsinaujino; nekartoti agentų ciklo rankiniu būdu ir nekeisti D1.
-3. Atkurti GitHub Actions schedule paleidimus, tada diagnozuoti GA4 timeout ir patvirtinti GSC nepriklausomą archyvavimą.
+1. Pakeisti Cloudflare API tokeną ir atnaujinti GitHub Actions secret.
+2. Užbaigti Worker cron žurnalų diagnostiką.
+3. Stebėti 08:23, 08:47, 09:11, 09:45, 10:20, 10:35 ir 10:40 Lietuvos laiko ciklus.
+4. Po 10:20 ciklo realiai patikrinti AI agentų sėkmę ir D1 atminties persistenciją.
+5. Jei Google vis dar nežinos pagrindinių URL, Search Console sąsajoje pateikti „Request indexing“.
+6. Termux/Codex telefone susieti tik po būtino vietinio veiksmo.
 
 ## Vienintelė teisinga darbo pradžios seka
 
