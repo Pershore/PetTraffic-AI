@@ -71,7 +71,21 @@ export async function callModel(env,system,input) {
 }
 async function getEvents(env) {
  const rows=await env.DB.prepare("SELECT kind,payload_json,created_at FROM events ORDER BY created_at DESC LIMIT 30").all();
- return (rows.results||[]).map(row=>({kind:row.kind,created_at:row.created_at,payload:JSON.parse(row.payload_json)}));
+ const events=[];
+ let invalidPayloadCount=0;
+ for(const row of rows.results||[]) {
+  try {
+   const payload=JSON.parse(row.payload_json);
+   if(!payload||typeof payload!=="object"||Array.isArray(payload)) {
+    invalidPayloadCount++;
+    continue;
+   }
+   events.push({kind:row.kind,created_at:row.created_at,payload});
+  } catch {
+   invalidPayloadCount++;
+  }
+ }
+ return {events,invalidPayloadCount};
 }
 async function getPublicContent(env) {
  const pages=[]; const fetcher=env.FETCH||fetch;
@@ -97,22 +111,37 @@ export async function runAgentOrchestration(env) {
  const date=new Date().toISOString().slice(0,10);
  const inserted=await env.DB.prepare("INSERT OR IGNORE INTO agent_runs (run_date,status,ai_calls,started_at) VALUES (?,'running',0,?)").bind(date,new Date().toISOString()).run();
  if(!inserted.meta?.changes)return {skipped:true,reason:"daily_run_already_started"};
+ let stage="load_events";
  try {
-  const events=await getEvents(env); const pages=await getPublicContent(env); const specialists={};
+  const eventData=await getEvents(env);
+  stage="fetch_public_content";
+  const pages=await getPublicContent(env);
+  const specialists={};
   for(const agent of AGENTS) {
-   const source=agent.id==="content-review"?{public_pages:pages}:{verified_snapshots:events.filter(e=>agent.kinds.includes(e.kind))};
+   const source=agent.id==="content-review"?{public_pages:pages}:{verified_snapshots:eventData.events.filter(e=>agent.kinds.includes(e.kind))};
+   stage="reserve_"+agent.id;
    if(!(await reserveCall(env,date)))throw new Error("daily_ai_call_cap_reached");
+   stage="model_"+agent.id;
    specialists[agent.id]={label:agent.label,...await callModel(env,"Tu esi Pet traffic projekto read-only specialistas. Atsakyk tik validžiu JSON: {status:string,findings:string[],recommendations:string[],evidence_gaps:string[]}. Naudok tik pateiktus duomenis. Nekeisk svetainės ir neprašyk publikuoti. Jei duomenų nepakanka, aiškiai pasakyk.",JSON.stringify({task:agent.task,source}))};
   }
+  stage="reserve_coordinator";
   if(!(await reserveCall(env,date)))throw new Error("daily_ai_call_cap_reached");
+  stage="model_coordinator";
   const coordinator=await callModel(env,"Tu esi Pet traffic centrinis koordinatorius. Sujunk keturių specialistų rezultatus į trumpą prioritetinę ataskaitą. Atsakyk tik validžiu JSON: {status:string,findings:string[],recommendations:string[],evidence_gaps:string[]}. Nespėliok. Jokio publikavimo, kodo keitimo ar infrastruktūros veiksmų; rekomendacijoms būtinas žmogaus patvirtinimas.",JSON.stringify({date_utc:date,specialist_results:specialists}));
-  const report={date_utc:date,generated_at:new Date().toISOString(),model:MODEL,ai_calls:MAX_DAILY_CALLS,specialists,coordinator,read_only:true,publication_enabled:false};
+  if(eventData.invalidPayloadCount>0) {
+   coordinator.evidence_gaps=[...(coordinator.evidence_gaps||[]),`Skipped ${eventData.invalidPayloadCount} invalid stored event payload(s); source data requires review.`].slice(0,5);
+  }
+  const report={date_utc:date,generated_at:new Date().toISOString(),model:MODEL,ai_calls:MAX_DAILY_CALLS,specialists,coordinator,data_quality:{invalid_event_payload_count:eventData.invalidPayloadCount},read_only:true,publication_enabled:false};
+  stage="build_control_decision";
   const decision=buildControlDecision(report);
+  stage="persist_control_decision";
   await persistControlDecision(env,decision);
+  stage="save_agent_report";
   await env.DB.prepare("UPDATE agent_runs SET status='completed',report_json=?,completed_at=? WHERE run_date=?").bind(JSON.stringify({...report,control_decision:decision}),new Date().toISOString(),date).run();
   return {completed:true,run_date:date,ai_calls:MAX_DAILY_CALLS,control_core_version:decision.core_version};
  } catch(error) {
-  await env.DB.prepare("UPDATE agent_runs SET status='failed',error_code=?,completed_at=? WHERE run_date=?").bind(String(error?.message||"agent_run_failed").slice(0,80),new Date().toISOString(),date).run();
-  return {completed:false,run_date:date,error:String(error?.message||"agent_run_failed").slice(0,80)};
+  const errorCode=(stage+":"+String(error?.message||"agent_run_failed")).replace(/[^A-Za-z0-9_.:-]/g,"_").slice(0,120);
+  await env.DB.prepare("UPDATE agent_runs SET status='failed',error_code=?,completed_at=? WHERE run_date=?").bind(errorCode,new Date().toISOString(),date).run();
+  return {completed:false,run_date:date,error:errorCode};
  }
 }
