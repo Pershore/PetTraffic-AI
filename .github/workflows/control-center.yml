@@ -3,6 +3,15 @@ name: Pet traffic central control center
 on:
   schedule:
     - cron: "0 8 * * *"
+  # Re-evaluate alerts after monitored jobs finish, not while they are still running.
+  workflow_run:
+    workflows:
+      - "Pet traffic analytics snapshot"
+      - "Pet traffic daily topic radar"
+      - "Pet traffic live-site monitor"
+      - "Pet traffic Lighthouse audits"
+    types: [completed]
+    branches: [main]
   push:
     branches: [main]
     paths:
