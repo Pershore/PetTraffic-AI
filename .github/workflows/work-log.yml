@@ -1,0 +1,84 @@
+name: PetTraffic automatic work log
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "reports/work-log/**"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pettraffic-automatic-work-log
+  cancel-in-progress: false
+
+jobs:
+  append-commits:
+    name: Append merged main commits to the work log
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Append commit records
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const branch = context.ref.replace("refs/heads/", "");
+            const commits = context.payload.commits || [];
+            if (commits.length === 0) {
+              core.info("Push payload contains no commit records; nothing to append.");
+              return;
+            }
+
+            const path = "reports/work-log/README.md";
+            const response = await github.rest.repos.getContent({
+              owner, repo, path, ref: branch
+            });
+            if (Array.isArray(response.data) || !response.data.content) {
+              throw new Error("Work-log README was not returned as a file.");
+            }
+
+            let document = Buffer.from(response.data.content, "base64").toString("utf8");
+            const marker = "## Darbo įrašai";
+            if (!document.includes(marker)) {
+              throw new Error("Work-log table heading is missing; refusing to write.");
+            }
+
+            const rows = commits.map(commit => {
+              const date = (commit.timestamp || context.payload.head_commit?.timestamp || new Date().toISOString()).slice(0, 10);
+              const title = (commit.message || "GitHub push").split("\n")[0].replace(/\|/g, "\\|").slice(0, 180);
+              const sha = (commit.id || "").slice(0, 7);
+              const files = [...new Set([
+                ...(commit.added || []),
+                ...(commit.modified || []),
+                ...(commit.removed || [])
+              ])].slice(0, 10);
+              const fileSummary = files.length ? files.join(", ") : "failų sąrašas push įvykyje nepateiktas";
+              const compare = commit.id
+                ? "https://github.com/" + owner + "/" + repo + "/commit/" + commit.id
+                : "https://github.com/" + owner + "/" + repo + "/commits/" + branch;
+              return "| " + date + " | Automatinis GitHub pakeitimo įrašas: " + title +
+                " | commit laikas (UTC): " + (commit.timestamp || "nepateiktas") +
+                " | NEMATUOTA | NEMATUOTA | NEMATUOTA | NEAPSKAIČIUOTA | Commit " +
+                sha + "; failai: " + fileSummary + "; [commit](" + compare + ") |";
+            });
+
+            const tableEnd = document.indexOf("\n", document.indexOf("|---", document.indexOf(marker)));
+            if (tableEnd < 0) {
+              throw new Error("Could not locate the work-log table header.");
+            }
+            const insertAt = document.indexOf("\n", tableEnd + 1);
+            if (insertAt < 0) {
+              throw new Error("Could not locate the first work-log table row.");
+            }
+            document = document.slice(0, insertAt + 1) + rows.join("\n") + "\n" + document.slice(insertAt + 1);
+
+            await github.rest.repos.createOrUpdateFileContents({
+              owner, repo, path,
+              message: "chore: automatically record main commit activity",
+              content: Buffer.from(document, "utf8").toString("base64"),
+              sha: response.data.sha,
+              branch
+            });
+            core.info("Appended " + rows.length + " commit record(s) to " + path + ".");
