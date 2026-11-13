@@ -169,11 +169,33 @@ async function handle(request, env) {
       const agentRun = await env.DB.prepare(
         "SELECT run_date, status, ai_calls, started_at, completed_at, error_code FROM agent_runs ORDER BY run_date DESC LIMIT 1"
       ).first();
+      const controlCoreRun = await env.DB.prepare(
+        "SELECT run_date, status, core_version, created_at, decision_json FROM control_core_runs ORDER BY created_at DESC LIMIT 1"
+      ).first();
+      const controlCoreMemory = await env.DB.prepare(
+        "SELECT updated_at FROM control_core_memory WHERE memory_key = 'latest_control_decision' LIMIT 1"
+      ).first();
+      const decision = controlCoreRun ? JSON.parse(controlCoreRun.decision_json) : null;
+      const controlCore = controlCoreRun ? {
+        run_date: controlCoreRun.run_date,
+        status: controlCoreRun.status,
+        core_version: controlCoreRun.core_version,
+        created_at: controlCoreRun.created_at,
+        recommendation_count: Array.isArray(decision?.recommendations) ? decision.recommendations.length : 0,
+        evidence_gap_count: Array.isArray(decision?.evidence_gaps) ? decision.evidence_gaps.length : 0,
+        memory_status: controlCoreMemory ? "present" : "missing",
+        memory_updated_at: controlCoreMemory?.updated_at || null,
+      } : {
+        status: "not_started",
+        memory_status: controlCoreMemory ? "present" : "missing",
+        memory_updated_at: controlCoreMemory?.updated_at || null,
+      };
       return response({
         ok: true,
         service: "pettraffic-control-api",
         database: "connected",
         control_core_schema: "connected",
+        control_core: controlCore,
         heartbeat: heartbeat ? {
           checked_at: heartbeat.checked_at,
           site_ok: Number(heartbeat.site_ok) === 1,
