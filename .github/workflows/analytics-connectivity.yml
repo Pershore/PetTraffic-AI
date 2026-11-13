@@ -30,7 +30,7 @@ jobs:
         with:
           python-version: "3.x"
       - name: Run connectivity unit tests
-        run: python -m unittest tests.test_analytics_connectivity -v
+        run: python -m unittest discover -s tests -p 'test_analytics_connectivity.py' -v
       - name: Install Google API authentication
         run: python -m pip install --disable-pip-version-check google-auth requests
       - name: Check GA4 and Search Console independently
