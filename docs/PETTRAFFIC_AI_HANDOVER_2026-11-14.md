@@ -6,7 +6,7 @@
 
 ## Santrauka
 
-- GitHub integracija veikia; PR #169–#173 sujungti, atvirų PR ir atvirų issue šiuo metu nėra.
+- GitHub integracija veikia; PR #169–#175 sujungti, atvirų PR ir atvirų issue šiuo metu nėra.
 - PR #169 sutaisė straipsnių filtrų CSS regresiją; pataisa gyvai patikrinta.
 - Cloudflare Worker ir D1 pasiekiami; 15 min. heartbeat atsinaujino 00:30:47 Lietuvos laiku.
 - Cloudflare API patvirtino abu Worker cron grafikus: `*/15 * * * *` ir `20 7,8 * * *`.
@@ -38,13 +38,13 @@ Paskutinis žinomas AI ciklas:
 
 **Svarbu:** 2026-11-14 00:31 dar nėra įvykęs šiandienos 10:20 AI ciklas. Todėl `memory_status=missing` ir ankstesnės dienos klaida šiuo metu žymimos WAITING, o ne šiandienos gedimu. Atmintį tikrinti po 10:20 ciklo, suplanuota 10:35; centrinis valdymo centras – 10:40.
 
-Naujas diagnostikos workflow `worker-cron-diagnostic.yml` vykdo 17 min. Wrangler tail stebėseną (run #43518529439). Galutinis žurnalų rezultatas dar laukiamas. Šis workflow tik skaito Cloudflare grafikus ir Worker logus; Worker/D1 konfigūracijos nekeičia.
+Pirmasis 17 min. Wrangler tail run #43518529439 prisijungė ir užbaigė stebėseną, bet inline parseris nulūžo, nes Wrangler `event` laukas buvo string tipo. PR #175 išskyrė parserį į `tools/worker-tail/parse_logs.py`, pridėjo 5 regresijos testus ir juos sėkmingai patikrino. Naujas diagnostikos run #43521123258 dabar vykdo 17 min. stebėseną; galutinis žurnalų rezultatas dar laukiamas. Workflow tik skaito Cloudflare grafikus ir Worker logus; Worker/D1 konfigūracijos nekeičia.
 
 ## 2. GitHub Actions ir automatizacijos
 
 - Centrinio valdymo centro run #43517740768 – sėkmingas; jo išvada buvo laukti šiandienos ciklų.
 - Issue #145 uždarytas automatiškai 2026-11-13 22:11:17Z po ankstesnio kodo pataisymo.
-- PR #169–#173 sujungti; šiuo metu atvirų PR nėra.
+- PR #169–#175 sujungti; šiuo metu atvirų PR nėra.
 - Lietuvos dienos pradžia nesutampa su UTC dienos pradžia. 00:31 Lietuvoje dar yra 22:31Z lapkričio 13 d.; todėl GitHub API filtras `created >= 2026-11-14T00:00:00Z` negali būti naudojamas kaip Lietuvos dienos vykdymų patikra.
 
 Šiandienos suplanuoti vykdymai (Europe/Vilnius):
