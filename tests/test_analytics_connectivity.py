@@ -1,7 +1,7 @@
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, call
 
-from agent.analytics_connectivity import check_api
+from agent.analytics_connectivity import check_api, run_independent_checks
 
 
 class ConnectivityCheckTests(unittest.TestCase):
@@ -27,7 +27,7 @@ class ConnectivityCheckTests(unittest.TestCase):
         self.assertFalse(ok)
         self.assertIn("HTTP 403", detail)
 
-    def test_timeout_is_reported_without_skipping_caller(self):
+    def test_timeout_is_reported_without_raising(self):
         session = Mock()
         session.post.side_effect = TimeoutError("read timed out")
 
@@ -35,6 +35,24 @@ class ConnectivityCheckTests(unittest.TestCase):
 
         self.assertFalse(ok)
         self.assertIn("TimeoutError", detail)
+
+    def test_ga4_timeout_does_not_skip_search_console(self):
+        success = Mock(ok=True)
+        success.json.return_value = {"rows": []}
+        session = Mock()
+        session.post.side_effect = [TimeoutError("GA4 timed out"), success]
+
+        results = run_independent_checks(
+            session, "https://ga4.test", {}, "https://gsc.test", {}
+        )
+
+        self.assertFalse(results["GA4"][0])
+        self.assertTrue(results["Search Console"][0])
+        self.assertEqual(session.post.call_count, 2)
+        self.assertEqual(
+            [entry.args[0] for entry in session.post.call_args_list],
+            ["https://ga4.test", "https://gsc.test"],
+        )
 
 
 if __name__ == "__main__":
