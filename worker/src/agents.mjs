@@ -7,7 +7,7 @@ import { buildControlDecision, persistControlDecision } from "./control-core.mjs
 const MODEL = "@cf/openai/gpt-oss-20b";
 const MAX_DAILY_CALLS = 5;
 const MAX_INPUT_CHARS = 6000;
-const MAX_OUTPUT_TOKENS = 192;
+const MAX_OUTPUT_TOKENS = 256;
 const SITE = "https://pettraffic-ai.pages.dev";
 const CONTENT_PATHS = ["/articles/kada-kreiptis-i-veterinara.html", "/articles/kate-negali-pasislapinti-skubi-pagalba.html", "/articles/kate-viduriuoja-ka-daryti.html", "/articles/suo-viduriuoja-ka-daryti.html"];
 const AGENTS = [
@@ -16,17 +16,58 @@ const AGENTS = [
  { id:"technical-seo", label:"Techninio SEO agentas", kinds:["control_center_snapshot","recommendation_snapshot"], task:"Įvertink kontrolės centro ir rekomendacijų suvestines. Ieškok tik konkrečių, patikrinamų techninių problemų. Nekeisk kodo, DNS ar infrastruktūros." },
  { id:"content-review", label:"Turinio peržiūros agentas", kinds:[], task:"Peržiūrėk viešų puslapių tekstą ir struktūrą. Pažymėk galimai neparemtus veterinarinius teiginius, trūkstamas autoritetingas nuorodas ir aiškumo problemas. Netvirtink medicininių faktų be šaltinių." },
 ];
-function parseResult(raw) {
- if(typeof raw!=="string") throw new Error("invalid_model_response");
+function invalidResult(status, gap) {
+ return {status,findings:[],recommendations:[],evidence_gaps:[gap],requires_human_approval:true};
+}
+export function extractResponseText(result) {
+ if(typeof result?.output_text==="string") return result.output_text;
+ if(Array.isArray(result?.output)) {
+  const text=result.output.flatMap(item=>Array.isArray(item?.content)?item.content:[])
+   .filter(part=>part&&["output_text","text"].includes(part.type)&&typeof part.text==="string")
+   .map(part=>part.text).join("\n");
+  if(text) return text;
+ }
+ if(typeof result?.response==="string") return result.response;
+ if(Array.isArray(result?.choices)) {
+  const content=result.choices[0]?.message?.content;
+  if(typeof content==="string") return content;
+  if(Array.isArray(content)) return content.filter(part=>typeof part?.text==="string").map(part=>part.text).join("\n");
+ }
+ if(typeof result?.message?.content==="string") return result.message.content;
+ return "";
+}
+export function parseResult(raw) {
+ if(typeof raw!=="string"||!raw.trim()) return invalidResult("invalid_response","Model returned no text output; this specialist result was not used.");
  const cleaned=raw.trim().replace(/^\x60{3}(?:json)?\s*/i,"").replace(/\s*\x60{3}$/i,"");
- const value=JSON.parse(cleaned);
- if(!value||typeof value!=="object"||Array.isArray(value)) throw new Error("invalid_model_json");
+ let value;
+ try {
+  value=JSON.parse(cleaned);
+ } catch {
+  const first=cleaned.indexOf("{"); const last=cleaned.lastIndexOf("}");
+  if(first>=0&&last>first) {
+   try { value=JSON.parse(cleaned.slice(first,last+1)); }
+   catch { return invalidResult("invalid_json","Model response was not valid JSON; this specialist result was not used."); }
+  } else {
+   return invalidResult("invalid_json","Model response was incomplete JSON; this specialist result was not used.");
+  }
+ }
+ if(!value||typeof value!=="object"||Array.isArray(value)) return invalidResult("invalid_json","Model response did not match the expected JSON object.");
  const strings=k=>Array.isArray(value[k])?value[k].filter(x=>typeof x==="string").slice(0,5).map(x=>x.slice(0,400)):[];
  return {status:typeof value.status==="string"?value.status.slice(0,40):"reviewed",findings:strings("findings"),recommendations:strings("recommendations"),evidence_gaps:strings("evidence_gaps"),requires_human_approval:true};
 }
-async function callModel(env,system,input) {
- const result=await env.AI.run(MODEL,{messages:[{role:"system",content:system},{role:"user",content:input.slice(0,MAX_INPUT_CHARS)}],max_tokens:MAX_OUTPUT_TOKENS,temperature:0.2});
- return parseResult(typeof result?.response==="string"?result.response:"");
+export async function callModel(env,system,input) {
+ try {
+  // GPT-OSS on Workers AI supports the Responses API on the Worker binding.
+  // Low reasoning effort leaves more of the bounded output budget for the JSON result.
+  const result=await env.AI.run(MODEL,{
+   input:[{role:"system",content:system},{role:"user",content:input.slice(0,MAX_INPUT_CHARS)}],
+   reasoning:{effort:"low"},
+   max_output_tokens:MAX_OUTPUT_TOKENS,
+  });
+  return parseResult(extractResponseText(result));
+ } catch {
+  return invalidResult("unavailable","Workers AI request failed; this specialist result was not used.");
+ }
 }
 async function getEvents(env) {
  const rows=await env.DB.prepare("SELECT kind,payload_json,created_at FROM events ORDER BY created_at DESC LIMIT 30").all();
