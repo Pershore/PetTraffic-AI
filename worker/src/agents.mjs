@@ -140,8 +140,34 @@ export async function runAgentOrchestration(env) {
   await env.DB.prepare("UPDATE agent_runs SET status='completed',report_json=?,completed_at=? WHERE run_date=?").bind(JSON.stringify({...report,control_decision:decision}),new Date().toISOString(),date).run();
   return {completed:true,run_date:date,ai_calls:MAX_DAILY_CALLS,control_core_version:decision.core_version};
  } catch(error) {
-  const errorCode=(stage+":"+String(error?.message||"agent_run_failed")).replace(/[^A-Za-z0-9_.:-]/g,"_").slice(0,120);
-  await env.DB.prepare("UPDATE agent_runs SET status='failed',error_code=?,completed_at=? WHERE run_date=?").bind(errorCode,new Date().toISOString(),date).run();
-  return {completed:false,run_date:date,error:errorCode};
+  const cause=(stage+":"+String(error?.message||"agent_run_failed")).replace(/[^A-Za-z0-9_.:-]/g,"_").slice(0,100);
+  // Preserve partial operational knowledge even when a specialist reservation or model call fails.
+  // A failed run must never be reported as completed, but it should still leave a durable memory entry.
+  const failureReport={
+   date_utc:date,
+   generated_at:new Date().toISOString(),
+   model:MODEL,
+   specialists,
+   coordinator:{
+    status:"partial",
+    findings:[],
+    recommendations:[],
+    evidence_gaps:[`Orchestration stopped at ${stage}; partial specialist output was retained. Cause: ${cause}`],
+    requires_human_approval:true,
+   },
+   read_only:true,
+   publication_enabled:false,
+  };
+  let recoveryError=null;
+  try {
+   const failureDecision=buildControlDecision(failureReport);
+   await persistControlDecision(env,failureDecision);
+   failureReport.control_decision=failureDecision;
+  } catch(recovery) {
+   recoveryError=("memory_recovery:"+String(recovery?.message||"failed")).replace(/[^A-Za-z0-9_.:-]/g,"_").slice(0,100);
+  }
+  const errorCode=(cause+(recoveryError?":"+recoveryError:"")).slice(0,120);
+  await env.DB.prepare("UPDATE agent_runs SET status='failed',error_code=?,report_json=?,completed_at=? WHERE run_date=?").bind(errorCode,JSON.stringify(failureReport),new Date().toISOString(),date).run();
+  return {completed:false,run_date:date,error:errorCode,memory_persisted:!recoveryError};
  }
 }
