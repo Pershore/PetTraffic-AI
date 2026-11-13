@@ -164,3 +164,22 @@ Po 2026-11-14 10:20 Europe/Vilnius suplanuoto agentų ciklo perskaityti naujausi
 
 ### Kitas konkretus veiksmas
 Po 2026-11-14 10:20 Europe/Vilnius Worker ciklo perskaityti naujausią `reports/history/project-state/latest.md`, darbo žurnalą ir gyvą `/health`. Patikrinti, ar agentų būsena pasikeitė į `completed`, ar yra galiojantis control-core sprendimas ir atminties įrašas. Jei ne, naudoti naują `agent_orchestration.error_code` etapo prefiksą ir taisyti tik patvirtintą gedimo vietą. Atskirai tęsti GitHub Actions schedule ir GA4 diagnostiką. Nekeisti ARO Vet, DNS, secrets ar Cloudflare teisių.
+
+
+## 11. Termux / Codex / GitHub vietinio tilto paruošimas – 2026-11-13 20:00 UTC
+
+### Įgyvendinta ir patikrinta GitHub pusėje
+- PR #159 `Add Termux Codex and GitHub local setup bridge` sujungtas commit `28ec11f4b97caae608d9cd4619d5ec7a36778ecf`.
+- Pridėta `tools/termux/bootstrap.sh`: Termux įdiegia `proot-distro`, paruošia Debian aplinką ir iškviečia setup.
+- Pridėta `tools/termux/setup-debian.sh`: Debian aplinkoje įdiegiami Git, GitHub CLI, Node.js, Python ir OpenAI Codex CLI; prisijungiama oficialiais GitHub ir ChatGPT device/browser srautais; klonuojama `Pershore/PetTraffic-AI`.
+- Pridėta `docs/TERMUX_CODEX_BRIDGE.md` ir `.github/workflows/termux-bridge-check.yml`.
+- PR bridge check run `43497319872` ir site checks run `43497319830` – success. Po merge bridge check `43497432740`, site checks `43497432744` ir work-log run `43497432741` – success.
+
+### Kas dar neįjungta / nepatvirtinta
+- Termux bootstrap dar nepaleistas vartotojo telefone; Codex CLI Android / Debian proot suderinamumas turi būti patvirtintas realiu `codex doctor` ir read-only užduotimi.
+- Tiesioginio ChatGPT → Termux valdymo kanalo nėra. GitHub yra bendras kodo ir darbo šaltinis, bet automatinė užduočių eilė, kurią Termux Codex agentas pats paima ir paverčia PR, dar nesukurta.
+- Nuolatinis Termux fono procesas / automatinis startas po telefono perkrovimo dar neįjungtas.
+- Cloudflare prisijungimo duomenys į telefoną nekeliami; Worker diegimus toliau atlieka esami GitHub Actions procesai. Jokių Cloudflare teisių, secrets ar DNS pakeitimų neatlikta.
+
+### Kitas konkretus veiksmas
+Po PR #159 sujungimo vartotojas turi vieną kartą paleisti `docs/TERMUX_CODEX_BRIDGE.md` nurodytą bootstrap komandą Termux programoje ir užbaigti oficialius prisijungimus. Tada patikrinti `gh auth status`, `codex login status`, `codex doctor` ir read-only projekto aprašymo užduotį. Tik po šio realaus testo projektuoti / aktyvuoti GitHub užduočių eilę ir Codex automatinį PR kūrimą. Jokio mokamo API rakto ar Cloudflare rakto nereikia.
