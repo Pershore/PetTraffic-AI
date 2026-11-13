@@ -2,7 +2,7 @@ name: Pet traffic Lighthouse audits
 
 on:
   schedule:
-    - cron: "20 7 * * 1"
+    - cron: "27 7 * * 1"
   workflow_dispatch:
   push:
     branches: [main]
