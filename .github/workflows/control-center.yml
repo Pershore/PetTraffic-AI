@@ -2,7 +2,7 @@ name: Pet traffic central control center
 
 on:
   schedule:
-    - cron: "13 8 * * *"
+    - cron: "40 8 * * *"
   # Re-evaluate alerts after monitored jobs finish, not while they are still running.
   workflow_run:
     workflows:
@@ -77,7 +77,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: "3.x"
+          python-version: "3.13"
       - name: Run control-center unit tests
         run: |
           python -m unittest discover -s tests -p 'test_control_center.py' -v
