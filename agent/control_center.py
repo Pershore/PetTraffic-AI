@@ -122,14 +122,53 @@ def evaluate_workflow(
         return {**base, "state": "unknown", "detail": f"Nežinoma išvada: {conclusion}."}
     if schedule:
         due = latest_schedule_due(now, schedule)
-        if created < due:
+        scheduled_runs = [item for item in runs if item.get("event") == "schedule"]
+        scheduled_latest = max(
+            scheduled_runs,
+            key=lambda item: item.get("created_at", ""),
+            default=None,
+        )
+        scheduled_created_raw = scheduled_latest.get("created_at", "") if scheduled_latest else ""
+        try:
+            scheduled_created = parse_time(scheduled_created_raw) if scheduled_latest else None
+        except (TypeError, ValueError):
+            return {
+                **base,
+                "state": "unknown",
+                "detail": "Suplanuoto paleidimo data neatpažinta.",
+            }
+        if scheduled_created is None or scheduled_created < due:
+            scheduled_detail = (
+                f"paskutinis suplanuotas paleidimas buvo {scheduled_created_raw}"
+                if scheduled_created_raw else "suplanuotų paleidimų istorijoje nėra"
+            )
             return {
                 **base,
                 "state": "warning",
                 "detail": (
-                    f"Suplanuotas ciklas nuo {due.strftime('%Y-%m-%d %H:%M')} UTC dar neturi "
-                    f"naujo paleidimo; paskutinis paleidimas buvo {created_raw}."
+                    f"Suplanuotas ciklas nuo {due.strftime('%Y-%m-%d %H:%M')} UTC dar neįvykdytas; "
+                    f"{scheduled_detail}. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia."
                 ),
+            }
+        scheduled_status = scheduled_latest.get("status")
+        scheduled_conclusion = scheduled_latest.get("conclusion")
+        if scheduled_status in ("queued", "in_progress", "waiting", "pending"):
+            return {
+                **base,
+                "state": "running",
+                "detail": f"Suplanuotas ciklas vykdomas ({scheduled_status}).",
+            }
+        if scheduled_conclusion == "failure":
+            return {
+                **base,
+                "state": "failure",
+                "detail": "Paskutinis suplanuotas ciklas nepavyko.",
+            }
+        if scheduled_conclusion not in ("success", "neutral", "skipped"):
+            return {
+                **base,
+                "state": "warning",
+                "detail": f"Suplanuoto ciklo išvada nepatvirtinta: {scheduled_conclusion}.",
             }
     if age > timedelta(hours=max_age_hours):
         hours = int(age.total_seconds() // 3600)
@@ -137,7 +176,7 @@ def evaluate_workflow(
     return {**base, "state": "success", "detail": "Paskutinis paleidimas sėkmingas."}
 
 def fetch_runs(workflow_file: str) -> list[dict]:
-    endpoint = f"https://api.github.com/repos/{REPO}/actions/workflows/{quote(workflow_file, safe='')}/runs?branch=main&per_page=5"
+    endpoint = f"https://api.github.com/repos/{REPO}/actions/workflows/{quote(workflow_file, safe='')}/runs?branch=main&per_page=100"
     request = Request(endpoint, headers={
         "Accept": "application/vnd.github+json",
         "Authorization": f"Bearer {TOKEN}",
