@@ -66,3 +66,14 @@ Atnaujinta: 2026-11-13
 ## ChatGPT projekto apribojimas
 
 GitHub dokumentai gali išsaugoti tęstinumo būseną, bet negali patys priversti ChatGPT pokalbio automatiškai pradėti GitHub skaitymo, vos atidarius projektą. ChatGPT projekto instrukcijose turi būti nurodyta, kad pirmame vartotojo pranešime naujoje sesijoje asistentas tyliai perskaito aukščiau nurodytus šaltinius ir tęsia nuo kito veiksmo. Jei įrankių ryšys nepasiekiamas, jis turi aiškiai pasakyti, kad būsenos negalėjo patikrinti, ir nieko nekeisti.
+
+
+## Naujausias patvirtintas tęstinumo taškas (2026-11-13 19:47 UTC)
+
+- PR #156 „Recover safely from ambiguous D1 AI call reservations“ sujungtas commit `a74ad11f755f4bd39a9b17c92999d5172f045326`; Worker pakeitimas įdiegtas.
+- PR #156 testai ir Cloudflare read-only validacija – success; post-merge Worker deploy run `43495408320` – success, įskaitant D1 migracijų žingsnį, gyvą /health ir API autentifikacijos ribą. Site checks `43495408435`, control center `43495408385`, work log `43495408363` ir central sync `43495504768` – success.
+- PR #156 atkuria D1 AI kvietimo skaitiklį po dviprasmiško `UPDATE ... RETURNING` atsakymo: prieš pakartojimą atliekamas read-back, todėl nebedubliuojamas jau įrašytas kvietimas.
+- 2026-11-13 ankstesnis agentų ciklas vis dar saugomas kaip failed; tos pačios dienos ciklas automatiškai nekartojamas. Kitas Worker ciklas: 2026-11-14 10:20 Europe/Vilnius. Esama vienkartinė ChatGPT atminties patikra: 10:35 Europe/Vilnius.
+- GitHub Actions cron yra YAML failuose, tačiau peržiūrėjus `event=schedule` vykdymus rasta tik viena eilutė (site checks); kitų pagrindinių workflow schedule paleidimai nepatvirtinti. Repo Actions settings per dabartinę jungtį nepasiekiami.
+- Naujausias analytics archyvas: GA4 unavailable, Search Console available; GA4 runReport timeout problema lieka atvira.
+- Tęsti nuo 2026-11-14 agentų ciklo patikros; nekartoti jau sėkmingų PR #156 testų ar diegimo patikros be naujų įrodymų.
