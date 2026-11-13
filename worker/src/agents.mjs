@@ -102,9 +102,33 @@ async function getPublicContent(env) {
  }
  return pages;
 }
-async function reserveCall(env,date) {
- const row=await env.DB.prepare("UPDATE agent_runs SET ai_calls=ai_calls+1 WHERE run_date=? AND ai_calls<? RETURNING ai_calls").bind(date,MAX_DAILY_CALLS).first();
- return Boolean(row);
+async function reserveCall(env,date,expectedCall) {
+ const reserve=()=>env.DB.prepare("UPDATE agent_runs SET ai_calls=ai_calls+1 WHERE run_date=? AND ai_calls<? RETURNING ai_calls").bind(date,MAX_DAILY_CALLS).first();
+ const readCount=async()=>{
+  const row=await env.DB.prepare("SELECT ai_calls FROM agent_runs WHERE run_date=?").bind(date).first();
+  const count=Number(row?.ai_calls);
+  if(!Number.isInteger(count))throw new Error("reservation_counter_unavailable");
+  return count;
+ };
+ try {
+  return Boolean(await reserve());
+ } catch {
+  // D1 may commit UPDATE ... RETURNING but lose/truncate the response. Reconcile
+  // the counter before retrying so a committed reservation is never counted twice.
+  let count;
+  try { count=await readCount(); }
+  catch { throw new Error("reservation_readback_failed"); }
+  if(count>=expectedCall)return true;
+  if(count!==expectedCall-1)throw new Error("reservation_counter_unexpected");
+  try {
+   return Boolean(await reserve());
+  } catch {
+   try { count=await readCount(); }
+   catch { throw new Error("reservation_retry_readback_failed"); }
+   if(count>=expectedCall)return true;
+   throw new Error("reservation_retry_failed");
+  }
+ }
 }
 export async function runAgentOrchestration(env) {
  if(!env.DB||!env.AI)return {skipped:true,reason:!env.DB?"database_not_bound":"ai_binding_missing"};
@@ -113,6 +137,13 @@ export async function runAgentOrchestration(env) {
  if(!inserted.meta?.changes)return {skipped:true,reason:"daily_run_already_started"};
  let stage="load_events";
  const specialists={};
+ let reservedCalls=0;
+ const reserveNextCall=async()=>{
+  const expectedCall=reservedCalls+1;
+  const reserved=await reserveCall(env,date,expectedCall);
+  if(reserved)reservedCalls=expectedCall;
+  return reserved;
+ };
  try {
   const eventData=await getEvents(env);
   stage="fetch_public_content";
@@ -120,12 +151,12 @@ export async function runAgentOrchestration(env) {
   for(const agent of AGENTS) {
    const source=agent.id==="content-review"?{public_pages:pages}:{verified_snapshots:eventData.events.filter(e=>agent.kinds.includes(e.kind))};
    stage="reserve_"+agent.id;
-   if(!(await reserveCall(env,date)))throw new Error("daily_ai_call_cap_reached");
+   if(!(await reserveNextCall()))throw new Error("daily_ai_call_cap_reached");
    stage="model_"+agent.id;
    specialists[agent.id]={label:agent.label,...await callModel(env,"Tu esi Pet traffic projekto read-only specialistas. Atsakyk tik validžiu JSON: {status:string,findings:string[],recommendations:string[],evidence_gaps:string[]}. Naudok tik pateiktus duomenis. Nekeisk svetainės ir neprašyk publikuoti. Jei duomenų nepakanka, aiškiai pasakyk.",JSON.stringify({task:agent.task,source}))};
   }
   stage="reserve_coordinator";
-  if(!(await reserveCall(env,date)))throw new Error("daily_ai_call_cap_reached");
+  if(!(await reserveNextCall()))throw new Error("daily_ai_call_cap_reached");
   stage="model_coordinator";
   const coordinator=await callModel(env,"Tu esi Pet traffic centrinis koordinatorius. Sujunk keturių specialistų rezultatus į trumpą prioritetinę ataskaitą. Atsakyk tik validžiu JSON: {status:string,findings:string[],recommendations:string[],evidence_gaps:string[]}. Nespėliok. Jokio publikavimo, kodo keitimo ar infrastruktūros veiksmų; rekomendacijoms būtinas žmogaus patvirtinimas.",JSON.stringify({date_utc:date,specialist_results:specialists}));
   if(eventData.invalidPayloadCount>0) {
