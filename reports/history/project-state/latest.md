@@ -71,3 +71,11 @@ Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (failure)
 
 - Esama vienkartinė ChatGPT automatizacija „Rytoj patikrinti PetTraffic AI atmintį“ atnaujinta ir palikta enabled; kitas paleidimas 2026-11-14 10:35 Europe/Vilnius. Ištaisyta jos šaltinių šakų nuoroda: latest.md iš automation-history, darbo žurnalas iš main. Patikros promptas apriboja D1 įrodymus iki realiai grąžinamų /health laukų ir draudžia apsimesti, kad perskaitytos žalios D1 lentelės.
 - PR #168 atidarytas dokumentacijos / darbo žurnalo įrašui. GitHub site-check ir Termux bridge patikros SUCCESS, tačiau Cloudflare Pages preview check dar IN_PROGRESS; pagal taisykles PR nesujungtas, kol visi check'ai nebaigti.
+
+
+## PR #168 sujungimo patvirtinimas – 2026-11-13 21:26 UTC
+
+- PR #168 „Correct the scheduled D1 memory verification task“ sujungtas commit `b45f256d111c5d4acbc92cba1ebe8b90c6a32faf`.
+- GitHub PR patikros: site checks SUCCESS, Termux bridge shell-validation SUCCESS, Cloudflare Pages preview SUCCESS.
+- Main darbo žurnale patvirtintas rankinis automatizacijos pataisos įrašas. Po merge paleisti main site-check, Termux bridge ir work-log workflow; jų būsenos tikrintinos pagal run'us `43510646972`, `43510646709`, `43510646708`.
+- Vienkartinė D1 atminties patikros automatizacija enabled; 2026-11-14 10:35 Europe/Vilnius.
