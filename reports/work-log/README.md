@@ -20,19 +20,19 @@ Paskirtis: fiksuoti atliktus darbus, jų trukmę, patikrinimus ir sprendimus, ka
 |---|---|---|---:|---:|---:|---:|---|
 | 2026-11-09–2026-11-12 | Pradinis PetTraffic AI kūrimas, svetainė, Termux, GitHub, GA4/GSC, automatizacijos, Worker/D1, valdymo centras ir techniniai patobulinimai | Tikslūs sesijų laikai neturimi | NEMATUOTA | NEMATUOTA | NEMATUOTA | NEMATUOTA | Darbų apimtis aprašyta projekto perdavimo dokumente; atgaline data valandų nepriskirti |
 | 2026-11-12 | Pradėta nauja darbo laiko apskaita ir veiksmų žurnalo įvedimas | Pradžios/pabaigos žymos šiame pokalbyje neišmatuotos | NEMATUOTA | NEMATUOTA | NEMATUOTA | NEMATUOTA | Apskaitos taisyklės paruoštos; nuo kitos aiškiai pradėtos sesijos fiksuoti laiko žymas |
+| 2026-11-13 | Projekto būsenos perėmimas ir patikra: Worker/D1 deploy #50, OIDC event sync #40, automation-history archyvas; sujungtas dokumentacijos PR #105 | 07:23–07:24:59 Europe/Vilnius | NEATSKIRTA | NEATSKIRTA | 0 min. (šiame bloke nelaukta suplanuoto ciklo) | NEAPS KAIČIUOTA | Patvirtinta: deploy #50 visi darbai success; /health 200 su D1 ir control-core schema, neautentifikuotas /v1/events 401; sync #40 success su OIDC ir D1 write/readback; automation-history turi analytics, control-center ir recommendations JSON; PR #105 sujungtas commit c8939fe. Po sujungimo site-check #336 dar vyksta. |
 
 ## Atviros užduotys ir tęstinumas
 
-Prieš kiekvieną naują darbų etapą atnaujinti šią dalį:
-- Paskutinis patvirtintas etapas:
-- Šiuo metu vykdoma užduotis:
-- Kitas vienintelis veiksmas:
-- Jau atlikti veiksmai, kurių nekartoti:
-- Likę patikrinimai:
-- Blokuojantys veiksniai:
+- Paskutinis patvirtintas etapas: Worker + D1 ir control-core schema įdiegti; GitHub OIDC event sync patikrintas; dokumentacijos PR #105 sujungtas.
+- Šiuo metu vykdoma užduotis: laukiama šiandienos suplanuotų GitHub Actions ciklų ir pirmojo 10:20 Europe/Vilnius Workers AI agentų vykdymo.
+- Kitas vienintelis veiksmas: po 10:20 patikrinti, ar AI vykdymas užbaigtas ir ar D1 sukūrė įrašus agent_runs, control_core_runs ir control_core_memory; 10:30 suplanuota atskira projekto patikra.
+- Jau atlikti veiksmai, kurių nekartoti: Worker deploy #50; D1 migracijos 0001–0003; gyvas health/auth smoke testas; OIDC snapshot sync #40; PR #105 sujungimas.
+- Likę patikrinimai: šiandienos temų radaro, GA4/GSC, svetainės monitoriaus ir control-center ciklai; pirmas realus AI agentų vykdymas; agentų ataskaitos kokybė.
+- Blokuojantys veiksniai: kol nėra pirmojo realaus AI vykdymo ir D1 įrašų, agentų sluoksnio negalima žymėti veikiančiu. Task API lieka išjungta.
 
 ## Suvestinė
 
-- Išmatuotas aktyvaus darbo laikas: kol kas nėra patikimų valandų duomenų.
+- Išmatuotas aktyvaus darbo laikas: šios sesijos aktyvus darbas ir įrankių vykdymas atskirai neišmatuoti; bendras stebėtas laiko langas 1 min. 59 sek.
 - Istorinis 2026-11-09–2026-11-12 laikas: nežinomas; nebus išgalvojamas.
-- Pirmas tiksliai fiksuojamas darbo blokas: nuo kitos sesijos pradžios, kai bus galima užrašyti pradžios ir pabaigos žymas.
+- ARO Vet PR #66 paliktas nepaliestas; ARO Vet svetainė ir kodas nekeisti.
