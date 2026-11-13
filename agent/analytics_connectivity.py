@@ -26,6 +26,14 @@ def check_api(session, name: str, url: str, body: dict) -> tuple[bool, str]:
         return False, f"{type(exc).__name__}: {str(exc)[:300]}"
 
 
+def run_independent_checks(session, ga_url: str, ga_body: dict,
+                           gsc_url: str, gsc_body: dict) -> dict[str, tuple[bool, str]]:
+    """Run both APIs even if the first one fails or times out."""
+    ga_result = check_api(session, "GA4", ga_url, ga_body)
+    gsc_result = check_api(session, "Search Console", gsc_url, gsc_body)
+    return {"GA4": ga_result, "Search Console": gsc_result}
+
+
 def main() -> int:
     raw = os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON", "").strip()
     ga4_id = os.environ.get("GA4_PROPERTY_ID", "").strip()
@@ -78,20 +86,14 @@ def main() -> int:
         + "/searchAnalytics/query"
     )
 
-    # Keep the two checks independent: a timeout in one API must not skip the other.
-    ga_ok, ga_message = check_api(
+    results = run_independent_checks(
         session,
-        "GA4",
         ga_url,
         {
             "dateRanges": [{"startDate": ga_start.isoformat(), "endDate": ga_end.isoformat()}],
             "metrics": [{"name": "sessions"}],
             "limit": 1,
         },
-    )
-    gsc_ok, gsc_message = check_api(
-        session,
-        "Search Console",
         gsc_url,
         {
             "startDate": gsc_start.isoformat(),
@@ -99,6 +101,8 @@ def main() -> int:
             "rowLimit": 1,
         },
     )
+    ga_ok, ga_message = results["GA4"]
+    gsc_ok, gsc_message = results["Search Console"]
 
     lines = [
         "# Google API connectivity check",
