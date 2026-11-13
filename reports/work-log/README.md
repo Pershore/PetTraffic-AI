@@ -55,16 +55,20 @@ Paskirtis: fiksuoti atliktus darbus, jų trukmę, patikrinimus ir sprendimus, ka
 | 2026-11-13 | Ilgalaikio projekto tęstinumo patikra: perskaityta projekto būsena, patikrintas main ir automation-history medžių turinys, darbo žurnalas, PR #131 ir control-center run #107 | Tikslūs sesijos pradžios/pabaigos laikai neišmatuoti | NEMATUOTA | NEMATUOTA | NEMATUOTA | NEAPSKAIČIUOTA | Patvirtinta: PR #131 sujungtas; deploy patikra #54 ir site checks #388 – success; control-center run #107 – success, bet jo ataskaitoje projekto būsena REIKIA DĖMESIO dėl „AI agentai + control-core atmintis“ klaidos „Unexpected_end_of_JSON_input“. automation-history šaka saugo tik reports/history agregatus; darbo žurnalas lieka main. Sukurtas tęstinumo perdavimo dokumento atnaujinimo PR; jokie production nustatymai ar ARO Vet pakeitimai neatlikti. |
 
 | 2026-11-13 | Voice-first taisyklės ir automatizacijų tvarkaraščių dokumentacijos atnaujinimas (PR #151, #152) | GitHub įvykiai 17:04–17:06 UTC; aktyvūs laikai neišmatuoti | NEMATUOTA | NEMATUOTA | NEMATUOTA | NEAPSKAIČIUOTA | PR #151 sujungtas commit 1f046bf; site-check run 43469054324 – success. PR #152 sujungtas commit 2f2abd7; site-check run 43469355419 – success. Atnaujinti AGENTS.md ir docs/SESSION_START.md, sukurtas docs/VOICE_FIRST_AUTONOMY.md; suderinti dokumentuoti cron laikai su workflow failais. Peržiūrėjus 100 naujausių Actions vykdymų nerasta event=schedule įrašų; cron konfigūracija yra, tačiau Actions nustatymų prieigos per dabartinę jungtį nėra. Jokių production, DNS, secrets ar ARO Vet pakeitimų. |
-## 2026-11-14 – sistemos auditas ir paieškos regresijos taisymas
+## 2026-11-14 – sistemos auditas, paieškos pataisa ir cron patikra
 
-- Atlikta GitHub `main` ir `automation-history` būsenos, naujausių commit/PR, Actions vykdymų, Worker kodo, cron konfigūracijos ir darbo žurnalo patikra.
-- Gyvas Worker `/health`: HTTP 200; D1 ir control-core schema connected. Paskutinis heartbeat `2026-11-13T22:00:47.423Z`; AI run `2026-11-13 / failed / ai_calls=1 / Unexpected_end_of_JSON_input`; control-core `not_started`; memory `missing`. Tai patvirtina pasiekiamą API, bet ne periodinio cron ar AI atminties veikimą.
-- GitHub Actions API: nuo `2026-11-14T00:00:00Z` naujų run nerasta; Issue #145 tebėra open. YAML tvarkaraščiai egzistuoja, tačiau repository Actions settings per dabartinę jungtį neprieinami.
-- Vieši puslapiai: homepage, 4 pagrindiniai straipsniai, about, privacy, robots.txt ir sitemap.xml – HTTP 200.
-- Naršyklės testu nustatyta paieškos regresija: įvedus „šuo“, tik viena kortelė atitiko filtrą, bet likusios kortelės su `hidden=true` liko rodomos dėl `.article-card { display:flex }` CSS taisyklės. Pateikta pataisa `.article-card[hidden] { display:none!important }` ir regresijos testas atskirame PR.
-- GA4 paskutiniame turimame snapshot nepasiekiamas dėl `ReadTimeout`; Search Console API veikė atskirai. Naujo 2026-11-14 analytics snapshot nėra.
-- Firecrawl viešų puslapių patikra naudojo esamą kvotą; naujas mokamas planas ar API neaktyvuotas. ARO Vet, DNS, Worker/D1 production konfigūracija ir secrets nekeisti. Viešas turinys nepublikuotas.
-- Aktyvaus darbo ir įrankių laikas atskirai neišmatuoti; trukmės neišgalvotos.
+- Atlikta GitHub `main`, `automation-history`, PR, Actions, Worker, D1, viešos svetainės ir Termux bridge patikra.
+- PR #169 sutaisė `.article-card[hidden]` CSS regresiją; pridėti 2 testai. Site-check praėjo 83 testus; gyva paieška „šuo“ 1/4, „katė“ 2/4, nerastas terminas 0/4 su tuščio rezultato pranešimu, reset 4/4.
+- Lighthouse 10 auditų: performance 98–100, Accessibility / Best Practices / SEO 100. Homepage, keturi straipsniai, about, privacy, robots ir sitemap grąžino HTTP 200.
+- PR #170 pridėjo read-only Cloudflare schedules API patikrą; patvirtinti cron `*/15 * * * *` ir `20 7,8 * * *`. PR #171–#173 sutvarkė diagnostikos workflow saugą ir Wrangler tail sampling.
+- Gyvas Worker /health 00:31 Europe/Vilnius: HTTP 200, D1 connected, schema connected, heartbeat `2026-11-13T22:30:47.462Z` (00:30:47 vietos laiku), site_ok=true, database_ok=true. Tai patvirtina 15 min. heartbeat cron ir D1 rašymą.
+- Paskutinis AI agentų ciklas 2026-11-13 buvo failed dėl `Unexpected_end_of_JSON_input`; 2026-11-14 10:20 ciklas dar laukia. `memory_status=missing` prieš šiandienos ciklą nėra šiandienos gedimo įrodymas. Atminties patikra 10:35, control-center 10:40.
+- GitHub schedule vykdymai lapkričio 14 d. vietos laiku dar neatėjo; 00:31 vietos laiku atitinka 22:31Z lapkričio 13 d. Nenaudoti UTC vidurnakčio filtro kaip Lietuvos dienos ribos.
+- Issue #145 automatiškai uždarytas 2026-11-13 22:11:17Z; šiuo metu atvirų issue ir PR nėra.
+- GA4 paskutiniame analytics snapshot ReadTimeout; Search Console API veikė, bet 5 pagrindiniai URL dar nežinomi Google indeksui, sitemap apdorojimas nepatvirtintas. Kitas analytics ciklas 08:47.
+- Naujas Worker cron diagnostikos run #43518529439 vykdo 17 min. Wrangler tail stebėseną; rezultatas dar laukiamas.
+- Saugumo incidento įrašas: pirmoji diagnostikos workflow versija nusiuntė `CLOUDFLARE_API_TOKEN` Authorization antraštę viešam Worker /health URL; atsakymas 403, reikšmė GitHub loguose nebuvo atspausdinta. Viešas probe pašalintas. Žetoną laikyti galimai atskleistu: išrotuoti Cloudflare paskyroje ir atnaujinti GitHub Actions secret. Naujo rakto pokalbyje nesiųsti.
+- Termux/Codex telefono susiejimas nepatvirtintas; CI paruošimo testai praėjo. ARO Vet, DNS, Worker/D1 production konfigūracija ir duomenys nekeisti. Naujas mokamas planas ar API neįjungti.
 
 ## Automatinis darbo žurnalo papildymas
 
