@@ -112,11 +112,11 @@ export async function runAgentOrchestration(env) {
  const inserted=await env.DB.prepare("INSERT OR IGNORE INTO agent_runs (run_date,status,ai_calls,started_at) VALUES (?,'running',0,?)").bind(date,new Date().toISOString()).run();
  if(!inserted.meta?.changes)return {skipped:true,reason:"daily_run_already_started"};
  let stage="load_events";
+ const specialists={};
  try {
   const eventData=await getEvents(env);
   stage="fetch_public_content";
   const pages=await getPublicContent(env);
-  const specialists={};
   for(const agent of AGENTS) {
    const source=agent.id==="content-review"?{public_pages:pages}:{verified_snapshots:eventData.events.filter(e=>agent.kinds.includes(e.kind))};
    stage="reserve_"+agent.id;
