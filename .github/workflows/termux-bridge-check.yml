@@ -6,6 +6,7 @@ on:
     paths:
       - "tools/termux/**"
       - "docs/TERMUX_CODEX_BRIDGE.md"
+      - "docs/SESSION_START.md"
       - ".github/workflows/termux-bridge-check.yml"
   push:
     branches: [main]
