@@ -43,6 +43,16 @@ Atnaujinta: 2026-11-13
 - Nenaudoti kelių agentų tam pačiam failui vienu metu. Vienas koordinatorius paskiria atskiras, nesikertančias užduotis; visi pakeitimai grįžta per PR ir testus.
 - Jokio mokamo plano ar API be atskiro biudžeto patvirtinimo.
 
+## Voice-first / naudotojo be rankinio darbo principas
+
+- Vartotojas valdo projektą balsu arba trumpais pranešimais. Įprastų techninių veiksmų (terminalo komandų, failų kopijavimo, GitHub naršymo, testų paleidimo, statusų rinkimo) neperduoti vartotojui, jei juos gali atlikti prijungti įrankiai.
+- Koordinatorius pats perskaito būseną, parenka saugų kitą veiksmą, vykdo jį per GitHub / prijungtas integracijas, paleidžia testus ir užrašo įrodymus.
+- Vartotojo klausti tik dėl išankstinio leidimo mokamoms paslaugoms, publikavimui, production / DNS / Cloudflare teisių / secrets pakeitimams ar kitiems didelės rizikos veiksmams.
+- Nesiųsti tarpinių „dirbu“ pranešimų be rezultato. Pateikti trumpą atsakymą, kai yra patikrintas etapas arba būtinas vartotojo sprendimas.
+- Pokalbio ar įrankio vykdymas nėra nuolatinis foninis procesas. Fone gali veikti tik realiai aktyvuoti suplanuoti GitHub Actions arba ChatGPT automatizavimai. Jų vykdymą būtina įrodyti realiais run'ais, ne vien konfigūracija.
+- Vienas pagrindinis kasdienis priežiūros agentas koordinuoja darbą; nekuriami dubliuojantys kasdieniai agentai. GitHub Actions atlieka aiškiai apibrėžtas specialistų užduotis, Worker agentai vykdo ribotą analizę ir saugo atmintį.
+- Jei trūksta prieigos, pateikti tikslų blokatorių ir vieną mažiausią reikalingą vartotojo veiksmą; niekada neprašyti slaptažodžių, MFA ar slaptų raktų pokalbyje.
+
 ## ChatGPT projekto apribojimas
 
 GitHub dokumentai gali išsaugoti tęstinumo būseną, bet negali patys priversti ChatGPT pokalbio automatiškai pradėti GitHub skaitymo, vos atidarius projektą. ChatGPT projekto instrukcijose turi būti nurodyta, kad pirmame vartotojo pranešime naujoje sesijoje asistentas tyliai perskaito aukščiau nurodytus šaltinius ir tęsia nuo kito veiksmo. Jei įrankių ryšys nepasiekiamas, jis turi aiškiai pasakyti, kad būsenos negalėjo patikrinti, ir nieko nekeisti.
