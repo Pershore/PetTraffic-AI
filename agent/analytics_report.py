@@ -245,6 +245,7 @@ def main() -> int:
             )
             current = metric_totals(ga_current)
             previous = metric_totals(ga_previous)
+            ga4_ok = True
     
             lines += [
                 "",
@@ -312,14 +313,16 @@ def main() -> int:
             else:
                 lines.append("_GA4 puslapių duomenų šiam laikotarpiui nėra._")
     
-    
-            ga4_ok = True
         except Exception as ga_exc:
             lines += [
                 "",
                 "## Pagrindiniai rodikliai (GA4)",
                 "",
-                "GA4 duomenų gauti nepavyko; Search Console bus tikrinama atskirai.",
+                (
+                    "Papildomų GA4 išklotinių gauti nepavyko; pagrindiniai rodikliai išsaugoti."
+                    if ga4_ok else
+                    "GA4 duomenų gauti nepavyko; Search Console bus tikrinama atskirai."
+                ),
                 f"Techninė priežastis: {type(ga_exc).__name__}: {ga_exc}",
             ]
             print(f"WARNING: GA4 unavailable: {type(ga_exc).__name__}: {ga_exc}", file=sys.stderr)
@@ -470,7 +473,11 @@ def main() -> int:
                 "",
                 "## Google paieška (Search Console)",
                 "",
-                "Duomenų gauti nepavyko. GA4 ataskaita pateikta atskirai.",
+                (
+                    "Papildomų Search Console išklotinių gauti nepavyko; pagrindiniai rodikliai išsaugoti."
+                    if gsc_ok else
+                    "Duomenų gauti nepavyko. GA4 ataskaita pateikta atskirai."
+                ),
                 f"Techninė priežastis: {type(gsc_exc).__name__}: {gsc_exc}",
                 "403 dažniausiai reiškia, kad paslaugos paskyra neturi teisės skaityti nurodytos nuosavybės arba Search Console API / projekto prieiga dar nesutvarkyta. Patikrinkite, ar Search Console API įjungta tame pačiame Google Cloud projekte, ar paslaugos paskyra pridėta būtent prie šios nuosavybės, ir ar GSC_SITE_URL tiksliai sutampa su nuosavybės adresu.",
             ]
