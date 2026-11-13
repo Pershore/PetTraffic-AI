@@ -269,3 +269,33 @@ Vartotojui reikia įjungti ChatGPT Settings → Security → Device code login (
 ### Saugumo / projekto tapatybės priminimas
 - Viešas prekės ženklas – **Pet traffic**; ARO Vet nėra projekto turinio ar rinkodaros tikslas. ARO Vet neliesti.
 - Jokio mokamo API, DNS, secrets, paskyrų teisių ar automatinio publikavimo.
+
+
+## 15. Worker cron patikimumo pataisa ir pilna šios sesijos patikra – 2026-11-13 21:22 UTC
+
+### Įgyvendinta ir patikrinta
+- PR #166 „Run Worker agents from the scheduled cron timestamp“ sujungtas commit `4d477f490c073d29600e3a73f9239199b8385927`.
+- Root cause: Worker `scheduled()` anksčiau tikrino tikslų vietinį `10:20` pagal handlerio realų vykdymo laiką. Jei Cloudflare cron įvykį pristatydavo pavėluotai, agento paleidimas galėjo būti tyliai praleistas. Cloudflare oficiali dokumentacija nurodo naudoti `controller.scheduledTime` (epoch milisekundės) numatytam įvykio laikui.
+- Pataisa: `isAgentScheduledEvent(controller)` tikrina tikslų cron ir `controller.scheduledTime`, o ne dabartinį laikrodį. Pridėti 3 regresiniai atvejai: pavėluotas 10:20 įvykis, 09:20 žiemos trigeris ir ne agentų / trūkstamo timestamp įvykiai.
+- PR patikros: Worker Node **50/50 PASS**, Python Worker **4/4 PASS**, Cloudflare token/D1/Worker resursų patikra **SUCCESS**, statinės svetainės patikros **SUCCESS**.
+- Po merge Worker deploy run `43509823943` – **SUCCESS**. Deploy logas patvirtino aktyvius Cloudflare cron trigerius `*/15 * * * *` ir `20 7,8 * * *`; Worker versija `ce0bab56-1c75-4e32-b580-04f2bb7ce3af`. D1 migracijų pakeitimų nebuvo. Post-deploy /health patvirtino Worker, D1 ir control-core schemą; neautentifikuotas API grąžino HTTP 401.
+- Site checks run `43509823913` – **SUCCESS**. Control Center push run `43509823929` – **SUCCESS**. Po deploy Control Center run `43509987422` – **SUCCESS**. Automatinis darbo žurnalas run `43509824121` – **SUCCESS**, PR #166 įrašytas į `reports/work-log/README.md`.
+- Gyvas Pet traffic puslapio patikrinimas: homepage, visi 4 pagrindiniai straipsniai, about, privacy, robots.txt, sitemap.xml ir neegzistuojančio URL 404 turinys pasiekiami. Tai Firecrawl turinio patikra; HTTP status kodai atskirai ne visiems puslapiams perskaityti.
+
+### Kas vis dar nepatvirtinta / laukia
+- Gyvas Worker `/health` po deploy vis dar rodo 2026-11-13 seną agentų įrašą `failed`, `ai_calls=1`, `Unexpected_end_of_JSON_input`; `control_core.status=not_started`, `memory_status=missing`. Tai įvyko iki PR #164/#166 ir nėra naujas bandymas.
+- Cloudflare deploy logas patvirtina cron trigerių konfigūraciją, tačiau realus agento vykdymas po `scheduledTime` pataisos dar neįvyko. Kitas numatytas 10:20 Europe/Vilnius agentų ciklas: **2026-11-14 08:20 UTC**. Po jo patikrinti `/health`, naują `agent_orchestration.error_code`, D1 `control_core_runs` ir `control_core_memory`.
+- GitHub Actions workflow cron YAML yra, bet per paskutinių 100 vykdymų auditą nėra `event=schedule` vykdymų. Cloudflare Worker cron yra atskiras ir dabar deploy logu patvirtintas. GitHub Actions repository scheduler nustatymų per šią jungtį skaityti / keisti negalima.
+- GA4 metadata veikia, tačiau `runReport` ir su 1 dienos minimalia užklausa timeoutina: atskira diagnostika run `43412153068` – ReadTimeout po 25 s; analytics snapshot `43443849180` – ReadTimeout po 15 s. Search Console API veikia. Nėra įrodymų, kad priežastis yra leidimai; nekeitinėti Google paskyros teisių ar raktų spėliojant.
+- Termux bootstrap / GitHub CLI / Codex CLI telefone vis dar nepaleisti. Šio pokalbio GitHub jungtis leidžia skaityti ir rašyti repo per PR, bet neturi vietinio Android terminalo vykdymo kanalo. ChatGPT Remote `localhost Offline` nėra Termux ryšys.
+- Aktyvus ChatGPT kasdienis koordinatorius „Pet traffic – kasdienė savarankiška priežiūra“ patvirtintas kaip enabled; kitas paleidimas 2026-11-14 09:45 Europe/Vilnius. Vienkartinė D1 atminties patikra numatyta 10:35 Europe/Vilnius. Kiti senesni priežiūros dubleriai yra paused; jų neatnaujinti.
+
+### Kitas konkretus veiksmas
+1. 2026-11-14 10:20 Europe/Vilnius patikrinti naują Worker AI ciklą ir D1 atminties įrašą.
+2. Jei agentų ciklas sėkmingas, patvirtinti Control Center problemos uždarymą; jei nepavykęs, taisyti tik pagal naują tikslų klaidos etapą.
+3. Toliau diagnozuoti GA4 runReport ir atskirai išspręsti GitHub Actions schedule nustatymų / Termux vietinio prijungimo blokatorius.
+
+### Saugumo ir autonomijos ribos
+- Worker / D1 veikia per esamus GitHub Actions ir Cloudflare credentials; šioje sesijoje nekeisti secrets, DNS, paskyros teisių ar D1 schemos.
+- ChatGPT GitHub jungtis nėra tiesioginis Cloudflare dashboard ar Android Termux shell valdymas. Vartotojo leidimas leidžia atlikti saugius darbus, bet pats nesukuria neegzistuojančio techninio kanalo.
+- Viešas prekės ženklas tik **Pet traffic**; ARO Vet neliečiamas; viešo turinio publikavimas lieka su patvirtinimo vartais; papildomas biudžetas 0 €/mėn.

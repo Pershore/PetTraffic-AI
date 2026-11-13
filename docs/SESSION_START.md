@@ -121,3 +121,15 @@ GitHub dokumentai gali išsaugoti tęstinumo būseną, bet negali patys priverst
 - Termux/Codex kodas ir CI paruošti, bet telefone bootstrap/login/doctor neatlikti. ChatGPT Remote localhost Offline nėra aktyvus Termux ryšys.
 - Kitas veiksmas: po 10:20 ciklo patikrinti AI ir D1 atmintį; toliau diagnozuoti GA4; išspręsti Actions schedule nustatymų ir Termux prijungimo blokatorius.
 - Laikytis `AGENTS.md`: viešas prekės ženklas Pet traffic, ARO Vet neliečiamas.
+
+
+## Naujausias tęstinumo taškas – 2026-11-13 21:22 UTC
+- PR #166 sujungtas commit `4d477f490c073d29600e3a73f9239199b8385927`. Worker agentų cron dabar naudoja Cloudflare `controller.scheduledTime`, todėl pavėluotas event delivery nebeturėtų praleisti 10:20 paleidimo. Regresijos testai: Node 50/50, Python 4/4.
+- Worker deploy run `43509823943` – success; Cloudflare logas patvirtino `*/15 * * * *` ir `20 7,8 * * *` cron trigerius; Worker versija `ce0bab56-1c75-4e32-b580-04f2bb7ce3af`; D1 ir control-core schema connected; unauthenticated API 401.
+- Site checks `43509823913`, Control Center `43509987422`, work log `43509824121` – success. GitHub work log įrašė PR #166.
+- AI atmintis dar nepatvirtinta: gyvas /health rodo tik seną 2026-11-13 failed run, `Unexpected_end_of_JSON_input`, memory missing. Kitas tikras agentų ciklas 2026-11-14 10:20 Europe/Vilnius; po jo tikrinti D1 `control_core_runs` ir `control_core_memory`.
+- GitHub Actions YAML schedule yra, bet paskutinių 100 run audite `event=schedule` nėra. Tai atskira problema nuo dabar deploy logu patvirtintų Cloudflare Worker cron trigerių. GitHub Actions settings prieigos ši integracija neturi.
+- GA4 metadata veikia, bet minimalus GA4 `runReport` timeoutina po 15–25 s; GSC API veikia. Neįrodyta, kad kalta paskyros prieiga.
+- Termux/Codex dar neįdiegtas telefone. ChatGPT Remote localhost Offline nėra Termux ryšys; vietinio Android shell prieigos per dabartinius įrankius nėra.
+- Aktyvus kasdienis ChatGPT koordinatorius enabled; kitas vykdymas 2026-11-14 09:45 Europe/Vilnius. Vienkartinė D1 atminties patikra 10:35 Europe/Vilnius.
+- Kitas veiksmas: 10:20 agentų ciklo realus patvirtinimas; jei pavyksta – uždaryti central alert, jei ne – taisyti pagal naują klaidos etapą. Toliau GA4, GitHub Actions schedulerio ir Termux blokatoriai.
