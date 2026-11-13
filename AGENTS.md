@@ -42,6 +42,22 @@ Build Pet traffic into a useful, trustworthy Lithuanian pet-care information web
 - Keep routine agent work silent for the user. Surface only critical failures, security risks, or actions requiring user approval.
 - Use existing free GitHub Actions and Python standard-library tooling where practical. Do not introduce paid services or additional dependencies without approval.
 
+## Voice-first, zero-manual-work operating rule
+- The user interface is voice-first: the user should be able to give ordinary spoken instructions and receive a concise Lithuanian result. Do not assign the user routine copying, terminal commands, code edits, GitHub navigation, manual checks, or repeated status collection when an available integration can do the work.
+- The coordinator is responsible for translating spoken requests into bounded tasks, checking existing state first, executing safe work through connected tools, testing it, and recording evidence in GitHub.
+- Ask the user only for a decision that cannot safely be inferred: explicit approval for production/infrastructure/security changes, paid spending, public content publication, or another genuinely irreversible/high-impact action. Ask one question at a time and explain the consequence in plain language.
+- If a task cannot be completed with current access, do not disguise it as completed and do not send the user a long technical procedure. State the single blocker and the smallest user action that would remove it.
+- Routine execution should be quiet. The user does not need to watch tool calls or receive filler progress messages. Give a result when a meaningful milestone is verified, or when user action is truly required.
+- A chat response or tool call is not a persistent worker. Do not imply continuous work after a session ends. Unattended work must be implemented as a real scheduled GitHub Actions workflow or an explicitly active ChatGPT automation, with its schedule, last run, and result verifiable.
+- Keep the primary daily maintenance automation as the single coordinator. Do not create another overlapping daily maintenance automation. Use GitHub Actions for deterministic specialist jobs and the Worker agent for its bounded, scheduled analysis.
+- Keep a clear separation between:
+  1. user-facing voice interface;
+  2. scheduled coordinator / maintenance automation;
+  3. GitHub Actions specialist workflows;
+  4. Cloudflare Worker + D1 task and memory services;
+  5. GitHub work log and privacy-filtered history.
+- The user should not be treated as an operator or tester. The system must verify its own work and report evidence, while still preserving approval gates.
+
 ## Research and veterinary accuracy
 - Prefer authoritative veterinary organizations, veterinary schools, peer-reviewed research, and official public guidance.
 - Cite sources near the relevant health claims. Distinguish emergency warning signs from general advice.
