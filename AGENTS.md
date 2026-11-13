@@ -72,3 +72,10 @@ At the end of each work session, write a short Lithuanian report with:
 3. Whether a PR was opened/merged and whether the live site was verified.
 4. Remaining blockers and the next three priorities.
 Be factual, concise, and never overstate completion.
+
+## Mandatory session continuity
+- At the start of every new agent session, read `docs/SESSION_START.md` before investigating or changing anything.
+- Read `reports/history/project-state/latest.md` from `automation-history` and `reports/work-log/README.md` from `main`; the work log is intentionally not stored on `automation-history`.
+- Read the latest applicable handover in `docs/` and continue from its first unresolved next action. Do not repeat verified work.
+- If the next action depends on a scheduled run that has not happened, mark it waiting and do not claim success.
+- Use one agent as coordinator; delegate only bounded, non-overlapping tasks. All code changes must return through a branch, pull request, and tests.
