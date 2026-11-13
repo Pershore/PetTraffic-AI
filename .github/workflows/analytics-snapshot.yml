@@ -30,7 +30,9 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: "3.x"
+          # Pin a stable runtime while diagnosing repeated GA4 Data API read timeouts.
+          # Do not float to the newest Python release automatically.
+          python-version: "3.13"
       - name: Run analytics unit tests
         run: python -m unittest discover -s tests -v
       - name: Install Google API authentication
