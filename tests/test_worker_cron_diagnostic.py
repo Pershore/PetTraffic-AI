@@ -15,6 +15,8 @@ class WorkerCronDiagnosticSecurityTests(unittest.TestCase):
         self.assertIn("schedules = get_cloudflare(", WORKFLOW)
         self.assertIn('expected = {"*/15 * * * *", "20 7,8 * * *"}', WORKFLOW)
         self.assertIn("wrangler@4 tail pettraffic-control-api", WORKFLOW)
+        self.assertIn("--sampling-rate=0.99", WORKFLOW)
+        self.assertNotIn("--sampling-rate=1 ", WORKFLOW)
 
 
 if __name__ == "__main__":
