@@ -194,7 +194,7 @@ def main() -> int:
     )
     site_script = Path("site/assets/site.js")
     site_script_text = site_script.read_text(encoding="utf-8") if site_script.exists() else ""
-    measurement_match = re.search(r"GA_ID\\s*=\\s*['\\\"]([^'\\\"]+)['\\\"]", site_script_text)
+    measurement_match = re.search(r"GA_ID\s*=\s*'([^']+)'", site_script_text)
     site_measurement_id = measurement_match.group(1) if measurement_match else ""
     gsc_url = (
         "https://searchconsole.googleapis.com/webmasters/v3/sites/"
