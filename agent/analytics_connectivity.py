@@ -13,9 +13,9 @@ import sys
 OUT = Path("reports/analytics-connectivity.md")
 
 
-def check_api(session, name: str, url: str, body: dict) -> tuple[bool, str]:
+def check_api(session, name: str, url: str, body: dict, timeout: int = 25) -> tuple[bool, str]:
     try:
-        response = session.post(url, json=body, timeout=25)
+        response = session.post(url, json=body, timeout=timeout)
         if not response.ok:
             detail = response.text[:500].replace("\n", " ")
             return False, f"HTTP {response.status_code}: {detail}"
@@ -208,6 +208,27 @@ def main() -> int:
         if site_measurement_id else
         (False, "Could not find GA_ID in site/assets/site.js")
     )
+    ga7_single_ok, ga7_single_message = check_api(
+        session, "GA4 7-day sessions", ga_url,
+        {
+            "dateRanges": [{"startDate": ga_start.isoformat(), "endDate": ga_end.isoformat()}],
+            "metrics": [{"name": "sessions"}],
+            "limit": 1,
+        },
+        timeout=20,
+    )
+    ga7_multi_ok, ga7_multi_message = check_api(
+        session, "GA4 7-day core metrics", ga_url,
+        {
+            "dateRanges": [{"startDate": ga_start.isoformat(), "endDate": ga_end.isoformat()}],
+            "metrics": [
+                {"name": "activeUsers"}, {"name": "newUsers"},
+                {"name": "sessions"}, {"name": "screenPageViews"},
+            ],
+            "limit": 1,
+        },
+        timeout=20,
+    )
     ga_grpc_ok, ga_grpc_message = check_ga4_grpc(
         BetaAnalyticsDataClient, credentials, ga4_id, ga_start, ga_end
     )
@@ -241,6 +262,8 @@ def main() -> int:
         "|---|---|---|",
         f"| GA4 metadata | {'OK' if ga_metadata_ok else 'FAILED'} | {ga_metadata_message.replace('|', '/')} |",
         f"| GA4 web stream | {'OK' if ga_stream_ok else 'FAILED'} | {ga_stream_message.replace('|', '/')} |",
+        f"| GA4 report REST (7 days, sessions only) | {'OK' if ga7_single_ok else 'FAILED'} | {ga7_single_message.replace('|', '/')} |",
+        f"| GA4 report REST (7 days, 4 core metrics) | {'OK' if ga7_multi_ok else 'FAILED'} | {ga7_multi_message.replace('|', '/')} |",
         f"| GA4 report gRPC (1 day) | {'OK' if ga_grpc_ok else 'FAILED'} | {ga_grpc_message.replace('|', '/')} |",
         f"| GA4 realtime gRPC | {'OK' if ga_realtime_ok else 'FAILED'} | {ga_realtime_message.replace('|', '/')} |",
         f"| GA4 report REST (1 day) | {'OK' if ga_ok else 'FAILED'} | {ga_message.replace('|', '/')} |",
