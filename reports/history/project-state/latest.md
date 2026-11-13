@@ -51,3 +51,17 @@ Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (failure)
 - AI rekomendacijos yra patariamosios; modelio išvestys nesuteikia vykdymo teisių.
 
 > Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.
+
+
+## Rankinis sesijos papildymas – 2026-11-13 21:23 UTC
+
+- PR #166 sujungtas commit `4d477f490c073d29600e3a73f9239199b8385927`: Worker cron agentų paleidimas dabar remiasi Cloudflare `controller.scheduledTime`, o ne tikslia handlerio sieninio laikrodžio minute. Tai pašalina pavėluoto cron delivery praleidimo riziką.
+- PR #166 testai: Node 50/50 PASS, Python 4/4 PASS, Cloudflare resource validation SUCCESS, site checks SUCCESS.
+- Post-merge Worker deploy run `43509823943` SUCCESS. Cloudflare logas patvirtino cron trigerius `*/15 * * * *` ir `20 7,8 * * *`, Worker versiją `ce0bab56-1c75-4e32-b580-04f2bb7ce3af`, D1/control-core connected ir neautentifikuoto API HTTP 401.
+- Post-merge site-check `43509823913`, Control Center `43509987422`, automatic work-log `43509824121` SUCCESS. PR #166 įrašytas į main darbo žurnalą.
+- Gyvas /health vis dar rodo tik seną 2026-11-13 agentų failure `Unexpected_end_of_JSON_input`, memory missing. Naujas cron event dar neįvyko; kitas agentų ciklas 2026-11-14 10:20 Europe/Vilnius. AI/D1 atminties būsena lieka WAITING, ne PATIKRINTA.
+- GitHub Actions paskutinių 100 įvykių audite nėra `event=schedule`; tai atskira problema nuo Cloudflare Worker cron, kurio trigeriai deploy logu patvirtinti. GitHub Actions settings nėra prieinami per šią jungtį.
+- GA4 runReport vis dar timeoutina (1 dienos užklausa 25 s, 7 dienų 15 s); GA4 metadata OK, GSC API OK. Prieigos klaida neįrodyta.
+- Viešos svetainės patikra: homepage, 4 pagrindiniai straipsniai, about, privacy, robots.txt, sitemap.xml ir custom 404 turinys pasiekiami; PR #167 dokumentacijos patikros ir Cloudflare Pages preview SUCCESS.
+- Termux/Codex telefone dar neįdiegtas; dabartinė integracija neturi vietinio Android shell kanalo. Aktyvus kasdienis ChatGPT koordinatorius enabled, kitas paleidimas 2026-11-14 09:45 Europe/Vilnius; vienkartinė D1 atminties patikra 10:35 Europe/Vilnius.
+- PR #167 sujungtas commit `035116d00bc8a05ae4a1dccf0ba22230f09eef84`, papildyti handover ir session-start dokumentai.
