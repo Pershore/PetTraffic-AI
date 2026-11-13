@@ -10,6 +10,7 @@ on:
       - "Pet traffic daily topic radar"
       - "Pet traffic live-site monitor"
       - "Pet traffic Lighthouse audits"
+      - "Deploy PetTraffic control API"
     types: [completed]
     branches: [main]
   push:
