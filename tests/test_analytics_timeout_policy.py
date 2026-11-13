@@ -14,6 +14,7 @@ class ConnectTimeout(Exception):
 
 class FakeResponse:
     ok = True
+    status_code = 200
 
     def json(self):
         return {"rows": []}
