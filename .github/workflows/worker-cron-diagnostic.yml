@@ -1,0 +1,162 @@
+name: Pet traffic Worker cron diagnostics
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/worker-cron-diagnostic.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pettraffic-worker-cron-diagnostics
+  cancel-in-progress: false
+
+jobs:
+  verify-and-observe:
+    name: Verify configured crons and observe live invocations
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      API_URL: ${{ vars.PETTRAFFIC_CONTROL_API_URL || 'https://pettraffic-control-api.pauliusgrubliauskis.workers.dev' }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      - name: Verify Cloudflare schedules and current Worker health
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import sys
+          import urllib.request
+          from datetime import datetime, timezone
+
+          token = os.environ.get("CLOUDFLARE_API_TOKEN", "")
+          account = os.environ.get("CLOUDFLARE_ACCOUNT_ID", "")
+          api_url = os.environ.get("API_URL", "").rstrip("/")
+          if not token or not account or not api_url:
+              raise SystemExit("Required Cloudflare connection settings are missing.")
+
+          def get(url):
+              request = urllib.request.Request(url, headers={"Authorization": "Bearer " + token})
+              with urllib.request.urlopen(request, timeout=20) as response:
+                  return json.loads(response.read())
+
+          schedules = get(
+              f"https://api.cloudflare.com/client/v4/accounts/{account}/workers/scripts/pettraffic-control-api/schedules"
+          )
+          if not schedules.get("success"):
+              raise SystemExit("Cloudflare did not confirm Worker schedules.")
+          actual = sorted({item.get("cron") for item in schedules.get("result", {}).get("schedules", []) if item.get("cron")})
+          expected = {"*/15 * * * *", "20 7,8 * * *"}
+          missing = sorted(expected - set(actual))
+          print("Registered Worker schedules: " + ", ".join(actual))
+          if missing:
+              raise SystemExit("Expected schedules missing: " + ", ".join(missing))
+
+          health = get(api_url + "/health")
+          if health.get("ok") is not True or health.get("database") != "connected":
+              raise SystemExit("Worker health or D1 connectivity is not healthy.")
+          heartbeat = health.get("heartbeat") or {}
+          checked_at = heartbeat.get("checked_at")
+          if checked_at:
+              parsed = datetime.fromisoformat(checked_at.replace("Z", "+00:00"))
+              age_minutes = round((datetime.now(timezone.utc) - parsed).total_seconds() / 60, 1)
+              print(f"Last D1 heartbeat: {checked_at} ({age_minutes} minutes old)")
+          else:
+              print("Last D1 heartbeat: missing")
+          agent = health.get("agent_orchestration") or {}
+          core = health.get("control_core") or {}
+          print("Latest AI run: " + json.dumps({
+              "run_date": agent.get("run_date"),
+              "status": agent.get("status"),
+              "ai_calls": agent.get("ai_calls"),
+              "error_code": agent.get("error_code"),
+              "control_core_status": core.get("status"),
+              "memory_status": core.get("memory_status"),
+          }, ensure_ascii=False))
+          PY
+
+      - name: Observe Worker invocations for one cron interval
+        working-directory: worker
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/wrangler-tail.toml" <<EOF
+          name = "pettraffic-control-api"
+          account_id = "$CLOUDFLARE_ACCOUNT_ID"
+          compatibility_date = "2026-11-12"
+          [observability]
+          enabled = true
+          EOF
+
+          set +e
+          timeout --signal=INT --kill-after=30s 17m npx --yes wrangler@4 tail pettraffic-control-api --config "$RUNNER_TEMP/wrangler-tail.toml" --format=json --sampling-rate=1 > "$RUNNER_TEMP/worker-tail.jsonl" 2> "$RUNNER_TEMP/worker-tail.stderr"
+          tail_status=$?
+          set -e
+          if [ "$tail_status" -ne 124 ] && [ "$tail_status" -ne 130 ]; then
+            cat "$RUNNER_TEMP/worker-tail.stderr"
+            exit "$tail_status"
+          fi
+
+          python - "$RUNNER_TEMP/worker-tail.jsonl" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          path = Path(sys.argv[1])
+          entries = []
+          for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+              try:
+                  entries.append(json.loads(line))
+              except json.JSONDecodeError:
+                  continue
+
+          def event_type(entry):
+              workers = entry.get("$workers") or entry.get("workers") or {}
+              metadata = entry.get("$metadata") or {}
+              event = entry.get("event") or {}
+              return (
+                  workers.get("eventType")
+                  or workers.get("event_type")
+                  or metadata.get("eventType")
+                  or event.get("type")
+                  or entry.get("eventType")
+                  or ""
+              )
+
+          cron_entries = []
+          for entry in entries:
+              event = entry.get("event") or {}
+              kind = str(event_type(entry)).lower()
+              if kind in {"scheduled", "cron"} or event.get("cron") or event.get("scheduledTime") or event.get("scheduled_time"):
+                  cron_entries.append(entry)
+
+          print(f"Total structured Worker invocations observed: {len(entries)}")
+          print(f"Cron/scheduled invocations observed: {len(cron_entries)}")
+          for entry in cron_entries[-10:]:
+              event = entry.get("event") or {}
+              workers = entry.get("$workers") or entry.get("workers") or {}
+              print(json.dumps({
+                  "event_type": event_type(entry),
+                  "cron": event.get("cron") or event.get("schedule"),
+                  "event_timestamp": entry.get("eventTimestamp") or entry.get("timestamp"),
+                  "outcome": entry.get("outcome") or workers.get("outcome"),
+                  "exceptions": len(entry.get("exceptions") or []),
+                  "logs": len(entry.get("logs") or []),
+              }, ensure_ascii=False))
+
+          if not cron_entries:
+              raise SystemExit("No Cron Trigger invocation was observed during the 17-minute capture window.")
+          if any(entry.get("exceptions") for entry in cron_entries):
+              raise SystemExit("At least one Cron Trigger invocation contained an exception.")
+          PY
