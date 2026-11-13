@@ -144,3 +144,23 @@ Po 2026-11-14 10:20 Europe/Vilnius suplanuoto agentų ciklo perskaityti naujausi
 2. Jei AI ciklas nepavyko, taisyti tik pagal naują stage prefiksą ir logus; jei pavyko, patvirtinti tikrą atminties įrašymą.
 3. Toliau diagnozuoti GitHub Actions schedule paleidimų nebuvimą. Jei Actions nustatymų skaitymas / keitimas lieka neprieinamas per jungtį, prašyti vieno minimalaus vartotojo veiksmo, neperduodant kitų techninių darbų.
 4. Tęsti GA4 timeout diagnostiką tik gavus naujus įrodymus; Search Console duomenis išsaugoti nepriklausomai.
+
+
+## 10. Patvirtintas techninis atnaujinimas – 2026-11-13 19:47 UTC
+
+### PR #156 – D1 AI kvietimų rezervacijos atkūrimas
+- PR #156 „Recover safely from ambiguous D1 AI call reservations“ sujungtas į main; merge commit `a74ad11f755f4bd39a9b17c92999d5172f045326`.
+- Pakeista `worker/src/agents.mjs` rezervacijos logika: jei D1 `UPDATE ... RETURNING` atsakymas nutrūksta, pirmiausia perskaitomas `ai_calls` skaitiklis. Jei rezervacija jau įrašyta, ji nebekartojama; jei neįrašyta, leidžiamas vienas saugus pakartojimas. Taip išvengiama dvigubo AI kvietimų skaičiavimo.
+- Pridėti testai: nutrūkęs atsakymas po commit, klaida prieš commit ir nepasiekiamas read-back.
+- PR patikros: deploy workflow testai ir Cloudflare read-only validacija – success; site checks – success; snapshot sync PR patikra – success.
+- Pagrindinės šakos Worker deploy run `43495408320` – success: Worker testai, Cloudflare token/resource validacija, D1 migracijų žingsnis, Worker deploy, gyvas `/health` (D1 ir control-core schema connected) ir neautentifikuoto API užklausos HTTP 401 patikra – success.
+- Site checks run `43495408435` – success; control-center run `43495408385` – success; automatic work-log run `43495408363` – success; central API sync run `43495504768` – success.
+
+### Kas dar nepatvirtinta
+- 2026-11-13 ankstesnio agentų ciklo D1 įrašas vis dar pažymėtas `failed` su `Unexpected_end_of_JSON_input`. PR #156 išsprendžia dviprasmiškos rezervacijos atkūrimą ir yra įdiegtas, tačiau jis nepaleidžia tos pačios dienos agentų ciklo iš naujo (idempotentiškumo užraktas jau panaudotas).
+- Kitas Worker agentų ciklas numatytas 2026-11-14 10:20 Europe/Vilnius. Tik po jo galima patvirtinti sėkmingą AI agentų darbą ir `control_core_runs` / `control_core_memory` D1 įrašus. ChatGPT patikra suplanuota 10:35 Europe/Vilnius.
+- GitHub Actions cron konfigūracijos yra, bet patikros metu `event=schedule` vykdymų sąraše rasta tik viena vykdymo eilutė (site checks); atskirų schedule vykdymų analytics, topic radar, live-site monitor, control-center ir Lighthouse workflow nepastebėta. Dabartinė GitHub jungtis neleidžia patikrinti ar pakeisti repo Actions nustatymų. Nevadinti cron veikimo patvirtintu.
+- Naujausias archyvuotas analytics snapshot run `43443849180` (2026-11-13 14:34 UTC): GA4 `unavailable`, Search Console `available`. GA4 runReport timeout problema neišspręsta; GSC laikotarpio 2026-11-04–2026-11-10 rodikliai 0 parodymų ir 0 paspaudimų, prioritetiniai URL dar nurodyti kaip Google nežinomi.
+
+### Kitas konkretus veiksmas
+Po 2026-11-14 10:20 Europe/Vilnius Worker ciklo perskaityti naujausią `reports/history/project-state/latest.md`, darbo žurnalą ir gyvą `/health`. Patikrinti, ar agentų būsena pasikeitė į `completed`, ar yra galiojantis control-core sprendimas ir atminties įrašas. Jei ne, naudoti naują `agent_orchestration.error_code` etapo prefiksą ir taisyti tik patvirtintą gedimo vietą. Atskirai tęsti GitHub Actions schedule ir GA4 diagnostiką. Nekeisti ARO Vet, DNS, secrets ar Cloudflare teisių.
