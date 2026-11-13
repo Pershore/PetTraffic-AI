@@ -77,3 +77,14 @@ GitHub dokumentai gali išsaugoti tęstinumo būseną, bet negali patys priverst
 - GitHub Actions cron yra YAML failuose, tačiau peržiūrėjus `event=schedule` vykdymus rasta tik viena eilutė (site checks); kitų pagrindinių workflow schedule paleidimai nepatvirtinti. Repo Actions settings per dabartinę jungtį nepasiekiami.
 - Naujausias analytics archyvas: GA4 unavailable, Search Console available; GA4 runReport timeout problema lieka atvira.
 - Tęsti nuo 2026-11-14 agentų ciklo patikros; nekartoti jau sėkmingų PR #156 testų ar diegimo patikros be naujų įrodymų.
+
+
+## 2026-11-13 – Termux / Codex / GitHub prijungimo etapas
+
+- Atidarytas PR #159: `Add Termux Codex and GitHub local setup bridge`.
+- PR prideda Termux bootstrap, Debian proot setup, Codex CLI + GitHub CLI diegimą ir atskirą shell sintaksės / saugumo patikrų workflow.
+- Naujausias PR commit: `a6e06e9035ad431f3f5c90fb038ac99ffef8d5d8`.
+- Termux / Codex bridge patikra run `43497203181` – success; bendro site-check run `43497203198` dar vyksta (paskutinė patikra: analytics testų žingsnis in_progress).
+- Tai paruošia vietinį Codex ir GitHub CLI telefonui, bet dar nepatvirtina realaus diegimo Android įrenginyje ir nesukuria fone veikiančio užduočių pollerio.
+- ChatGPT tiesioginis valdymas per GitHub užduočių eilę ir automatinis Codex PR kūrimas – kitas atskiras etapas; Cloudflare Worker diegimai lieka esamuose GitHub Actions.
+- Nėra tiesioginės Termux prieigos iš ChatGPT. Po PR sujungimo reikės vieną kartą paleisti dokumentuotą bootstrap komandą Termux programoje ir atlikti GitHub / ChatGPT oficialius prisijungimus. Jokie slapti raktai pokalbyje neprašomi.
