@@ -9,7 +9,7 @@ function mockEnv({ai=true,existingRun=false,reserveErrorAt=0,invalidEventPayload
    first:async()=>{if(sql.includes("UPDATE agent_runs SET ai_calls")){state.aiCalls++;if(reserveErrorAt===state.aiCalls)throw new SyntaxError("Unexpected_end_of_JSON_input");return state.aiCalls<=5?{ai_calls:state.aiCalls}:null;}return null;},
    all:async()=>({results:[]}),
   };},
-  all:async()=>({results:[]}),
+  all:async()=>({results:invalidEventPayload?[{kind:"analytics_snapshot",payload_json:"{truncated",created_at:"2026-11-13T00:00:00.000Z"}]:[]}),
  };}}};
  if(ai)env.AI={run:async()=>({response:JSON.stringify({status:"reviewed",findings:[],recommendations:[],evidence_gaps:[]})})};
  return{env,state};
