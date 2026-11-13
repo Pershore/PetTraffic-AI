@@ -191,12 +191,14 @@ def build_recommendations(history_root: Path = HISTORY_ROOT) -> list[dict]:
         )
     else:
         latest_topics = topics[-1]
-        if (latest_topics.get("empty_topic_queries") or 0) > 0:
+        empty_topic_checks = latest_topics.get("empty_topic_checks", latest_topics.get("empty_topic_queries", 0))
+        total_topic_checks = latest_topics.get("total_topic_checks", latest_topics.get("total_topic_queries"))
+        if (empty_topic_checks or 0) > 0:
             add(
                 "topic-rss-gaps",
                 "low",
                 "Stebėti tuščias temų RSS užklausas",
-                f"Tuščių RSS temų užklausų: {latest_topics.get('empty_topic_queries')} iš {latest_topics.get('total_topic_queries')}.",
+                f"Tuščių RSS temų užklausų: {empty_topic_checks} iš {total_topic_checks}.",
                 "Patikrinti, ar tai laikinas Google News RSS rezultatų nebuvimas; nekurti temų paklausos išvadų iš šių skaičių.",
             )
 

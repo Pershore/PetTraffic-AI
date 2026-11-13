@@ -39,6 +39,9 @@ class BuildEventTests(unittest.TestCase):
             payload = events[0]["payload"]
             self.assertEqual(events[0]["kind"], "topic_snapshot")
             self.assertEqual(payload["topic_counts"]["Katės mityba"], 5)
+            self.assertEqual(payload["empty_topic_checks"], 1)
+            self.assertEqual(payload["total_topic_checks"], 7)
+            self.assertNotIn("query", json.dumps(payload).lower())
             self.assertNotIn("headlines", payload)
 
     def test_control_center_and_recommendations_are_separate_events(self):
