@@ -95,3 +95,20 @@ Techninė būsena turi būti tikrinama GitHub. ChatGPT atmintis padeda prisimint
 ---
 **Paskutinio techninės būsenos šaltinio run:** https://github.com/Pershore/PetTraffic-AI/actions/runs/43456177377  
 **Paskutinė istorijos šaka:** https://github.com/Pershore/PetTraffic-AI/tree/automation-history/reports/history/project-state
+
+
+## 8. Patvirtintas tęstinumo atnaujinimas – 2026-11-13 16:04 UTC
+
+- PR #147 „Document durable project continuity and automatic work log“ sujungtas commit `8afc64961b3d9116f8c6218e9f380f51fa464e37`.
+- Automatinio darbo žurnalo workflow pirmą kartą realiai įvykdytas sėkmingai: run `43458230606`; commit #147 automatiškai įrašytas į `reports/work-log/README.md`.
+- PR #148 „Diagnose and harden AI agent memory JSON failures“ sujungtas commit `97551e833b2ae8a8494752595237688de1962bc9`.
+- PR #148 Worker testai, Cloudflare token/resource validation ir site checks – success. Production Worker diegimas run `43458770826` – success; D1 migracijų žingsnis ir Worker deploy sėkmingi; galutinis health/auth smoke testas sėkmingas.
+- Gyvas `/health` po diegimo grąžino HTTP 200, `database=connected`, `control_core_schema=connected` ir `decision_json_status=not_available`. AI atmintis dar nepatvirtinta: ankstesnio 2026-11-13 10:20 Europe/Vilnius agentų ciklo būsena liko `failed`, `ai_calls=1`, `Unexpected_end_of_JSON_input`; `control_core.status=not_started`, `memory_status=missing`.
+- Naujas Worker kodas įdiegia stage-aware klaidų kodus (pvz., `reserve_topics:...`), saugiai praleidžia sugadintus istorinių įvykių JSON ir /health nebekrenta dėl sugadinto control-core sprendimo JSON. Tačiau konkreti senojo klaidos įvykio priežastis dar neįrodyta, nes ji atsirado iki stage diagnostikos diegimo.
+- Naujas agentų ciklas suplanuotas kitam 10:20 Europe/Vilnius vykdymui – 2026-11-14. Tik po jo galima patvirtinti, ar agentai sėkmingai išsaugojo `control_core_runs` ir `control_core_memory`.
+- Naujausias projekto būsenos snapshot: run `43458770880`, šaltinio commit `97551e833b2ae8a8494752595237688de1962bc9`; būsena vis dar **REIKIA DĖMESIO** dėl ankstesnio AI ciklo failure.
+- Jokie ARO Vet pakeitimai, DNS pakeitimai, Cloudflare leidimų ar secrets pakeitimai neatlikti.
+
+### Kitas privalomas veiksmas
+
+Po 2026-11-14 10:20 Europe/Vilnius suplanuoto agentų ciklo perskaityti naujausią `reports/history/project-state/latest.md`, `reports/work-log/README.md` ir gyvą `/health`. Jei agentų ciklas sėkmingas, patvirtinti, kad control-core sprendimas ir kompaktiška atmintis įrašyti į D1. Jei nepavykęs, naudoti naują stage prefiksą iš `agent_orchestration.error_code` ir taisyti tik konkrečią įrodytą vietą.

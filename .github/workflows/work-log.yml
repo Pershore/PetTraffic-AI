@@ -45,24 +45,33 @@ jobs:
               throw new Error("Work-log table heading is missing; refusing to write.");
             }
 
-            const rows = commits.map(commit => {
-              const date = (commit.timestamp || context.payload.head_commit?.timestamp || new Date().toISOString()).slice(0, 10);
+            const rows = await Promise.all(commits.map(async commit => {
+              const timestamp = commit.timestamp || context.payload.head_commit?.timestamp || new Date().toISOString();
+              const date = timestamp.slice(0, 10);
               const title = (commit.message || "GitHub push").split("\n")[0].replace(/\|/g, "\\|").slice(0, 180);
               const sha = (commit.id || "").slice(0, 7);
-              const files = [...new Set([
+              let files = [...new Set([
                 ...(commit.added || []),
                 ...(commit.modified || []),
                 ...(commit.removed || [])
-              ])].slice(0, 10);
-              const fileSummary = files.length ? files.join(", ") : "failų sąrašas push įvykyje nepateiktas";
+              ])];
+              if (files.length === 0 && commit.id) {
+                try {
+                  const details = await github.rest.repos.getCommit({ owner, repo, ref: commit.id });
+                  files = (details.data.files || []).map(file => file.filename);
+                } catch (error) {
+                  core.warning("Could not retrieve changed-file list for commit " + sha + ".");
+                }
+              }
+              const fileSummary = files.length ? files.slice(0, 10).join(", ") : "failų sąrašas nepasiekiamas";
               const compare = commit.id
                 ? "https://github.com/" + owner + "/" + repo + "/commit/" + commit.id
                 : "https://github.com/" + owner + "/" + repo + "/commits/" + branch;
               return "| " + date + " | Automatinis GitHub pakeitimo įrašas: " + title +
-                " | commit laikas (UTC): " + (commit.timestamp || "nepateiktas") +
+                " | commit laikas: " + timestamp +
                 " | NEMATUOTA | NEMATUOTA | NEMATUOTA | NEAPSKAIČIUOTA | Commit " +
                 sha + "; failai: " + fileSummary + "; [commit](" + compare + ") |";
-            });
+            }));
 
             const tableEnd = document.indexOf("\n", document.indexOf("|---", document.indexOf(marker)));
             if (tableEnd < 0) {
