@@ -206,10 +206,10 @@ def main() -> int:
     # Guard against retired public branding and partner tracking returning.
     forbidden_patterns = {
         r"\bAI\b": "standalone AI label",
+        r"ARO\s*Vet|arovetvaistine": "retired partner name",
         r"data-partner|partner_outbound_click": "retired partner tracking",
         r"aro-vet\.html|gargzdai-augintiniams": "retired partner page",
     }
-    approved_partner_pattern = r"ARO\s*Vet|arovetvaistine"
     for public_file in ROOT.rglob("*"):
         if public_file.is_file() and public_file.suffix.lower() in {".html", ".js", ".css", ".svg", ".xml", ".txt"}:
             try:
@@ -217,25 +217,6 @@ def main() -> int:
             except (OSError, UnicodeError) as exc:
                 errors.append(f"{public_file.relative_to(ROOT)}: cannot inspect public file: {exc}")
                 continue
-            if public_file.resolve() == (ROOT / "index.html").resolve():
-                partner_blocks = list(re.finditer(
-                    r'<section class="recommend-section partner-products".*?</section>',
-                    content, flags=re.IGNORECASE | re.DOTALL,
-                ))
-                if len(partner_blocks) != 1:
-                    errors.append("index.html: expected exactly one approved ARO Vet advertising block")
-                else:
-                    block = partner_blocks[0].group(0)
-                    cards = re.findall(r'<article class="partner-card">', block)
-                    if len(cards) != 5:
-                        errors.append(f"index.html: expected 5 approved partner product cards, found {len(cards)}")
-                    if not re.search(r"(?i)reklama", block):
-                        errors.append("index.html: partner product block must be clearly disclosed as advertising")
-                    outside_block = content[:partner_blocks[0].start()] + content[partner_blocks[0].end():]
-                    if re.search(approved_partner_pattern, outside_block):
-                        errors.append("index.html: ARO Vet name is allowed only inside the approved advertising block")
-            elif re.search(approved_partner_pattern, content):
-                errors.append(f"{public_file.relative_to(ROOT)}: contains partner name outside the approved advertising block")
             for pattern, label in forbidden_patterns.items():
                 if re.search(pattern, content):
                     errors.append(f"{public_file.relative_to(ROOT)}: contains forbidden {label}")
