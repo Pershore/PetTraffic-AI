@@ -1,7 +1,9 @@
 import unittest
+import threading
+import time
 from datetime import date
 
-from agent.analytics_report import ga_rows, gsc_query
+from agent.analytics_report import ga_rows, gsc_query, gsc_inspect_many
 
 
 class ReadTimeout(Exception):
@@ -16,8 +18,11 @@ class FakeResponse:
     ok = True
     status_code = 200
 
+    def __init__(self, data=None):
+        self.data = data if data is not None else {"rows": []}
+
     def json(self):
-        return {"rows": []}
+        return self.data
 
 
 class FakeSession:
@@ -56,6 +61,44 @@ class AnalyticsTimeoutPolicyTests(unittest.TestCase):
         )
         self.assertEqual(session.calls, 2)
         self.assertEqual(result, {"rows": []})
+
+    def test_priority_url_inspections_run_concurrently_and_isolate_failures(self):
+        lock = threading.Lock()
+        state = {"active": 0, "max_active": 0}
+
+        class InspectionSession:
+            def post(self, url, json, timeout):
+                with lock:
+                    state["active"] += 1
+                    state["max_active"] = max(state["max_active"], state["active"])
+                try:
+                    time.sleep(0.05)
+                    if json["inspectionUrl"].endswith("/slow-failure"):
+                        raise ReadTimeout("one URL inspection timed out")
+                    return FakeResponse({
+                        "inspectionResult": {
+                            "indexStatusResult": {"verdict": "PASS"}
+                        }
+                    })
+                finally:
+                    with lock:
+                        state["active"] -= 1
+
+            def close(self):
+                return None
+
+        urls = [
+            "https://pettraffic-ai.pages.dev/",
+            "https://pettraffic-ai.pages.dev/articles/one",
+            "https://pettraffic-ai.pages.dev/articles/two",
+            "https://pettraffic-ai.pages.dev/articles/slow-failure",
+            "https://pettraffic-ai.pages.dev/articles/four",
+        ]
+        results = gsc_inspect_many(InspectionSession, urls, "https://pettraffic-ai.pages.dev/")
+        self.assertGreater(state["max_active"], 1)
+        self.assertEqual(results[urls[0]]["inspectionResult"]["indexStatusResult"]["verdict"], "PASS")
+        self.assertIsInstance(results[urls[3]], ReadTimeout)
+        self.assertEqual(len(results), len(urls))
 
     def test_ga4_report_still_retries_connection_timeout(self):
         session = FakeSession([ConnectTimeout("temporary connection failure")])
