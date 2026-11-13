@@ -102,7 +102,22 @@ jobs:
 
           get(f"/accounts/{account}/d1/database/{database}", "D1 database access")
           get(f"/accounts/{account}/workers/scripts/pettraffic-control-api/settings", "Worker access")
-          print("READY: Cloudflare token, account, D1 database and Worker are reachable.")
+          schedule_payload = get(
+              f"/accounts/{account}/workers/scripts/pettraffic-control-api/schedules",
+              "Worker Cron Trigger schedules",
+          )
+          actual_crons = sorted({
+              item.get("cron", "")
+              for item in schedule_payload.get("result", {}).get("schedules", [])
+              if item.get("cron")
+          })
+          expected_crons = {"*/15 * * * *", "20 7,8 * * *"}
+          missing_crons = sorted(expected_crons - set(actual_crons))
+          if missing_crons:
+              print("BLOCKED: Expected Worker Cron Trigger schedules are missing: " + ", ".join(missing_crons))
+              sys.exit(1)
+          print("OK: Cloudflare Worker Cron Trigger schedules confirmed: " + ", ".join(actual_crons))
+          print("READY: Cloudflare token, account, D1 database, Worker and Cron schedules are reachable.")
           PY
 
   deploy:
