@@ -81,10 +81,10 @@ GitHub dokumentai gali išsaugoti tęstinumo būseną, bet negali patys priverst
 
 ## 2026-11-13 – Termux / Codex / GitHub prijungimo etapas
 
-- Atidarytas PR #159: `Add Termux Codex and GitHub local setup bridge`.
-- PR prideda Termux bootstrap, Debian proot setup, Codex CLI + GitHub CLI diegimą ir atskirą shell sintaksės / saugumo patikrų workflow.
-- Naujausias PR commit: `a6e06e9035ad431f3f5c90fb038ac99ffef8d5d8`.
-- Termux / Codex bridge patikra run `43497203181` – success; bendro site-check run `43497203198` dar vyksta (paskutinė patikra: analytics testų žingsnis in_progress).
+- PR #159 `Add Termux Codex and GitHub local setup bridge` sujungtas į `main`; merge commit `28ec11f4b97caae608d9cd4619d5ec7a36778ecf`.
+- Pridėta Termux bootstrap, Debian proot setup, Codex CLI + GitHub CLI diegimas, instrukcija `docs/TERMUX_CODEX_BRIDGE.md` ir atskiras shell sintaksės / saugumo patikrų workflow.
+- PR patikros: bridge run `43497319872` – success; bendras site-check run `43497319830` – success.
+- Po sujungimo: bridge run `43497432740`, site checks `43497432744` ir automatinis darbo žurnalas `43497432741` – visi success.
 - Tai paruošia vietinį Codex ir GitHub CLI telefonui, bet dar nepatvirtina realaus diegimo Android įrenginyje ir nesukuria fone veikiančio užduočių pollerio.
 - ChatGPT tiesioginis valdymas per GitHub užduočių eilę ir automatinis Codex PR kūrimas – kitas atskiras etapas; Cloudflare Worker diegimai lieka esamuose GitHub Actions.
-- Nėra tiesioginės Termux prieigos iš ChatGPT. Po PR sujungimo reikės vieną kartą paleisti dokumentuotą bootstrap komandą Termux programoje ir atlikti GitHub / ChatGPT oficialius prisijungimus. Jokie slapti raktai pokalbyje neprašomi.
+- Nėra tiesioginės Termux prieigos iš ChatGPT. Kitas būtinas veiksmas: vieną kartą paleisti `docs/TERMUX_CODEX_BRIDGE.md` aprašytą bootstrap komandą Termux programoje ir atlikti oficialius GitHub / ChatGPT prisijungimus. Jokie slapti raktai pokalbyje neprašomi.
