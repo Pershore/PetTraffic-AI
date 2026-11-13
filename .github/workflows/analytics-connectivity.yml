@@ -1,0 +1,57 @@
+name: Google API connectivity check
+
+on:
+  push:
+    branches: [main, 'fix/independent-google-api-diagnostics']
+    paths:
+      - 'agent/analytics_connectivity.py'
+      - 'tests/test_analytics_connectivity.py'
+      - '.github/workflows/analytics-connectivity.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: "53 6 * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pettraffic-google-api-connectivity
+  cancel-in-progress: false
+
+jobs:
+  connectivity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Run connectivity unit tests
+        run: python -m unittest discover -s tests -p 'test_analytics_connectivity.py' -v
+      - name: Install Google API authentication
+        run: python -m pip install --disable-pip-version-check google-auth requests
+      - name: Check GA4 and Search Console independently
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GA4_PROPERTY_ID: ${{ vars.GA4_PROPERTY_ID || '563539278' }}
+          GSC_SITE_URL: ${{ vars.GSC_SITE_URL || 'https://pettraffic-ai.pages.dev/' }}
+        run: python agent/analytics_connectivity.py
+      - name: Upload connectivity report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pettraffic-google-api-connectivity
+          path: reports/analytics-connectivity.md
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Add connectivity report to job summary
+        if: always()
+        run: |
+          if [ -f reports/analytics-connectivity.md ]; then
+            cat reports/analytics-connectivity.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'Connectivity report was not created.' >> "$GITHUB_STEP_SUMMARY"
+          fi
