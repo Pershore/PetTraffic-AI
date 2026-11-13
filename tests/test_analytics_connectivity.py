@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock, call
 
-from agent.analytics_connectivity import check_api, run_independent_checks
+from agent.analytics_connectivity import check_api, check_ga4_grpc, run_independent_checks
 
 
 class ConnectivityCheckTests(unittest.TestCase):
@@ -35,6 +35,33 @@ class ConnectivityCheckTests(unittest.TestCase):
 
         self.assertFalse(ok)
         self.assertIn("TimeoutError", detail)
+
+    def test_grpc_probe_uses_one_day_report_and_closes_client(self):
+        response = Mock(row_count=1)
+        client = Mock()
+        client.run_report.return_value = response
+        factory = Mock(return_value=client)
+
+        from datetime import date
+        ok, detail = check_ga4_grpc(factory, object(), "12345", date(2026, 11, 12), date(2026, 11, 12))
+
+        self.assertTrue(ok)
+        self.assertIn("row_count=1", detail)
+        self.assertEqual(factory.call_args.kwargs["transport"], "grpc")
+        self.assertEqual(client.run_report.call_args.kwargs["timeout"], 20)
+        client.close.assert_called_once()
+
+    def test_grpc_probe_reports_timeout_without_raising(self):
+        from datetime import date
+        client = Mock()
+        client.run_report.side_effect = TimeoutError("gRPC timed out")
+        factory = Mock(return_value=client)
+
+        ok, detail = check_ga4_grpc(factory, object(), "12345", date(2026, 11, 12), date(2026, 11, 12))
+
+        self.assertFalse(ok)
+        self.assertIn("TimeoutError", detail)
+        client.close.assert_called_once()
 
     def test_ga4_timeout_does_not_skip_search_console(self):
         success = Mock(ok=True)
