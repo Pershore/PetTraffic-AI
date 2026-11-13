@@ -193,14 +193,20 @@ class ControlCenterTests(unittest.TestCase):
         self.assertEqual(result["state"], "missing")
         self.assertFalse(needs_attention([result]))
 
-    def test_weekly_missing_workflow_only_alerts_after_its_scheduled_day(self):
-        friday = datetime(2026, 11, 13, 8, 10, tzinfo=timezone.utc)
+    def test_weekly_missing_workflow_alerts_until_a_current_week_run_exists(self):
+        before_monday_schedule = datetime(2026, 11, 16, 7, 30, tzinfo=timezone.utc)
         schedule = {"frequency": "weekly", "weekday": 0, "hour": 7, "minute": 20, "grace_minutes": 60}
-        result = evaluate_workflow("Lighthouse", [], friday, 9 * 24, schedule)
+        result = evaluate_workflow("Lighthouse", [], before_monday_schedule, 9 * 24, schedule)
         self.assertEqual(result["state"], "missing")
         self.assertFalse(needs_attention([result]))
-        monday = datetime(2026, 11, 16, 8, 30, tzinfo=timezone.utc)
-        result = evaluate_workflow("Lighthouse", [], monday, 9 * 24, schedule)
+
+        monday_after_grace = datetime(2026, 11, 16, 8, 30, tzinfo=timezone.utc)
+        result = evaluate_workflow("Lighthouse", [], monday_after_grace, 9 * 24, schedule)
+        self.assertEqual(result["state"], "warning")
+        self.assertTrue(needs_attention([result]))
+
+        friday = datetime(2026, 11, 20, 12, 0, tzinfo=timezone.utc)
+        result = evaluate_workflow("Lighthouse", [], friday, 9 * 24, schedule)
         self.assertEqual(result["state"], "warning")
         self.assertTrue(needs_attention([result]))
 
