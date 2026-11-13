@@ -62,7 +62,7 @@ permissions:
   issues: write
 
 concurrency:
-  group: pettraffic-control-center
+  group: pettraffic-control-center-${{ github.ref }}
   # Queue newer checks instead of cancelling the active test run on each PR update.
   cancel-in-progress: false
 
