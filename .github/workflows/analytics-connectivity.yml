@@ -9,7 +9,7 @@ on:
       - '.github/workflows/analytics-connectivity.yml'
   workflow_dispatch:
   schedule:
-    - cron: "53 6 * * *"
+    - cron: "57 6 * * *"
 
 permissions:
   contents: read
