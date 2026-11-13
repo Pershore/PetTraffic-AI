@@ -62,13 +62,13 @@ Paskirtis: fiksuoti atliktus darbus, jų trukmę, patikrinimus ir sprendimus, ka
 - Atlikta GitHub `main`, `automation-history`, PR, Actions, Worker, D1, viešos svetainės ir Termux bridge patikra.
 - PR #169 sutaisė `.article-card[hidden]` CSS regresiją; pridėti 2 testai. Site-check praėjo 83 testus; gyva paieška „šuo“ 1/4, „katė“ 2/4, nerastas terminas 0/4 su tuščio rezultato pranešimu, reset 4/4.
 - Lighthouse 10 auditų: performance 98–100, Accessibility / Best Practices / SEO 100. Homepage, keturi straipsniai, about, privacy, robots ir sitemap grąžino HTTP 200.
-- PR #170 pridėjo read-only Cloudflare schedules API patikrą; patvirtinti cron `*/15 * * * *` ir `20 7,8 * * *`. PR #171–#173 sutvarkė diagnostikos workflow saugą ir Wrangler tail sampling.
+- PR #170 pridėjo read-only Cloudflare schedules API patikrą; patvirtinti cron `*/15 * * * *` ir `20 7,8 * * *`. PR #171–#173 sutvarkė diagnostikos workflow saugą ir Wrangler tail sampling. PR #175 išskyrė Wrangler tail JSON parserį ir pridėjo 5 regresijos testus; CI praėjo.
 - Gyvas Worker /health 00:31 Europe/Vilnius: HTTP 200, D1 connected, schema connected, heartbeat `2026-11-13T22:30:47.462Z` (00:30:47 vietos laiku), site_ok=true, database_ok=true. Tai patvirtina 15 min. heartbeat cron ir D1 rašymą.
+- Pirmasis 17 min. Wrangler tail run #43518529439 prisijungė, bet inline parseris nulūžo ties string tipo `event` lauku. Naujas parseris įdiegtas; pakartotinis run #43521123258 vyksta, rezultatas laukiamas.
 - Paskutinis AI agentų ciklas 2026-11-13 buvo failed dėl `Unexpected_end_of_JSON_input`; 2026-11-14 10:20 ciklas dar laukia. `memory_status=missing` prieš šiandienos ciklą nėra šiandienos gedimo įrodymas. Atminties patikra 10:35, control-center 10:40.
 - GitHub schedule vykdymai lapkričio 14 d. vietos laiku dar neatėjo; 00:31 vietos laiku atitinka 22:31Z lapkričio 13 d. Nenaudoti UTC vidurnakčio filtro kaip Lietuvos dienos ribos.
-- Issue #145 automatiškai uždarytas 2026-11-13 22:11:17Z; šiuo metu atvirų issue ir PR nėra.
+- Issue #145 automatiškai uždarytas 2026-11-13 22:11:17Z; PR #169–#175 sujungti; šiuo metu atvirų issue ir PR nėra.
 - GA4 paskutiniame analytics snapshot ReadTimeout; Search Console API veikė, bet 5 pagrindiniai URL dar nežinomi Google indeksui, sitemap apdorojimas nepatvirtintas. Kitas analytics ciklas 08:47.
-- Naujas Worker cron diagnostikos run #43518529439 vykdo 17 min. Wrangler tail stebėseną; rezultatas dar laukiamas.
 - Saugumo incidento įrašas: pirmoji diagnostikos workflow versija nusiuntė `CLOUDFLARE_API_TOKEN` Authorization antraštę viešam Worker /health URL; atsakymas 403, reikšmė GitHub loguose nebuvo atspausdinta. Viešas probe pašalintas. Žetoną laikyti galimai atskleistu: išrotuoti Cloudflare paskyroje ir atnaujinti GitHub Actions secret. Naujo rakto pokalbyje nesiųsti.
 - Termux/Codex telefono susiejimas nepatvirtintas; CI paruošimo testai praėjo. ARO Vet, DNS, Worker/D1 production konfigūracija ir duomenys nekeisti. Naujas mokamas planas ar API neįjungti.
 
