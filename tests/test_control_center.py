@@ -2,7 +2,7 @@ import unittest
 import json
 from unittest.mock import patch
 from datetime import datetime, timezone, timedelta
-from agent.control_center import WORKFLOWS, evaluate_workflow, evaluate_worker_health, fetch_workflow_metadata, needs_attention, render
+from agent.control_center import WORKFLOWS, evaluate_workflow, evaluate_worker_health, evaluate_agent_orchestration, fetch_workflow_metadata, needs_attention, render
 
 class ControlCenterTests(unittest.TestCase):
     def setUp(self):
@@ -106,6 +106,98 @@ class ControlCenterTests(unittest.TestCase):
         result = evaluate_worker_health({}, status_code=503)
         self.assertEqual(result["state"], "failure")
         self.assertIn("503", result["detail"])
+
+    def test_agent_failure_is_reported_after_daily_cycle(self):
+        now = datetime(2026, 11, 13, 9, 0, tzinfo=timezone.utc)  # 11:00 Vilnius
+        result = evaluate_agent_orchestration({
+            "agent_orchestration": {
+                "run_date": "2026-11-13",
+                "status": "failed",
+                "ai_calls": 1,
+                "error_code": "Unexpected_end_of_JSON_input",
+            }
+        }, now=now)
+        self.assertEqual(result["state"], "failure")
+        self.assertIn("Unexpected_end_of_JSON_input", result["detail"])
+
+    def test_previous_failed_agent_run_waits_before_today_window(self):
+        now = datetime(2026, 11, 14, 7, 0, tzinfo=timezone.utc)  # 09:00 Vilnius
+        result = evaluate_agent_orchestration({
+            "agent_orchestration": {
+                "run_date": "2026-11-13",
+                "status": "failed",
+                "ai_calls": 1,
+                "error_code": "old_failure",
+            }
+        }, now=now)
+        self.assertEqual(result["state"], "waiting")
+        self.assertFalse(needs_attention([result]))
+
+    def test_missing_agent_run_warns_after_daily_window(self):
+        now = datetime(2026, 11, 13, 9, 0, tzinfo=timezone.utc)
+        result = evaluate_agent_orchestration({
+            "agent_orchestration": {"status": "not_started"}
+        }, now=now)
+        self.assertEqual(result["state"], "warning")
+        self.assertTrue(needs_attention([result]))
+
+    def test_missing_agent_run_waits_before_daily_window(self):
+        now = datetime(2026, 11, 13, 7, 0, tzinfo=timezone.utc)
+        result = evaluate_agent_orchestration({
+            "agent_orchestration": {"status": "not_started"}
+        }, now=now)
+        self.assertEqual(result["state"], "waiting")
+        self.assertFalse(needs_attention([result]))
+
+    def test_completed_agent_with_reviewed_memory_is_success(self):
+        now = datetime(2026, 11, 13, 9, 0, tzinfo=timezone.utc)
+        result = evaluate_agent_orchestration({
+            "agent_orchestration": {"run_date": "2026-11-13", "status": "completed"},
+            "control_core": {
+                "status": "reviewed",
+                "memory_status": "present",
+                "recommendation_count": 3,
+                "evidence_gap_count": 0,
+            },
+        }, now=now)
+        self.assertEqual(result["state"], "success")
+        self.assertIn("atmintis išsaugota", result["detail"])
+
+    def test_completed_agent_with_evidence_gaps_is_warning(self):
+        now = datetime(2026, 11, 13, 9, 0, tzinfo=timezone.utc)
+        result = evaluate_agent_orchestration({
+            "agent_orchestration": {"run_date": "2026-11-13", "status": "completed"},
+            "control_core": {
+                "status": "needs_evidence",
+                "memory_status": "present",
+                "recommendation_count": 2,
+                "evidence_gap_count": 1,
+            },
+        }, now=now)
+        self.assertEqual(result["state"], "warning")
+        self.assertIn("trūksta įrodymų: 1", result["detail"])
+
+    def test_completed_agent_without_memory_is_warning(self):
+        now = datetime(2026, 11, 13, 9, 0, tzinfo=timezone.utc)
+        result = evaluate_agent_orchestration({
+            "agent_orchestration": {"run_date": "2026-11-13", "status": "completed"},
+            "control_core": {"status": "reviewed", "memory_status": "missing"},
+        }, now=now)
+        self.assertEqual(result["state"], "warning")
+        self.assertIn("atmintis neišsaugota", result["detail"])
+
+    def test_recently_running_agent_is_reported_as_running(self):
+        now = datetime(2026, 11, 13, 9, 0, tzinfo=timezone.utc)
+        started = (now - timedelta(minutes=5)).isoformat()
+        result = evaluate_agent_orchestration({
+            "agent_orchestration": {
+                "run_date": "2026-11-13",
+                "status": "running",
+                "started_at": started,
+                "ai_calls": 2,
+            }
+        }, now=now)
+        self.assertEqual(result["state"], "running")
 
     def test_control_api_sync_is_monitored(self):
         self.assertIn("sync-control-api.yml", [item[0] for item in WORKFLOWS])
