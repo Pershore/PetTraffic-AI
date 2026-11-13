@@ -44,6 +44,8 @@ def parse_report(report: str, run_id: str, generated_at: str | None = None) -> d
         ga_status = "not_connected"
     elif "Būsena: klaida" in report:
         ga_status = "error"
+    elif "GA4 duomenų gauti nepavyko" in report:
+        ga_status = "unavailable"
     else:
         ga_status = "available" if ga_present else "unknown"
 

@@ -69,6 +69,50 @@ class AnalyticsHistoryTests(unittest.TestCase):
         self.assertEqual(item["search_console_details"]["sitemap"]["status"], "unknown")
         self.assertEqual(item["search_console_details"]["priority_url_inspections"], [])
 
+    def test_records_independent_ga4_and_search_console_statuses(self):
+        partial = """# Pet traffic
+GA4 laikotarpis: 2026-11-05 – 2026-11-11
+
+## Pagrindiniai rodikliai (GA4)
+
+GA4 duomenų gauti nepavyko; Search Console bus tikrinama atskirai.
+Techninė priežastis: ReadTimeout: timed out
+
+## Google paieška (Search Console)
+
+Laikotarpis: 2026-11-03 – 2026-11-09
+
+| Rodiklis | Paskutinės 7 d. | Pokytis |
+|---|---:|---:|
+| Paieškos parodymai | 120 | +10 |
+| Paspaudimai | 8 | +2 |
+"""
+        item = parse_report(partial, "partial-run", "2026-11-13T08:00:00Z")
+        self.assertEqual(item["ga4_status"], "unavailable")
+        self.assertEqual(item["search_console_status"], "available")
+        self.assertIsNone(item["metrics"]["sessions"])
+        self.assertEqual(item["metrics"]["search_impressions"], 120)
+        self.assertEqual(item["metrics"]["search_clicks"], 8)
+
+    def test_records_ga4_when_search_console_is_unavailable(self):
+        partial = """# Pet traffic
+GA4 laikotarpis: 2026-11-05 – 2026-11-11
+
+## Pagrindiniai rodikliai (GA4)
+| Rodiklis | Paskutinės 7 d. | Pokytis |
+|---|---:|---:|
+| Sesijos / apsilankymai | 14 | +3 |
+
+## Google paieška (Search Console)
+
+Duomenų gauti nepavyko. GA4 ataskaita pateikta atskirai.
+"""
+        item = parse_report(partial, "partial-run-2", "2026-11-13T08:00:00Z")
+        self.assertEqual(item["ga4_status"], "available")
+        self.assertEqual(item["search_console_status"], "unavailable")
+        self.assertEqual(item["metrics"]["sessions"], 14)
+        self.assertIsNone(item["metrics"]["search_clicks"])
+
     def test_stores_and_deduplicates_run(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
