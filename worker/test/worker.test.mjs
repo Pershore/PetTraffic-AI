@@ -39,7 +39,7 @@ const env = {
   DB: {
     prepare(sql) {
       return {
-        first: async () => sql.includes("system_heartbeats") ? null : ({ ok: 1 }),
+        first: async () => sql.includes("system_heartbeats") || sql.includes("agent_runs") ? null : ({ ok: 1 }),
         bind() {
           return {
             run: async () => ({ meta: { changes: 1 } }),
@@ -61,6 +61,7 @@ test("health endpoint confirms database connectivity without exposing secrets", 
     database: "connected",
     control_core_schema: "connected",
     heartbeat: null,
+    agent_orchestration: { status: "not_started" },
   });
 });
 
@@ -76,7 +77,7 @@ test("health endpoint exposes the latest scheduled heartbeat", async () => {
     DB: {
       prepare(sql) {
         return {
-          first: async () => sql.includes("system_heartbeats") ? heartbeat : ({ ok: 1 }),
+          first: async () => sql.includes("system_heartbeats") ? heartbeat : sql.includes("agent_runs") ? null : ({ ok: 1 }),
         };
       },
     },
@@ -89,6 +90,29 @@ test("health endpoint exposes the latest scheduled heartbeat", async () => {
     site_status: 200,
     database_ok: true,
   });
+});
+
+test("health endpoint exposes only aggregate AI orchestration execution metadata", async () => {
+  const agentRun = {
+    run_date: "2026-11-13",
+    status: "failed",
+    ai_calls: 2,
+    started_at: "2026-11-13T08:20:00.000Z",
+    completed_at: "2026-11-13T08:20:30.000Z",
+  };
+  const agentEnv = {
+    ...env,
+    DB: {
+      prepare(sql) {
+        return {
+          first: async () => sql.includes("agent_runs") ? agentRun : null,
+        };
+      },
+    },
+  };
+  const response = await worker.fetch(new Request("https://api.example/health"), agentEnv);
+  assert.equal(response.status, 200);
+  assert.deepEqual((await response.json()).agent_orchestration, agentRun);
 });
 
 test("versioned endpoints reject requests without GitHub OIDC identity", async () => {
