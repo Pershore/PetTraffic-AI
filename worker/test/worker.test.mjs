@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { generateKeyPairSync, createSign } from "node:crypto";
 import worker from "../src/index.mjs";
+import { callModel, extractResponseText, parseResult } from "../src/agents.mjs";
 
 const { publicKey, privateKey } = generateKeyPairSync("rsa", { modulusLength: 2048 });
 const jwk = { ...publicKey.export({ format: "jwk" }), kid: "test-key", use: "sig", alg: "RS256" };
@@ -370,4 +371,82 @@ test("health endpoint fails closed when control-core D1 migrations are missing",
   const response = await worker.fetch(new Request("https://api.example/health"), brokenEnv);
   assert.equal(response.status, 503);
   assert.deepEqual(await response.json(), { ok: false, error: "database_unavailable" });
+});
+
+const agentValidJson = JSON.stringify({
+  status: "reviewed",
+  findings: ["Sitemap is pending."],
+  recommendations: ["Check crawl discovery."],
+  evidence_gaps: [],
+});
+
+test("extracts text from the GPT-OSS Responses API output array", () => {
+  const result = {
+    output: [{
+      type: "message",
+      content: [{ type: "output_text", text: agentValidJson }],
+    }],
+  };
+  assert.equal(extractResponseText(result), agentValidJson);
+});
+
+test("supports the native Workers AI response string shape", () => {
+  assert.equal(extractResponseText({ response: agentValidJson }), agentValidJson);
+});
+
+test("supports OpenAI chat completion response shape as a compatibility fallback", () => {
+  assert.equal(extractResponseText({
+    choices: [{ message: { content: agentValidJson } }],
+  }), agentValidJson);
+});
+
+test("parses fenced JSON and JSON surrounded by short prose", () => {
+  assert.equal(parseResult("Result:\n\x60\x60\x60json\n" + agentValidJson + "\n\x60\x60\x60").status, "reviewed");
+});
+
+test("empty or incomplete model output becomes a bounded evidence gap instead of throwing", () => {
+  const empty = parseResult("");
+  const incomplete = parseResult('{"status":"reviewed"');
+  assert.equal(empty.status, "invalid_response");
+  assert.equal(incomplete.status, "invalid_json");
+  assert.equal(empty.findings.length, 0);
+  assert.equal(incomplete.recommendations.length, 0);
+  assert.equal(empty.requires_human_approval, true);
+});
+
+test("GPT-OSS is called through Responses API with low reasoning and bounded output", async () => {
+  let model;
+  let request;
+  const result = await callModel({
+    AI: {
+      run: async (selectedModel, body) => {
+        model = selectedModel;
+        request = body;
+        return {
+          output: [{
+            type: "message",
+            content: [{ type: "output_text", text: agentValidJson }],
+          }],
+        };
+      },
+    },
+  }, "system prompt", "source data");
+
+  assert.equal(model, "@cf/openai/gpt-oss-20b");
+  assert.deepEqual(request.input, [
+    { role: "system", content: "system prompt" },
+    { role: "user", content: "source data" },
+  ]);
+  assert.deepEqual(request.reasoning, { effort: "low" });
+  assert.equal(request.max_output_tokens, 256);
+  assert.equal(result.status, "reviewed");
+});
+
+test("AI request errors are converted into an explicit evidence gap", async () => {
+  const result = await callModel({
+    AI: { run: async () => { throw new Error("internal model detail"); } },
+  }, "system", "input");
+  assert.equal(result.status, "unavailable");
+  assert.match(result.evidence_gaps[0], /Workers AI request failed/);
+  assert.doesNotMatch(JSON.stringify(result), /internal model detail/);
 });
