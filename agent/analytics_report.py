@@ -13,15 +13,17 @@ import time
 import xml.etree.ElementTree as ET
 
 OUT = Path("reports/analytics-7d.md")
+GA4_REPORT_TIMEOUT_SECONDS = 15
 
 
-def api_post(session, url: str, body: dict, *, retry_read_timeout: bool = True) -> dict:
+def api_post(session, url: str, body: dict, *, retry_read_timeout: bool = True,
+             timeout: int = 25) -> dict:
     # Retry transient connection failures and HTTP 5xx/429 responses once.
     # A GA4 runReport ReadTimeout is not retried: it already waited 25 seconds,
     # and repeating the same slow report doubles the daily workflow delay.
     for attempt in range(2):
         try:
-            response = session.post(url, json=body, timeout=25)
+            response = session.post(url, json=body, timeout=timeout)
         except Exception as exc:
             name = exc.__class__.__name__
             retryable = name in {"ConnectTimeout", "ConnectionError"} or (
@@ -61,7 +63,11 @@ def ga_rows(session, url: str, start: date, end: date, metrics: list[str],
         body["orderBys"] = [{"metric": {"metricName": metrics[-1]}, "desc": True}]
     if metric_aggregations:
         body["metricAggregations"] = metric_aggregations
-    return api_post(session, url, body, retry_read_timeout=False)
+    return api_post(
+        session, url, body,
+        retry_read_timeout=False,
+        timeout=GA4_REPORT_TIMEOUT_SECONDS,
+    )
 
 
 def metric_totals(data: dict) -> dict[str, float]:
