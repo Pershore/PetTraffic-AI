@@ -183,3 +183,23 @@ Po 2026-11-14 10:20 Europe/Vilnius Worker ciklo perskaityti naujausią `reports/
 
 ### Kitas konkretus veiksmas
 Po PR #159 sujungimo vartotojas turi vieną kartą paleisti `docs/TERMUX_CODEX_BRIDGE.md` nurodytą bootstrap komandą Termux programoje ir užbaigti oficialius prisijungimus. Tada patikrinti `gh auth status`, `codex login status`, `codex doctor` ir read-only projekto aprašymo užduotį. Tik po šio realaus testo projektuoti / aktyvuoti GitHub užduočių eilę ir Codex automatinį PR kūrimą. Jokio mokamo API rakto ar Cloudflare rakto nereikia.
+
+
+## 12. Patvirtintas Android Codex prisijungimo instrukcijos pataisymas – 2026-11-13 20:40 UTC
+
+### Įgyvendinta ir patikrinta
+- PR #160 „Clarify Codex device-code sign-in on Android“ sujungtas commit `230ccd62f6ce6939381b8ddc3d494fdf07154bb5`.
+- `docs/TERMUX_CODEX_BRIDGE.md` dabar aiškiai nurodo privalomą ChatGPT **Settings → Security → Device code login (beta)** nustatymą. Valdomoje darbo srityje jį turi įjungti administratorius.
+- Instrukcija paaiškina vienkartinio patvirtinimo URL ir kodo naudojimą naršyklėje bei Android atvejį, kai nuorodą perima ChatGPT programėlė.
+- `tools/termux/setup-debian.sh` po nesėkmingo `codex login --device-auth` pateikia aiškų nustatymo patikros paaiškinimą.
+- PR patikros: Termux bridge run `43503585504` – success; site checks `43503578139` – success.
+- Po merge: Termux bridge run `43503672152` – success; site checks `43503671906` – success; automatinio darbo žurnalo run `43503672813` – success.
+- Jokių API raktų, mokamų paslaugų, Cloudflare, DNS, ARO Vet ar produkcinės svetainės pakeitimų neatlikta.
+
+### Kas dar nepatvirtinta
+- Termux bootstrap dar nepaleistas vartotojo Android telefone. Codex CLI prisijungimas, `codex doctor` ir read-only užduotis realiame įrenginyje dar nepatikrinti.
+- GitHub integracija šiame ChatGPT pokalbyje veikia (repo, PR ir Actions skaitymas / PR kūrimas patvirtinti), bet tai nėra tas pats, kas vietinis Codex CLI prisijungimas telefone.
+- Tiesioginis ChatGPT → Termux valdymas ir automatinė Codex užduočių eilė dar neįjungti.
+
+### Kitas konkretus veiksmas
+Vartotojui reikia įjungti ChatGPT Settings → Security → Device code login (beta), tada vieną kartą paleisti `docs/TERMUX_CODEX_BRIDGE.md` nurodytą bootstrap komandą Termux programoje. Prisijungimo kodą įvesti tik oficialiame OpenAI puslapyje, niekada nekelti jo į pokalbį. Po diegimo patikrinti `gh auth status`, `codex login status`, `codex doctor` ir read-only projekto aprašymo užduotį. Tik po šio testo pradėti projektuoti automatinį GitHub užduočių paėmimą.
