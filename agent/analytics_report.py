@@ -225,92 +225,111 @@ def main() -> int:
             + "/searchAnalytics/query"
         )
 
-        ga_current = ga_rows(
-            session, ga_url, ga_start, ga_end,
-            ["activeUsers", "newUsers", "sessions", "screenPageViews"], limit=1,
-        )
-        ga_previous = ga_rows(
-            session, ga_url, ga_prev_start, ga_prev_end,
-            ["activeUsers", "newUsers", "sessions", "screenPageViews"], limit=1,
-        )
-        current = metric_totals(ga_current)
-        previous = metric_totals(ga_previous)
-
         lines = [
             "# Pet traffic – lankomumo ataskaita",
             "",
             f"GA4 laikotarpis: {ga_start} – {ga_end}",
             f"Palyginimas: {ga_prev_start} – {ga_prev_end}",
-            "",
-            "## Pagrindiniai rodikliai (GA4)",
-            "",
-            "| Rodiklis | Paskutinės 7 d. | Pokytis prieš ankstesnes 7 d. |",
-            "|---|---:|---:|",
         ]
-        for key, label in (
-            ("activeUsers", "Aktyvūs naudotojai"),
-            ("newUsers", "Nauji naudotojai"),
-            ("sessions", "Sesijos / apsilankymai"),
-            ("screenPageViews", "Puslapių peržiūros"),
-        ):
-            lines.append(
-                f"| {label} | {fmt(current.get(key, 0))} | "
-                f"{delta(current.get(key, 0), previous.get(key, 0))} |"
-            )
+        ga4_ok = False
+        gsc_ok = False
 
-        channels = ga_rows(
-            session, ga_url, ga_start, ga_end, ["sessions"],
-            ["sessionDefaultChannelGroup"], limit=50, metric_aggregations=["TOTAL"],
-        )
-        lines += ["", "### Sesijos pagal kanalą", "", "| Kanalas | Sesijos |", "|---|---:|"]
-        if channels.get("metadata", {}).get("dataLossFromOtherRow"):
-            lines.append("_Dalis kanalų sujungta į „(other)“ dėl didelio dimensijos reikšmių skaičiaus._")
-        if channels.get("metadata", {}).get("subjectToThresholding"):
-            lines.append("_Google taiko duomenų slenkstį; kanalų suma gali nesutapti su bendru rodikliu._")
-        organic_sessions = 0.0
-        channel_sessions_total = 0.0
-        for row in channels.get("rows", []):
-            channel = row.get("dimensionValues", [{}])[0].get("value", "Nežinomas")
-            value = float(row.get("metricValues", [{}])[0].get("value", "0"))
-            lines.append(f"| {channel} | {fmt(value)} |")
-            channel_sessions_total += value
-            if channel == "Organic Search":
-                organic_sessions = value
-        if not channels.get("rows"):
-            lines.append("| Duomenų nėra | – |")
-        total_sessions = current.get("sessions", 0.0)
-        channel_api_total = metric_aggregation_total(channels, "sessions")
-        channel_verified, channel_note = channel_breakdown_status(
-            channel_sessions_total, channel_api_total, total_sessions
-        )
-        if channel_verified:
-            lines += ["", f"Organinės paieškos sesijos: **{fmt(organic_sessions)}**", ""]
-        else:
+        try:
+            ga_current = ga_rows(
+                session, ga_url, ga_start, ga_end,
+                ["activeUsers", "newUsers", "sessions", "screenPageViews"], limit=1,
+            )
+            ga_previous = ga_rows(
+                session, ga_url, ga_prev_start, ga_prev_end,
+                ["activeUsers", "newUsers", "sessions", "screenPageViews"], limit=1,
+            )
+            current = metric_totals(ga_current)
+            previous = metric_totals(ga_previous)
+    
             lines += [
                 "",
-                "Organinės paieškos sesijos: **nepatvirtinta** – kanalų išklotinė nesutampa su bendru GA4 sesijų skaičiumi.",
-                f"Duomenų patikra: {channel_note}.",
-                "Kanalų lentelė ir organinės paieškos skaičius yra preliminarūs; jų nenaudokite kaip patvirtinto pasiskirstymo.",
+                "## Pagrindiniai rodikliai (GA4)",
                 "",
+                "| Rodiklis | Paskutinės 7 d. | Pokytis prieš ankstesnes 7 d. |",
+                "|---|---:|---:|",
             ]
-
-        top_pages = ga_rows(
-            session, ga_url, ga_start, ga_end, ["screenPageViews"], ["pagePath"], limit=10,
-        )
-        lines += ["### Daugiausia peržiūrėti puslapiai (GA4)", ""]
-        if top_pages.get("rows"):
-            for row in top_pages["rows"]:
-                path = row.get("dimensionValues", [{}])[0].get("value", "/")
-                views = float(row.get("metricValues", [{}])[0].get("value", "0"))
-                lines.append(f"- {path} – {fmt(views)} peržiūrų")
-        else:
-            lines.append("_GA4 puslapių duomenų šiam laikotarpiui nėra._")
+            for key, label in (
+                ("activeUsers", "Aktyvūs naudotojai"),
+                ("newUsers", "Nauji naudotojai"),
+                ("sessions", "Sesijos / apsilankymai"),
+                ("screenPageViews", "Puslapių peržiūros"),
+            ):
+                lines.append(
+                    f"| {label} | {fmt(current.get(key, 0))} | "
+                    f"{delta(current.get(key, 0), previous.get(key, 0))} |"
+                )
+    
+            channels = ga_rows(
+                session, ga_url, ga_start, ga_end, ["sessions"],
+                ["sessionDefaultChannelGroup"], limit=50, metric_aggregations=["TOTAL"],
+            )
+            lines += ["", "### Sesijos pagal kanalą", "", "| Kanalas | Sesijos |", "|---|---:|"]
+            if channels.get("metadata", {}).get("dataLossFromOtherRow"):
+                lines.append("_Dalis kanalų sujungta į „(other)“ dėl didelio dimensijos reikšmių skaičiaus._")
+            if channels.get("metadata", {}).get("subjectToThresholding"):
+                lines.append("_Google taiko duomenų slenkstį; kanalų suma gali nesutapti su bendru rodikliu._")
+            organic_sessions = 0.0
+            channel_sessions_total = 0.0
+            for row in channels.get("rows", []):
+                channel = row.get("dimensionValues", [{}])[0].get("value", "Nežinomas")
+                value = float(row.get("metricValues", [{}])[0].get("value", "0"))
+                lines.append(f"| {channel} | {fmt(value)} |")
+                channel_sessions_total += value
+                if channel == "Organic Search":
+                    organic_sessions = value
+            if not channels.get("rows"):
+                lines.append("| Duomenų nėra | – |")
+            total_sessions = current.get("sessions", 0.0)
+            channel_api_total = metric_aggregation_total(channels, "sessions")
+            channel_verified, channel_note = channel_breakdown_status(
+                channel_sessions_total, channel_api_total, total_sessions
+            )
+            if channel_verified:
+                lines += ["", f"Organinės paieškos sesijos: **{fmt(organic_sessions)}**", ""]
+            else:
+                lines += [
+                    "",
+                    "Organinės paieškos sesijos: **nepatvirtinta** – kanalų išklotinė nesutampa su bendru GA4 sesijų skaičiumi.",
+                    f"Duomenų patikra: {channel_note}.",
+                    "Kanalų lentelė ir organinės paieškos skaičius yra preliminarūs; jų nenaudokite kaip patvirtinto pasiskirstymo.",
+                    "",
+                ]
+    
+            top_pages = ga_rows(
+                session, ga_url, ga_start, ga_end, ["screenPageViews"], ["pagePath"], limit=10,
+            )
+            lines += ["### Daugiausia peržiūrėti puslapiai (GA4)", ""]
+            if top_pages.get("rows"):
+                for row in top_pages["rows"]:
+                    path = row.get("dimensionValues", [{}])[0].get("value", "/")
+                    views = float(row.get("metricValues", [{}])[0].get("value", "0"))
+                    lines.append(f"- {path} – {fmt(views)} peržiūrų")
+            else:
+                lines.append("_GA4 puslapių duomenų šiam laikotarpiui nėra._")
+    
+    
+            ga4_ok = True
+        except Exception as ga_exc:
+            lines += [
+                "",
+                "## Pagrindiniai rodikliai (GA4)",
+                "",
+                "GA4 duomenų gauti nepavyko; Search Console bus tikrinama atskirai.",
+                f"Techninė priežastis: {type(ga_exc).__name__}: {ga_exc}",
+            ]
+            print(f"WARNING: GA4 unavailable: {type(ga_exc).__name__}: {ga_exc}", file=sys.stderr)
 
         # Search Console is optional: a permissions/API issue must not discard valid GA4 data.
         try:
             # Search Console uses its own, deliberately delayed reporting window.
             gsc_current = gsc_query(session, gsc_url, gsc_start, gsc_end)
             gsc_previous = gsc_query(session, gsc_url, gsc_prev_start, gsc_prev_end)
+            gsc_ok = True
             lines += [
                 "",
                 "## Google paieška (Search Console)",
@@ -459,7 +478,8 @@ def main() -> int:
 
         OUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
         print(f"Analytics report created: {OUT}")
-        return 0
+        # A partial report is a successful collection if either independent source worked.
+        return 0 if ga4_ok or gsc_ok else 1
     except Exception as exc:
         OUT.write_text(
             "# Pet traffic – lankomumo ataskaita\n\n"
