@@ -19,7 +19,7 @@ def api_post(session, url: str, body: dict) -> dict:
     # Retry once for those transport/server failures, but never retry permission errors.
     for attempt in range(2):
         try:
-            response = session.post(url, json=body, timeout=45)
+            response = session.post(url, json=body, timeout=25)
         except Exception as exc:
             retryable = exc.__class__.__name__ in {
                 "ReadTimeout", "ConnectTimeout", "ConnectionError"
