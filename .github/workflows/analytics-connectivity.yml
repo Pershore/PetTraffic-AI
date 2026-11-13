@@ -2,7 +2,7 @@ name: Google API connectivity check
 
 on:
   push:
-    branches: [main]
+    branches: [main, 'fix/independent-google-api-diagnostics']
     paths:
       - 'agent/analytics_connectivity.py'
       - 'tests/test_analytics_connectivity.py'
