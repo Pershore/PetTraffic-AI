@@ -203,3 +203,31 @@ Po PR #159 sujungimo vartotojas turi vieną kartą paleisti `docs/TERMUX_CODEX_B
 
 ### Kitas konkretus veiksmas
 Vartotojui reikia įjungti ChatGPT Settings → Security → Device code login (beta), tada vieną kartą paleisti `docs/TERMUX_CODEX_BRIDGE.md` nurodytą bootstrap komandą Termux programoje. Prisijungimo kodą įvesti tik oficialiame OpenAI puslapyje, niekada nekelti jo į pokalbį. Po diegimo patikrinti `gh auth status`, `codex login status`, `codex doctor` ir read-only projekto aprašymo užduotį. Tik po šio testo pradėti projektuoti automatinį GitHub užduočių paėmimą.
+
+
+## 13. Patvirtintas AI agentų išvesties validavimo pataisymas – 2026-11-13 21:05 UTC
+
+### Įgyvendinta ir patikrinta
+- PR #162 „Fail agent runs when model output is invalid“ sujungtas commit `eda9c571e63812ef9ca28928409b970168b74590`.
+- `worker/src/agents.mjs` dabar reikalauja visų keturių JSON laukų: `status`, `findings`, `recommendations`, `evidence_gaps`. Nepilna / sugadinta / tuščia Workers AI išvestis nebegali būti palaikyta sėkmingu specialisto rezultatu.
+- Jei specialisto arba koordinatoriaus atsakymas netinkamas, orchestration pažymi konkrečią `model_<agent>:model_output_<status>` stadijos klaidą ir per esamą atkūrimo kelią išsaugo dalinę ataskaitą bei control-core atmintį. Tai nebeleidžia blogos modelio išvesties tyliai pažymėti kaip `completed`.
+- PR patikros: Worker Node.js testai **46/46 PASS**, Worker Python testai **4/4 PASS**, Cloudflare išteklių / tokeno validacija **SUCCESS**, svetainės patikra **SUCCESS**.
+- Po sujungimo Worker automatiškai įdiegtas: deploy run `43507443321` **SUCCESS**. D1 migracijų nebuvo; Worker įkeltas su nauja versija `4326e80d-dfa3-43a2-b720-31ea4806367f`. Post-deploy patikra patvirtino Worker, D1 ir control-core schemos ryšį; neautentifikuotas `/v1/events` grąžino HTTP 401.
+- Control Center ir site-check po merge: `43507443380` ir `43507443476` – SUCCESS. Po deploy paleistas papildomas Control Center run `43507548375`; jo baigtį reikia perskaityti iš naujausio run / latest snapshot.
+
+### Kas dar neišspręsta / nepatvirtinta
+- 2026-11-13 agentų ciklo senasis D1 įrašas vis dar rodo `Unexpected_end_of_JSON_input`, `ai_calls=1`. Tai istorinis gedimas, įvykęs iki PR #156 rezervacijos atkūrimo pataisos ir PR #162 išvesties validavimo. Jo negalima perrašyti ar laikyti išspręstu vien todėl, kad naujas Worker įdiegtas.
+- Agentų ciklas yra idempotentinis vienam UTC kalendoriniam laikotarpiui; šiandienos nepavykęs įrašas automatiškai iš naujo nevykdomas. Kitas realus patvirtinimas – 2026-11-14 Worker agentų ciklas 10:20 Europe/Vilnius. Tada patikrinti `/health`, tikslų `agent_orchestration.error_code`, `control_core_runs` ir `control_core_memory` būseną.
+- GA4 runReport paskutiniame patikrintame vykdyme vis dar timeoutino po 15 s; Search Console API veikė ir išsaugojo savo atskirą rezultatą. GA4 priežastis neįrodyta; neliesti paskyros leidimų ar raktų be konkretaus poreikio.
+- GitHub Actions schedule paleidimų trūkumas neišspręstas: cron aprašymai YAML failuose yra, bet ankstesniame 100 vykdymų audite nerasta laukiamų schedule įvykių. Dabartinė GitHub jungtis neleidžia perskaityti repo Actions nustatymų.
+- Termux bootstrap telefone dar nepaleistas; Codex CLI login / `codex doctor` ir GitHub užduočių paėmimas nėra patikrinti. ChatGPT Remote ekrane `localhost` buvo Offline; Desktop poravimas nepatvirtintas.
+
+### Kitas konkretus veiksmas
+1. Po 2026-11-14 10:20 Europe/Vilnius Worker ciklo patikrinti agentų vykdymą ir D1 atminties įrašą. Tik tada žymėti AI atmintį PATIKRINTA.
+2. Tęsti GA4 timeout diagnostiką ir atskirai išsaugoti GSC duomenis.
+3. Išspręsti GitHub Actions schedule nustatymų patikrą ir užbaigti vienkartinį Termux / Codex prijungimą.
+
+### Projekto paskirties suderinimas
+- Viešas svetainės prekės ženklas yra **Pet traffic**. „PetTraffic AI“ – vidinis projekto / automatizavimo pavadinimas.
+- Pagal galiojantį `AGENTS.md`, ARO Vet nėra viešo svetainės turinio, partnerinių nuorodų ar rinkodaros tikslas; ARO Vet svetainė ir infrastruktūra neliečiama.
+- Senesni 2026-11-12 perdavimo sakiniai apie lankytojų nukreipimą į ARO Vet yra pasenę ir neturi būti naudojami naujoms užduotims.
