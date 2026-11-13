@@ -222,24 +222,44 @@ def fetch_runs(workflow_file: str) -> list[dict]:
         return json.loads(response.read().decode("utf-8")).get("workflow_runs", [])
 
 def fetch_workflow_metadata(workflow_file: str) -> dict:
-    """Read the workflow's activation state and last file update timestamp."""
-    endpoint = (
-        f"https://api.github.com/repos/{REPO}/actions/workflows/"
-        f"{quote(workflow_file, safe='')}"
-    )
-    request = Request(endpoint, headers={
+    """Read activation state and the actual last commit touching the workflow file."""
+    headers = {
         "Accept": "application/vnd.github+json",
         "Authorization": f"Bearer {TOKEN}",
         "X-GitHub-Api-Version": "2022-11-28",
         "User-Agent": "PetTraffic-ControlCenter/1.0",
-    })
+    }
+    endpoint = (
+        f"https://api.github.com/repos/{REPO}/actions/workflows/"
+        f"{quote(workflow_file, safe='')}"
+    )
+    request = Request(endpoint, headers=headers)
     with urlopen(request, timeout=15) as response:
         payload = json.loads(response.read().decode("utf-8"))
     if not isinstance(payload, dict):
         raise ValueError("GitHub workflow metadata response is not an object")
+
+    # The workflow resource's updated_at can lag behind changes to the YAML file.
+    # Use the latest commit touching the actual workflow file as the schedule baseline.
+    workflow_path = quote(f".github/workflows/{workflow_file}", safe="")
+    commits_endpoint = (
+        f"https://api.github.com/repos/{REPO}/commits"
+        f"?path={workflow_path}&per_page=1"
+    )
+    commits_request = Request(commits_endpoint, headers=headers)
+    with urlopen(commits_request, timeout=15) as response:
+        commits = json.loads(response.read().decode("utf-8"))
+    if not isinstance(commits, list) or not commits:
+        raise ValueError("GitHub did not return commit history for workflow file")
+    commit = commits[0].get("commit", {})
+    commit_dates = commit.get("committer", {}) or {}
+    author_dates = commit.get("author", {}) or {}
+    last_file_commit = commit_dates.get("date") or author_dates.get("date")
+    if not last_file_commit:
+        raise ValueError("GitHub workflow file commit has no timestamp")
     return {
         "state": payload.get("state", "unknown"),
-        "updated_at": payload.get("updated_at"),
+        "updated_at": last_file_commit,
     }
 
 

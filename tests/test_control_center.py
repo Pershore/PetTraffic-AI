@@ -1,6 +1,8 @@
 import unittest
+import json
+from unittest.mock import patch
 from datetime import datetime, timezone, timedelta
-from agent.control_center import WORKFLOWS, evaluate_workflow, evaluate_worker_health, needs_attention, render
+from agent.control_center import WORKFLOWS, evaluate_workflow, evaluate_worker_health, fetch_workflow_metadata, needs_attention, render
 
 class ControlCenterTests(unittest.TestCase):
     def setUp(self):
@@ -9,6 +11,38 @@ class ControlCenterTests(unittest.TestCase):
     def run_item(self, status="completed", conclusion="success", age_hours=2):
         created = self.now - timedelta(hours=age_hours)
         return {"created_at": created.isoformat().replace("+00:00", "Z"), "status": status, "conclusion": conclusion, "html_url": "https://github.com/example/run/1"}
+
+    def test_workflow_schedule_baseline_uses_last_file_commit(self):
+        class FakeResponse:
+            def __init__(self, payload):
+                self.payload = payload
+            def __enter__(self):
+                return self
+            def __exit__(self, *args):
+                return False
+            def read(self):
+                return json.dumps(self.payload).encode("utf-8")
+
+        responses = [
+            FakeResponse({
+                "state": "active",
+                "updated_at": "2026-11-11T20:16:28Z",
+            }),
+            FakeResponse([{
+                "commit": {
+                    "committer": {"date": "2026-11-13T12:00:00Z"},
+                    "author": {"date": "2026-11-13T11:59:00Z"},
+                }
+            }]),
+        ]
+
+        with patch("agent.control_center.urlopen", side_effect=responses) as mocked:
+            result = fetch_workflow_metadata("analytics-snapshot.yml")
+
+        self.assertEqual(result["state"], "active")
+        self.assertEqual(result["updated_at"], "2026-11-13T12:00:00Z")
+        self.assertEqual(mocked.call_count, 2)
+        self.assertIn(".github%2Fworkflows%2Fanalytics-snapshot.yml", mocked.call_args_list[1].args[0].full_url)
 
     def test_worker_health_success_requires_recent_site_and_database_heartbeat(self):
         result = evaluate_worker_health({
