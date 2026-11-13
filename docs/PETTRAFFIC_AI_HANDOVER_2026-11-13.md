@@ -39,7 +39,7 @@ Techninė būsena turi būti tikrinama GitHub. ChatGPT atmintis padeda prisimint
 - Paskutinė patikrinta `main` būsena: commit `40abf6a0ff5cf4565a8b8ec16e28e7e8d55ec354`.
 - `automation-history` paskutinis patikrintas commit: `73a522b6f4e664765cf91c312edeb2b1d7a2ea5c`.
 - Istorijos šakoje yra `reports/history/project-state/latest.md`, `latest.json`, dienos būsenų, analitikos, control-center ir rekomendacijų JSON archyvai.
-- `reports/work-log/README.md` yra `main) šakoje. Jo nėra `automation-history` šakoje – tai atitinka istorijos šakos apribojimą saugoti tik agreguotą istoriją.
+- `reports/work-log/README.md` yra `main` šakoje. Jo nėra `automation-history` šakoje – tai atitinka istorijos šakos apribojimą saugoti tik agreguotą istoriją.
 - PR #131 „Prevent Worker redeploys on workflow-only edits“ sujungtas.
 - PR #131 deploy patikra #54 – success; site checks #388 – success.
 - Control-center run #107 (`43456177377`) baigėsi success; visi jo job žingsniai buvo success.
