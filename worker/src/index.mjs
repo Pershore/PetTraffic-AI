@@ -167,7 +167,7 @@ async function handle(request, env) {
       ).first();
       // Expose only aggregate execution metadata; never return prompts, model output or stored reports.
       const agentRun = await env.DB.prepare(
-        "SELECT run_date, status, ai_calls, started_at, completed_at FROM agent_runs ORDER BY run_date DESC LIMIT 1"
+        "SELECT run_date, status, ai_calls, started_at, completed_at, error_code FROM agent_runs ORDER BY run_date DESC LIMIT 1"
       ).first();
       return response({
         ok: true,
@@ -186,6 +186,11 @@ async function handle(request, env) {
           ai_calls: Number(agentRun.ai_calls),
           started_at: agentRun.started_at,
           completed_at: agentRun.completed_at,
+          error_code: agentRun.status === "failed"
+            ? (typeof agentRun.error_code === "string"
+              ? agentRun.error_code.replace(/[^A-Za-z0-9_.-]/g, "_").slice(0, 80)
+              : "agent_run_failed")
+            : null,
         } : { status: "not_started" },
       }, 200, origin);
     } catch {
