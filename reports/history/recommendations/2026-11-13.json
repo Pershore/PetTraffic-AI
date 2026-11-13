@@ -1754,6 +1754,44 @@
           "status": "monitor"
         }
       ]
+    },
+    {
+      "generated_at": "2026-11-13T21:20:58.339926+00:00",
+      "run_id": "43509823929",
+      "recommendations": [
+        {
+          "id": "ga4-connection",
+          "priority": "high",
+          "title": "Patikrinti GA4 duomenų prieigą",
+          "evidence": "Naujausio išrašo GA4 būsena: unavailable.",
+          "next_action": "Patikrinti GA4 paslaugos paskyros skaitymo prieigą ir API atsakymą.",
+          "status": "monitor"
+        },
+        {
+          "id": "search-visibility",
+          "priority": "medium",
+          "title": "Patikrinti Google paieškos matomumą",
+          "evidence": "Dviejuose naujausiuose prieinamuose Search Console laikotarpiuose parodymai ir paspaudimai buvo nuliniai.",
+          "next_action": "Patikrinti URL indeksavimo būseną, sitemap apdorojimą ir ar svarbiausi puslapiai prieinami Googlebot.",
+          "status": "monitor"
+        },
+        {
+          "id": "sitemap-processing",
+          "priority": "info",
+          "title": "Stebėti Google sitemap apdorojimą",
+          "evidence": "Search Console nurodo, kad sitemap dar laukia apdorojimo.",
+          "next_action": "Pakartotinai patikrinti kitame cikle; sitemap pakartotinai neteikti, jei jis jau pateiktas.",
+          "status": "monitor"
+        },
+        {
+          "id": "automation-health",
+          "priority": "high",
+          "title": "Pašalinti automatizacijų būklės problemas",
+          "evidence": "AI agentai + control-core atmintis: failure",
+          "next_action": "Atidaryti centrinio valdymo GitHub įspėjimą ir taisyti konkretaus proceso klaidą.",
+          "status": "monitor"
+        }
+      ]
     }
   ]
 }

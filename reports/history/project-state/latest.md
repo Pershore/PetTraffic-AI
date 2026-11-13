@@ -1,9 +1,9 @@
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
-- Atnaujinta: 2026-11-13T21:14:04.420048+00:00
+- Atnaujinta: 2026-11-13T21:20:49.389708+00:00
 - Būsena: **REIKIA DĖMESIO**
-- GitHub run: 43508810788
-- Šaltinio commit: 67c2d0dcb4efeb01a12539a584964474ad0e3851
+- GitHub run: 43509823929
+- Šaltinio commit: 4d477f490c073d29600e3a73f9239199b8385927
 
 ## Paskutinis patikrintas etapas
 
@@ -16,7 +16,7 @@ Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (failure)
 ## Patvirtinti procesai
 
 - Centrinės API sinchronizavimas: Paskutinis paleidimas sėkmingas.
-- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 13 min.
+- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 5 min.
 
 ## Problemos
 
@@ -51,14 +51,3 @@ Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (failure)
 - AI rekomendacijos yra patariamosios; modelio išvestys nesuteikia vykdymo teisių.
 
 > Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.
-
-
-## Rankinis sesijos papildymas – 2026-11-13 21:15 UTC
-
-- PR #164 sujungtas: GPT-OSS 20B `max_output_tokens` 256→1024; Worker Node.js testai 47/47, Python testai 4/4, Cloudflare validacija ir site checks sėkmingi.
-- Worker deploy run `43508721169` – SUCCESS; D1 ir control-core schema connected, apsaugotas API patikrintas HTTP 401.
-- **AI atmintis vis dar nepatvirtinta:** gyvas `/health` rodo 2026-11-13 seną `failed` įrašą, `ai_calls=1`, `Unexpected_end_of_JSON_input`; `control_core.status=not_started`, `memory_status=missing`. Naujas modelio biudžetas dar netikrintas realiu agentų ciklu; kitas ciklas 2026-11-14 10:20 Europe/Vilnius.
-- GA4 metadata veikia, tačiau minimalus `runReport` timeoutina ir po 25 s; GSC API veikia. 2026-11-13 analytics artefaktas perskaitytas: GSC ataskaita išsaugota, 0 parodymų / 0 paspaudimų 2026-11-04–2026-11-10, sitemap pateiktas, Google fetch dar nepatvirtintas.
-- Paskutinių 100 GitHub Actions vykdymų `schedule` įvykių nerasta; YAML cron yra, tačiau Actions nustatymų prieiga per šią integraciją nepasiekiama.
-- Termux/Codex bootstrap ir login telefone neatlikti. ChatGPT Remote `localhost` Offline nėra Termux jungtis; reikalingas vienkartinis bootstrap telefone.
-- Darbo žurnalas ir perdavimo dokumentai papildyti PR #165; visi duomenys ir senoji istorija išsaugoti.
