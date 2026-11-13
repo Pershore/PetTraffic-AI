@@ -20,7 +20,9 @@ class TopicHistoryTests(unittest.TestCase):
         item = parse_report(REPORT, "run-1", "2026-11-12T08:00:00Z")
         self.assertEqual(item["topic_counts"]["šunų priežiūra"], 8)
         self.assertEqual(item["unique_article_links"], 11)
-        self.assertEqual(item["empty_topic_queries"], 2)
+        self.assertEqual(item["empty_topic_checks"], 2)
+        self.assertEqual(item["total_topic_checks"], 7)
+        self.assertNotIn("query", json.dumps(item).lower())
         self.assertNotIn("antraštės", json.dumps(item).lower())
         self.assertNotIn("https://", json.dumps(item))
 
