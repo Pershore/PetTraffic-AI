@@ -79,6 +79,30 @@ def check_ga4_grpc(client_factory, credentials, property_id: str,
                 close()
 
 
+def check_ga4_realtime_grpc(client_factory, credentials, property_id: str) -> tuple[bool, str]:
+    """Check the separate GA4 realtime-report RPC over gRPC."""
+    client = None
+    try:
+        client = client_factory(credentials=credentials, transport="grpc")
+        response = client.run_realtime_report(
+            request={
+                "property": f"properties/{property_id}",
+                "metrics": [{"name": "activeUsers"}],
+            },
+            timeout=20,
+            retry=None,
+        )
+        row_count = getattr(response, "row_count", "unknown")
+        return True, f"gRPC runRealtimeReport succeeded (row_count={row_count})"
+    except Exception as exc:
+        return False, f"{type(exc).__name__}: {str(exc)[:300]}"
+    finally:
+        if client is not None:
+            close = getattr(client, "close", None)
+            if callable(close):
+                close()
+
+
 def main() -> int:
     raw = os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON", "").strip()
     ga4_id = os.environ.get("GA4_PROPERTY_ID", "").strip()
@@ -143,6 +167,9 @@ def main() -> int:
     ga_grpc_ok, ga_grpc_message = check_ga4_grpc(
         BetaAnalyticsDataClient, credentials, ga4_id, ga_start, ga_end
     )
+    ga_realtime_ok, ga_realtime_message = check_ga4_realtime_grpc(
+        BetaAnalyticsDataClient, credentials, ga4_id
+    )
     results = run_independent_checks(
         session,
         ga_url,
@@ -170,6 +197,7 @@ def main() -> int:
         "|---|---|---|",
         f"| GA4 metadata | {'OK' if ga_metadata_ok else 'FAILED'} | {ga_metadata_message.replace('|', '/')} |",
         f"| GA4 report gRPC (1 day) | {'OK' if ga_grpc_ok else 'FAILED'} | {ga_grpc_message.replace('|', '/')} |",
+        f"| GA4 realtime gRPC | {'OK' if ga_realtime_ok else 'FAILED'} | {ga_realtime_message.replace('|', '/')} |",
         f"| GA4 report REST (1 day) | {'OK' if ga_ok else 'FAILED'} | {ga_message.replace('|', '/')} |",
         f"| Search Console | {'OK' if gsc_ok else 'FAILED'} | {gsc_message.replace('|', '/')} |",
         "",
@@ -178,7 +206,7 @@ def main() -> int:
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(lines))
-    return 0 if ga_metadata_ok or ga_grpc_ok or ga_ok or gsc_ok else 1
+    return 0 if ga_metadata_ok or ga_grpc_ok or ga_realtime_ok or ga_ok or gsc_ok else 1
 
 
 if __name__ == "__main__":
