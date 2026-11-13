@@ -12,6 +12,8 @@ class WorkerCronDiagnosticSecurityTests(unittest.TestCase):
         self.assertIn('"Authorization": "Bearer " + token', cloudflare_helper)
         self.assertNotIn("get_public", WORKFLOW)
         self.assertNotIn("API_URL", WORKFLOW)
+        self.assertIn("schedules = get_cloudflare(", WORKFLOW)
+        self.assertIn('expected = {"*/15 * * * *", "20 7,8 * * *"}', WORKFLOW)
         self.assertIn("wrangler@4 tail pettraffic-control-api", WORKFLOW)
 
 
