@@ -30,8 +30,8 @@ def parse_report(report: str, run_id: str, generated_at: str | None = None) -> d
         "source": "Google News RSS public headlines; not Google search volume",
         "topic_counts": counts,
         "unique_article_links": int(unique.group(1)) if unique else None,
-        "empty_topic_queries": int(empty.group(1)) if empty else None,
-        "total_topic_queries": int(empty.group(2)) if empty else None,
+        "empty_topic_checks": int(empty.group(1)) if empty else None,
+        "total_topic_checks": int(empty.group(2)) if empty else None,
     }
 
 
