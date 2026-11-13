@@ -1,0 +1,36 @@
+name: Termux Codex bridge checks
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "tools/termux/**"
+      - "docs/TERMUX_CODEX_BRIDGE.md"
+      - ".github/workflows/termux-bridge-check.yml"
+  push:
+    branches: [main]
+    paths:
+      - "tools/termux/**"
+      - "docs/TERMUX_CODEX_BRIDGE.md"
+      - ".github/workflows/termux-bridge-check.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  shell-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v7
+      - name: Validate shell syntax
+        run: |
+          bash -n tools/termux/bootstrap.sh
+          bash -n tools/termux/setup-debian.sh
+      - name: Check safe setup invariants
+        run: |
+          grep -Fq 'codex login --device-auth' tools/termux/setup-debian.sh
+          grep -Fq 'gh auth setup-git' tools/termux/setup-debian.sh
+          grep -Fq 'proot-distro login debian' tools/termux/bootstrap.sh
+          ! grep -Eiq '(OPENAI_API_KEY|CLOUDFLARE_API_TOKEN|CLOUDFLARE_GLOBAL_API_KEY)=' tools/termux/*.sh
