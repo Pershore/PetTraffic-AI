@@ -31,6 +31,14 @@ Sujungti esamas automatizacijas į vieną valdymo sluoksnį, kuris parodo sistem
 - Archyvas laikomas atskiroje šakoje, kad istorijos įrašai nekeistų `main` svetainės šaltinių ir nekeltų nereikalingų Cloudflare Pages publikavimų.
 - Istorijoje nerenkami atskirų lankytojų duomenys, paieškos užklausų tekstai ar paslaptys.
 
+### 2.1 etapas – automatinė projekto būsenos atkūrimo atmintis
+
+- Po kiekvieno centrinio valdymo ciklo sukuriama trumpa, mašinai ir žmogui skaitoma projekto būsenos santrauka.
+- Naujausia santrauka saugoma `reports/history/project-state/latest.md` ir `latest.json` šakoje `automation-history`; dienos JSON įrašai išsaugo atskirus vykdymus.
+- Santraukoje yra patikrinti procesai, problemos, laukiančios patikros, AI agentų / control-core atminties būsena ir vienas kitas veiksmas.
+- Santrauka neperrašo pilnos GitHub istorijos ir nėra ChatGPT pokalbio atminties pakaitalas. Naujoje sesijoje ją reikia perskaityti prieš keičiant kodą.
+- Įrašomi tik agreguoti procesų duomenys; lankytojų lygmens duomenys, žalios paieškos užklausos ir paslaptys neįtraukiami.
+
 ### 3 etapas – Cloudflare Worker + D1
 
 Worker taps centrine API / įvykių priėmimo vieta, o D1 – ilgalaike duomenų baze, kai atsiras realus poreikis:
