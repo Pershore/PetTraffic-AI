@@ -110,3 +110,14 @@ GitHub dokumentai gali išsaugoti tęstinumo būseną, bet negali patys priverst
 - Termux bootstrap / Codex login / `codex doctor` telefone nepatvirtinti; ChatGPT Remote `localhost` buvo Offline.
 - Kitas veiksmas: po rytojaus 10:20 ciklo patikrinti `/health`, agent orchestration klaidos kodą, D1 `control_core_runs` ir `control_core_memory`. Tada tęsti GA4 ir Actions schedule diagnostiką.
 - Viešas prekės ženklas – **Pet traffic**; „PetTraffic AI“ yra vidinis pavadinimas. Laikytis `AGENTS.md` – negrąžinti ARO Vet turinio ar rinkodaros nuorodų.
+
+
+## Naujausias tęstinumo taškas – 2026-11-13 21:14 UTC
+- PR #164 sujungtas commit `e2de83d1f5af0e76dceb05ea96d673cf0c73ad57`; Worker deploy run `43508721169` – success.
+- GPT-OSS 20B output budget padidintas 256→1024; Worker testai 47/47, Python 4/4, Cloudflare validacija ir site checks – success.
+- Live `/health`: Worker/D1/control-core schema connected, tačiau 2026-11-13 agentų run vis dar failed su `Unexpected_end_of_JSON_input`; control-core memory missing. Dėl dienos idempotency kito tikro ciklo laukimas: 2026-11-14 10:20 Europe/Vilnius.
+- GA4 minimalus `runReport` timeoutina ir per 25 s, nors metadata veikia; Search Console API veikia. 2026-11-13 snapshot artefaktas patvirtina, kad GSC ataskaita išsaugoma nepriklausomai.
+- 100 paskutinių GitHub Actions vykdymų neturi `schedule` event; repo Actions nustatymų per dabartinę jungtį patikrinti negalima.
+- Termux/Codex kodas ir CI paruošti, bet telefone bootstrap/login/doctor neatlikti. ChatGPT Remote localhost Offline nėra aktyvus Termux ryšys.
+- Kitas veiksmas: po 10:20 ciklo patikrinti AI ir D1 atmintį; toliau diagnozuoti GA4; išspręsti Actions schedule nustatymų ir Termux prijungimo blokatorius.
+- Laikytis `AGENTS.md`: viešas prekės ženklas Pet traffic, ARO Vet neliečiamas.

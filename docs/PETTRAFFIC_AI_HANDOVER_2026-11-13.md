@@ -231,3 +231,41 @@ Vartotojui reikia įjungti ChatGPT Settings → Security → Device code login (
 - Viešas svetainės prekės ženklas yra **Pet traffic**. „PetTraffic AI“ – vidinis projekto / automatizavimo pavadinimas.
 - Pagal galiojantį `AGENTS.md`, ARO Vet nėra viešo svetainės turinio, partnerinių nuorodų ar rinkodaros tikslas; ARO Vet svetainė ir infrastruktūra neliečiama.
 - Senesni 2026-11-12 perdavimo sakiniai apie lankytojų nukreipimą į ARO Vet yra pasenę ir neturi būti naudojami naujoms užduotims.
+
+
+## 14. AI model JSON biudžeto pataisa ir po-diegimo patikra – 2026-11-13 21:14 UTC
+
+### Įgyvendinta ir patikrinta
+- PR #164 „Prevent Workers AI specialist JSON truncation“ sujungtas commit `e2de83d1f5af0e76dceb05ea96d673cf0c73ad57`.
+- `worker/src/agents.mjs`: GPT-OSS 20B `max_output_tokens` padidintas nuo 256 iki 1024. Priežastis – ankstesnis 256 biudžetas galėjo būti sunaudotas modelio reasoning žetonams, palikdamas nepilną JSON. Tai pagrįsta hipotezė, bet ne galutinai patvirtinta ankstesnio gedimo priežastis.
+- Pridėtas testas, tikrinantis modelio vardą, reasoning režimą ir 1024 išvesties biudžetą.
+- PR patikros: Worker Node.js **47/47 PASS**, Worker Python **4/4 PASS**, Cloudflare išteklių validacija **SUCCESS**, statinės svetainės / automatizacijų patikros **SUCCESS**, Cloudflare Pages preview **SUCCESS**.
+- Worker deploy run `43508721169` – **SUCCESS**. Deploy logas patvirtino Worker, D1 ir control-core schemą; neautentifikuotas API atsakymas HTTP 401. D1 migracijų pakeitimų nebuvo.
+- Po deploy Control Center run `43508721148` – **SUCCESS**, bet jis teisingai paliko AI atminties gedimą atvirą.
+
+### Gyva būsena po deploy
+- `/health` atsako `ok=true`; D1 ir control-core schema `connected`.
+- Agentų įrašas 2026-11-13 vis dar `failed`, `ai_calls=1`, `Unexpected_end_of_JSON_input`; `control_core.status=not_started`, `memory_status=missing`.
+- Tai ankstesnio dienos ciklo įrašas. Kasdienio idempotentiškumo užraktas neleidžia jo perrašyti vien nauju deploy. Naujas modelio biudžetas dar nepatvirtintas realiu agentų ciklu.
+- Kitas tikras agentų ciklas: **2026-11-14 10:20 Europe/Vilnius**. Po jo patikrinti `/health`, `agent_orchestration.error_code`, `control_core_runs` ir `control_core_memory`. Tik tada žymėti AI agentus ir atmintį PATIKRINTA.
+
+### GA4 / Search Console – naujas artefakto patikrinimas
+- Analytics snapshot run `43443849180` artefaktas buvo realiai parsisiųstas ir perskaitytas.
+- GA4 2026-11-06–2026-11-12: `ReadTimeout` po 15 s. Atskira connectivity patikra run `43412153068`: GA4 metadata **OK**, minimalus 1 dienos `runReport` **ReadTimeout po 25 s**, Search Console API **OK**.
+- Tas pats artefaktas patvirtina, kad GSC duomenys išsaugomi net GA4 nepavykus: 2026-11-04–2026-11-10 parodymai 0, paspaudimai 0; sitemap pateiktas, tačiau Google paskutinio atsisiuntimo laikas ir URL indeksavimo būsena dar nenurodyti.
+- Todėl GA4 prieigos klaida neįrodyta; tikėtina problema susijusi su `runReport` atsako laiku. Nekeisti Google paskyros teisių ar raktų be įrodymų.
+
+### Likę išoriniai blokatoriai
+- GitHub Actions paskutinių 100 vykdymų audite nėra `event=schedule` paleidimų. Cron įrašai YAML failuose yra. Dabartinė GitHub integracija neleidžia perskaityti ar pakeisti repo Actions nustatymų; negalima teigti, kad scheduleris sutaisytas.
+- Termux bootstrap / GitHub CLI / Codex CLI dar nepaleisti vartotojo Android telefone. PR #159/#160 bridge kodas ir CI patikros paruošti, bet `gh auth status`, `codex login status`, `codex doctor` telefone nepatvirtinti.
+- ChatGPT Remote `localhost` ekrane buvo Offline. Tai nėra aktyvus Termux tiltas; Desktop QR poravimas ir Termux bootstrap yra atskiri veiksmai.
+- Tiesioginis ChatGPT→Termux vykdymas ir automatinė Codex užduočių eilė dar nesukurti. GitHub jungtis leidžia atlikti repo darbus tiesiogiai, bet ji nėra vietinio telefono terminalo valdymas.
+
+### Kitas veiksmas
+1. 2026-11-14 10:20 agentų ciklo realus testas.
+2. Atskirai tęsti GA4 `runReport` diagnostiką, išsaugant GSC rezultatą.
+3. Gauti prieigą prie GitHub Actions General nustatymų ir vieną kartą užbaigti Termux/Codex prijungimą.
+
+### Saugumo / projekto tapatybės priminimas
+- Viešas prekės ženklas – **Pet traffic**; ARO Vet nėra projekto turinio ar rinkodaros tikslas. ARO Vet neliesti.
+- Jokio mokamo API, DNS, secrets, paskyrų teisių ar automatinio publikavimo.
