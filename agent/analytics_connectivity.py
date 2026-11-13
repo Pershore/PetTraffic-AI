@@ -86,7 +86,9 @@ def main() -> int:
 
     today = date.today()
     ga_end = today - timedelta(days=1)
-    ga_start = ga_end - timedelta(days=6)
+    # Use the smallest possible date range to distinguish report-endpoint latency
+    # from any cost associated with a multi-day reporting window.
+    ga_start = ga_end
     gsc_end = today - timedelta(days=3)
     gsc_start = gsc_end - timedelta(days=6)
 
@@ -133,7 +135,7 @@ def main() -> int:
         "| API check | Result | Detail |",
         "|---|---|---|",
         f"| GA4 metadata | {'OK' if ga_metadata_ok else 'FAILED'} | {ga_metadata_message.replace('|', '/')} |",
-        f"| GA4 report | {'OK' if ga_ok else 'FAILED'} | {ga_message.replace('|', '/')} |",
+        f"| GA4 report (1 day) | {'OK' if ga_ok else 'FAILED'} | {ga_message.replace('|', '/')} |",
         f"| Search Console | {'OK' if gsc_ok else 'FAILED'} | {gsc_message.replace('|', '/')} |",
         "",
         "This check requests aggregate metrics only; it does not retrieve search query strings or individual visitor data.",
