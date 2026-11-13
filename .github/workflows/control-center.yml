@@ -19,6 +19,7 @@ on:
       - "agent/control_center.py"
       - "agent/history_store.py"
       - "agent/recommendations.py"
+      - "agent/project_state.py"
       - "agent/analytics_history.py"
       - "agent/analytics_report.py"
       - "agent/topic_history.py"
@@ -31,6 +32,7 @@ on:
       - "tests/test_analytics_history.py"
       - "tests/test_topic_history.py"
       - "tests/test_recommendations.py"
+      - "tests/test_project_state.py"
       - ".github/workflows/control-center.yml"
       - ".github/workflows/analytics-snapshot.yml"
       - ".github/workflows/daily-topic-radar.yml"
@@ -45,6 +47,7 @@ on:
       - "agent/control_center.py"
       - "agent/history_store.py"
       - "agent/recommendations.py"
+      - "agent/project_state.py"
       - "agent/analytics_history.py"
       - "agent/topic_history.py"
       - "tests/test_control_center.py"
@@ -52,6 +55,7 @@ on:
       - "tests/test_analytics_history.py"
       - "tests/test_topic_history.py"
       - "tests/test_recommendations.py"
+      - "tests/test_project_state.py"
       - ".github/workflows/control-center.yml"
       - ".github/workflows/analytics-snapshot.yml"
       - ".github/workflows/daily-topic-radar.yml"
@@ -85,6 +89,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_analytics_history.py' -v
           python -m unittest discover -s tests -p 'test_topic_history.py' -v
           python -m unittest discover -s tests -p 'test_recommendations.py' -v
+          python -m unittest discover -s tests -p 'test_project_state.py' -v
       - name: Build central status report
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -100,6 +105,7 @@ jobs:
           git archive origin/automation-history reports/history | tar -x -C .
           python agent/history_store.py
           python agent/recommendations.py
+          python agent/project_state.py
       - name: Add report to job summary
         if: always()
         run: |
@@ -111,6 +117,10 @@ jobs:
           if [ -f reports/recommendations.md ]; then
             echo "" >> "$GITHUB_STEP_SUMMARY"
             cat reports/recommendations.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [ -f reports/project-state.md ]; then
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            cat reports/project-state.md >> "$GITHUB_STEP_SUMMARY"
           fi
       - name: Notify on actionable automation problems
         if: always() && github.event_name != 'pull_request'
@@ -173,6 +183,7 @@ jobs:
           path: |
             reports/control-center.*
             reports/recommendations.*
+            reports/project-state.*
           if-no-files-found: error
           retention-days: 90
 
@@ -184,6 +195,7 @@ jobs:
           mkdir -p /tmp/pettraffic-history
           cp -R reports/history/control-center /tmp/pettraffic-history/
           cp -R reports/history/recommendations /tmp/pettraffic-history/
+          cp -R reports/history/project-state /tmp/pettraffic-history/
           rm -rf reports/history
           git fetch origin automation-history
           git checkout -B automation-history origin/automation-history
@@ -192,9 +204,10 @@ jobs:
           mkdir -p reports/history
           cp -R /tmp/pettraffic-history/control-center reports/history/
           cp -R /tmp/pettraffic-history/recommendations reports/history/
+          cp -R /tmp/pettraffic-history/project-state reports/history/
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add reports/history/control-center reports/history/recommendations
+          git add reports/history/control-center reports/history/recommendations reports/history/project-state
           if ! git diff --cached --quiet; then
             git commit -m "chore: archive control-center history"
             git pull --rebase origin automation-history
