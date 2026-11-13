@@ -47,12 +47,18 @@ jobs:
           if not token or not account or not api_url:
               raise SystemExit("Required Cloudflare connection settings are missing.")
 
-          def get(url):
+          def get_cloudflare(url):
               request = urllib.request.Request(url, headers={"Authorization": "Bearer " + token})
               with urllib.request.urlopen(request, timeout=20) as response:
                   return json.loads(response.read())
 
-          schedules = get(
+          def get_public(url):
+              # The public Worker health endpoint must never receive the Cloudflare API token.
+              request = urllib.request.Request(url)
+              with urllib.request.urlopen(request, timeout=20) as response:
+                  return json.loads(response.read())
+
+          schedules = get_cloudflare(
               f"https://api.cloudflare.com/client/v4/accounts/{account}/workers/scripts/pettraffic-control-api/schedules"
           )
           if not schedules.get("success"):
@@ -64,7 +70,7 @@ jobs:
           if missing:
               raise SystemExit("Expected schedules missing: " + ", ".join(missing))
 
-          health = get(api_url + "/health")
+          health = get_public(api_url + "/health")
           if health.get("ok") is not True or health.get("database") != "connected":
               raise SystemExit("Worker health or D1 connectivity is not healthy.")
           heartbeat = health.get("heartbeat") or {}
