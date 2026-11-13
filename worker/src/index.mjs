@@ -175,18 +175,29 @@ async function handle(request, env) {
       const controlCoreMemory = await env.DB.prepare(
         "SELECT updated_at FROM control_core_memory WHERE memory_key = 'latest_control_decision' LIMIT 1"
       ).first();
-      const decision = controlCoreRun ? JSON.parse(controlCoreRun.decision_json) : null;
+      let decision = null;
+      let decisionJsonStatus = "not_available";
+      if (controlCoreRun) {
+        try {
+          decision = JSON.parse(controlCoreRun.decision_json);
+          decisionJsonStatus = decision && typeof decision === "object" && !Array.isArray(decision) ? "valid" : "invalid_shape";
+        } catch {
+          decisionJsonStatus = "invalid_json";
+        }
+      }
       const controlCore = controlCoreRun ? {
         run_date: controlCoreRun.run_date,
         status: controlCoreRun.status,
         core_version: controlCoreRun.core_version,
         created_at: controlCoreRun.created_at,
+        decision_json_status: decisionJsonStatus,
         recommendation_count: Array.isArray(decision?.recommendations) ? decision.recommendations.length : 0,
         evidence_gap_count: Array.isArray(decision?.evidence_gaps) ? decision.evidence_gaps.length : 0,
         memory_status: controlCoreMemory ? "present" : "missing",
         memory_updated_at: controlCoreMemory?.updated_at || null,
       } : {
         status: "not_started",
+        decision_json_status: decisionJsonStatus,
         memory_status: controlCoreMemory ? "present" : "missing",
         memory_updated_at: controlCoreMemory?.updated_at || null,
       };
