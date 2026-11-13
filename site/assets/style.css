@@ -219,3 +219,20 @@ footer small{color:#65736a}
       color: #222;
       cursor: pointer;
     }
+
+
+/* Clearly disclosed ARO Vet partner product cards. */
+.partner-products{margin-top:64px}
+.partner-disclosure{max-width:850px;margin:0 0 18px;padding:12px 15px;border:1px solid var(--line);border-radius:9px;background:#fafbf8;color:#526359;font-size:13px}
+.partner-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.partner-card{display:flex;flex-direction:column;align-items:flex-start;min-height:270px;padding:20px;border:1px solid var(--line);border-radius:14px;background:#fff;box-shadow:0 5px 20px rgba(38,55,47,.045)}
+.partner-icon{display:grid;place-items:center;width:42px;height:42px;margin-bottom:13px;border-radius:50%;background:var(--green-pale);font-size:21px}
+.partner-category{margin:0 0 7px;color:#526b55;font-size:9px;font-weight:850;letter-spacing:1.15px}
+.partner-card h3{margin:0 0 8px;color:var(--ink);font-size:17px;line-height:1.35}
+.partner-card>p:not(.partner-category):not(.partner-price){margin:0 0 14px;color:var(--muted);font-size:12px;line-height:1.6}
+.partner-price{margin:auto 0 10px;color:var(--green-dark);font-size:15px;font-weight:850}
+.partner-card>a{display:inline-flex;align-items:center;padding:8px 11px;border-radius:7px;background:var(--green);color:#fff;font-size:12px;font-weight:800;text-decoration:none}
+.partner-card>a:hover{background:var(--green-dark)}
+.partner-footnote{margin:14px 0 0;color:var(--muted);font-size:11px;line-height:1.6}
+@media(max-width:900px){.partner-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.partner-products{margin-top:50px}.partner-grid{grid-template-columns:1fr}.partner-card{min-height:0;padding:18px}.partner-card h3{font-size:17px}}
