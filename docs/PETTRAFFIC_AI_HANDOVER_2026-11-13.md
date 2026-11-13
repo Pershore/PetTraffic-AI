@@ -112,3 +112,35 @@ Techninė būsena turi būti tikrinama GitHub. ChatGPT atmintis padeda prisimint
 ### Kitas privalomas veiksmas
 
 Po 2026-11-14 10:20 Europe/Vilnius suplanuoto agentų ciklo perskaityti naujausią `reports/history/project-state/latest.md`, `reports/work-log/README.md` ir gyvą `/health`. Jei agentų ciklas sėkmingas, patvirtinti, kad control-core sprendimas ir kompaktiška atmintis įrašyti į D1. Jei nepavykęs, naudoti naują stage prefiksą iš `agent_orchestration.error_code` ir taisyti tik konkrečią įrodytą vietą.
+
+
+## 9. Patvirtintas vakarinis tęstinumo atnaujinimas – 2026-11-13 17:12 UTC
+
+### Įgyvendinta ir patikrinta
+- PR #150 sujungtas commit `9d0bec49c37d8f3efc161b41dd9b8c87c3c258a8`: Copilot / Codex instrukcijos ir agentų sesijos tęstinumas.
+- PR #151 sujungtas commit `1f046bfc34697460c5c7d712dcf732f97e8c9ee1`: `AGENTS.md` ir `docs/SESSION_START.md` papildytos voice-first / zero-manual-work taisyklėmis; sukurtas `docs/VOICE_FIRST_AUTONOMY.md`.
+- PR #152 sujungtas commit `2f2abd72dea29a1f3fe11fd97f791b606cb524c1`: dokumentuoti GitHub Actions ir Worker cron laikai sulyginti su tikrais workflow failais.
+- PR #153 sujungtas commit `aedbb0e059475c2708569b9679622ebece7fcfce`: į darbo žurnalą įrašyti #151 ir #152 darbai bei schedule audit rezultatas.
+- PR #151 site-check run `43469054324` – success; PR #152 run `43469355419` – success; PR #153 run `43469659349` – success.
+- Po sujungimų pagrindinės šakos site-check run `43469741292` – success. Automatinio darbo žurnalo run `43469472067` – success.
+- Pagrindinis kasdienis ChatGPT priežiūros agentas yra aktyvus. Paskutinis vykdymas baigėsi 2026-11-13 08:22 UTC (10:22 Europe/Vilnius), truko apie 21 min. Kitas suplanuotas vykdymas: 2026-11-14 09:45 Europe/Vilnius.
+- Papildoma vienkartinė AI atminties patikra jau suplanuota 2026-11-14 10:35 Europe/Vilnius; Worker agentų ciklas laukiamas 10:20 Europe/Vilnius.
+- `AGENTS.md` dokumentuoti cron laikai dabar atitinka YAML: site-check 05:37 UTC, topic radar 06:23 UTC, analytics 06:47 UTC, live-site monitor 07:11 UTC, Lighthouse pirmadienį 07:27 UTC, central control center 08:40 UTC. Worker heartbeat – kas 15 min.; agentų orchestration laiko patikra 07:20 ir 08:20 UTC.
+- ARO Vet atskira svetainė / kodas, DNS, Cloudflare leidimai ir secrets šios sesijos metu nekeisti. Mokamų paslaugų ar priklausomybių nepridėta.
+
+### Naujausi analitikos įrodymai
+- Analytics snapshot run `43443849180` baigėsi success ir sukūrė artefaktą `pettraffic-analytics-7d`.
+- GA4 laikotarpis 2026-11-06–2026-11-12: duomenų gauti nepavyko dėl `ReadTimeout` (15 s).
+- Search Console API tame pačiame snapshot veikė. 2026-11-04–2026-11-10: 0 parodymų, 0 paspaudimų; užklausų ir puslapių eilučių nėra. Sitemap pateiktas 2026-11-10, Google atsisiuntimas dar nenurodytas, apdorojimas laukiamas. Penkių prioritetinių URL patikros grąžino URL nežinomas Google / indeksavimo būsena neapibrėžta.
+- Atskiras connectivity run `43441823755`: Search Console OK, GA4 FAILED su `ReadTimeout` (25 s). GA4 stabilumas nepatvirtintas; nekeisti leidimų ar paslaugos paskyros raktų be aiškaus poreikio.
+
+### Svarbus fono automatizacijų blokatorius
+- Peržiūrėjus 100 naujausių GitHub Actions vykdymų, nerasta nė vieno `event=schedule` paleidimo. Workflow failuose cron tvarkaraščiai yra, o push / pull_request / workflow_run paleidimai veikia.
+- Dabartinė GitHub jungtis leidžia skaityti repo, PR ir Actions vykdymus, tačiau neleidžia perskaityti repo Actions nustatymų ar juos keisti. Todėl tiksli priežastis, kodėl nėra schedule paleidimų, dar nepatvirtinta. Nespėti, kad cron failai klaidingi.
+- Pagrindinis ChatGPT priežiūros agentas vis tiek aktyvus ir gali atlikti kasdienį koordinavimą; tai nėra 24/7 nenutrūkstamas programavimo procesas. Vartotojui įprastų ataskaitų nesiųsti.
+
+### Kitas konkretus veiksmas
+1. Po 2026-11-14 10:20 Europe/Vilnius Worker agentų ciklo patikrinti `/health`, tikslų `agent_orchestration.error_code`, D1 `control_core_runs` ir `control_core_memory`. Vienkartinė automatizacija 10:35 jau suplanuota.
+2. Jei AI ciklas nepavyko, taisyti tik pagal naują stage prefiksą ir logus; jei pavyko, patvirtinti tikrą atminties įrašymą.
+3. Toliau diagnozuoti GitHub Actions schedule paleidimų nebuvimą. Jei Actions nustatymų skaitymas / keitimas lieka neprieinamas per jungtį, prašyti vieno minimalaus vartotojo veiksmo, neperduodant kitų techninių darbų.
+4. Tęsti GA4 timeout diagnostiką tik gavus naujus įrodymus; Search Console duomenis išsaugoti nepriklausomai.
