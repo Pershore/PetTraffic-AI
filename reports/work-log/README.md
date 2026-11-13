@@ -17,6 +17,7 @@ Paskirtis: fiksuoti atliktus darbus, jų trukmę, patikrinimus ir sprendimus, ka
 ## Darbo įrašai
 
 | Data | Užduotis / etapas | Pradžia–pabaiga | Aktyvus darbas | Įrankių vykdymas | Automatinis laukimas | Vartotojo laikas | Būsena / įrodymai |
+| 2026-11-13 | Android Codex device-code prisijungimo diagnostika, instrukcijų pataisa ir po-merge patikra | Tikslūs sesijos pradžios/pabaigos laikai neišmatuoti | NEMATUOTA | NEMATUOTA | NEMATUOTA | NEAPSKAIČIUOTA | PR #160 sujungtas; bridge ir site-check PR patikros success; po merge bridge, site-check ir work-log success. Patikslintas ChatGPT Security device-code leidimo reikalavimas ir Android naršyklės srautas. Telefono bootstrap dar neatliktas; jokių production ar mokamų pakeitimų. |
 |---|---|---|---:|---:|---:|---:|---|
 | 2026-11-09–2026-11-12 | Pradinis PetTraffic AI kūrimas, svetainė, Termux, GitHub, GA4/GSC, automatizacijos, Worker/D1, valdymo centras ir techniniai patobulinimai | Tikslūs sesijų laikai neturimi | NEMATUOTA | NEMATUOTA | NEMATUOTA | NEMATUOTA | Darbų apimtis aprašyta projekto perdavimo dokumente; atgaline data valandų nepriskirti |
 | 2026-11-13 | Automatinis GitHub pakeitimo įrašas: Clarify Codex device-code sign-in on Android | commit laikas: 2026-11-13T22:40:08+02:00 | NEMATUOTA | NEMATUOTA | NEMATUOTA | NEAPSKAIČIUOTA | Commit 230ccd6; failai: .github/workflows/termux-bridge-check.yml, docs/TERMUX_CODEX_BRIDGE.md, tools/termux/setup-debian.sh; [commit](https://github.com/Pershore/PetTraffic-AI/commit/230ccd62f6ce6939381b8ddc3d494fdf07154bb5) |
