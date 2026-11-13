@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock, call
 
-from agent.analytics_connectivity import check_api, check_ga4_grpc, check_ga4_realtime_grpc, run_independent_checks
+from agent.analytics_connectivity import check_api, check_ga4_grpc, check_ga4_realtime_grpc, check_ga4_web_stream, run_independent_checks
 
 
 class ConnectivityCheckTests(unittest.TestCase):
@@ -77,6 +77,42 @@ class ConnectivityCheckTests(unittest.TestCase):
         client.run_realtime_report.assert_called_once()
         self.assertEqual(client.run_realtime_report.call_args.kwargs["timeout"], 20)
         client.close.assert_called_once()
+
+    def test_ga4_web_stream_matches_site_measurement_id(self):
+        response = Mock(ok=True)
+        response.json.return_value = {
+            "dataStreams": [{
+                "type": "WEB_DATA_STREAM",
+                "webStreamData": {"measurementId": "G-19VR75D8BG"},
+            }]
+        }
+        session = Mock()
+        session.get.return_value = response
+
+        ok, detail = check_ga4_web_stream(
+            session, "https://admin.test/dataStreams", "G-19VR75D8BG"
+        )
+
+        self.assertTrue(ok)
+        self.assertIn("matches", detail)
+
+    def test_ga4_web_stream_detects_measurement_id_mismatch(self):
+        response = Mock(ok=True)
+        response.json.return_value = {
+            "dataStreams": [{
+                "type": "WEB_DATA_STREAM",
+                "webStreamData": {"measurementId": "G-OTHER"},
+            }]
+        }
+        session = Mock()
+        session.get.return_value = response
+
+        ok, detail = check_ga4_web_stream(
+            session, "https://admin.test/dataStreams", "G-19VR75D8BG"
+        )
+
+        self.assertFalse(ok)
+        self.assertIn("does not match", detail)
 
     def test_ga4_timeout_does_not_skip_search_console(self):
         success = Mock(ok=True)
