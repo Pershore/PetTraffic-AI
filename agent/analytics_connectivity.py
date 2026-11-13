@@ -7,6 +7,7 @@ from pathlib import Path
 from urllib.parse import quote
 import json
 import os
+import re
 import sys
 
 OUT = Path("reports/analytics-connectivity.md")
@@ -103,6 +104,35 @@ def check_ga4_realtime_grpc(client_factory, credentials, property_id: str) -> tu
                 close()
 
 
+def check_ga4_web_stream(session, url: str, expected_measurement_id: str) -> tuple[bool, str]:
+    """Verify that the configured GA4 property owns the site's measurement ID."""
+    try:
+        response = session.get(url, timeout=20)
+        if not response.ok:
+            detail = response.text[:500].replace("\\n", " ")
+            return False, f"HTTP {response.status_code}: {detail}"
+        payload = response.json()
+        streams = payload.get("dataStreams", []) if isinstance(payload, dict) else []
+        web_streams = [
+            stream for stream in streams
+            if stream.get("type") == "WEB_DATA_STREAM"
+        ]
+        if not web_streams:
+            return False, "No web data stream was returned for this GA4 property"
+        stream_ids = [
+            stream.get("webStreamData", {}).get("measurementId", "")
+            for stream in web_streams
+        ]
+        if expected_measurement_id in stream_ids:
+            return True, f"Site measurement ID matches GA4 property stream ({expected_measurement_id})"
+        return False, (
+            f"Site measurement ID {expected_measurement_id} does not match "
+            f"property web stream ID(s): {', '.join(stream_ids) or 'none'}"
+        )
+    except Exception as exc:
+        return False, f"{type(exc).__name__}: {str(exc)[:300]}"
+
+
 def main() -> int:
     raw = os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON", "").strip()
     ga4_id = os.environ.get("GA4_PROPERTY_ID", "").strip()
@@ -157,6 +187,15 @@ def main() -> int:
         + quote(ga4_id, safe="")
         + "/metadata"
     )
+    ga_streams_url = (
+        "https://analyticsadmin.googleapis.com/v1beta/properties/"
+        + quote(ga4_id, safe="")
+        + "/dataStreams"
+    )
+    site_script = Path("site/assets/site.js")
+    site_script_text = site_script.read_text(encoding="utf-8") if site_script.exists() else ""
+    measurement_match = re.search(r"GA_ID\\s*=\\s*['\\\"]([^'\\\"]+)['\\\"]", site_script_text)
+    site_measurement_id = measurement_match.group(1) if measurement_match else ""
     gsc_url = (
         "https://searchconsole.googleapis.com/webmasters/v3/sites/"
         + quote(gsc_site, safe="")
@@ -164,6 +203,11 @@ def main() -> int:
     )
 
     ga_metadata_ok, ga_metadata_message = check_api_get(session, ga_metadata_url)
+    ga_stream_ok, ga_stream_message = (
+        check_ga4_web_stream(session, ga_streams_url, site_measurement_id)
+        if site_measurement_id else
+        (False, "Could not find GA_ID in site/assets/site.js")
+    )
     ga_grpc_ok, ga_grpc_message = check_ga4_grpc(
         BetaAnalyticsDataClient, credentials, ga4_id, ga_start, ga_end
     )
@@ -196,6 +240,7 @@ def main() -> int:
         "| API check | Result | Detail |",
         "|---|---|---|",
         f"| GA4 metadata | {'OK' if ga_metadata_ok else 'FAILED'} | {ga_metadata_message.replace('|', '/')} |",
+        f"| GA4 web stream | {'OK' if ga_stream_ok else 'FAILED'} | {ga_stream_message.replace('|', '/')} |",
         f"| GA4 report gRPC (1 day) | {'OK' if ga_grpc_ok else 'FAILED'} | {ga_grpc_message.replace('|', '/')} |",
         f"| GA4 realtime gRPC | {'OK' if ga_realtime_ok else 'FAILED'} | {ga_realtime_message.replace('|', '/')} |",
         f"| GA4 report REST (1 day) | {'OK' if ga_ok else 'FAILED'} | {ga_message.replace('|', '/')} |",
