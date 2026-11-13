@@ -33,10 +33,12 @@ Build Pet traffic into a useful, trustworthy Lithuanian pet-care information web
 - The primary agent runs daily at 09:45 Europe/Vilnius, after the scheduled GitHub Actions jobs, and should inspect their completed results before deciding on new work.
 - GitHub Actions are the specialist workers:
   - site validation: daily 05:37 UTC and on pushes / pull requests;
-  - topic radar: daily 06:17 UTC;
-  - GA4 / Search Console snapshot: daily 06:43 UTC;
-  - production health monitor: daily 07:05 UTC;
-  - Lighthouse mobile / desktop audits: weekly Monday 07:20 UTC and after relevant site changes.
+  - topic radar: daily 06:23 UTC;
+  - GA4 / Search Console snapshot: daily 06:47 UTC;
+  - live-site monitor: daily 07:11 UTC;
+  - Lighthouse mobile / desktop audits: weekly Monday 07:27 UTC and after relevant site changes;
+  - central control center: daily 08:40 UTC and after monitored workflows complete.
+- Worker heartbeat: every 15 minutes; the agent orchestration cron is configured for 07:20 and 08:20 UTC, with the Europe/Vilnius time guard allowing the 10:20 local run.
 - Treat workflow schedules as intended cadence, not proof of execution. Verify actual run history, job completion, artifacts, and deployment results.
 - Do not start overlapping duplicate checks when a workflow is already queued or running. Recheck it later and consume its artifact or job summary.
 - Keep routine agent work silent for the user. Surface only critical failures, security risks, or actions requiring user approval.
