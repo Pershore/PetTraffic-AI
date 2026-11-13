@@ -51,6 +51,7 @@ echo "Patikra:"
 gh auth status --hostname github.com
 codex login status
 codex --version
+codex doctor
 git -C "$WORKDIR" status --short --branch
 
 cat <<'EOF'
