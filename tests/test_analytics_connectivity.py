@@ -17,6 +17,17 @@ class ConnectivityCheckTests(unittest.TestCase):
         self.assertEqual(detail, "API request succeeded")
         session.post.assert_called_once()
 
+    def test_api_check_accepts_custom_timeout(self):
+        response = Mock(ok=True)
+        response.json.return_value = {"rows": []}
+        session = Mock()
+        session.post.return_value = response
+
+        ok, _ = check_api(session, "GA4", "https://example.test", {}, timeout=20)
+
+        self.assertTrue(ok)
+        self.assertEqual(session.post.call_args.kwargs["timeout"], 20)
+
     def test_http_error_is_reported_without_raising(self):
         response = Mock(ok=False, status_code=403, text="forbidden")
         session = Mock()
