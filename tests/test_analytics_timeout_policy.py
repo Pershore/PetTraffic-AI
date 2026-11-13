@@ -29,9 +29,11 @@ class FakeSession:
     def __init__(self, failures=()):
         self.failures = list(failures)
         self.calls = 0
+        self.timeouts = []
 
     def post(self, url, json, timeout):
         self.calls += 1
+        self.timeouts.append(timeout)
         if self.failures:
             failure = self.failures.pop(0)
             raise failure
@@ -50,6 +52,7 @@ class AnalyticsTimeoutPolicyTests(unittest.TestCase):
                 ["sessions"],
             )
         self.assertEqual(session.calls, 1)
+        self.assertEqual(session.timeouts, [15])
 
     def test_search_console_query_keeps_one_read_timeout_retry(self):
         session = FakeSession([ReadTimeout("temporary GSC delay")])
@@ -60,6 +63,7 @@ class AnalyticsTimeoutPolicyTests(unittest.TestCase):
             date(2026, 11, 7),
         )
         self.assertEqual(session.calls, 2)
+        self.assertEqual(session.timeouts, [25, 25])
         self.assertEqual(result, {"rows": []})
 
     def test_priority_url_inspections_run_concurrently_and_isolate_failures(self):
