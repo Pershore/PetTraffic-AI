@@ -52,9 +52,18 @@ export function parseResult(raw) {
   }
  }
  if(!value||typeof value!=="object"||Array.isArray(value)) return invalidResult("invalid_json","Model response did not match the expected JSON object.");
- const strings=k=>Array.isArray(value[k])?value[k].filter(x=>typeof x==="string").slice(0,5).map(x=>x.slice(0,400)):[];
- return {status:typeof value.status==="string"?value.status.slice(0,40):"reviewed",findings:strings("findings"),recommendations:strings("recommendations"),evidence_gaps:strings("evidence_gaps"),requires_human_approval:true};
+ const required=["status","findings","recommendations","evidence_gaps"];
+ if(typeof value.status!=="string"||!required.slice(1).every(key=>Array.isArray(value[key]))) {
+  return invalidResult("invalid_json","Model JSON did not contain the required status, findings, recommendations and evidence_gaps fields.");
+ }
+ const strings=k=>value[k].filter(x=>typeof x==="string").slice(0,5).map(x=>x.slice(0,400));
+ return {status:value.status.slice(0,40),findings:strings("findings"),recommendations:strings("recommendations"),evidence_gaps:strings("evidence_gaps"),requires_human_approval:true};
 }
+function isUsableModelResult(result) {
+ return Boolean(result && typeof result.status==="string" &&
+  !["unavailable","invalid_response","invalid_json"].includes(result.status));
+}
+
 export async function callModel(env,system,input) {
  try {
   // GPT-OSS on Workers AI supports the Responses API on the Worker binding.
@@ -153,12 +162,15 @@ export async function runAgentOrchestration(env) {
    stage="reserve_"+agent.id;
    if(!(await reserveNextCall()))throw new Error("daily_ai_call_cap_reached");
    stage="model_"+agent.id;
-   specialists[agent.id]={label:agent.label,...await callModel(env,"Tu esi Pet traffic projekto read-only specialistas. Atsakyk tik validžiu JSON: {status:string,findings:string[],recommendations:string[],evidence_gaps:string[]}. Naudok tik pateiktus duomenis. Nekeisk svetainės ir neprašyk publikuoti. Jei duomenų nepakanka, aiškiai pasakyk.",JSON.stringify({task:agent.task,source}))};
+   const result=await callModel(env,"Tu esi Pet traffic projekto read-only specialistas. Atsakyk tik validžiu JSON: {status:string,findings:string[],recommendations:string[],evidence_gaps:string[]}. Naudok tik pateiktus duomenis. Nekeisk svetainės ir neprašyk publikuoti. Jei duomenų nepakanka, aiškiai pasakyk.",JSON.stringify({task:agent.task,source}));
+   specialists[agent.id]={label:agent.label,...result};
+   if(!isUsableModelResult(result))throw new Error("model_output_"+result.status);
   }
   stage="reserve_coordinator";
   if(!(await reserveNextCall()))throw new Error("daily_ai_call_cap_reached");
   stage="model_coordinator";
   const coordinator=await callModel(env,"Tu esi Pet traffic centrinis koordinatorius. Sujunk keturių specialistų rezultatus į trumpą prioritetinę ataskaitą. Atsakyk tik validžiu JSON: {status:string,findings:string[],recommendations:string[],evidence_gaps:string[]}. Nespėliok. Jokio publikavimo, kodo keitimo ar infrastruktūros veiksmų; rekomendacijoms būtinas žmogaus patvirtinimas.",JSON.stringify({date_utc:date,specialist_results:specialists}));
+  if(!isUsableModelResult(coordinator))throw new Error("model_output_"+coordinator.status);
   if(eventData.invalidPayloadCount>0) {
    coordinator.evidence_gaps=[...(coordinator.evidence_gaps||[]),`Skipped ${eventData.invalidPayloadCount} invalid stored event payload(s); source data requires review.`].slice(0,5);
   }
