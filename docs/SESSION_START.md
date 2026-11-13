@@ -99,3 +99,14 @@ GitHub dokumentai gali išsaugoti tęstinumo būseną, bet negali patys priverst
 - Termux bootstrap vartotojo telefone dar nepaleistas; vietinis Codex prisijungimas ir `codex doctor` dar nepatvirtinti. GitHub integracija šiame pokalbyje veikia atskirai.
 - Kitas būtinas vartotojo veiksmas: įjungti device-code prisijungimą ChatGPT Security nustatymuose ir vieną kartą paleisti Termux bootstrap iš `docs/TERMUX_CODEX_BRIDGE.md`. Po to atlikti read-only testą.
 - Kiti laukiantys darbai lieka: 2026-11-14 10:20 Worker AI agentų ciklo ir 10:35 ChatGPT atminties patikra; GA4 runReport timeout; GitHub Actions schedule paleidimų patikra. Esama kasdienė priežiūros automatizacija aktyvi, kitas vykdymas 2026-11-14 09:45 Europe/Vilnius.
+
+
+## Naujausias patvirtintas tęstinumo taškas (2026-11-13 21:05 UTC)
+
+- PR #162 sujungtas commit `eda9c571e63812ef9ca28928409b970168b74590`; Worker deploy run `43507443321` – success. Node testai 46/46, Python Worker testai 4/4, Cloudflare resource validation ir post-deploy health/auth patikros – success.
+- Agentų JSON sutartis dabar validuojama griežtai; bloga modelio išvestis pažymima kaip stage failure ir dalinė atmintis išsaugoma, o ne tyliai pažymima completed.
+- **AI agentų D1 atminties ciklas dar nėra PATIKRINTA.** 2026-11-13 senasis įrašas tebėra failed su `Unexpected_end_of_JSON_input`; PR #156 ir #162 pataisos bus realiai įvertintos tik po kito suplanuoto Worker ciklo 2026-11-14 10:20 Europe/Vilnius.
+- GA4 runReport vis dar timeoutina; Search Console atskirai veikia. GitHub Actions schedule event paleidimai nepatvirtinti, o repo Actions nustatymų prieiga per dabartinę jungtį neprieinama.
+- Termux bootstrap / Codex login / `codex doctor` telefone nepatvirtinti; ChatGPT Remote `localhost` buvo Offline.
+- Kitas veiksmas: po rytojaus 10:20 ciklo patikrinti `/health`, agent orchestration klaidos kodą, D1 `control_core_runs` ir `control_core_memory`. Tada tęsti GA4 ir Actions schedule diagnostiką.
+- Viešas prekės ženklas – **Pet traffic**; „PetTraffic AI“ yra vidinis pavadinimas. Laikytis `AGENTS.md` – negrąžinti ARO Vet turinio ar rinkodaros nuorodų.
