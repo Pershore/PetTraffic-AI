@@ -24,21 +24,21 @@ export function extractResponseText(result) {
  if(Array.isArray(result?.output)) {
   const text=result.output.flatMap(item=>Array.isArray(item?.content)?item.content:[])
    .filter(part=>part&&["output_text","text"].includes(part.type)&&typeof part.text==="string")
-   .map(part=>part.text).join("\\n");
+   .map(part=>part.text).join("\n");
   if(text) return text;
  }
  if(typeof result?.response==="string") return result.response;
  if(Array.isArray(result?.choices)) {
   const content=result.choices[0]?.message?.content;
   if(typeof content==="string") return content;
-  if(Array.isArray(content)) return content.filter(part=>typeof part?.text==="string").map(part=>part.text).join("\\n");
+  if(Array.isArray(content)) return content.filter(part=>typeof part?.text==="string").map(part=>part.text).join("\n");
  }
  if(typeof result?.message?.content==="string") return result.message.content;
  return "";
 }
 export function parseResult(raw) {
  if(typeof raw!=="string"||!raw.trim()) return invalidResult("invalid_response","Model returned no text output; this specialist result was not used.");
- const cleaned=raw.trim().replace(/^\x60{3}(?:json)?\\s*/i,"").replace(/\\s*\x60{3}$/i,"");
+ const cleaned=raw.trim().replace(/^\x60{3}(?:json)?\s*/i,"").replace(/\s*\x60{3}$/i,"");
  let value;
  try {
   value=JSON.parse(cleaned);
