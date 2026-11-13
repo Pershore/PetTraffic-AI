@@ -24,8 +24,8 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.x"
       - name: Test event payload builder
@@ -39,8 +39,8 @@ jobs:
     if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.x"
       - name: Check whether central API is configured
@@ -56,7 +56,7 @@ jobs:
           fi
       - name: Download source workflow artifact
         if: steps.config.outputs.enabled == 'true'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: ${{ github.event.workflow_run.name == 'Pet traffic analytics snapshot' && 'pettraffic-analytics-7d' || github.event.workflow_run.name == 'Pet traffic daily topic radar' && 'pettraffic-topic-radar' || 'pettraffic-control-center' }}
           path: artifacts
