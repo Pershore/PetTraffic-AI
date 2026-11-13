@@ -99,6 +99,7 @@ test("health endpoint exposes only aggregate AI orchestration execution metadata
     ai_calls: 2,
     started_at: "2026-11-13T08:20:00.000Z",
     completed_at: "2026-11-13T08:20:30.000Z",
+    error_code: "model error: model not available",
   };
   const agentEnv = {
     ...env,
@@ -112,7 +113,10 @@ test("health endpoint exposes only aggregate AI orchestration execution metadata
   };
   const response = await worker.fetch(new Request("https://api.example/health"), agentEnv);
   assert.equal(response.status, 200);
-  assert.deepEqual((await response.json()).agent_orchestration, agentRun);
+  assert.deepEqual((await response.json()).agent_orchestration, {
+    ...agentRun,
+    error_code: "model_error__model_not_available",
+  });
 });
 
 test("versioned endpoints reject requests without GitHub OIDC identity", async () => {
