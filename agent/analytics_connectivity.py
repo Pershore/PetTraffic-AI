@@ -34,6 +34,21 @@ def run_independent_checks(session, ga_url: str, ga_body: dict,
     return {"GA4": ga_result, "Search Console": gsc_result}
 
 
+def check_api_get(session, url: str) -> tuple[bool, str]:
+    """Probe GA4 metadata without running a report query."""
+    try:
+        response = session.get(url, timeout=25)
+        if not response.ok:
+            detail = response.text[:500].replace("\\n", " ")
+            return False, f"HTTP {response.status_code}: {detail}"
+        payload = response.json()
+        if not isinstance(payload, dict):
+            return False, "API returned an unexpected response format"
+        return True, "Metadata endpoint responded successfully"
+    except Exception as exc:
+        return False, f"{type(exc).__name__}: {str(exc)[:300]}"
+
+
 def main() -> int:
     raw = os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON", "").strip()
     ga4_id = os.environ.get("GA4_PROPERTY_ID", "").strip()
@@ -80,12 +95,18 @@ def main() -> int:
         + quote(ga4_id, safe="")
         + ":runReport"
     )
+    ga_metadata_url = (
+        "https://analyticsdata.googleapis.com/v1beta/properties/"
+        + quote(ga4_id, safe="")
+        + "/metadata"
+    )
     gsc_url = (
         "https://searchconsole.googleapis.com/webmasters/v3/sites/"
         + quote(gsc_site, safe="")
         + "/searchAnalytics/query"
     )
 
+    ga_metadata_ok, ga_metadata_message = check_api_get(session, ga_metadata_url)
     results = run_independent_checks(
         session,
         ga_url,
@@ -109,9 +130,10 @@ def main() -> int:
         "",
         f"Checked: {date.today().isoformat()}",
         "",
-        "| API | Result | Detail |",
+        "| API check | Result | Detail |",
         "|---|---|---|",
-        f"| GA4 | {'OK' if ga_ok else 'FAILED'} | {ga_message.replace('|', '/')} |",
+        f"| GA4 metadata | {'OK' if ga_metadata_ok else 'FAILED'} | {ga_metadata_message.replace('|', '/')} |",
+        f"| GA4 report | {'OK' if ga_ok else 'FAILED'} | {ga_message.replace('|', '/')} |",
         f"| Search Console | {'OK' if gsc_ok else 'FAILED'} | {gsc_message.replace('|', '/')} |",
         "",
         "This check requests aggregate metrics only; it does not retrieve search query strings or individual visitor data.",
@@ -119,7 +141,7 @@ def main() -> int:
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(lines))
-    return 0 if ga_ok or gsc_ok else 1
+    return 0 if ga_metadata_ok or ga_ok or gsc_ok else 1
 
 
 if __name__ == "__main__":
