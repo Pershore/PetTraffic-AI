@@ -41,10 +41,15 @@ def current_schedule_is_due(now: datetime, schedule: dict) -> bool:
     if frequency == "daily":
         return current >= due + grace
     if frequency == "weekly":
-        return (
-            current.weekday() == int(schedule["weekday"])
-            and current >= due + grace
+        weekday = int(schedule["weekday"])
+        days_back = (current.weekday() - weekday) % 7
+        due = (current - timedelta(days=days_back)).replace(
+            hour=int(schedule["hour"]),
+            minute=int(schedule["minute"]),
+            second=0,
+            microsecond=0,
         )
+        return current >= due + grace
     raise ValueError(f"Unsupported schedule frequency: {frequency}")
 
 
