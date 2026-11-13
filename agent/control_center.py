@@ -15,12 +15,12 @@ TOKEN = os.environ.get("GITHUB_TOKEN", "").strip()
 # GitHub Actions cron expressions use UTC. A 60-minute grace avoids alerting
 # on normal scheduler delays while still detecting a missed daily/weekly cycle.
 WORKFLOWS = [
-    ("analytics-snapshot.yml", "GA4 ir Search Console", 36, {"frequency": "daily", "hour": 6, "minute": 43, "grace_minutes": 60}),
+    ("analytics-snapshot.yml", "GA4 ir Search Console", 36, {"frequency": "daily", "hour": 6, "minute": 47, "grace_minutes": 60}),
     ("sync-control-api.yml", "Centrinės API sinchronizavimas", 36, None),
-    ("daily-topic-radar.yml", "Temų radaras", 36, {"frequency": "daily", "hour": 6, "minute": 17, "grace_minutes": 60}),
-    ("live-site-monitor.yml", "Svetainės stebėjimas", 36, {"frequency": "daily", "hour": 7, "minute": 5, "grace_minutes": 60}),
-    ("lighthouse-audit.yml", "Lighthouse auditas", 9 * 24, {"frequency": "weekly", "weekday": 0, "hour": 7, "minute": 20, "grace_minutes": 60}),
-    ("control-center.yml", "Centrinis valdymo centras", 36, {"frequency": "daily", "hour": 8, "minute": 0, "grace_minutes": 60}),
+    ("daily-topic-radar.yml", "Temų radaras", 36, {"frequency": "daily", "hour": 6, "minute": 23, "grace_minutes": 60}),
+    ("live-site-monitor.yml", "Svetainės stebėjimas", 36, {"frequency": "daily", "hour": 7, "minute": 11, "grace_minutes": 60}),
+    ("lighthouse-audit.yml", "Lighthouse auditas", 9 * 24, {"frequency": "weekly", "weekday": 0, "hour": 7, "minute": 27, "grace_minutes": 60}),
+    ("control-center.yml", "Centrinis valdymo centras", 36, {"frequency": "daily", "hour": 8, "minute": 13, "grace_minutes": 60}),
 ]
 
 def parse_time(value: str) -> datetime:
