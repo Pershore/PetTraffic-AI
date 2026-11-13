@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { runAgentOrchestration, isVilniusAgentRunTime, parseResult, extractResponseText } from "../src/agents.mjs";
+import { runAgentOrchestration, isVilniusAgentRunTime, parseResult, extractResponseText, callModel } from "../src/agents.mjs";
 function mockEnv({ai=true,existingRun=false,reserveErrorAt=0,reserveErrorBeforeCommit=false,reserveReadbackError=false,invalidEventPayload=false,modelResponse=null}={}) {
  const state={inserted:false,aiCalls:0,updates:[],reservationErrorThrown:false};
  const env={FETCH:async()=>new Response("<html><body><p>Test content</p></body></html>",{status:200}),DB:{prepare(sql){return {
@@ -85,4 +85,14 @@ test("invalid model output fails the orchestration and persists partial memory",
  assert.ok(state.updates.some(x=>x.sql.includes("status='failed'")));
  assert.ok(state.updates.some(x=>x.sql.includes("control_core_memory")));
  assert.equal(state.updates.some(x=>x.sql.includes("status='completed'")),false);
+});
+
+test("Workers AI receives enough output budget for the complete JSON response",async()=>{
+ let received;
+ const env={AI:{run:async(model,options)=>{received={model,options};return{response:JSON.stringify({status:"reviewed",findings:[],recommendations:[],evidence_gaps:[]})};}}};
+ const result=await callModel(env,"Return only compact JSON.","bounded test input");
+ assert.equal(result.status,"reviewed");
+ assert.equal(received.model,"@cf/openai/gpt-oss-20b");
+ assert.equal(received.options.max_output_tokens,1024);
+ assert.equal(received.options.reasoning.effort,"low");
 });
