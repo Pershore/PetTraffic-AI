@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { runAgentOrchestration, isVilniusAgentRunTime, parseResult, extractResponseText } from "../src/agents.mjs";
-function mockEnv({ai=true,existingRun=false,reserveErrorAt=0,reserveErrorBeforeCommit=false,reserveReadbackError=false,invalidEventPayload=false}={}) {
+function mockEnv({ai=true,existingRun=false,reserveErrorAt=0,reserveErrorBeforeCommit=false,reserveReadbackError=false,invalidEventPayload=false,modelResponse=null}={}) {
  const state={inserted:false,aiCalls:0,updates:[],reservationErrorThrown:false};
  const env={FETCH:async()=>new Response("<html><body><p>Test content</p></body></html>",{status:200}),DB:{prepare(sql){return {
   bind(...values){return {
@@ -11,7 +11,7 @@ function mockEnv({ai=true,existingRun=false,reserveErrorAt=0,reserveErrorBeforeC
   };},
   all:async()=>({results:invalidEventPayload?[{kind:"analytics_snapshot",payload_json:"{truncated",created_at:"2026-11-13T00:00:00.000Z"}]:[]}),
  };}}};
- if(ai)env.AI={run:async()=>({response:JSON.stringify({status:"reviewed",findings:[],recommendations:[],evidence_gaps:[]})})};
+ if(ai)env.AI={run:async()=>({response:modelResponse??JSON.stringify({status:"reviewed",findings:[],recommendations:[],evidence_gaps:[]})})};
  return{env,state};
 }
 test("orchestrator performs five capped AI calls and stores a read-only report",async()=>{const{env,state}=mockEnv();const result=await runAgentOrchestration(env);assert.equal(result.completed,true);assert.equal(result.ai_calls,5);assert.equal(state.aiCalls,5);assert.ok(state.updates.some(x=>x.sql.includes("status='completed'")));});
@@ -69,4 +69,20 @@ test("orchestrator skips malformed stored event JSON and preserves an evidence g
  const report=JSON.parse(completed.values[0]);
  assert.equal(report.data_quality.invalid_event_payload_count,1);
  assert.ok(report.coordinator.evidence_gaps.some(x=>x.includes("invalid stored event payload")));
+});
+
+test("model JSON must contain every required schema field",()=>{
+ assert.equal(parseResult('{"status":"reviewed"}').status,"invalid_json");
+ assert.equal(parseResult('{"status":"reviewed","findings":[],"recommendations":[],"evidence_gaps":[]}').status,"reviewed");
+});
+
+test("invalid model output fails the orchestration and persists partial memory",async()=>{
+ const{env,state}=mockEnv({modelResponse:'{"status":"reviewed"'});
+ const result=await runAgentOrchestration(env);
+ assert.equal(result.completed,false);
+ assert.match(result.error,/model_analytics:model_output_invalid_json/);
+ assert.equal(result.memory_persisted,true);
+ assert.ok(state.updates.some(x=>x.sql.includes("status='failed'")));
+ assert.ok(state.updates.some(x=>x.sql.includes("control_core_memory")));
+ assert.equal(state.updates.some(x=>x.sql.includes("status='completed'")),false);
 });
