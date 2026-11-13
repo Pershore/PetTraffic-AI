@@ -7,7 +7,8 @@ import { buildControlDecision, persistControlDecision } from "./control-core.mjs
 const MODEL = "@cf/openai/gpt-oss-20b";
 const MAX_DAILY_CALLS = 5;
 const MAX_INPUT_CHARS = 6000;
-const MAX_OUTPUT_TOKENS = 256;
+// GPT-OSS reasoning tokens count against this budget; 256 can truncate the final JSON payload.
+const MAX_OUTPUT_TOKENS = 1024;
 const SITE = "https://pettraffic-ai.pages.dev";
 const CONTENT_PATHS = ["/articles/kada-kreiptis-i-veterinara.html", "/articles/kate-negali-pasislapinti-skubi-pagalba.html", "/articles/kate-viduriuoja-ka-daryti.html", "/articles/suo-viduriuoja-ka-daryti.html"];
 const AGENTS = [
