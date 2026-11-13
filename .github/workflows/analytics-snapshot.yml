@@ -59,7 +59,7 @@ jobs:
           fi
 
       - name: Archive aggregate analytics history
-        if: success()
+        if: always() && hashFiles('reports/analytics-7d.md') != ''
         env:
           GITHUB_RUN_ID: ${{ github.run_id }}
         run: |
