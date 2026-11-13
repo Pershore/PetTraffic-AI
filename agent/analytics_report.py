@@ -14,20 +14,24 @@ import xml.etree.ElementTree as ET
 OUT = Path("reports/analytics-7d.md")
 
 
-def api_post(session, url: str, body: dict) -> dict:
-    # Google APIs occasionally return transient 5xx/429 responses or slow reads.
-    # Retry once for those transport/server failures, but never retry permission errors.
+def api_post(session, url: str, body: dict, *, retry_read_timeout: bool = True) -> dict:
+    # Retry transient connection failures and HTTP 5xx/429 responses once.
+    # A GA4 runReport ReadTimeout is not retried: it already waited 25 seconds,
+    # and repeating the same slow report doubles the daily workflow delay.
     for attempt in range(2):
         try:
             response = session.post(url, json=body, timeout=25)
         except Exception as exc:
-            retryable = exc.__class__.__name__ in {
-                "ReadTimeout", "ConnectTimeout", "ConnectionError"
-            }
+            name = exc.__class__.__name__
+            retryable = name in {"ConnectTimeout", "ConnectionError"} or (
+                name == "ReadTimeout" and retry_read_timeout
+            )
             if retryable and attempt == 0:
-                print(f"Temporary Google API transport error ({type(exc).__name__}); retrying once.", file=sys.stderr)
+                print(f"Temporary Google API transport error ({name}); retrying once.", file=sys.stderr)
                 time.sleep(3)
                 continue
+            if name == "ReadTimeout" and not retry_read_timeout:
+                print("GA4 report read timed out; skipping duplicate retry to keep the daily cycle fast.", file=sys.stderr)
             raise
         if response.status_code in (429, 500, 502, 503, 504) and attempt == 0:
             print(f"Temporary Google API HTTP {response.status_code}; retrying once.", file=sys.stderr)
@@ -56,7 +60,7 @@ def ga_rows(session, url: str, start: date, end: date, metrics: list[str],
         body["orderBys"] = [{"metric": {"metricName": metrics[-1]}, "desc": True}]
     if metric_aggregations:
         body["metricAggregations"] = metric_aggregations
-    return api_post(session, url, body)
+    return api_post(session, url, body, retry_read_timeout=False)
 
 
 def metric_totals(data: dict) -> dict[str, float]:
