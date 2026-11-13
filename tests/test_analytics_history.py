@@ -4,6 +4,7 @@ import unittest
 from pathlib import Path
 
 from agent.analytics_history import parse_report, store_snapshot
+from agent.analytics_report import api_post
 
 
 REPORT = """# Pet traffic – lankomumo ataskaita
@@ -77,6 +78,64 @@ class AnalyticsHistoryTests(unittest.TestCase):
             saved = json.loads(path.read_text(encoding="utf-8"))
             self.assertEqual(len(saved["snapshots"]), 1)
             self.assertEqual(path.name, "2026-11-12.json")
+
+
+
+class ReadTimeout(Exception):
+    pass
+
+
+class FakeResponse:
+    def __init__(self, status_code, payload=None, text=""):
+        self.status_code = status_code
+        self.ok = 200 <= status_code < 300
+        self._payload = payload or {}
+        self.text = text
+
+    def json(self):
+        return self._payload
+
+
+class FakeSession:
+    def __init__(self, outcomes):
+        self.outcomes = list(outcomes)
+        self.calls = 0
+
+    def post(self, url, json, timeout):
+        self.calls += 1
+        outcome = self.outcomes.pop(0)
+        if isinstance(outcome, Exception):
+            raise outcome
+        return outcome
+
+
+class AnalyticsApiRetryTests(unittest.TestCase):
+    def test_retries_one_transient_read_timeout(self):
+        from unittest.mock import patch
+        session = FakeSession([ReadTimeout("temporary timeout"), FakeResponse(200, {"ok": True})])
+        with patch("agent.analytics_report.time.sleep") as sleep:
+            result = api_post(session, "https://example.test", {"query": 1})
+        self.assertEqual(result, {"ok": True})
+        self.assertEqual(session.calls, 2)
+        sleep.assert_called_once_with(3)
+
+    def test_retries_one_transient_server_error(self):
+        from unittest.mock import patch
+        session = FakeSession([FakeResponse(503, text="temporarily unavailable"), FakeResponse(200, {"rows": []})])
+        with patch("agent.analytics_report.time.sleep") as sleep:
+            result = api_post(session, "https://example.test", {"query": 1})
+        self.assertEqual(result, {"rows": []})
+        self.assertEqual(session.calls, 2)
+        sleep.assert_called_once_with(3)
+
+    def test_does_not_retry_permission_errors(self):
+        from unittest.mock import patch
+        session = FakeSession([FakeResponse(403, text="forbidden"), FakeResponse(200, {"ok": True})])
+        with patch("agent.analytics_report.time.sleep") as sleep:
+            with self.assertRaisesRegex(RuntimeError, "Google API HTTP 403"):
+                api_post(session, "https://example.test", {"query": 1})
+        self.assertEqual(session.calls, 1)
+        sleep.assert_not_called()
 
 
 if __name__ == "__main__":
