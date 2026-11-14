@@ -1,17 +1,24 @@
 {
   "schema_version": 1,
   "project": "PetTraffic AI",
-  "generated_at": "2026-11-14T14:13:30.136214+00:00",
-  "run_id": "43603715907",
-  "source_commit": "7be86f45f1ac82bb3a0a5086a6e579d063af1b95",
+  "generated_at": "2026-11-14T14:20:43.263625+00:00",
+  "run_id": "43604361738",
+  "source_commit": "073bc8d96d81e174c0873061dbffee9aa4162714",
   "overall_status": "needs_attention",
   "last_verified_stage": "Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataskaitoje.",
   "next_action": "Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (failure). AI agentų ciklas nepavyko (2026-11-14); AI kvietimų: 4; klaida: model_content-review_model_output_invalid_json.",
   "verified_processes": [
     {
+      "name": "Centrinės API sinchronizavimas",
+      "state": "success",
+      "detail": "Paskutinis paleidimas sėkmingas.",
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43603771330",
+      "created_at": "2026-11-14T14:13:50Z"
+    },
+    {
       "name": "Cloudflare Worker + D1",
       "state": "success",
-      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 12 min.",
+      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 5 min.",
       "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
       "created_at": null
     }
@@ -34,13 +41,6 @@
       "created_at": "2026-11-14T14:13:00Z"
     },
     {
-      "name": "Centrinės API sinchronizavimas",
-      "state": "running",
-      "detail": "Vyksta (in_progress).",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43603741485",
-      "created_at": "2026-11-14T14:13:28Z"
-    },
-    {
       "name": "Lighthouse auditas",
       "state": "waiting",
       "detail": "Workflow atnaujintas 2026-11-13 12:09 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.",
@@ -51,8 +51,8 @@
       "name": "Centrinis valdymo centras",
       "state": "waiting",
       "detail": "Workflow atnaujintas 2026-11-14 13:42 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43603715907",
-      "created_at": "2026-11-14T14:13:10Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43604361738",
+      "created_at": "2026-11-14T14:20:35Z"
     }
   ],
   "ai_agent_memory_check": {
@@ -89,24 +89,5 @@
     "Nekeisti DNS, Cloudflare teisių ar produkcinės infrastruktūros be atskiro patvirtinimo.",
     "AI rekomendacijos yra patariamosios; modelio išvestys nesuteikia vykdymo teisių."
   ],
-  "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.",
-  "manual_audit": {
-    "audited_at": "2026-11-14T14:15:47Z",
-    "kind": "manual_post_deploy_audit",
-    "source": "GitHub PR #196/#197/#199, deploy run #43603199126, live Worker /health",
-    "verified": [
-      "Termux proot, Git, GitHub CLI, Codex CLI and Codex authentication confirmed by user-provided bootstrap output.",
-      "Worker version 71dfa69f-88bf-4c04-9b6c-5a124be3dbc9 deployed successfully.",
-      "Post-deploy heartbeat at 2026-11-14T14:15:47Z: site HTTP 200, D1 connected, control-core schema connected.",
-      "Agent degraded-fallback code and tests passed in PR CI.",
-      "Daily-suite direct cron configured at 06:10 UTC; PR #199 merged.",
-      "Single ChatGPT coordinator automation rescheduled to 11:00 Europe/Vilnius and remains enabled."
-    ],
-    "pending": [
-      "First real post-deploy AI agent cycle: 2026-11-15T08:20:00Z.",
-      "First direct daily-suite schedule run: 2026-11-15T06:10:00Z.",
-      "Worker task API remains intentionally disabled pending a dedicated least-privilege agent identity and PR-only execution model."
-    ],
-    "note": "Manual audit supplements this generated snapshot. Original generated_at, run_id, source_commit and automated findings are preserved."
-  }
+  "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių."
 }
