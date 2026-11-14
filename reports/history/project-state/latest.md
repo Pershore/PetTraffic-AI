@@ -17,7 +17,7 @@ Tęsti laukiančių patikrų stebėseną: GA4, temų radaras ir svetainės steb�
 ## Patvirtinti procesai
 
 - Centrinės API sinchronizavimas: Paskutinis paleidimas sėkmingas.
-- Centrinis valdymo centras: Paskutinis paleidimas sėkmingas.
+- Centrinis valdymo centras: run #158 ir paskesnė būsenos patikra – success.
 - Cloudflare Worker + D1: PR #209 Worker deploy #96 (43651631954) – success; post-deploy /health, D1 ir neautorizuoto API 401 patikros – success.
 
 ## Problemos
@@ -60,3 +60,5 @@ Tęsti laukiančių patikrų stebėseną: GA4, temų radaras ir svetainės steb�
 - Darbo žurnalas `reports/work-log/README.md` atnaujintas `main` šakoje. `latest.md` – `automation-history` šakoje.
 - Firecrawl kredito perspėjimas: sunaudota 80% iš 1 000 nemokamų kreditų. Mokėjimo metodo nepridėti, išlaikyti 0 €/mėn.
 - Kitas būtinas patvirtinimas: realus Worker agentų ciklas 2026-11-15 10:20 Europe/Vilnius. Iki jo AI agentų atkūrimas nėra laikomas patvirtintu.
+
+- Po istorijos įrašų atnaujinimo papildomi site-check #600 ir central API sync #178 taip pat sėkmingi.
