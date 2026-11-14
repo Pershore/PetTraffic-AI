@@ -105,7 +105,7 @@
   ],
   "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.",
   "manual_audit": {
-    "audited_at": "2026-11-14T10:56:42Z",
+    "audited_at": "2026-11-14T11:35:00Z",
     "main_head_commit": "84fc060947d7714d4622b6eab81298a3e593b0b6",
     "project_memory": {
       "status": "merged_and_ci_verified",
@@ -162,8 +162,9 @@
     "open_blockers": [
       "cloudflare_token_rotation_unconfirmed",
       "github_actions_schedule_not_verified",
-      "worker_ai_agent_json_output_invalid",
-      "android_termux_codex_auth_unverified"
+      "worker_ai_agent_json_output_invalid_not_deployed",
+      "android_termux_codex_auth_unverified",
+      "worker_task_api_intentionally_disabled_pending_agent_identity"
     ],
     "note": "Manual audit appended separately; generated_at, run_id and source_commit above remain the last automatic Control Center snapshot and were not rewritten as a new automated run.",
     "coordinator_prompt_updated_at": "2026-11-14T10:55:18.115977Z",
@@ -175,10 +176,53 @@
     ],
     "coordinator_schedule": "daily 09:45 Europe/Vilnius; existing automation remains enabled; next run 2026-11-15T09:45:00+02:00",
     "latest_schedule_audit": {
-      "checked_at": "2026-11-14T10:56:42Z",
-      "runs_checked": 100,
-      "schedule_events": 0
+      "checked_at": "2026-11-14T11:35:00Z",
+      "total_runs_reported": 1074,
+      "schedule_events_found": 1,
+      "only_schedule_run": {
+        "id": "43433299383",
+        "name": "Pet traffic site checks",
+        "created_at": "2026-11-13T13:23:57Z",
+        "conclusion": "success"
+      },
+      "expected_crons_utc": {
+        "site_check": "37 5 * * *",
+        "topic_radar": "23 6 * * *",
+        "analytics": "47 6 * * *",
+        "live_site_monitor": "11 7 * * *",
+        "control_center": "40 8 * * *"
+      },
+      "note": "No 2026-11-14 schedule events found. Workflow activation/settings could not be read through the connected GitHub integration; root cause remains unknown."
     },
-    "main_auto_worklog_commit": "84fc060947d7714d4622b6eab81298a3e593b0b6"
+    "main_auto_worklog_commit": "84fc060947d7714d4622b6eab81298a3e593b0b6",
+    "latest_checks": [
+      {
+        "name": "main-site-check",
+        "run_id": "43587642755",
+        "conclusion": "success"
+      },
+      {
+        "name": "main-automatic-work-log",
+        "run_id": "43587642784",
+        "conclusion": "success"
+      }
+    ],
+    "open_pull_requests": [
+      {
+        "number": 183,
+        "title": "Constrain Workers AI agent JSON output",
+        "head": "fb93f62341437d2f3428ddf1a4e42a31b76780e6",
+        "state": "open",
+        "mergeable": true,
+        "checks": {
+          "worker_test": "success",
+          "cloudflare_validation": "success",
+          "static_site_checks": "success",
+          "pages_preview": "success",
+          "worker_deploy": "skipped"
+        }
+      }
+    ],
+    "stale_snapshot_note": "The automatic snapshot fields generated_at/run_id/source_commit and pending_checks are preserved as historical output from run 43586067171 at 2026-11-14T10:36:19Z. Current manual observations are recorded here and in the appended latest.md section."
   }
 }
