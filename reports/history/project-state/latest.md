@@ -1,9 +1,9 @@
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
-- Atnaujinta: 2026-11-14T15:18:48.321623+00:00
+- Atnaujinta: 2026-11-14T22:57:51+00:00
 - Būsena: **REIKIA DĖMESIO**
-- GitHub run: 43609485305
-- Šaltinio commit: e697da667648e36bea2c22a4a05c38c61c1713df
+- GitHub run: 43650277872
+- Šaltinio commit: 277335916dd7540f2ec1a5e3bfb8cd5578f7060d
 
 ## Paskutinis patikrintas etapas
 
@@ -56,3 +56,11 @@ Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (failure)
 - Darbo priežiūros automatizacija pataisyta, kad skaitytų kiekvieną failą iš teisingos šakos. Niekada nekopijuoti `reports/work-log/README.md` į `automation-history`.
 - Patvirtinimas: `main` medyje yra `reports/work-log/README.md`; `automation-history` medyje yra `reports/history/...` archyvai ir nėra `reports/work-log/` katalogo.
 - 2026-11-15: kasdienės greičio priežiūros automatizacijos promptas atnaujintas sėkmingai; kodo, infrastruktūros ir produkcijos pakeitimų neatlikta.
+
+
+## 2026-11-15 – klaidų audito patikslinimas
+
+- Gyvas Worker heartbeat patvirtino svetainės HTTP 200 ir D1 ryšį.
+- Ankstesnė AI agento klaida buvo pataisyta ir Worker versija įdiegta; automatinių testų ir deploy patikros rezultatai success.
+- Iki kito suplanuoto ciklo agentų paskutinio vykdymo būsena lieka istorinė `failed`; jos negalima žymėti kaip atkurtos, kol naujas ciklas neužbaigtas.
+- Site-check #590 success; atvirų PR nėra. Kitas būtinas patikrinimas – 2026-11-15 08:20 UTC Worker agentų ciklas.
