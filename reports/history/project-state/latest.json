@@ -103,5 +103,53 @@
     "Nekeisti DNS, Cloudflare teisių ar produkcinės infrastruktūros be atskiro patvirtinimo.",
     "AI rekomendacijos yra patariamosios; modelio išvestys nesuteikia vykdymo teisių."
   ],
-  "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių."
+  "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.",
+  "manual_audit": {
+    "audited_at": "2026-11-14T10:54:03Z",
+    "main_head_commit": "3c32740f052b33624b2f318a8be6aa8f5ebbfad5",
+    "project_memory": {
+      "status": "merged_and_ci_verified",
+      "pull_request": 185,
+      "merge_commit": "245446cf123a25df76b212943353c76e6d3f6c69",
+      "followup_pull_request": 186,
+      "followup_merge_commit": "535fba9f44371eb17417c527518e655e1d0b73e5"
+    },
+    "checks": [
+      {
+        "name": "main-site-check",
+        "run_id": "43587281754",
+        "conclusion": "success"
+      },
+      {
+        "name": "main-termux-bridge",
+        "run_id": "43587281810",
+        "conclusion": "success"
+      },
+      {
+        "name": "memory-followup-site-check",
+        "run_id": "43587388813",
+        "conclusion": "success"
+      },
+      {
+        "name": "memory-followup-termux-bridge",
+        "run_id": "43587388672",
+        "conclusion": "success"
+      }
+    ],
+    "access_matrix": {
+      "github": "connected_repo_admin",
+      "firecrawl": "installed",
+      "cloudflare_dashboard": "not_connected",
+      "android_termux": "not_connected",
+      "codex_device_auth": "unverified",
+      "ga4_gsc": "via_github_actions"
+    },
+    "open_blockers": [
+      "cloudflare_token_rotation_unconfirmed",
+      "github_actions_schedule_not_verified",
+      "worker_ai_agent_json_output_invalid",
+      "android_termux_codex_auth_unverified"
+    ],
+    "note": "Manual audit appended separately; generated_at, run_id and source_commit above remain the last automatic Control Center snapshot and were not rewritten as a new automated run."
+  }
 }
