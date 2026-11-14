@@ -397,3 +397,12 @@ Pirmiausia būtinas Cloudflare tokeno rotacijos ir GitHub secret atnaujinimo pat
 2. 2026-11-15 08:20 UTC (10:20 LT) patikrinti pirmą agentų ciklą po PR #197; tikrinti agentų statusą, specialistų degraded skaičių, control-core decision ir memory.
 3. Toliau diagnozuoti GitHub Actions schedule neatitikimą; nekurti dirbtinių push paleidimų ir nekeisti cron spėliojant.
 4. Tik po atskiros saugumo peržiūros spręsti, ar įjungti ribotą /v1/tasks eilę.
+
+
+## 2026-11-14 – daily-suite ir pagrindinio koordinatoriaus grafiko sutvarkymas
+
+- PR #199 sujungtas commit abcd5072e51c98d0b68d2d6a948fd09488245c5b. Daily-suite dabar paleidžiamas tiesioginiu cron 06:10 UTC (08:10 LT), nebelaukia site-check workflow_run pabaigos. Įtrauktas workflow_dispatch, Control Center stebi 06:10 UTC.
+- PR #199 testai: central-control-center ir site-check – success; po merge site-check, central-control-center ir automatic work-log push vykdymai – success. Tai patvirtina konfigūraciją ir push patikrą, bet dar ne realų schedule paleidimą.
+- Pirmas direct schedule paleidimas laukia 2026-11-15 06:10 UTC. Jei jis įvyks, tikrinti GA4/GSC, topic radar ir live-site job rezultatus bei artefaktus.
+- Vienintelė ChatGPT kasdienė priežiūros automatizacija perkelta iš 09:45 į 11:00 Europe/Vilnius; ji vykdysis po daily-suite 08:10, Worker AI ciklo 10:20 ir Control Center 10:40. Automatizacija išlieka įjungta; dublikatų nėra.
+- Worker /v1/tasks API lieka išjungta. Naujas grafikas neįrodo savavališko Codex vykdymo; jis užtikrina nuoseklią suplanuotų specialistų analizę ir koordinatoriaus peržiūrą.
