@@ -22,3 +22,11 @@ Worker heartbeat kas 15 min. ir AI analizė kartą per dieną yra suplanuota ser
 - PR #202 testai: snapshot sync, central-control-center ir site-check – success.
 - Pirmas realus daily-suite schedule + D1 read-back dar laukia 2026-11-15 06:10 UTC.
 - Paskutinis automatinis project-state snapshot atnaujintas 2026-11-14 14:20:43 UTC, run 43604361738; jis išsaugo seno AI ciklo klaidą kaip paskutinio vykdymo faktą. Naujo agentų ciklo po pataisos dar nėra.
+
+
+## Galutinis sesijos papildymas (2026-11-14 14:25 UTC)
+- PR #202 sujungtas: sync-control-api tiesioginio daily-suite schedule artefaktus atpažįsta pagal event=schedule; pirmas realus D1 read-back laukia 2026-11-15 06:10 UTC.
+- PR #203 ir #205 dokumentacijos pakeitimai sujungti; jų site-check testai success.
+- Pagrindinės ChatGPT priežiūros automatizacijos promptas atnaujintas pagal naują dienos seką ir naujausius PR; automatizacija enabled, next run 2026-11-15 11:00 Europe/Vilnius.
+- GitHub Issue #145 lieka open, nes /health vis dar rodo seną 2026-11-14 08:20 UTC agentų ciklo klaidą, įvykusią prieš PR #197 deploy. Ji neturi būti uždaryta, kol naujas ciklas nepatvirtintas.
+- Kitas Worker heartbeat po 14:15:47 UTC dar laukiamas; kitą kartą tikrinti po 14:30 UTC.
