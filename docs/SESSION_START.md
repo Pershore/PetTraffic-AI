@@ -32,7 +32,7 @@ Jeigu privalomų istorijos failų perskaityti nepavyksta, pranešti apie tai ir 
 3. Po deploy patvirtinta: D1 connected, control-core schema connected, /health ok=true, neautentifikuotas /v1/events grąžina 401. D1 migracijų taikyti nereikėjo.
 4. AI agentų pataisos veiksmingumas dar NEPATVIRTINTAS: gyvas /health vis dar rodo ankstesnį 2026-11-14 08:20 UTC ciklo gedimą model_content-review_model_output_invalid_json. Kitas numatytas agentų ciklas – 2026-11-15 08:20 UTC (10:20 Europe/Vilnius).
 5. GitHub Actions schedule problema lieka NEPATVIRTINTA / REIKIA DĖMESIO: YAML cron yra, bet ankstesnėje istorijoje suplanuotų paleidimų trūko; tiksli priežastis nežinoma. Nekeisti cron spėliojant.
-6. Android Termux / Codex autentifikacija ir lokalaus repo būsena telefone vis dar LAUKIA; CI bridge testai nėra telefono prisijungimo įrodymas.
+6. Android Termux / Codex lokali aplinka PATIKRINTA pagal 2026-11-14 vartotojo bootstrap išvestį: proot, Git, GitHub CLI, Codex CLI, Codex autentifikacija OK; main...origin/main. Tai nėra foninio agento įrodymas.
 7. GA4 30 s timeout pataisa turi vieną sėkmingą realų analytics ciklą; ilgalaikį stabilumą reikia vertinti pagal kitus suplanuotus ciklus.
 8. Worker /v1/tasks* API lieka tyčia išjungta iki atskiros agentų tapatybės ir leidimų politikos.
 
@@ -63,9 +63,20 @@ Atnaujinti `reports/work-log/README.md`, `reports/history/project-state/latest.m
 
 - PR #191 sujungtas: `9eacbd44636a9110b74878e7735ee5536e5e6bdd`.
 - Ubuntu npm/glob klaidos atkūrimo scenarijus dabar naudoja oficialų npm 10.9.10 su SHA-512 patikra; Termux CI, site-check ir Cloudflare Pages po merge – success.
-- Kitas žingsnis: vartotojui vieną kartą pakartoti bootstrap iš Termux. Iki realios telefono išvesties gh/Codex autentifikacija lieka LAUKIA.
+- Vartotojo 2026-11-14 pateikta reali Termux išvestis patvirtino proot, Git, GitHub CLI, Codex CLI, Codex autentifikaciją ir švarią sinchronizuotą main šaką.
 
 
 ## Termux / Codex patikslinimas (2026-11-14)
 
-Tikras bootstrap iš Termux patvirtintas: Linux proot, Git, GitHub CLI, Codex CLI įdiegti; Codex autentifikacija OK; `main...origin/main`. Tai nėra nuolatinio fono agento ar automatinio GitHub užduočių paėmimo įrodymas. Kitas etapas – saugios užduočių eilės ir atskiros agento tapatybės projektavimas; `/v1/tasks*` palikti išjungtą iki saugumo patikros.
+Tikras bootstrap iš Termux patvirtintas: Linux proot, Git, GitHub CLI, Codex CLI įdiegti; Codex autentifikacija OK; main...origin/main. PR #196 sujungtas. Tai nėra nuolatinio fono agento ar automatinio GitHub užduočių paėmimo įrodymas. Telefonas nėra naudojamas kaip serverio agento vykdymo aplinka; nuolatiniai procesai turi veikti Worker / GitHub Actions pusėje. /v1/tasks API lieka išjungta iki atskiros agento tapatybės ir užduočių leidimų politikos.
+
+
+## Nuolatinių agentų būsena (2026-11-14, 14:08 UTC)
+
+- Worker Cron trigeriai po deploy realiai užregistruoti: */15 * * * * (svetainės + D1 heartbeat) ir 20 7,8 * * * (10:20 Europe/Vilnius AI agentų langas). Deploy run #43603199126 – success; Worker versija 71dfa69f-88bf-4c04-9b6c-5a124be3dbc9.
+- PR #197 sujungtas commit 6c88f7b3437a753973dfe45108874f4a6c4f4456. Worker testai, Cloudflare prieigos ir konfigūracijos patikra bei site-check – success; production deploy patvirtino D1/control-core ryšį ir apsaugoto API 401 ribą.
+- Pataisa: vieno specialisto netaisyklingas AI JSON atsakymas nebestabdo viso ciklo; koordinatorius naudoja deterministinį read-only atsarginį sujungimą, jei jo AI atsakymas netinkamas. Jei visi specialistai negrąžina tinkamų rezultatų, penktas AI kvietimas praleidžiamas ir išsaugoma evidence-gap ataskaita.
+- Gyvas /health po deploy patvirtina ok=true, D1 connected, control-core schema connected. Jis dar rodo seną 2026-11-14 08:20 UTC agentų gedimą, įvykusį iki naujo deploy. Naujos pataisos realus veikimas dar LAUKIA kito 2026-11-15 08:20 UTC (10:20 LT) ciklo.
+- GitHub Actions kasdienio rinkinio grafikai lieka dalinai NEPATVIRTINTI: vienas suplanuotas Google API connectivity run #43602315641 – success, tačiau analytics/topic/live-site schedule ciklo dar nepatvirtinome. Push ir workflow_run nėra schedule įrodymas.
+- ChatGPT kasdienė koordinatoriaus automatizacija lieka vienintelė ir įjungta; dublikato nekurti. Termux Codex autentifikacija patvirtinta, bet tiesioginės Android shell prieigos šiame pokalbyje nėra.
+- /v1/tasks API lieka tyčia išjungta. Tai reiškia, kad AI specialistai analizuoja ir teikia rekomendacijas, bet negali savavališkai vykdyti GitHub užduočių ar keisti produkcijos. Publikavimui, production, DNS, saugumo teisių ir išlaidų pakeitimams lieka žmogaus patvirtinimo vartai.
