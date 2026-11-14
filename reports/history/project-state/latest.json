@@ -150,6 +150,13 @@
       "worker_ai_agent_json_output_invalid",
       "android_termux_codex_auth_unverified"
     ],
-    "note": "Manual audit appended separately; generated_at, run_id and source_commit above remain the last automatic Control Center snapshot and were not rewritten as a new automated run."
+    "note": "Manual audit appended separately; generated_at, run_id and source_commit above remain the last automatic Control Center snapshot and were not rewritten as a new automated run.",
+    "coordinator_prompt_updated_at": "2026-11-14T10:55:18.115977Z",
+    "coordinator_prompt_changes": [
+      "read docs/PROJECT_MEMORY.md at session start",
+      "remove stale hard-coded Lighthouse metrics",
+      "preserve generated snapshot timestamps and distinguish manual audit"
+    ],
+    "coordinator_schedule": "daily 09:45 Europe/Vilnius; existing automation remains enabled; next run 2026-11-15T09:45:00+02:00"
   }
 }
