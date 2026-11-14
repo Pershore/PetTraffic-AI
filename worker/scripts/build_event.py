@@ -50,6 +50,19 @@ def build_events(workflow_name: str, artifact_dir: Path, run_id: str) -> list[di
         report = find_file(artifact_dir, "topic-radar.md").read_text(encoding="utf-8")
         snapshot = parse_topic_report(report, run_id)
         return [{"kind": "topic_snapshot", "payload": snapshot}]
+    if workflow_name == "Pet traffic daily automation suite":
+        events = []
+        analytics_report = next(iter(sorted(artifact_dir.rglob("analytics-7d.md"))), None)
+        topic_report = next(iter(sorted(artifact_dir.rglob("topic-radar.md"))), None)
+        if analytics_report:
+            snapshot = parse_analytics_report(analytics_report.read_text(encoding="utf-8"), run_id)
+            events.append({"kind": "analytics_snapshot", "payload": snapshot})
+        if topic_report:
+            snapshot = parse_topic_report(topic_report.read_text(encoding="utf-8"), run_id)
+            events.append({"kind": "topic_snapshot", "payload": snapshot})
+        if not events:
+            raise FileNotFoundError("Daily suite did not produce an analytics or topic artifact")
+        return events
     if workflow_name == "Pet traffic central control center":
         control = json.loads(find_file(artifact_dir, "control-center.json").read_text(encoding="utf-8"))
         events = [{
