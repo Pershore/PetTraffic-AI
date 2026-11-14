@@ -43,15 +43,12 @@ gh auth setup-git
 
 CODEX_AUTH="OK"
 if ! codex login status >/dev/null 2>&1; then
+  CODEX_AUTH="WAITING"
   echo
-  echo "2/2 – Codex prisijungimas per ChatGPT:"
-  if ! codex login --device-auth; then
-    CODEX_AUTH="WAITING"
-    echo "LAUKIA: Codex įrenginio kodo prisijungimas nebaigtas; diegimas tęsiamas." >&2
-    echo "Įjunkite ChatGPT Settings → Security → Device code login (beta)." >&2
-    echo "Jei paskyra valdoma darbo srities, leidimą turi įjungti administratorius." >&2
-    echo "Prisijungimą vėliau pakartosite komanda: codex login --device-auth" >&2
-  fi
+  echo "LAUKIA: Codex dar neprisijungęs. Dėl ankstesnio 15 min. skirtojo laiko diegimas nebandys automatiškai laukti."
+  echo "Pirmiausia įjunkite ChatGPT Settings → Security → Device code login (beta)."
+  echo "Tada Ubuntu aplinkoje paleiskite: codex login --device-auth"
+  echo "Jei paskyra valdoma darbo srities, leidimą turi įjungti administratorius."
 fi
 
 WORKDIR="$HOME/PetTraffic-AI"
