@@ -166,3 +166,25 @@ PR #181 „Fix Termux npm recovery and avoid Codex device-auth timeout“ sujung
 **Dabartinė telefono būsena: LAUKIA.** CI patikros neįrodo, kad telefono Ubuntu npm jau atkurtas ar kad GitHub/Codex CLI prisijungę. Vartotojas turi dar kartą paleisti atnaujintą bootstrap iš Termux. Po to tikrinti tik ne slaptą galutinę išvestį. Device code, slaptažodžių, MFA ar tokenų neprašyti.
 
 Jokie Cloudflare production nustatymai, Worker/D1, DNS, secrets, ARO Vet ar mokamos paslaugos nepakeisti. Cloudflare Pages automatinis branch preview nėra production deploy.
+
+
+## 11. Penkių blokatorių tęstinis auditas (2026-11-14)
+
+### 1) AI agentų JSON išvestis
+Gyvas Worker `/health` 10:30:47 UTC: `ok=true`, D1 connected, control-core schema connected, svetainė HTTP 200, control-core decision JSON valid, memory present. Tačiau agentų ciklas failed po 4 AI kvietimų: `model_content-review_model_output_invalid_json`. PR #183 pridėjo kompaktiško JSON išvesties sutartį ir regresijos testus; Worker testai ir Cloudflare validation praėjo, bet deploy job buvo SKIPPED. Runtime pataisa neaktyvi.
+
+### 2) GitHub suplanuoti vykdymai
+Peržiūrėtas naujausių 100 Actions vykdymų sąrašas – nerasta nė vieno `event=schedule`. Visų pagrindinių workflow YAML cron įrašai yra. Dabartinė GitHub jungtis neleidžia perskaityti workflow aktyvumo / Actions nustatymų, todėl tiksli priežastis nenustatyta. Nekeisti repo nustatymai ir nekurti tariamo cron patvirtinimo.
+
+### 3) GA4 / Search Console
+Analytics run #43443849180 logai patvirtina, kad GA4 `runReport` baigėsi `ReadTimeout` po 15 sekundžių; GSC apdorojamas atskirai. PR #184 pakeičia GA4 timeout į 30 sekundžių, nekeisdamas vieno bandymo politikos, ir atnaujina regresijos testą. CI patikros praėjo. GA4 API sėkmė bus patvirtinta tik po realaus kito nuskaitymo; timeout nebūna interpretuojamas kaip nulinis srautas.
+
+### 4) Cloudflare API tokenas
+Tokenas vis dar laikomas galimai atskleistu. Rotacijos ir GitHub secret `CLOUDFLARE_API_TOKEN` atnaujinimo negalima patikrinti ar atlikti per šią jungtį. PR #183 Worker runtime nekeisti / nediegti, kol rotacija nepatvirtinta. Slaptas raktas pokalbyje neprašomas.
+
+### 5) Android Termux / Codex
+PR #182 bootstrap pataisa sujungta; bridge CI #39 ir site-check #514 success. Tai įrodo tik CI pusės patikras. Android įrenginio vietinė npm būklė, `gh auth status`, Codex autentifikacija ir `codex doctor` iš šios aplinkos nepasiekiami, todėl lieka WAITING.
+
+**Saugumo ribos:** ARO Vet, viešas turinys, DNS, Cloudflare production, Worker/D1 schema, secrets ir mokamos paslaugos nepakeistos. Nuotolinis shell / savavališkas komandų vykdymas neįjungtas.
+
+**Kitas veiksmas:** sulaukti PR #184 CI patikrų (jau PASS), tada kitame realiame analytics cikle patikrinti GA4; PR #183 laikyti nediegtą iki tokeno rotacijos įrodymo; schedule ir telefono autentifikaciją žymėti WAITING, kol gaunami tikri įrodymai.
