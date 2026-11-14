@@ -51,3 +51,15 @@ Spręsti pirmą aptiktą problemą: GA4 ir Search Console (warning). Suplanuotas
 - AI rekomendacijos yra patariamosios; modelio išvestys nesuteikia vykdymo teisių.
 
 > Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.
+
+
+## 2026-11-14 – Termux / Codex vietinės aplinkos atkūrimas
+
+- Vartotojas patvirtino tęstinumo taisyklę: `latest.md` skaityti iš `automation-history`, o `reports/work-log/README.md` – iš `main`. Darbo žurnalo nebuvimas istorijos šakoje nėra klaida.
+- Termux bootstrap realiai panaudojo jau įdiegtą Ubuntu proot. Pirmas bandymas sustojo dėl npm priklausomybės: trūko `/usr/share/node_modules/glob/dist/cjs/src/index.js`.
+- PR #181 sujungtas (merge commit `07dab98a82a9573c41a6c5c77071d8e45b06b85b`). Pridėtas npm sveikatos patikrinimas ir vienkartinis `nodejs`, `npm`, `node-glob` paketų atkūrimas; pridėti regresijos testai.
+- Codex device-code prisijungimas buvo timeout po 15 min. Setup pakeistas taip, kad automatiškai nebelauktų: Codex autentifikaciją pažymi `WAITING`, bet leidžia užbaigti GitHub / klono paruošimą. Reikalingas ChatGPT Settings → Security → Device code login (beta) ir atskiras `codex login --device-auth`.
+- PR bridge CI #35, site-check #508, po-merge main bridge #36, site-check #509 ir work-log #36 – success.
+- **Telefono Termux/Codex būsena vis dar LAUKIA**: dar nėra naujos vartotojo pateiktos išvesties po PR #181, todėl npm atkūrimas, `gh auth status`, Codex prisijungimas ir `codex doctor` telefone nepatvirtinti.
+- Kitas konkretus veiksmas: pakartoti atnaujintą bootstrap iš Termux; jei Codex būsena `WAITING`, įjungti Device code login (beta) ir tada paleisti `codex login --device-auth`.
+- Nekeista Cloudflare production, Worker/D1, DNS, secrets, ARO Vet ar mokamų paslaugų konfigūracija. Pages preview nėra production deploy.
