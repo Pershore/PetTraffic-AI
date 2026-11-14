@@ -3,7 +3,7 @@
 - Atnaujinta: 2026-11-14 (rankinė tęstinumo patikra po PR #185 ir #186, 10:54 UTC)
 - Būsena: **REIKIA DĖMESIO**
 - Paskutinis automatinis Control Center run: 43586067171
-- Naujausias main commit: 3c32740f052b33624b2f318a8be6aa8f5ebbfad5
+- Naujausias main commit: 1aafc9348ea04ee42af9519e5fc8740249286094
 - Automatinio snapshot šaltinio commit: 2a7eaf09aedbccec4b26a5338b51a2198bf85518
 
 ## Paskutinis patikrintas etapas
@@ -91,3 +91,12 @@ Pagrindinis kasdienis ChatGPT koordinatorius yra įjungtas ir kitą kartą numat
 ## 2026-11-14 – kasdienio koordinatoriaus atminties sinchronizavimas
 
 - Pagrindinio kasdienio ChatGPT koordinatoriaus prompt atnaujintas 2026-11-14 10:55 UTC: dabar privalomai skaito `docs/PROJECT_MEMORY.md`, pašalinti pasenę į prompt įrašyti Lighthouse rodikliai, aiškiai atskiriami automatiniai snapshot'ai ir rankinis auditas. Esama automatizacija palikta įjungta; naujas dublikatas nesukurtas. Kitas suplanuotas vykdymas 2026-11-15 09:45 Europe/Vilnius.
+
+
+## 2026-11-14 – koordinatoriaus atminties sinchronizavimo PR patikra
+
+- PR #187 sujungtas commit `1aafc9348ea04ee42af9519e5fc8740249286094`; `docs/PROJECT_MEMORY.md`, darbo žurnalas ir handover dabar įrašo, kad kasdienis koordinatorius privalomai skaito kanoninę atmintį.
+- PR #187 site-check #43587606977 – success; po merge main site-check #43587642755 – success; automatinis darbo žurnalas #43587642784 – success.
+- Esamas ChatGPT koordinatorius enabled; prompt atnaujintas, tvarkaraštis nekeistas; kitas vykdymas 2026-11-15 09:45 Europe/Vilnius.
+- Naujausių 100 GitHub Actions vykdymų patikroje (2026-11-14 10:56 UTC) `event=schedule` įvykių nėra. Tai neįrodo, kad cron yra išjungtas; nustatymų prieiga nepasiekiama.
+- PR #183 vis dar open; Worker production deploy skipped iki Cloudflare tokeno rotacijos patvirtinimo. Termux/Codex vietinė autentifikacija nepatvirtinta.
