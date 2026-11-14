@@ -164,7 +164,7 @@ jobs:
                 const created = await github.rest.issues.create({ owner, repo, title, body });
                 core.info("Created central alert issue #" + created.data.number);
               }
-            } else if (existing) {
+            } else if (existing && data.recovery_confirmed === true) {
               await github.rest.issues.createComment({
                 owner, repo, issue_number: existing.number,
                 body: "The central control center reports recovery. Latest successful check: " + runUrl
@@ -173,6 +173,8 @@ jobs:
                 owner, repo, issue_number: existing.number, state: "closed", state_reason: "completed"
               });
               core.info("Closed recovered central alert issue #" + existing.number);
+            } else if (existing) {
+              core.info("No confirmed recovery; keeping the central alert open while monitored checks wait or run.");
             } else {
               core.info("No actionable issue; no alert needed.");
             }
