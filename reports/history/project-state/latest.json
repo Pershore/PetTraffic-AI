@@ -174,6 +174,107 @@
     },
     "phone_verification": "waiting; CI does not prove Android Ubuntu npm repair or gh/Codex authentication",
     "main_head_after_termux_fix": "9eacbd44636a9110b74878e7735ee5536e5e6bdd",
-    "next_action": "User reruns the existing Termux bootstrap once; inspect only non-secret final output."
+    "next_action": "User reruns the existing Termux bootstrap once; inspect only non-secret final output.",
+    "latest_process_audit": {
+      "updated_at": "2026-11-14T13:05:00Z",
+      "source": "ChatGPT read-only GitHub Actions and Worker health audit",
+      "main_head": "f964ea487a5bb1b259512816969954ec6234a4f3",
+      "open_pull_requests": 0,
+      "schedule_events_found": 2,
+      "schedule_runs": [
+        {
+          "workflow": "site-check",
+          "run_id": 43594970279,
+          "created_at": "2026-11-14T12:28:10Z",
+          "conclusion": "success"
+        },
+        {
+          "workflow": "site-check",
+          "run_id": 43433299383,
+          "created_at": "2026-11-13T13:23:57Z",
+          "conclusion": "success"
+        }
+      ],
+      "unscheduled_workflows": {
+        "analytics": {
+          "run_id": 43586027796,
+          "event": "push",
+          "conclusion": "success"
+        },
+        "topic_radar": {
+          "run_id": 43422828353,
+          "event": "push",
+          "conclusion": "success"
+        },
+        "live_site_monitor": {
+          "run_id": 43422828198,
+          "event": "push",
+          "conclusion": "success"
+        }
+      },
+      "latest_site_check": {
+        "run_id": 43597374771,
+        "event": "push",
+        "conclusion": "success"
+      },
+      "lighthouse": {
+        "run_id": 43517122731,
+        "event": "push",
+        "conclusion": "success",
+        "mobile_lcp_seconds_range": "1.05-2.35",
+        "cls": 0,
+        "tbt_ms_range": "0-163"
+      },
+      "analytics_snapshot": {
+        "run_id": 43586027796,
+        "ga4_period": "2026-11-07 – 2026-11-13",
+        "active_users": 7,
+        "new_users": 7,
+        "sessions": 24,
+        "page_views": 88,
+        "organic_sessions_verified": 0,
+        "search_console_period": "2026-11-05 – 2026-11-11",
+        "search_impressions": 0,
+        "search_clicks": 0,
+        "search_ctr": 0,
+        "average_position": 0,
+        "sitemap": "submitted; processing pending",
+        "priority_urls_unknown_to_google": 5
+      },
+      "topic_radar": {
+        "run_id": 43422828353,
+        "event": "push",
+        "generated_at": "2026-11-13T12:09:51Z",
+        "unique_article_links": 31,
+        "source": "Google News RSS headlines; not search volume"
+      },
+      "worker_health": {
+        "checked_at": "2026-11-14T13:00:46.976Z",
+        "http_status": 200,
+        "ok": true,
+        "database": "connected",
+        "control_core_schema": "connected",
+        "site_ok": true,
+        "site_status": 200,
+        "control_core_status": "needs_evidence",
+        "evidence_gap_count": 4,
+        "memory_status": "present",
+        "agent_run_date": "2026-11-14",
+        "agent_status": "failed",
+        "ai_calls": 4,
+        "error_code": "model_content-review_model_output_invalid_json",
+        "agent_completed_at": "2026-11-14T08:20:20.592Z",
+        "worker_deploy_at": "2026-11-14T11:51:45Z",
+        "next_agent_cycle": "2026-11-15T08:20:00Z"
+      },
+      "codex_local_status": "User-provided terminal output confirmed Ubuntu Codex CLI 0.167.1 authenticated via ChatGPT and clean main branch synchronized with origin",
+      "workflow_dispatch": "Unavailable through current GitHub connector; no synthetic push or worker task API bypass attempted",
+      "production_changes": "none",
+      "remaining_blockers": [
+        "Analytics, topic radar and live-site-monitor schedule runs not verified; latest runs were push-triggered.",
+        "First post-deploy Worker AI agent cycle awaits 2026-11-15 08:20 UTC.",
+        "No direct Android shell access from ChatGPT; local state verified only from user-provided output."
+      ]
+    }
   }
 }
