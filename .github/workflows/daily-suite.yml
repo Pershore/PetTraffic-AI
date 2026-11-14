@@ -1,5 +1,5 @@
 name: Pet traffic daily automation suite
-run-name: \${{ github.event.workflow_run.event == 'schedule' && format('Scheduled daily suite from site-check #{0}', github.event.workflow_run.id) || format('Non-scheduled site-check run #{0}', github.event.workflow_run.id) }}
+run-name: ${{ github.event.workflow_run.event == 'schedule' && format('Scheduled daily suite from site-check #{0}', github.event.workflow_run.id) || format('Non-scheduled site-check run #{0}', github.event.workflow_run.id) }}
 
 on:
   workflow_run:
@@ -32,9 +32,9 @@ jobs:
         run: python -m pip install --disable-pip-version-check google-auth requests
       - name: Fetch aggregated GA4 and Search Console metrics
         env:
-          GOOGLE_SERVICE_ACCOUNT_JSON: \${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
-          GA4_PROPERTY_ID: \${{ vars.GA4_PROPERTY_ID || '563539278' }}
-          GSC_SITE_URL: \${{ vars.GSC_SITE_URL || 'https://pettraffic-ai.pages.dev/' }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GA4_PROPERTY_ID: ${{ vars.GA4_PROPERTY_ID || '563539278' }}
+          GSC_SITE_URL: ${{ vars.GSC_SITE_URL || 'https://pettraffic-ai.pages.dev/' }}
         run: python agent/analytics_report.py
       - name: Upload analytics report
         if: always()
@@ -55,7 +55,7 @@ jobs:
       - name: Archive aggregate analytics history
         if: always() && hashFiles('reports/analytics-7d.md') != ''
         env:
-          GITHUB_RUN_ID: \${{ github.run_id }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
         run: |
           git fetch origin automation-history
           git archive origin/automation-history reports/history | tar -x -C .
@@ -114,7 +114,7 @@ jobs:
       - name: Archive topic-radar aggregate history
         if: success()
         env:
-          GITHUB_RUN_ID: \${{ github.run_id }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
         run: |
           git fetch origin automation-history
           git archive origin/automation-history reports/history | tar -x -C .
