@@ -57,3 +57,10 @@ Prieš tęsiant perskaityti docs/PROJECT_MEMORY.md 12 skyrių ir naujausius Acti
 ## Darbo pabaiga
 
 Atnaujinti `reports/work-log/README.md`, `reports/history/project-state/latest.md` ir naujausią handover. Registruoti tik realius pakeitimus, testus, workflow run nuorodas, klaidas, likusius blokatorius ir konkretų kitą veiksmą. Neteigti, kad vyksta nuolatinis darbas tarp sesijų.
+
+
+## Termux / Codex – naujausias veiksmas (2026-11-14)
+
+- PR #191 sujungtas: `9eacbd44636a9110b74878e7735ee5536e5e6bdd`.
+- Ubuntu npm/glob klaidos atkūrimo scenarijus dabar naudoja oficialų npm 10.9.10 su SHA-512 patikra; Termux CI, site-check ir Cloudflare Pages po merge – success.
+- Kitas žingsnis: vartotojui vieną kartą pakartoti bootstrap iš Termux. Iki realios telefono išvesties gh/Codex autentifikacija lieka LAUKIA.
