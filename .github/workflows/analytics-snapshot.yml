@@ -15,7 +15,7 @@ on:
 permissions:
   contents: write
 
-# Keep scheduled and push-triggered snapshots queued rather than cancelling an active GA4/GSC collection.
+# Keep push-triggered snapshots queued rather than cancelling an active GA4/GSC collection.
 concurrency:
   group: pettraffic-analytics-${{ github.ref }}
   cancel-in-progress: false
