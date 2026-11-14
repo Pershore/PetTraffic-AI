@@ -48,3 +48,11 @@ Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (failure)
 - AI rekomendacijos yra patariamosios; modelio išvestys nesuteikia vykdymo teisių.
 
 > Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.
+
+## Darbo žurnalo saugojimo vieta – patikslinta 2026-11-15
+
+- `reports/history/project-state/latest.md` ir kiti ilgalaikiai istorijos archyvai skaitomi / atnaujinami šakoje `automation-history`.
+- `reports/work-log/README.md` yra pagrindinėje šakoje `main`; šio failo nebuvimas `automation-history` šakoje yra numatyta struktūra, o ne klaida.
+- Darbo priežiūros automatizacija pataisyta, kad skaitytų kiekvieną failą iš teisingos šakos. Niekada nekopijuoti `reports/work-log/README.md` į `automation-history`.
+- Patvirtinimas: `main` medyje yra `reports/work-log/README.md`; `automation-history` medyje yra `reports/history/...` archyvai ir nėra `reports/work-log/` katalogo.
+- 2026-11-15: kasdienės greičio priežiūros automatizacijos promptas atnaujintas sėkmingai; kodo, infrastruktūros ir produkcijos pakeitimų neatlikta.
