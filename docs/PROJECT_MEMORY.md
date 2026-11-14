@@ -280,7 +280,7 @@ Nesujungti / atviri PR ir issues tikrinami kiekvienos sesijos pradžioje. Po PR 
 ## 19. 2026-11-14 – Autonominių procesų ir Codex būklės patikra
 
 ### Patvirtinta
-- `main` HEAD `f964ea487a5bb1b259512816969954ec6234a4f3`; atvirų PR nėra.
+- `main` HEAD `f964ea487a5bb1b259512816969954ec6234a4f3`; prieš šį dokumentacijos PR atvirų PR nebuvo (šis audito PR – #192).
 - Vartotojo pateikta Ubuntu išvestis patvirtina švarią, sinchronizuotą vietinę kopiją (`## main...origin/main`). Ubuntu `codex-cli 0.167.1` autentifikuotas per ChatGPT. GitHub CLI autentifikacija buvo patvirtinta Termux aplinkoje; jos Ubuntu aplinkoje atskirai neteigti.
 - GitHub Actions `event=schedule` istorijoje šiuo metu rasti du vykdymai: site-check `43594970279` (2026-11-14 12:28 UTC, success) ir site-check `43433299383` (2026-11-13 13:23 UTC, success). Tai patvirtina dalinį schedule veikimą, bet ne visų workflow grafikų veikimą.
 - Analytics `43586027796`, topic-radar `43422828353` ir live-site-monitor `43422828198` paskutiniai vykdymai buvo `push`, ne `schedule`; jų dieniniai grafikai lieka NEPATVIRTINTI.
