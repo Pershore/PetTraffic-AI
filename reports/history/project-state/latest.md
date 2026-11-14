@@ -60,3 +60,6 @@ Spręsti pirmą aptiktą problemą: GA4 ir Search Console (warning). Suplanuotas
 - Search Console laikotarpis 2026-11-05–11: 0 parodymų, 0 paspaudimų, CTR 0.0 %, vidutinė pozicija 0.0; užklausų ir puslapių eilučių nepateikta. Sitemap pateiktas, bet Google atsisiuntimo laikas dar nenurodytas, apdorojimas laukia. Nelaikyti 0 parodymų indeksavimo įrodymu.
 - Svarbu: GA4 duomenų gavimas atkurtas per push-trigger paleidimą, bet suplanuotas cron paleidimas vis dar nepatvirtintas. Šių dviejų būsenų nemaišyti.
 - PR: https://github.com/Pershore/PetTraffic-AI/pull/184; run: https://github.com/Pershore/PetTraffic-AI/actions/runs/43586027796.
+
+
+- Po analitikos ir istorijos dokumentavimo pakeitimų main site-check #526 (run `43586152253`) baigėsi success. Analytics run #46 (`43586027796`) ir centrinio valdymo run #127 (`43586067171`) taip pat success; sync-control-api run #138 (`43586103335`) success.
