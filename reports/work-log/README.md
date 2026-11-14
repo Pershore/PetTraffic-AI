@@ -97,15 +97,18 @@ Paskirtis: fiksuoti atliktus darbus, jų trukmę, patikrinimus ir sprendimus, ka
 
 ## Ilgalaikio tęstinumo šaltiniai
 
-- Projekto taisyklės, tikslai ir nekintamos saugumo ribos: `AGENTS.md` ir `docs/PETTRAFFIC_AI_HANDOVER_2026-11-12.md`.
+- Projekto taisyklės, tikslai ir saugumo ribos: `AGENTS.md`.
+- Vienintelė kanoninė ilgalaikė atmintis: `docs/PROJECT_MEMORY.md`.
+- Naujos sesijos skaitymo seka: `docs/SESSION_START.md`.
 - Paskutinė automatiškai sugeneruota techninė būsena: `reports/history/project-state/latest.md` ir `latest.json` šakoje `automation-history`.
 - Dienos būsenų istorija: `reports/history/project-state/YYYY-MM-DD.json` šakoje `automation-history`.
 - Veiksmų / laiko žurnalas: šis failas pagrindinėje `main` šakoje.
-- Išsamus kito pokalbio perdavimas: `docs/PETTRAFFIC_AI_HANDOVER_2026-11-13.md`.
+- Konkrečios sesijos perdavimas: naujausias `docs/PETTRAFFIC_AI_HANDOVER_*.md`.
 
-Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreguotais duomenimis. Darbo žurnalo README ten nekopijuoti, nes tai pažeistų istorijos šakos duomenų apribojimą. Techninė būsena yra GitHub įrodymų suvestinė, o ne pažodinis visų pokalbių archyvas.
+Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreguotais duomenimis. Darbo žurnalo README ten nekopijuoti. Techninė būsena yra GitHub įrodymų suvestinė, o ne pažodinis visų pokalbių archyvas.
 
 ## Atviros užduotys ir tęstinumas
+
 
 - Paskutinis patikrintas projekto būsenos snapshot: `reports/history/project-state/latest.md`, GitHub run `43456177377` (2026-11-13 15:47 UTC).
 - Kitas prioritetas: diagnozuoti AI agentų / control-core atminties ciklo klaidą `Unexpected_end_of_JSON_input`; prieš pakeitimus perskaityti atitinkamą Worker AI agentų vykdymo kodą, paskutinio ciklo įrašą ir testus.
@@ -164,3 +167,6 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 | 2026-11-14 | Po GA4 atkūrimo dokumentacijos pakeitimų galutinė main patikra | GitHub run #526 | NEMATUOTA | GitHub Actions | NEMATUOTA | NEAPSKAIČIUOTA | Site-check run #43586152253 – success; analytics #46 run #43586027796 – success; central control-center #127 run #43586067171 – success; control API sync #138 run #43586103335 – success. |
 
 | 2026-11-14 | Tęstinė autonomijos patikra: GitHub Actions cron, PR #183 ir kasdienis koordinatorius | GitHub run istorija patikrinta po 10:38 UTC; aktyvus darbo laikas neišmatuotas | NEMATUOTA | GitHub Actions API / Automations / issue #145 | NEMATUOTA | NEAPSKAIČIUOTA | Per 11 puslapių patikrinta 1 056 Actions vykdymų: tik vienas `event=schedule` – site-check run #43433299383 (2026-11-13 13:23:57 UTC, success); 2026-11-14 schedule įvykių nėra. YAML cron eilutės yra, tačiau Actions aktyvumo nustatymų per jungtį perskaityti / keisti negalima, priežastis nepatvirtinta. Pagrindinis ChatGPT kasdienis koordinatorius įjungtas, paskutinis vykdymas completed 2026-11-14 08:13:35 UTC, kitas 2026-11-15 09:45 Europe/Vilnius; dubliuojančio agento nekūriau. PR #183 atviras: testai ir Cloudflare validation success, Worker deploy job skipped; runtime pataisa neaktyvi. Tokenas vis dar laikomas galimai atskleistu, rotacija nepatvirtinta. Issue #145 papildytas komentaru #6876095236. Jokių secrets, repo nustatymų, Worker/D1, DNS, ARO Vet ar production pakeitimų. |
+
+
+| 2026-11-14 | Kanoninės projekto atminties konsolidavimas | Neišmatuota | NEMATUOTA | GitHub docs branch / PR | NEMATUOTA | NEAPSKAIČIUOTA | Sukurtas docs/PROJECT_MEMORY.md: sujungti projekto tikslai, šaltinių hierarchija, architektūra, integracijų prieigos matrica, patvirtinti rodikliai, PR, blokatoriai ir kiti veiksmai. Perrašytas docs/SESSION_START.md į trumpą privalomą skaitymo protokolą; atnaujintos ilgalaikės atminties nuorodos šiame darbo žurnale. Dokumentai pateikti per atskirą PR; dar nepatvirtinta, kol CI ir review baigsis. |
