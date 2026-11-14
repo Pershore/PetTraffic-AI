@@ -109,14 +109,16 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 
 ## Atviros užduotys ir tęstinumas
 
-
-- Paskutinis patikrintas projekto būsenos snapshot: `reports/history/project-state/latest.md`, GitHub run `43456177377` (2026-11-13 15:47 UTC).
-- Kitas prioritetas: diagnozuoti AI agentų / control-core atminties ciklo klaidą `Unexpected_end_of_JSON_input`; prieš pakeitimus perskaityti atitinkamą Worker AI agentų vykdymo kodą, paskutinio ciklo įrašą ir testus.
-- Toliau patikrinti naujausią GA4/GSC snapshot ir jo archyvą; GA4 runReport ankstesnėse patikrose kartotinai timeoutino, todėl stabilus veikimas nepatvirtintas.
-- Patikrinti suplanuotų workflow realius schedule-trigger paleidimus; cron pakeitimai savaime neįrodo stabilaus scheduler veikimo.
-- PR #131 jau sujungtas. Jo deploy patikra #54 ir site checks #388 patikrintos kaip success.
-- Worker ir D1 paskutiniame snapshot patvirtinti veikiantys; papildomų production pakeitimų nedaryti be atskiro leidimo.
-- ARO Vet PR #66 paliktas nepaliestas; ARO Vet svetainė ir kodas nekeisti.
+- PR #185 „Consolidate canonical project memory and session startup“ – atviras; dokumentų pakeitimai laukia site-check patikros.
+- PR #183 „Constrain Workers AI agent JSON output“ – atviras; Worker testai ir Cloudflare validation success, production deploy skipped iki Cloudflare tokeno rotacijos patvirtinimo.
+- GitHub Actions schedule: per 1 056 run patikrą rastas vienas schedule event (site-check 2026-11-13); 2026-11-14 schedule paleidimai nepatvirtinti. Tiksli priežastis nepasiekiama per dabartinę GitHub integraciją.
+- Cloudflare tokeno rotacija ir GitHub Actions secret `CLOUDFLARE_API_TOKEN` atnaujinimas nepatvirtinti; rakto pokalbyje neprašyti.
+- Worker AI agentų ciklas paskutinėje žinomoje gyvoje patikroje failed `model_content-review_model_output_invalid_json`; PR #183 dar neįdiegtas.
+- Termux / Codex telefone: CI bridge testai success, bet lokali autentifikacija ir `codex doctor` nepatvirtinti.
+- GA4 timeout pataisa 30 s sujungta; vienas analytics run success. Reikia stebėti kitus realius ciklus, kad būtų įrodytas stabilumas.
+- Pagrindinis kasdienis ChatGPT koordinatorius enabled; kitas vykdymas 2026-11-15 09:45 Europe/Vilnius.
+- Issue #145 lieka open; atnaujintas komentaru #6876095236.
+- Kitas veiksmas: saugumo blokatoriaus patvirtinimas, Actions schedule priežasties nustatymas, tada PR #183 ir realaus Worker AI ciklo patikra.
 
 ## Suvestinė
 
