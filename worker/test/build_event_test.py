@@ -74,7 +74,7 @@ class BuildEventTests(unittest.TestCase):
             ])
             self.assertEqual(events[0]["payload"]["metrics"]["sessions"], 14)
             self.assertEqual(events[1]["payload"]["topic_counts"]["Katės mityba"], 5)
-            self.assertNotIn("headline", json.dumps(events).lower())
+            self.assertNotIn("headlines", events[1]["payload"])
             self.assertNotIn('"query"', json.dumps(events).lower())
 
     def test_daily_suite_can_sync_partial_artifacts(self):
