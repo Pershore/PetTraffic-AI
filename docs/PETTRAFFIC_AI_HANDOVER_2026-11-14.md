@@ -383,7 +383,7 @@ Pirmiausia būtinas Cloudflare tokeno rotacijos ir GitHub secret atnaujinimo pat
 - Main deploy run #43603199126 – success; D1 migrations: none; Worker upload/deploy success.
 - Įdiegta Worker versija: 71dfa69f-88bf-4c04-9b6c-5a124be3dbc9.
 - Post-deploy workflow patvirtino D1 ir control-core schema ryšį bei neautentifikuoto /v1/events atsakymą HTTP 401.
-- Gyvas /health po deploy: ok=true, D1 connected, control-core schema connected. Paskutinis agentų ciklas vis dar rodo seną 2026-11-14 08:20 UTC gedimą; jis įvyko prieš deploy. Naujas ciklas dar neįvyko, todėl pataisos veiksmingumas LAUKIA 2026-11-15 08:20 UTC (10:20 LT).
+- Gyvas /health po deploy: ok=true, D1 connected, control-core schema connected; naujas heartbeat PATIKRINTAS 2026-11-14 14:15:47 UTC (site HTTP 200, D1 connected). Paskutinis agentų ciklas vis dar rodo seną 2026-11-14 08:20 UTC gedimą; jis įvyko prieš deploy. Naujas AI ciklas dar neįvyko, todėl pataisos veiksmingumas LAUKIA 2026-11-15 08:20 UTC (10:20 LT).
 
 ### Autonomijos realios ribos
 - Worker heartbeat: kas 15 min. (site + D1). AI specialistų ciklas: kartą per dieną 10:20 Europe/Vilnius. Tai yra nuolat veikianti serverless stebėsena ir suplanuota analizė, ne nuolatinis AI mąstymas kiekvieną sekundę.
