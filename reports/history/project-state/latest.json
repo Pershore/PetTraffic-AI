@@ -1,13 +1,20 @@
 {
   "schema_version": 1,
   "project": "PetTraffic AI",
-  "generated_at": "2026-11-14T14:07:54.478250+00:00",
-  "run_id": "43603233560",
+  "generated_at": "2026-11-14T14:08:25.967532+00:00",
+  "run_id": "43603258175",
   "source_commit": "07922ad2384e27249f01f438f7bf6dc44399da06",
   "overall_status": "needs_attention",
   "last_verified_stage": "Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataskaitoje.",
   "next_action": "Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (failure). AI agentų ciklas nepavyko (2026-11-14); AI kvietimų: 4; klaida: model_content-review_model_output_invalid_json.",
   "verified_processes": [
+    {
+      "name": "Centrinės API sinchronizavimas",
+      "state": "success",
+      "detail": "Paskutinis paleidimas sėkmingas.",
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43603268816",
+      "created_at": "2026-11-14T14:08:11Z"
+    },
     {
       "name": "Cloudflare Worker + D1",
       "state": "success",
@@ -34,13 +41,6 @@
       "created_at": "2026-11-14T14:07:44Z"
     },
     {
-      "name": "Centrinės API sinchronizavimas",
-      "state": "running",
-      "detail": "Vyksta (in_progress).",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43603234374",
-      "created_at": "2026-11-14T14:07:48Z"
-    },
-    {
       "name": "Lighthouse auditas",
       "state": "waiting",
       "detail": "Workflow atnaujintas 2026-11-13 12:09 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.",
@@ -51,8 +51,8 @@
       "name": "Centrinis valdymo centras",
       "state": "waiting",
       "detail": "Workflow atnaujintas 2026-11-14 13:42 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43603233560",
-      "created_at": "2026-11-14T14:07:48Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43603258175",
+      "created_at": "2026-11-14T14:08:04Z"
     }
   ],
   "ai_agent_memory_check": {
