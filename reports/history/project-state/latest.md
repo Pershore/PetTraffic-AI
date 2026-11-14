@@ -99,3 +99,14 @@ Pirmiausia užbaigti PR #183 AI JSON išvesties pataisos testus; Worker runtime 
 - Ankstesni du testų assertion gedimai ištaisyti; galutinė patikra sėkminga.
 - Production Worker deploy job buvo SKIPPED; Worker runtime nebuvo pakeistas. PR #183 lieka atviras, kol Cloudflare API tokenas nebus išrotuotas ir GitHub secret atnaujintas.
 - PR: https://github.com/Pershore/PetTraffic-AI/pull/183.
+
+
+## 2026-11-14 – penkių blokatorių tęstinis auditas
+
+- **AI agentų JSON:** gyvas `/health` 2026-11-14 10:30:47 UTC patvirtino Worker ir D1 connected, svetainę HTTP 200, control-core decision JSON valid ir memory present. Agentų ciklas vis dar failed: 4 AI calls, `model_content-review_model_output_invalid_json`. PR #183 prompt guard ir regresijos testai CI patikrinti; deploy job SKIPPED, produkcinis Worker nepakeistas. PR: https://github.com/Pershore/PetTraffic-AI/pull/183.
+- **GitHub schedule:** peržiūrėtas naujausių 100 Actions vykdymų sąrašas – 0 `event=schedule` įrašų. Cron įrašai yra workflow YAML, tačiau šios jungties leidžiami endpointai neparodo Actions workflow aktyvumo / repo nustatymų. Priežastis nepatvirtinta; rankinis/push vykdymas nelaikomas cron įrodymu.
+- **GA4:** ankstesnio analytics run #43443849180 žurnalas patvirtino GA4 `ReadTimeout` ties 15 s; GSC veikia atskirai. Sukurtas PR #184, kuris GA4 ataskaitos timeout didina iki 30 s ir atnaujina regresijos testą. Static checks ir Cloudflare Pages CI – success. Tai dar nėra realaus GA4 API sėkmės įrodymas. PR: https://github.com/Pershore/PetTraffic-AI/pull/184.
+- **Cloudflare tokenas:** rotacijos ir GitHub secret atnaujinimo įrodymo nėra. Dabartinė jungtis negali keisti Cloudflare paskyros ar GitHub Actions secrets; Worker runtime diegimas lieka sustabdytas. Naujo rakto pokalbyje neprašyta.
+- **Termux/Codex:** PR #182 bootstrap pataisa sujungta, CI bridge #39 ir site-check #514 success; tai nepatvirtina realaus telefono GitHub/Codex autentifikavimo. Android įrenginio iš šios aplinkos pasiekti negalima.
+- Nekeista ARO Vet aplinka, DNS, Cloudflare production, Worker/D1 schema, secrets, viešas turinys ar mokamos paslaugos. Nuotolinis komandų vykdymas neįjungtas.
+- Kitas veiksmas: stebėti PR #184 patikras ir po sujungimo tikrinti kitą GA4 ciklą; PR #183 laikyti nediegtą iki tokeno rotacijos patvirtinimo; schedule ir telefono būsenas žymėti WAITING, kol atsiras realūs įrodymai.
