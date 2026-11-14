@@ -255,3 +255,12 @@ Papildoma po-merge patikra: main site-check #526 (run `43586152253`) – success
 - Atminties dokumente patikslinta PR #182 tikroji merge SHA `740323047dab1b5e671092f1a4e42a31a0b7b28`; PR #185 dabar uždarytas / sujungtas.
 - Tai patvirtina dokumentų nuoseklumą ir CI, bet neįjungia tiesioginės Cloudflare paskyros prieigos, Android Termux nuotolinio valdymo ar GitHub Actions administravimo.
 - Jokių Worker/D1, DNS, secrets, ARO Vet, viešo turinio ar mokamų paslaugų pakeitimų neatlikta.
+
+
+## 16. Kasdienio koordinatoriaus atminties sinchronizavimas (2026-11-14, 10:55 UTC)
+
+- Esamos kasdienės „Pet traffic – kasdienė savarankiška priežiūra“ automatizacijos prompt atnaujintas; schedule ir enabled būsena nepakeista.
+- Privaloma sesijos pradžios seka papildyta `docs/PROJECT_MEMORY.md` skaitymu; kanoninė atmintis dabar nurodyta kaip ilgalaikio tęstinumo šaltinis.
+- Pašalinta sena prompt'e hard-coded Lighthouse diagnostika, kuri galėjo klaidinti; nurodyta remtis naujausiu patikimu artefaktu ir žymėti senus skaičius kaip istorinius.
+- Įrašyta taisyklė, kaip atnaujinti `automation-history/latest.md` ir `latest.json`, išsaugant automatinio snapshot `generated_at` ir `run_id`, o rankinį auditą žymint atskirai.
+- Automatizacija liko enabled, kitas vykdymas 2026-11-15 09:45 Europe/Vilnius. Naujo dublikato nekurta.

@@ -174,3 +174,6 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 
 
 | 2026-11-14 | Kanoninės projekto atminties konsolidavimas | Neišmatuota | NEMATUOTA | GitHub docs branch / PR | NEMATUOTA | NEAPSKAIČIUOTA | Sukurtas docs/PROJECT_MEMORY.md: sujungti projekto tikslai, šaltinių hierarchija, architektūra, integracijų prieigos matrica, patvirtinti rodikliai, PR, blokatoriai ir kiti veiksmai. Perrašytas docs/SESSION_START.md į trumpą privalomą skaitymo protokolą; atnaujintos ilgalaikės atminties nuorodos šiame darbo žurnale. PR #185 sujungtas squash commit `245446cf123a25df76b212943353c76e6d3f6c69`; site-check #43587281754 ir Termux bridge #43587281810 – success. Dokumentacijos konsolidavimas patikrintas. |
+
+
+| 2026-11-14 | Kasdienio koordinatoriaus atminties sinchronizavimas | Neišmatuota | NEMATUOTA | ChatGPT automation / GitHub automation-history | NEMATUOTA | NEAPSKAIČIUOTA | Atnaujintas esamas „Pet traffic – kasdienė savarankiška priežiūra“ prompt: privalomai skaito docs/PROJECT_MEMORY.md, pašalinti pasenę hard-coded Lighthouse rodikliai, aiškiai atskiria automatinius snapshot ir rankinius auditus. Tvarkaraštis nepakeistas, naujas agentas nesukurtas. Kitas vykdymas 2026-11-15 09:45 Europe/Vilnius. automation-history latest.md/latest.json atnaujinti rankinio audito lauku, originalus generated_at ir run_id išsaugoti. |
