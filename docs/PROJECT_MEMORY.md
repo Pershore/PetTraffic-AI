@@ -348,3 +348,10 @@ Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama 
 - Pataisyta kilmės patikra: daily-suite laikomas suplanuotu tik pagal GitHub workflow_run API lauką event == schedule. Senasis pavadinimas nebenaudojamas sync sprendimui. Pridėtas regresijos testas.
 - PR CI: worker snapshot sync test, central-control-center ir site-check – success. Po merge push site-check ir control-center paleisti; tai nėra schedule įrodymas.
 - Pirmas tikras daily-suite schedule ir D1 read-back laukia 2026-11-15 06:10 UTC (08:10 Europe/Vilnius).
+
+
+## 17. Pagrindinio koordinatoriaus prompto suderinimas (2026-11-14)
+
+- Vienintelės aktyvios Pet traffic pagrindinės ChatGPT priežiūros automatizacijos promptas atnaujintas: pašalinta pasenusi nuoroda į PR #183 kaip naujausią agentų pataisą; įrašyti PR #197 Worker atsparumo pakeitimas, PR #199 daily-suite tiesioginis grafikas ir PR #202 D1 sinchronizavimo pataisa.
+- Promptas dabar aiškiai nurodo dienos seką: daily-suite 06:10 UTC (08:10 LT), Worker AI 10:20 LT, Control Center 10:40 LT, koordinatorius 11:00 LT. Grafikai turi būti tikrinami pagal realius schedule įvykius ir artefaktus.
+- Esama automatizacija liko enabled; kitas vykdymas 2026-11-15 11:00 Europe/Vilnius. Naujos automatikos nesukurta.
