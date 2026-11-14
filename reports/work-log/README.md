@@ -142,3 +142,12 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 - Termux/Codex reali telefono sesija taip pat nepasiekiama nuotoliniam patikrinimui: CI testai patvirtina scenarijaus kodą, bet ne telefono autentifikaciją. Naujų telefono duomenų šiame etape nėra.
 - Atnaujintas centrinis perspėjimas #145 su dabartiniais įrodymais, išspręstu sync incidentu ir likusiais blokatoriais.
 - Nekeista ARO Vet aplinka, viešas turinys, DNS, Worker/D1 schema, Cloudflare production konfigūracija ar mokamos paslaugos. Aktyvus darbo laikas ir įrankių vykdymo trukmė atskirai neišmatuoti.
+
+
+## 2026-11-14 – PR #183 patikros užbaigtos
+
+- PR #183 galutinis commit: `fb93f62341437d2f3428ddf1a4e42a31b76780e6`.
+- Worker testai: PASS; Cloudflare token/resource validation: PASS; static site checks: PASS; snapshot-sync PR test: PASS.
+- Pirmų bandymų klaidos buvo testų assertion neatitikimai (pirmiausia senas tikslus system prompt palyginimas, vėliau neteisingai escapintas newline regex). Abu testai pataisyti ir galutiniai testai praėjo.
+- Production Worker deploy job: SKIPPED. PR #183 lieka atviras ir nesujungtas, nes Cloudflare tokeno rotacija dar nepatvirtinta; tai saugumo sąlyga prieš production deploy.
+- PR #183: https://github.com/Pershore/PetTraffic-AI/pull/183; test run #43585321019, site-check #43585321018, sync-check #43585321035.
