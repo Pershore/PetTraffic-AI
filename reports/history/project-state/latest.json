@@ -105,7 +105,7 @@
   ],
   "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.",
   "manual_audit": {
-    "updated_at": "2026-11-14T11:56:00Z",
+    "updated_at": "2026-11-14T12:05:00Z",
     "source": "ChatGPT/GitHub CI and live Worker verification",
     "merged_pr": 183,
     "merge_commit": "6a285a5505e88853a77fb1e31c08fa4fb1d9ad63",
@@ -120,13 +120,45 @@
     "last_known_ai_failure": "model_content-review_model_output_invalid_json at 2026-11-14T08:20:20Z; predates deployment",
     "next_agent_cycle": "2026-11-15T08:20:00Z",
     "open_issues": [
-      "GitHub Actions scheduled runs remain unverified; do not confuse push/workflow_run with schedule.",
-      "Worker AI JSON fix is deployed, but effectiveness awaits next scheduled agent cycle.",
-      "Termux/Codex phone authentication remains unverified.",
-      "GA4/GSC scheduled-cycle reliability and multi-run stability remain unverified.",
-      "Worker task API remains intentionally disabled."
+      145
     ],
     "documentation_pr": 189,
-    "documentation_merge_commit": "6ec622d1eb1ecbcc4f832c1e1b05a152cae9d3ac"
+    "documentation_merge_commit": "6ec622d1eb1ecbcc4f832c1e1b05a152cae9d3ac",
+    "verification_session": "read-only verification",
+    "main_head": "3c76d9b810c715d59783600e98c6f44646638ee9",
+    "pr_131": "merged",
+    "open_pull_requests": 0,
+    "successful_verification_runs": [
+      "43592320377 site-check",
+      "43592320390 Termux Codex bridge CI",
+      "43592320374 automatic work log",
+      "43592176751 central API sync",
+      "43592016509 Worker production deploy",
+      "43586027796 analytics snapshot",
+      "43592057614 control-center workflow"
+    ],
+    "analytics_snapshot": {
+      "run_id": "43586027796",
+      "ga4_period": "2026-11-07 – 2026-11-13",
+      "active_users": 7,
+      "new_users": 7,
+      "sessions": 24,
+      "page_views": 88,
+      "search_console_period": "2026-11-05 – 2026-11-11",
+      "search_impressions": 0,
+      "search_clicks": 0,
+      "search_ctr": 0,
+      "average_position": 0,
+      "sitemap": "submitted; processing pending"
+    },
+    "schedule_audit": "2026-11-14 schedule event not found; only returned schedule event in queried history is site-check run 43433299383 from 2026-11-13T13:23:57Z. Workflow activation settings are not readable through current GitHub integration.",
+    "ai_agent_runtime": "JSON fix deployed; post-deploy scheduled cycle has not run. Next expected 2026-11-15T08:20:00Z.",
+    "remaining_blockers": [
+      "GitHub Actions schedule execution remains unverified; repository Actions activation settings unavailable through current integration.",
+      "Worker AI JSON fix awaits first post-deploy scheduled agent cycle on 2026-11-15 08:20 UTC.",
+      "Android Termux/Codex authentication and local repository state remain unverified; no Android shell access.",
+      "GA4/GSC scheduled-cycle reliability remains unverified despite one successful push-triggered snapshot.",
+      "Worker task API intentionally disabled."
+    ]
   }
 }
