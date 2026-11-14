@@ -1,50 +1,29 @@
 {
   "schema_version": 1,
   "project": "PetTraffic AI",
-  "generated_at": "2026-11-14T11:53:31.924773+00:00",
-  "run_id": "43592057614",
-  "source_commit": "69127a8ffc4bd58d5f8a9e60efb60ae35ff5cab6",
+  "generated_at": "2026-11-14T13:39:52.962463+00:00",
+  "run_id": "43600881652",
+  "source_commit": "ba7385bf45ac4f091212556ffac80c6a82162583",
   "overall_status": "needs_attention",
   "last_verified_stage": "Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataskaitoje.",
-  "next_action": "Spręsti pirmą aptiktą problemą: GA4 ir Search Console (warning). Suplanuotas ciklas nuo 2026-11-14 06:47 UTC dar neįvykdytas; suplanuotų paleidimų istorijoje nėra. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.",
+  "next_action": "Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (failure). AI agentų ciklas nepavyko (2026-11-14); AI kvietimų: 4; klaida: model_content-review_model_output_invalid_json.",
   "verified_processes": [
     {
       "name": "Centrinės API sinchronizavimas",
       "state": "success",
       "detail": "Paskutinis paleidimas sėkmingas.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43592087874",
-      "created_at": "2026-11-14T11:52:41Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43592176751",
+      "created_at": "2026-11-14T11:53:53Z"
     },
     {
       "name": "Cloudflare Worker + D1",
       "state": "success",
-      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 7 min.",
+      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 9 min.",
       "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
       "created_at": null
     }
   ],
   "problems": [
-    {
-      "name": "GA4 ir Search Console",
-      "state": "warning",
-      "detail": "Suplanuotas ciklas nuo 2026-11-14 06:47 UTC dar neįvykdytas; suplanuotų paleidimų istorijoje nėra. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43586027796",
-      "created_at": "2026-11-14T10:35:41Z"
-    },
-    {
-      "name": "Temų radaras",
-      "state": "warning",
-      "detail": "Suplanuotas ciklas nuo 2026-11-14 06:23 UTC dar neįvykdytas; suplanuotų paleidimų istorijoje nėra. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43422828353",
-      "created_at": "2026-11-13T12:09:41Z"
-    },
-    {
-      "name": "Svetainės stebėjimas",
-      "state": "warning",
-      "detail": "Suplanuotas ciklas nuo 2026-11-14 07:11 UTC dar neįvykdytas; suplanuotų paleidimų istorijoje nėra. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43422828198",
-      "created_at": "2026-11-13T12:09:41Z"
-    },
     {
       "name": "AI agentai + control-core atmintis",
       "state": "failure",
@@ -54,6 +33,13 @@
     }
   ],
   "pending_checks": [
+    {
+      "name": "GA4, temų radaras ir svetainės stebėjimas",
+      "state": "waiting",
+      "detail": "Workflow atnaujintas 2026-11-14 13:39 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.",
+      "url": null,
+      "created_at": null
+    },
     {
       "name": "Lighthouse auditas",
       "state": "waiting",
@@ -65,8 +51,8 @@
       "name": "Centrinis valdymo centras",
       "state": "running",
       "detail": "Vyksta (in_progress).",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43592057614",
-      "created_at": "2026-11-14T11:52:17Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43600881652",
+      "created_at": "2026-11-14T13:39:44Z"
     }
   ],
   "ai_agent_memory_check": {
@@ -103,195 +89,5 @@
     "Nekeisti DNS, Cloudflare teisių ar produkcinės infrastruktūros be atskiro patvirtinimo.",
     "AI rekomendacijos yra patariamosios; modelio išvestys nesuteikia vykdymo teisių."
   ],
-  "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.",
-  "manual_audit": {
-    "updated_at": "2026-11-14T12:57:30Z",
-    "source": "ChatGPT/GitHub PR and post-merge CI verification",
-    "merged_pr": 191,
-    "merge_commit": "9eacbd44636a9110b74878e7735ee5536e5e6bdd",
-    "deployment_run": 43592016509,
-    "worker_version": "a34f8850-e1bf-42c0-a055-3e9c9c8714c0",
-    "token_rotation": "user_confirmed_and_ci_verified",
-    "worker_deploy": "success",
-    "d1_migrations": "no_migrations_to_apply",
-    "health": "ok_true_database_connected_control_core_schema_connected",
-    "auth_boundary": "unauthenticated_v1_events_returns_401",
-    "ai_cycle_after_deploy": "waiting_for_next_scheduled_cycle",
-    "last_known_ai_failure": "model_content-review_model_output_invalid_json at 2026-11-14T08:20:20Z; predates deployment",
-    "next_agent_cycle": "2026-11-15T08:20:00Z",
-    "open_issues": [
-      145
-    ],
-    "documentation_pr": 190,
-    "documentation_merge_commit": "097f76c04c002cd41b1ec007d0e8b1e7e341b8c1",
-    "verification_session": "read-only verification",
-    "main_head": "3c76d9b810c715d59783600e98c6f44646638ee9",
-    "pr_131": "merged",
-    "open_pull_requests": 0,
-    "successful_verification_runs": [
-      "43592320377 site-check",
-      "43592320390 Termux Codex bridge CI",
-      "43592320374 automatic work log",
-      "43592176751 central API sync",
-      "43592016509 Worker production deploy",
-      "43586027796 analytics snapshot",
-      "43592057614 control-center workflow"
-    ],
-    "analytics_snapshot": {
-      "run_id": "43586027796",
-      "ga4_period": "2026-11-07 – 2026-11-13",
-      "active_users": 7,
-      "new_users": 7,
-      "sessions": 24,
-      "page_views": 88,
-      "search_console_period": "2026-11-05 – 2026-11-11",
-      "search_impressions": 0,
-      "search_clicks": 0,
-      "search_ctr": 0,
-      "average_position": 0,
-      "sitemap": "submitted; processing pending"
-    },
-    "schedule_audit": "2026-11-14 schedule event not found; only returned schedule event in queried history is site-check run 43433299383 from 2026-11-13T13:23:57Z. Workflow activation settings are not readable through current GitHub integration.",
-    "ai_agent_runtime": "JSON fix deployed; post-deploy scheduled cycle has not run. Next expected 2026-11-15T08:20:00Z.",
-    "remaining_blockers": [
-      "GitHub Actions schedule execution remains unverified; repository Actions activation settings unavailable through current integration.",
-      "Worker AI JSON fix awaits first post-deploy scheduled agent cycle on 2026-11-15 08:20 UTC.",
-      "Android Termux/Codex authentication and local repository state remain unverified; no Android shell access.",
-      "GA4/GSC scheduled-cycle reliability remains unverified despite one successful push-triggered snapshot.",
-      "Worker task API intentionally disabled."
-    ],
-    "documentation_pr_checks": "site-check and Cloudflare Pages preview success",
-    "post_merge_site_check": 43593444358,
-    "main_head_after_audit": "097f76c04c002cd41b1ec007d0e8b1e7e341b8c1",
-    "termux_npm_fix": "official npm 10.9.10 package; registry HTTPS + SHA-512 integrity verified before extraction",
-    "pr_checks": "site-check success; Termux bridge success; Cloudflare Pages preview success",
-    "post_merge_checks": {
-      "termux_bridge_run": 43597291536,
-      "site_check_run": 43597291486,
-      "automatic_work_log_run": 43597291234,
-      "cloudflare_pages_check": 132454466931,
-      "all": "success"
-    },
-    "phone_verification": "waiting; CI does not prove Android Ubuntu npm repair or gh/Codex authentication",
-    "main_head_after_termux_fix": "9eacbd44636a9110b74878e7735ee5536e5e6bdd",
-    "next_action": "User reruns the existing Termux bootstrap once; inspect only non-secret final output.",
-    "latest_process_audit": {
-      "updated_at": "2026-11-14T13:05:00Z",
-      "source": "ChatGPT read-only GitHub Actions and Worker health audit",
-      "main_head": "f964ea487a5bb1b259512816969954ec6234a4f3",
-      "open_pull_requests": 0,
-      "schedule_events_found": 2,
-      "schedule_runs": [
-        {
-          "workflow": "site-check",
-          "run_id": 43594970279,
-          "created_at": "2026-11-14T12:28:10Z",
-          "conclusion": "success"
-        },
-        {
-          "workflow": "site-check",
-          "run_id": 43433299383,
-          "created_at": "2026-11-13T13:23:57Z",
-          "conclusion": "success"
-        }
-      ],
-      "unscheduled_workflows": {
-        "analytics": {
-          "run_id": 43586027796,
-          "event": "push",
-          "conclusion": "success"
-        },
-        "topic_radar": {
-          "run_id": 43422828353,
-          "event": "push",
-          "conclusion": "success"
-        },
-        "live_site_monitor": {
-          "run_id": 43422828198,
-          "event": "push",
-          "conclusion": "success"
-        }
-      },
-      "latest_site_check": {
-        "run_id": 43597374771,
-        "event": "push",
-        "conclusion": "success"
-      },
-      "lighthouse": {
-        "run_id": 43517122731,
-        "event": "push",
-        "conclusion": "success",
-        "mobile_lcp_seconds_range": "1.05-2.35",
-        "cls": 0,
-        "tbt_ms_range": "0-163"
-      },
-      "analytics_snapshot": {
-        "run_id": 43586027796,
-        "ga4_period": "2026-11-07 – 2026-11-13",
-        "active_users": 7,
-        "new_users": 7,
-        "sessions": 24,
-        "page_views": 88,
-        "organic_sessions_verified": 0,
-        "search_console_period": "2026-11-05 – 2026-11-11",
-        "search_impressions": 0,
-        "search_clicks": 0,
-        "search_ctr": 0,
-        "average_position": 0,
-        "sitemap": "submitted; processing pending",
-        "priority_urls_unknown_to_google": 5
-      },
-      "topic_radar": {
-        "run_id": 43422828353,
-        "event": "push",
-        "generated_at": "2026-11-13T12:09:51Z",
-        "unique_article_links": 31,
-        "source": "Google News RSS headlines; not search volume"
-      },
-      "worker_health": {
-        "checked_at": "2026-11-14T13:00:46.976Z",
-        "http_status": 200,
-        "ok": true,
-        "database": "connected",
-        "control_core_schema": "connected",
-        "site_ok": true,
-        "site_status": 200,
-        "control_core_status": "needs_evidence",
-        "evidence_gap_count": 4,
-        "memory_status": "present",
-        "agent_run_date": "2026-11-14",
-        "agent_status": "failed",
-        "ai_calls": 4,
-        "error_code": "model_content-review_model_output_invalid_json",
-        "agent_completed_at": "2026-11-14T08:20:20.592Z",
-        "worker_deploy_at": "2026-11-14T11:51:45Z",
-        "next_agent_cycle": "2026-11-15T08:20:00Z"
-      },
-      "codex_local_status": "User-provided terminal output confirmed Ubuntu Codex CLI 0.167.1 authenticated via ChatGPT and clean main branch synchronized with origin",
-      "workflow_dispatch": "Unavailable through current GitHub connector; no synthetic push or worker task API bypass attempted",
-      "production_changes": "none",
-      "remaining_blockers": [
-        "Analytics, topic radar and live-site-monitor schedule runs not verified; latest runs were push-triggered.",
-        "First post-deploy Worker AI agent cycle awaits 2026-11-15 08:20 UTC.",
-        "No direct Android shell access from ChatGPT; local state verified only from user-provided output."
-      ],
-      "documentation_pr": 192,
-      "documentation_pr_state": "merged",
-      "documentation_merge_commit": "3d7d132b98688857b906ff182673458806c7ce00",
-      "documentation_pr_checks": {
-        "site_check_run": 43598948829,
-        "post_merge_site_check_run": 43599004500,
-        "post_merge_worklog_run": 43599004495,
-        "cloudflare_pages_preview_check": 132459344714,
-        "cloudflare_pages_merge_check": 132459566528,
-        "cloudflare_pages_after_worklog_check": 132459632616,
-        "all": "success"
-      },
-      "main_head_after_audit": "cd95e0e071a140bc5e57c7f08bf1edb6a80aac02",
-      "open_pull_requests_after_audit": 0,
-      "post_merge_site_check": "success",
-      "post_merge_worklog": "success",
-      "cloudflare_pages_deployment": "success"
-    }
-  }
+  "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių."
 }
