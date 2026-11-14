@@ -80,3 +80,10 @@ Tikras bootstrap iš Termux patvirtintas: Linux proot, Git, GitHub CLI, Codex CL
 - GitHub Actions kasdienio rinkinio grafikai lieka dalinai NEPATVIRTINTI: vienas suplanuotas Google API connectivity run #43602315641 – success, tačiau analytics/topic/live-site schedule ciklo dar nepatvirtinome. Push ir workflow_run nėra schedule įrodymas.
 - ChatGPT kasdienė koordinatoriaus automatizacija lieka vienintelė ir įjungta; dublikato nekurti. Termux Codex autentifikacija patvirtinta, bet tiesioginės Android shell prieigos šiame pokalbyje nėra.
 - /v1/tasks API lieka tyčia išjungta. Tai reiškia, kad AI specialistai analizuoja ir teikia rekomendacijas, bet negali savavališkai vykdyti GitHub užduočių ar keisti produkcijos. Publikavimui, production, DNS, saugumo teisių ir išlaidų pakeitimams lieka žmogaus patvirtinimo vartai.
+
+
+## Daily-suite ir pagrindinio koordinatoriaus grafikas (2026-11-14)
+
+- PR #199 sujungtas commit abcd5072e51c98d0b68d2d6a948fd09488245c5b. Daily suite dabar turi nepriklausomą GitHub Actions cron 06:10 UTC (08:10 Europe/Vilnius), atskirai nuo site-check; Control Center stebi šį naują laiką. Pirmas realus schedule paleidimas laukia 2026-11-15 06:10 UTC.
+- Esama vienintelė ChatGPT priežiūros automatizacija perkelta iš 09:45 į 11:00 Europe/Vilnius, kad vykdytųsi po daily-suite 08:10, Worker AI agentų 10:20 ir Control Center 10:40. Ji lieka enabled; naujos automatikos nesukurtos.
+- Naujo grafiko realus veikimas dar LAUKIA rytojaus schedule įrodymo; push ir workflow_run paleidimai nėra schedule įrodymas.
