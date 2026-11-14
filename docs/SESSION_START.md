@@ -4,6 +4,18 @@ Atnaujinta: 2026-11-14
 
 Šis failas skirtas ChatGPT, Codex, GitHub Copilot ir žmogui, kuris tęsia projektą po pertraukos.
 
+## Naujausias patvirtintas tęstinumo taškas (2026-11-14, 10:10 UTC)
+
+- Naujausias `main` commit: `8011c8648db641ac182e775568234674ee3363b8`; PR #181 sujungtas commit `07dab98a82a9573c41a6c5c77071d8e45b06b85b`.
+- Vartotojas patvirtino teisingą istorijos skaitymo seką: projekto būseną iš `automation-history`, darbo žurnalą iš `main`. `reports/work-log/README.md` nebuvimas `automation-history` yra sąmoningas, ne klaida.
+- Termux bootstrap telefone panaudojo esamą Ubuntu. Pirmas bandymas sustojo dėl neveikiančio Ubuntu npm: trūko `/usr/share/node_modules/glob/dist/cjs/src/index.js`.
+- PR #181 pridėjo `tools/termux/ensure-npm.sh`, kuris patikrina npm ir, jei reikia, vieną kartą atkuria `nodejs`, `npm`, `node-glob`; pridėti testai sveikai npm būsenai, sėkmingam atkūrimui ir atkūrimo klaidai.
+- Codex device-code prisijungimas po 15 min. buvo timeout. Setup dabar automatiškai nebelaukia 15 min.: jei Codex neprisijungęs, jis palieka `CODEX_AUTH=WAITING`, užbaigia GitHub setup/klonavimą ir pateikia komandą `codex login --device-auth`, kurią reikia paleisti tik įjungus ChatGPT Settings → Security → Device code login (beta).
+- PR #181 bridge CI #35 ir site-check #508 – success; po merge main bridge #36 ir site-check #509 – success; work-log #36 – success. Įrodymai: https://github.com/Pershore/PetTraffic-AI/actions/runs/43583926135, https://github.com/Pershore/PetTraffic-AI/actions/runs/43583926102, https://github.com/Pershore/PetTraffic-AI/actions/runs/43583926103.
+- Tai patvirtina GitHub CI, bet dar **nepatvirtina** telefono npm atkūrimo, `gh auth status`, `codex login status`, `codex doctor` ar lokalaus git klono. Kitas veiksmas – vieną kartą pakartoti Termux bootstrap po PR #181 sujungimo, tada tikrinti Codex autorizaciją atskirai.
+- PR sukurta tik Cloudflare Pages šakos peržiūra; produkcija, Worker/D1, DNS, secrets, ARO Vet ir mokamos paslaugos nepakeistos.
+
+
 
 
 ## Naujausias patikrintas tęstinumo taškas (2026-11-14, 09:52 Europe/Vilnius)
