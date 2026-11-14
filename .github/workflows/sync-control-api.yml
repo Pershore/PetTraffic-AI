@@ -5,6 +5,7 @@ on:
     workflows:
       - "Pet traffic analytics snapshot"
       - "Pet traffic daily topic radar"
+      - "Pet traffic daily automation suite"
       - "Pet traffic central control center"
     types: [completed]
     branches: [main]
@@ -36,7 +37,7 @@ jobs:
       actions: read
       contents: read
       id-token: write
-    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main'
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.name == 'Pet traffic daily automation suite')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -54,8 +55,27 @@ jobs:
             echo "enabled=false" >> "$GITHUB_OUTPUT"
             echo "Central API URL is missing; GitHub history remains the source of truth."
           fi
+      - name: Check whether daily suite was triggered by the scheduled site check
+        id: suite-source
+        if: github.event.workflow_run.name == 'Pet traffic daily automation suite'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          payload="$(curl --fail --silent --show-error \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$REPOSITORY/actions/runs/$RUN_ID")"
+          title="$(python -c 'import json,sys; print(json.load(sys.stdin).get("display_title", ""))' <<< "$payload")"
+          if [[ "$title" == "Scheduled daily suite from site-check #"* ]]; then
+            echo "scheduled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "scheduled=false" >> "$GITHUB_OUTPUT"
+            echo "Non-scheduled suite run; no daily snapshot artifacts to sync."
+          fi
       - name: Download source workflow artifact
-        if: steps.config.outputs.enabled == 'true'
+        if: steps.config.outputs.enabled == 'true' && github.event.workflow_run.name != 'Pet traffic daily automation suite'
         uses: actions/download-artifact@v8
         with:
           name: ${{ github.event.workflow_run.name == 'Pet traffic analytics snapshot' && 'pettraffic-analytics-7d' || github.event.workflow_run.name == 'Pet traffic daily topic radar' && 'pettraffic-topic-radar' || 'pettraffic-control-center' }}
@@ -63,8 +83,28 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
           run-id: ${{ github.event.workflow_run.id }}
+      - name: Download daily suite analytics artifact
+        if: steps.config.outputs.enabled == 'true' && steps.suite-source.outputs.scheduled == 'true'
+        continue-on-error: true
+        uses: actions/download-artifact@v8
+        with:
+          name: pettraffic-analytics-7d
+          path: artifacts/analytics
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Download daily suite topic artifact
+        if: steps.config.outputs.enabled == 'true' && steps.suite-source.outputs.scheduled == 'true'
+        continue-on-error: true
+        uses: actions/download-artifact@v8
+        with:
+          name: pettraffic-topic-radar
+          path: artifacts/topic
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Prepare privacy-filtered event payloads
-        if: steps.config.outputs.enabled == 'true'
+        if: steps.config.outputs.enabled == 'true' && (github.event.workflow_run.name != 'Pet traffic daily automation suite' || steps.suite-source.outputs.scheduled == 'true')
         env:
           WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
           SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
