@@ -90,3 +90,12 @@ Pirmiausia užbaigti PR #183 AI JSON išvesties pataisos testus; Worker runtime 
 - Saugumo blokatorius: Cloudflare API tokenas laikomas galimai atskleistu; jį reikia išrotuoti Cloudflare ir atnaujinti GitHub secret. Dabartinė jungtis negali keisti Cloudflare paskyros ar GitHub secrets. PR #183 runtime kodo nejungti / nediegti iki rotacijos patvirtinimo.
 - Android Termux/Codex autentifikacija iš šios aplinkos nepasiekiama; CI patikra neįrodo telefono prisijungimo.
 - Issue #145 atnaujintas dabartine būsena. ARO Vet, DNS, Cloudflare production, D1 schema, viešas turinys ir mokamos paslaugos nepakeisti.
+
+
+## 2026-11-14 – PR #183 galutinės patikros
+
+- PR #183 galutinis commit `fb93f62341437d2f3428ddf1a4e42a31b76780e6`.
+- Worker testai, Cloudflare validation, static site checks ir snapshot-sync PR testai – PASS.
+- Ankstesni du testų assertion gedimai ištaisyti; galutinė patikra sėkminga.
+- Production Worker deploy job buvo SKIPPED; Worker runtime nebuvo pakeistas. PR #183 lieka atviras, kol Cloudflare API tokenas nebus išrotuotas ir GitHub secret atnaujintas.
+- PR: https://github.com/Pershore/PetTraffic-AI/pull/183.
