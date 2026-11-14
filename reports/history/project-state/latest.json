@@ -103,5 +103,30 @@
     "Nekeisti DNS, Cloudflare teisių ar produkcinės infrastruktūros be atskiro patvirtinimo.",
     "AI rekomendacijos yra patariamosios; modelio išvestys nesuteikia vykdymo teisių."
   ],
-  "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių."
+  "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.",
+  "manual_audit": {
+    "updated_at": "2026-11-14T11:56:00Z",
+    "source": "ChatGPT/GitHub CI and live Worker verification",
+    "merged_pr": 183,
+    "merge_commit": "6a285a5505e88853a77fb1e31c08fa4fb1d9ad63",
+    "deployment_run": 43592016509,
+    "worker_version": "a34f8850-e1bf-42c0-a055-3e9c9c8714c0",
+    "token_rotation": "user_confirmed_and_ci_verified",
+    "worker_deploy": "success",
+    "d1_migrations": "no_migrations_to_apply",
+    "health": "ok_true_database_connected_control_core_schema_connected",
+    "auth_boundary": "unauthenticated_v1_events_returns_401",
+    "ai_cycle_after_deploy": "waiting_for_next_scheduled_cycle",
+    "last_known_ai_failure": "model_content-review_model_output_invalid_json at 2026-11-14T08:20:20Z; predates deployment",
+    "next_agent_cycle": "2026-11-15T08:20:00Z",
+    "open_issues": [
+      "GitHub Actions scheduled runs remain unverified; do not confuse push/workflow_run with schedule.",
+      "Worker AI JSON fix is deployed, but effectiveness awaits next scheduled agent cycle.",
+      "Termux/Codex phone authentication remains unverified.",
+      "GA4/GSC scheduled-cycle reliability and multi-run stability remain unverified.",
+      "Worker task API remains intentionally disabled."
+    ],
+    "documentation_pr": 189,
+    "documentation_merge_commit": "6ec622d1eb1ecbcc4f832c1e1b05a152cae9d3ac"
+  }
 }
