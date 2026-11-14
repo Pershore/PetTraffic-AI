@@ -251,3 +251,13 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 - Esama kasdienė priežiūros automatizacija liko įjungta; papildomos dubliuojančios automatizacijos nesukurtos. Šioje sesijoje paleistas jos `run_now` veiksmas pateikė inline užduotį, kuri buvo vykdoma šiame pokalbyje.
 - Dabartinė GitHub jungtis leidžia skaityti Actions vykdymus, bet neturi workflow-dispatch veiksmo. Todėl nebuvo bandoma sukelti dirbtinio push/no-op commit ar apeiti Worker `/v1/tasks*` išjungimo. Rankinis Actions paleidimas per šią jungtį nepasiekiamas.
 - Jokie svetainės failai, viešas turinys, DNS, Cloudflare Worker/D1 konfigūracija ar duomenys, secrets, GitHub Actions nustatymai, ARO Vet ar mokamos paslaugos nebuvo pakeisti.
+
+
+## 2026-11-14 – tęstinė patikra po Worker JSON pataisos
+
+- main HEAD patikros metu: cd95e0e071a140bc5e57c7f08bf1edb6a80aac02; PR #183 pakeitimas įtrauktas į commit 6a285a5505e88853a77fb1e31c08fa4fb1d9ad63. Deploy run 43592016509 – success. Worker pataisos įdiegimas PATIKRINTAS.
+- Gyvas Worker /health tebėra ok=true, D1 ir control-core schema connected, svetainės heartbeat HTTP 200. Agentų paskutinis ciklas vis dar failed 2026-11-14 08:20:20 UTC su model_content-review_model_output_invalid_json; jis įvyko iki deploy 11:51 UTC. Naujo ciklo po deploy dar nėra, todėl pataisos veiksmingumas LAUKIA 2026-11-15 08:20 UTC ciklo.
+- Patikrintos workflow YAML reikšmės: analytics 47 6 * * *, topic radar 23 6 * * *, live-site monitor 11 7 * * *. Visuose yra schedule triggeris. GitHub Actions event=schedule istorijoje vis dar tik du site-check paleidimai (43594970279, 43433299383); kitų trijų workflow suplanuotų vykdymų nėra.
+- PR #126 jau atnaujino schedule registracijas; po šio pakeitimo schedule vis tiek nepatvirtintas. Cron nekeistas, nes priežastis nenustatyta. Dabartinė GitHub jungtis neturi workflow enable/disable nustatymų valdymo ir workflow-dispatch veiksmo.
+- Atviras centrinis įspėjimas issue #145 papildytas šios patikros faktais (komentaras 6877967835). Jokie production, Worker/D1, DNS, secrets, ARO Vet ar mokamų paslaugų pakeitimai neatlikti.
+- Kitas veiksmas: po kito suplanuoto Worker ciklo patikrinti JSON pataisos veiksmingumą; atskirai gauti GitHub Actions workflow aktyvumo nustatymų prieigą, tada spręsti schedule problemą. Termux/Codex lokali telefono būsena šiame patikrinime nekeista.
