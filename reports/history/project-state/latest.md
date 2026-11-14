@@ -119,3 +119,13 @@ Spręsti pirmą aptiktą problemą: GA4 ir Search Console (warning). Suplanuotas
 - Analytics, topic-radar ir live-site-monitor YAML turi cron schedule, bet GitHub Actions schedule įvykių sąraše yra tik du site-check vykdymai. PR #126 jau bandė atnaujinti schedule registracijas; problemos priežastis nenustatyta. Cron nekeistas. Reikia GitHub Actions workflow aktyvumo nustatymų prieigos; dabartinė jungtis jos nesuteikia ir neturi workflow-dispatch veiksmo.
 - Issue #145 atnaujintas komentaru 6877967835. Darbo žurnalo atnaujinimas pateiktas PR #193 (tik dokumentacija, laukia CI).
 - Jokių produkcijos, Worker/D1, DNS, secrets, ARO Vet ar mokamų paslaugų pakeitimų neatlikta.
+
+
+## 2026-11-14 – istorijos ir PR #193 galutinė patikra
+
+- PR #193 `docs: record post-deploy automation follow-up audit` sujungtas squash commit `520f4410b76212b53a242d943c8fa28e9fabf6a3`; PR `site-check` run `43599891858` – success. Tik darbo žurnalo dokumentacija, svetainės turinys nekeistas.
+- Patvirtintas `automation-history/reports/history/analytics/2026-11-14.json`: GA4 ir GSC statusai `available`. GA4 2026-11-07–13: 7 aktyvūs / 7 nauji naudotojai, 24 sesijos, 88 peržiūros. GSC 2026-11-05–11: 0 parodymų / paspaudimų, CTR 0, vidutinė pozicija 0. Sitemap pending; penki prioritetiniai URL Google dar nežinomi. Tai istorinis snapshot.
+- Topic radar istorijos kataloge yra tik `2026-11-13.json`; `2026-11-14.json` nėra. Tai papildomas įrodymas, kad 2026-11-14 suplanuotas temų radaro ciklas neįvyko / jo istorija neišsaugota.
+- Pakartotinis gyvas Worker `/health`: D1 ir control-core schema connected, heartbeat HTTP 200; agentų būsena vis dar 2026-11-14 08:20:20 UTC `failed`, `model_content-review_model_output_invalid_json`. Šis ciklas ankstesnis už 11:51 UTC deploy; po deploy naujo ciklo dar nėra. Kitas suplanuotas ciklas 2026-11-15 08:20 UTC.
+- Issue #145 papildytas komentaru 6877990856. Trijų workflow schedule priežastis vis dar nenustatyta: YAML cron yra, bet per dabartinę GitHub jungtį nėra workflow aktyvumo nustatymų skaitymo / valdymo ir workflow-dispatch veiksmo. Cron nekeistas.
+- Jokie Worker/D1, production, DNS, secrets, ARO Vet ar mokamų paslaugų pakeitimai neatlikti.
