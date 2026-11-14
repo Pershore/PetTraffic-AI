@@ -52,7 +52,7 @@ class AnalyticsTimeoutPolicyTests(unittest.TestCase):
                 ["sessions"],
             )
         self.assertEqual(session.calls, 1)
-        self.assertEqual(session.timeouts, [15])
+        self.assertEqual(session.timeouts, [30])
 
     def test_search_console_query_keeps_one_read_timeout_retry(self):
         session = FakeSession([ReadTimeout("temporary GSC delay")])
