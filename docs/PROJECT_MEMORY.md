@@ -300,3 +300,10 @@ Nesujungti / atviri PR ir issues tikrinami kiekvienos sesijos pradžioje. Po PR 
 ### Kitas konkretus veiksmas
 - Patikrinti 2026-11-15 08:20 UTC Worker agentų ciklą po JSON pataisos.
 - Stebėti realius GitHub `event=schedule` vykdymus analytics, topic-radar ir live-site-monitor workflow; jei jų nėra, tęsti tik skaitymo diagnostiką ir ieškoti autorizuoto workflow-dispatch kelio.
+
+
+## 13. Android Termux / Codex – realus diegimas patvirtintas (2026-11-14)
+
+Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama Linux proot aplinka, Git, GitHub CLI ir Codex CLI įdiegti, Codex autentifikacija `OK`, o vietinė saugykla rodo `## main...origin/main`. Diagnostikos santrauka: 19 OK, 1 idle, 2 notes, 1 warning, 0 fail; pilna įspėjimo informacija nepateikta.
+
+Šis įrodymas patvirtina lokalią kūrimo aplinką ir Codex prisijungimą, bet ne nuolatinį foninį agentą, automatinį GitHub užduočių paėmimą ar ChatGPT tiesioginį telefono shell ryšį. Worker `/v1/tasks*` lieka išjungtas iki atskiros agento tapatybės, ribotų teisių, užduočių validavimo ir PR-only vykdymo saugumo modelio. Cloudflare paslaptys į telefoną nekeliamos.
