@@ -2,7 +2,7 @@ import unittest
 import json
 from unittest.mock import patch
 from datetime import datetime, timezone, timedelta
-from agent.control_center import WORKFLOWS, evaluate_workflow, evaluate_worker_health, evaluate_agent_orchestration, fetch_workflow_metadata, needs_attention, render
+from agent.control_center import WORKFLOWS, evaluate_workflow, evaluate_worker_health, evaluate_agent_orchestration, fetch_workflow_metadata, needs_attention, recovery_confirmed, render
 
 class ControlCenterTests(unittest.TestCase):
     def test_control_center_rechecks_after_worker_deployment(self):
@@ -138,6 +138,20 @@ class ControlCenterTests(unittest.TestCase):
         }, now=now)
         self.assertEqual(result["state"], "waiting")
         self.assertFalse(needs_attention([result]))
+        self.assertFalse(recovery_confirmed([result]))
+
+    def test_alert_recovery_requires_every_check_to_be_success(self):
+        self.assertTrue(recovery_confirmed([{"state": "success"}, {"state": "success"}]))
+        self.assertFalse(recovery_confirmed([{"state": "success"}, {"state": "waiting"}]))
+        self.assertFalse(recovery_confirmed([{"state": "success"}, {"state": "running"}]))
+        self.assertFalse(recovery_confirmed([{"state": "success"}, {"state": "missing"}]))
+        self.assertFalse(recovery_confirmed([]))
+
+    def test_workflow_closes_alert_only_after_confirmed_recovery(self):
+        with open(".github/workflows/control-center.yml", encoding="utf-8") as stream:
+            workflow = stream.read()
+        self.assertIn("existing && data.recovery_confirmed === true", workflow)
+        self.assertIn("No confirmed recovery", workflow)
 
     def test_missing_agent_run_warns_after_daily_window(self):
         now = datetime(2026, 11, 13, 9, 0, tzinfo=timezone.utc)
