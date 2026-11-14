@@ -6,9 +6,6 @@ on:
   # Re-evaluate alerts after monitored jobs finish, not while they are still running.
   workflow_run:
     workflows:
-      - "Pet traffic analytics snapshot"
-      - "Pet traffic daily topic radar"
-      - "Pet traffic live-site monitor"
       - "Pet traffic daily automation suite"
       - "Pet traffic Lighthouse audits"
       - "Deploy PetTraffic control API"

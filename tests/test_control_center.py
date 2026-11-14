@@ -361,6 +361,50 @@ class ControlCenterTests(unittest.TestCase):
         result = evaluate_workflow("Analytics", [scheduled, pushed], now, 36, schedule)
         self.assertEqual(result["state"], "success")
 
+    def test_cancelled_non_scheduled_run_does_not_mask_successful_daily_schedule(self):
+        now = datetime(2026, 11, 13, 8, 10, tzinfo=timezone.utc)
+        scheduled = {
+            "created_at": "2026-11-13T07:50:00Z",
+            "event": "schedule",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/example/run/schedule",
+        }
+        cancelled = {
+            "created_at": "2026-11-13T08:05:00Z",
+            "event": "workflow_run",
+            "status": "completed",
+            "conclusion": "cancelled",
+            "html_url": "https://github.com/example/run/cancelled",
+        }
+        schedule = {"frequency": "daily", "hour": 6, "minute": 43, "grace_minutes": 60}
+        result = evaluate_workflow("Analytics", [scheduled, cancelled], now, 36, schedule)
+        self.assertEqual(result["state"], "success")
+
+    def test_running_non_scheduled_run_does_not_hide_missed_daily_cycle(self):
+        now = datetime(2026, 11, 13, 8, 10, tzinfo=timezone.utc)
+        running = {
+            "created_at": "2026-11-13T08:05:00Z",
+            "event": "push",
+            "status": "in_progress",
+            "conclusion": None,
+            "html_url": "https://github.com/example/run/push",
+        }
+        schedule = {"frequency": "daily", "hour": 6, "minute": 43, "grace_minutes": 60}
+        result = evaluate_workflow("Analytics", [running], now, 36, schedule)
+        self.assertEqual(result["state"], "warning")
+        self.assertIn("suplanuotų paleidimų istorijoje nėra", result["detail"])
+
+    def test_control_center_only_rechecks_after_daily_suite_and_weekly_or_worker_jobs(self):
+        with open(".github/workflows/control-center.yml", encoding="utf-8") as stream:
+            workflow = stream.read()
+        self.assertIn('"Pet traffic daily automation suite"', workflow)
+        self.assertIn('"Pet traffic Lighthouse audits"', workflow)
+        self.assertIn('"Deploy PetTraffic control API"', workflow)
+        self.assertNotIn('"Pet traffic analytics snapshot"', workflow)
+        self.assertNotIn('"Pet traffic daily topic radar"', workflow)
+        self.assertNotIn('"Pet traffic live-site monitor"', workflow)
+
     def test_success_after_scheduled_cycle_grace_is_current(self):
         now = datetime(2026, 11, 13, 8, 10, tzinfo=timezone.utc)
         current = {
