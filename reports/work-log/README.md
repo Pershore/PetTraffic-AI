@@ -238,7 +238,7 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 
 ## 2026-11-14 – Autonominių procesų ir Codex būklės patikra
 
-- Patvirtinta pagrindinė šaka `main`: HEAD `f964ea487a5bb1b259512816969954ec6234a4f3`; atvirų PR nėra. Vartotojo pateikta Ubuntu išvestis: `git status --short --branch` → `## main...origin/main` (švari ir sinchronizuota kopija).
+- Patvirtinta pagrindinė šaka `main`: HEAD `f964ea487a5bb1b259512816969954ec6234a4f3`; prieš šį dokumentacijos PR atvirų PR nebuvo (šis audito PR – #192). Vartotojo pateikta Ubuntu išvestis: `git status --short --branch` → `## main...origin/main` (švari ir sinchronizuota kopija).
 - Ubuntu aplinkoje `codex-cli 0.167.1` ir `codex login status` patvirtino prisijungimą per ChatGPT. GitHub CLI prisijungimas buvo patikrintas Termux aplinkoje; jo būklė Ubuntu aplinkoje atskirai neteigta.
 - GitHub Actions API `event=schedule` grąžino 2 vykdymus: site-check `43594970279` (2026-11-14 12:28:10 UTC, success) ir ankstesnį site-check `43433299383` (2026-11-13 13:23:57 UTC, success). Tai patvirtina, kad site-check schedule bent kartą suveikė.
 - Naujausi analytics `43586027796`, topic-radar `43422828353` ir live-site-monitor `43422828198` vykdymai buvo `event=push`, ne `schedule`. Todėl šių trijų dieninių grafikų veikimas lieka NEPATVIRTINTAS. Atvirų PR nėra.
