@@ -105,10 +105,10 @@
   ],
   "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.",
   "manual_audit": {
-    "updated_at": "2026-11-14T12:10:10Z",
-    "source": "ChatGPT/GitHub CI and live Worker verification",
-    "merged_pr": 183,
-    "merge_commit": "6a285a5505e88853a77fb1e31c08fa4fb1d9ad63",
+    "updated_at": "2026-11-14T12:57:30Z",
+    "source": "ChatGPT/GitHub PR and post-merge CI verification",
+    "merged_pr": 191,
+    "merge_commit": "9eacbd44636a9110b74878e7735ee5536e5e6bdd",
     "deployment_run": 43592016509,
     "worker_version": "a34f8850-e1bf-42c0-a055-3e9c9c8714c0",
     "token_rotation": "user_confirmed_and_ci_verified",
@@ -162,6 +162,18 @@
     ],
     "documentation_pr_checks": "site-check and Cloudflare Pages preview success",
     "post_merge_site_check": 43593444358,
-    "main_head_after_audit": "097f76c04c002cd41b1ec007d0e8b1e7e341b8c1"
+    "main_head_after_audit": "097f76c04c002cd41b1ec007d0e8b1e7e341b8c1",
+    "termux_npm_fix": "official npm 10.9.10 package; registry HTTPS + SHA-512 integrity verified before extraction",
+    "pr_checks": "site-check success; Termux bridge success; Cloudflare Pages preview success",
+    "post_merge_checks": {
+      "termux_bridge_run": 43597291536,
+      "site_check_run": 43597291486,
+      "automatic_work_log_run": 43597291234,
+      "cloudflare_pages_check": 132454466931,
+      "all": "success"
+    },
+    "phone_verification": "waiting; CI does not prove Android Ubuntu npm repair or gh/Codex authentication",
+    "main_head_after_termux_fix": "9eacbd44636a9110b74878e7735ee5536e5e6bdd",
+    "next_action": "User reruns the existing Termux bootstrap once; inspect only non-secret final output."
   }
 }
