@@ -14,10 +14,22 @@ fi
 pkg update -y
 pkg install -y proot-distro curl
 
-if ! proot-distro login debian -- true >/dev/null 2>&1; then
+# Reuse the user's existing Ubuntu proot first; otherwise reuse Debian.
+# Install Debian only when neither supported distro is already present.
+DISTRO=""
+for candidate in ubuntu debian; do
+  if proot-distro login "$candidate" -- true >/dev/null 2>&1; then
+    DISTRO="$candidate"
+    break
+  fi
+done
+
+if [ -z "$DISTRO" ]; then
   proot-distro install debian
+  DISTRO="debian"
 fi
 
 echo
-echo "Paruošiama Debian aplinka. Toliau reikės prisijungti prie GitHub ir ChatGPT per oficialius prisijungimo langus."
-proot-distro login debian -- bash -lc "curl -fsSL '${RAW_BASE}/${SETUP_PATH}' | bash"
+echo "Naudojama esama Linux aplinka: $DISTRO"
+echo "Paruošiama aplinka. Toliau reikės prisijungti prie GitHub ir ChatGPT tik jei dar neprisijungta."
+proot-distro login "$DISTRO" -- bash -lc "curl -fsSL '${RAW_BASE}/${SETUP_PATH}' | bash"

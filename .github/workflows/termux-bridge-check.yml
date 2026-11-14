@@ -30,11 +30,13 @@ jobs:
         run: |
           bash -n tools/termux/bootstrap.sh
           bash -n tools/termux/setup-debian.sh
+          bash -n tools/termux/test-bootstrap.sh
+          bash tools/termux/test-bootstrap.sh
       - name: Check safe setup invariants
         run: |
           grep -Fq 'codex login --device-auth' tools/termux/setup-debian.sh
           grep -Fq 'Device code login' tools/termux/setup-debian.sh
           grep -Fq 'Device code login' docs/TERMUX_CODEX_BRIDGE.md
           grep -Fq 'gh auth setup-git' tools/termux/setup-debian.sh
-          grep -Fq 'proot-distro login debian' tools/termux/bootstrap.sh
+          grep -Fq 'proot-distro login "$DISTRO"' tools/termux/bootstrap.sh
           ! grep -Eiq '(OPENAI_API_KEY|CLOUDFLARE_API_TOKEN|CLOUDFLARE_GLOBAL_API_KEY)=' tools/termux/*.sh
