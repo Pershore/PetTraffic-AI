@@ -100,3 +100,17 @@ Pagrindinis kasdienis ChatGPT koordinatorius yra įjungtas ir kitą kartą numat
 - Esamas ChatGPT koordinatorius enabled; prompt atnaujintas, tvarkaraštis nekeistas; kitas vykdymas 2026-11-15 09:45 Europe/Vilnius.
 - Naujausių 100 GitHub Actions vykdymų patikroje (2026-11-14 10:56 UTC) `event=schedule` įvykių nėra. Tai neįrodo, kad cron yra išjungtas; nustatymų prieiga nepasiekiama.
 - PR #183 vis dar open; Worker production deploy skipped iki Cloudflare tokeno rotacijos patvirtinimo. Termux/Codex vietinė autentifikacija nepatvirtinta.
+
+
+## 2026-11-14 11:35 UTC – pilnas autonomijos auditas (rankinis įrašas)
+
+- Naujausias main HEAD: 84fc060947d7714d4622b6eab81298a3e593b0b6.
+- Main site-check run 43587642755 – success; automatinio darbo žurnalo run 43587642784 – success.
+- Atviras PR #183: Worker test, Cloudflare validation, static site checks ir Pages preview – success; Worker deploy – skipped. Worker pataisa produkcijoje neaktyvi.
+- Patikrinta 1 074 Actions vykdymų; event=schedule paieška grąžino vieną vykdymą: site-check 43433299383 (2026-11-13 13:23:57 UTC, success). 2026-11-14 schedule įvykių nerasta.
+- YAML grafikai egzistuoja: site-check 05:37 UTC, topic radar 06:23, analytics 06:47, live monitor 07:11, control center 08:40. Workflow aktyvumo nustatymai per jungtį nepasiekiami; priežastis nenustatyta.
+- Cloudflare tokeno rotacijos įrodymo nėra; PR #183 production deploy lieka blokuotas.
+- Android Termux/Codex telefono autentifikacija nepatvirtinta; CI nėra vietinio telefono testas.
+- Worker task API tyčia disabled iki dedikuotos agentų tapatybės ir autorizacijos modelio.
+- Automatinio snapshot generated_at, run_id, source_commit ir senų pending_checks reikšmės išsaugotos kaip istorinis 10:36 UTC rezultatas; naujausi stebėjimai pateikti atskirame manual_audit įraše.
+- Kodo, secrets, Actions nustatymų, Worker/D1, DNS, ARO Vet ar viešo turinio pakeitimų neatlikta.
