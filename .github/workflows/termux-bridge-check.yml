@@ -30,12 +30,17 @@ jobs:
         run: |
           bash -n tools/termux/bootstrap.sh
           bash -n tools/termux/setup-debian.sh
+          bash -n tools/termux/ensure-npm.sh
           bash -n tools/termux/test-bootstrap.sh
+          bash -n tools/termux/test-ensure-npm.sh
           bash tools/termux/test-bootstrap.sh
+          bash tools/termux/test-ensure-npm.sh
       - name: Check safe setup invariants
         run: |
           grep -Fq 'codex login --device-auth' tools/termux/setup-debian.sh
           grep -Fq 'Device code login' tools/termux/setup-debian.sh
+          grep -Fq 'ensure-npm.sh' tools/termux/setup-debian.sh
+          grep -Fq 'apt-get install --reinstall -y nodejs npm node-glob' tools/termux/ensure-npm.sh
           grep -Fq 'Device code login' docs/TERMUX_CODEX_BRIDGE.md
           grep -Fq 'gh auth setup-git' tools/termux/setup-debian.sh
           grep -Fq 'proot-distro login "$DISTRO"' tools/termux/bootstrap.sh

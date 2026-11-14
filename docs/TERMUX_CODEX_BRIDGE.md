@@ -35,10 +35,12 @@ curl -fsSL https://raw.githubusercontent.com/Pershore/PetTraffic-AI/main/tools/t
 ```
 
 Diegimo metu:
-- įdiegiama Debian proot aplinka;
-- įdiegiami Git, GitHub CLI, Node.js, Python ir Codex CLI;
+- pirmiausia pakartotinai naudojama esama Ubuntu proot aplinka, jei ji įdiegta; kitu atveju naudojama esama Debian, o Debian įdiegiama tik jei nėra nė vienos iš jų;
+- įdiegiami / patikrinami Git, GitHub CLI, Node.js, Python ir Codex CLI;
+- jei Ubuntu/Debian `npm` sugadintas, vieną kartą atkuriami `nodejs`, `npm` ir `node-glob` paketai;
 - GitHub prisijungimas atliekamas oficialiu naršyklės / įrenginio patvirtinimo srautu;
-- Codex prisijungimas atliekamas per ChatGPT device-code srautą;
+- jei Codex dar neprisijungęs, diegimas nesėda laukti 15 minučių: jis pažymi prisijungimą kaip LAUKIA ir užbaigia GitHub saugyklos paruošimą;
+- po to, kai ChatGPT paskyroje įjungtas Device code login (beta), Codex prisijungimas atliekamas atskirai per `codex login --device-auth`;
 - saugykla klonuojama į `~/PetTraffic-AI`.
 
 **Niekada neįklijuok slaptažodžio, MFA kodo, GitHub tokeno, Codex auth failo ar Cloudflare rakto į ChatGPT pokalbį.** Prisijungimo kodus įvesk tik oficialiuose GitHub / OpenAI puslapiuose, kuriuos parodo CLI.

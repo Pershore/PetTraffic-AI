@@ -21,6 +21,16 @@ printf 'deb [arch=%s signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg
 apt-get update
 apt-get install -y gh
 
+# Ubuntu's packaged npm can be present but broken when node-glob files are missing.
+# Repair the distro packages once before installing Codex.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ ! -f "$SCRIPT_DIR/ensure-npm.sh" ]; then
+  curl -fsSL https://raw.githubusercontent.com/Pershore/PetTraffic-AI/main/tools/termux/ensure-npm.sh -o /tmp/pettraffic-ensure-npm.sh
+  bash /tmp/pettraffic-ensure-npm.sh
+else
+  bash "$SCRIPT_DIR/ensure-npm.sh"
+fi
+
 # Codex CLI uses the ChatGPT sign-in flow; no API key is required for this setup.
 npm install --global @openai/codex
 
@@ -31,15 +41,14 @@ if ! gh auth status --hostname github.com >/dev/null 2>&1; then
 fi
 gh auth setup-git
 
+CODEX_AUTH="OK"
 if ! codex login status >/dev/null 2>&1; then
+  CODEX_AUTH="WAITING"
   echo
-  echo "2/2 – Codex prisijungimas per ChatGPT:"
-  if ! codex login --device-auth; then
-    echo "Codex įrenginio kodo prisijungimas nepavyko." >&2
-    echo "Patikrinkite ChatGPT Settings → Security → Device code login (beta)." >&2
-    echo "Jei naudojate valdomą darbo sritį, šį nustatymą turi įjungti administratorius." >&2
-    exit 1
-  fi
+  echo "LAUKIA: Codex dar neprisijungęs. Dėl ankstesnio 15 min. skirtojo laiko diegimas nebandys automatiškai laukti."
+  echo "Pirmiausia įjunkite ChatGPT Settings → Security → Device code login (beta)."
+  echo "Tada Ubuntu aplinkoje paleiskite: codex login --device-auth"
+  echo "Jei paskyra valdoma darbo srities, leidimą turi įjungti administratorius."
 fi
 
 WORKDIR="$HOME/PetTraffic-AI"
@@ -54,14 +63,25 @@ fi
 echo
 echo "Patikra:"
 gh auth status --hostname github.com
-codex login status
+if codex login status >/dev/null 2>&1; then
+  CODEX_AUTH="OK"
+  codex login status
+else
+  CODEX_AUTH="WAITING"
+  echo "Codex prisijungimas: LAUKIA"
+fi
 codex --version
-codex doctor
+if [ "$CODEX_AUTH" = "OK" ]; then
+  codex doctor || echo "ĮSPĖJIMAS: codex doctor rado aplinkos problemų; patikrinkite išvestį."
+else
+  echo "codex doctor praleistas, kol neužbaigtas ChatGPT prisijungimas."
+fi
 git -C "$WORKDIR" status --short --branch
 
 cat <<'EOF'
 
-ĮDIEGTA: Debian proot + Git + GitHub CLI + Codex CLI.
+ĮDIEGTA: esama Linux proot aplinka + Git + GitHub CLI + Codex CLI.
+Codex autentifikacija: ${CODEX_AUTH}.
 ATKREIPK DĖMESĮ: tai dar nėra nuolatinis foninis agentas. Termux turi likti aktyvus,
 o Codex užduotis kol kas paleidžiama rankiniu būdu. Automatinį užduočių paėmimą
 iš GitHub ir PR kūrimą įjungsime atskiru, patikrintu etapu.
