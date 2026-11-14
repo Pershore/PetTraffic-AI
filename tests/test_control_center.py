@@ -8,8 +8,8 @@ class ControlCenterTests(unittest.TestCase):
     def test_daily_suite_jobs_run_on_direct_schedule_events(self):
         with open(".github/workflows/daily-suite.yml", encoding="utf-8") as stream:
             workflow = stream.read()
-        self.assertIn("  topic-radar:\\n    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'", workflow)
-        self.assertIn("  live-check:\\n    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'", workflow)
+        self.assertIn("  topic-radar:\n    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'", workflow)
+        self.assertIn("  live-check:\n    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'", workflow)
         self.assertNotIn("github.event.workflow_run.event == 'schedule'", workflow)
 
     def test_control_center_rechecks_after_worker_deployment(self):
