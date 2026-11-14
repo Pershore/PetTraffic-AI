@@ -235,3 +235,18 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 - Merge commit: `9eacbd44636a9110b74878e7735ee5536e5e6bdd`. Pakeitimai apsiribojo Termux diegimo skriptais, testais, CI ir dokumentacija; vieša svetainė turinio prasme, Worker/D1, DNS, secrets, ARO Vet ir mokamos paslaugos nekeistos.
 - **Telefono būsena lieka LAUKIA:** CI patvirtina scenarijaus logiką, bet ne vartotojo Ubuntu aplinkos atkūrimą, `gh auth` ar Codex autentifikaciją. Kitas žingsnis – vieną kartą pakartoti bootstrap iš Termux su atnaujintu `main` ir patikrinti tik ne slaptą galutinę išvestį.
 - Aktyvus darbo laikas ir vartotojo veiksmo trukmė nematuoti.
+
+## 2026-11-14 – Autonominių procesų ir Codex būklės patikra
+
+- Patvirtinta pagrindinė šaka `main`: HEAD `f964ea487a5bb1b259512816969954ec6234a4f3`; atvirų PR nėra. Vartotojo pateikta Ubuntu išvestis: `git status --short --branch` → `## main...origin/main` (švari ir sinchronizuota kopija).
+- Ubuntu aplinkoje `codex-cli 0.167.1` ir `codex login status` patvirtino prisijungimą per ChatGPT. GitHub CLI prisijungimas buvo patikrintas Termux aplinkoje; jo būklė Ubuntu aplinkoje atskirai neteigta.
+- GitHub Actions API `event=schedule` grąžino 2 vykdymus: site-check `43594970279` (2026-11-14 12:28:10 UTC, success) ir ankstesnį site-check `43433299383` (2026-11-13 13:23:57 UTC, success). Tai patvirtina, kad site-check schedule bent kartą suveikė.
+- Naujausi analytics `43586027796`, topic-radar `43422828353` ir live-site-monitor `43422828198` vykdymai buvo `event=push`, ne `schedule`. Todėl šių trijų dieninių grafikų veikimas lieka NEPATVIRTINTAS. Atvirų PR nėra.
+- Site-check `43594970279` ir naujausias push site-check `43597374771` – success. Naujausiame site-check žurnale matytas neblokuojantis RSS timeout perspėjimas vienai „kačių priežiūros“ užklausai; visas workflow baigėsi success.
+- Lighthouse `43517122731` (push, 2026-11-13) – success; 10 mobile/desktop auditų artefaktas išsaugotas. Išvestuose mobile rodikliuose LCP apie 1.05–2.35 s, CLS 0, TBT 0–163 ms; naujo schedule paleidimo nepatvirtinta.
+- Analytics snapshot `43586027796` (push, success), GA4 2026-11-07–13: 7 aktyvūs / 7 nauji naudotojai, 24 sesijos, 88 puslapių peržiūros, 0 patvirtintų organinių sesijų. Search Console 2026-11-05–11: 0 parodymų, 0 paspaudimų, CTR 0, vidutinė pozicija 0; sitemap pateiktas, bet apdorojimas pending, 5 prioritetiniai URL Google dar nežinomi.
+- Topic-radar paskutinis įrašas 2026-11-13 12:09:51 UTC: 31 unikali nuoroda iš Google News RSS antraščių; tai nėra Google paieškos apimčių matavimas. 2026-11-14 schedule vykdymo nėra.
+- Gyvas Worker `/health` 2026-11-14 13:00:46 UTC: HTTP 200, `ok=true`, D1 ir control-core schema connected, heartbeat `site_ok=true`, svetainė HTTP 200. Control-core `needs_evidence`, spragų skaičius 4, atmintis present. Agentų paskutinis ciklas failed 2026-11-14 08:20:20 UTC po 4 AI kvietimų, klaida `model_content-review_model_output_invalid_json`; šis ciklas įvyko PR #183 Worker deploy (11:51 UTC) metu dar prieš diegimą. Pataisos veiksmingumas laukia kito ciklo 2026-11-15 08:20 UTC.
+- Esama kasdienė priežiūros automatizacija liko įjungta; papildomos dubliuojančios automatizacijos nesukurtos. Šioje sesijoje paleistas jos `run_now` veiksmas pateikė inline užduotį, kuri buvo vykdoma šiame pokalbyje.
+- Dabartinė GitHub jungtis leidžia skaityti Actions vykdymus, bet neturi workflow-dispatch veiksmo. Todėl nebuvo bandoma sukelti dirbtinio push/no-op commit ar apeiti Worker `/v1/tasks*` išjungimo. Rankinis Actions paleidimas per šią jungtį nepasiekiamas.
+- Jokie svetainės failai, viešas turinys, DNS, Cloudflare Worker/D1 konfigūracija ar duomenys, secrets, GitHub Actions nustatymai, ARO Vet ar mokamos paslaugos nebuvo pakeisti.
