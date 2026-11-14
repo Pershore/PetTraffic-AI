@@ -76,7 +76,14 @@ Tikras bootstrap iš Termux patvirtintas: Linux proot, Git, GitHub CLI, Codex CL
 - Worker Cron trigeriai po deploy realiai užregistruoti: */15 * * * * (svetainės + D1 heartbeat) ir 20 7,8 * * * (10:20 Europe/Vilnius AI agentų langas). Deploy run #43603199126 – success; Worker versija 71dfa69f-88bf-4c04-9b6c-5a124be3dbc9.
 - PR #197 sujungtas commit 6c88f7b3437a753973dfe45108874f4a6c4f4456. Worker testai, Cloudflare prieigos ir konfigūracijos patikra bei site-check – success; production deploy patvirtino D1/control-core ryšį ir apsaugoto API 401 ribą.
 - Pataisa: vieno specialisto netaisyklingas AI JSON atsakymas nebestabdo viso ciklo; koordinatorius naudoja deterministinį read-only atsarginį sujungimą, jei jo AI atsakymas netinkamas. Jei visi specialistai negrąžina tinkamų rezultatų, penktas AI kvietimas praleidžiamas ir išsaugoma evidence-gap ataskaita.
-- Gyvas /health po deploy patvirtina ok=true, D1 connected, control-core schema connected. Jis dar rodo seną 2026-11-14 08:20 UTC agentų gedimą, įvykusį iki naujo deploy. Naujos pataisos realus veikimas dar LAUKIA kito 2026-11-15 08:20 UTC (10:20 LT) ciklo.
+- Gyvas /health po deploy patvirtina ok=true, D1 connected, control-core schema connected; naujas Worker heartbeat po deploy PATIKRINTAS 2026-11-14 14:15:47 UTC (site HTTP 200, D1 connected). Jis dar rodo seną 2026-11-14 08:20 UTC agentų gedimą, įvykusį iki naujo deploy. Naujos agentų pataisos realus veikimas dar LAUKIA kito 2026-11-15 08:20 UTC (10:20 LT) ciklo.
 - GitHub Actions kasdienio rinkinio grafikai lieka dalinai NEPATVIRTINTI: vienas suplanuotas Google API connectivity run #43602315641 – success, tačiau analytics/topic/live-site schedule ciklo dar nepatvirtinome. Push ir workflow_run nėra schedule įrodymas.
 - ChatGPT kasdienė koordinatoriaus automatizacija lieka vienintelė ir įjungta; dublikato nekurti. Termux Codex autentifikacija patvirtinta, bet tiesioginės Android shell prieigos šiame pokalbyje nėra.
 - /v1/tasks API lieka tyčia išjungta. Tai reiškia, kad AI specialistai analizuoja ir teikia rekomendacijas, bet negali savavališkai vykdyti GitHub užduočių ar keisti produkcijos. Publikavimui, production, DNS, saugumo teisių ir išlaidų pakeitimams lieka žmogaus patvirtinimo vartai.
+
+
+## Daily-suite ir pagrindinio koordinatoriaus grafikas (2026-11-14)
+
+- PR #199 sujungtas commit abcd5072e51c98d0b68d2d6a948fd09488245c5b. Daily suite dabar turi nepriklausomą GitHub Actions cron 06:10 UTC (08:10 Europe/Vilnius), atskirai nuo site-check; Control Center stebi šį naują laiką. Pirmas realus schedule paleidimas laukia 2026-11-15 06:10 UTC.
+- Esama vienintelė ChatGPT priežiūros automatizacija perkelta iš 09:45 į 11:00 Europe/Vilnius, kad vykdytųsi po daily-suite 08:10, Worker AI agentų 10:20 ir Control Center 10:40. Ji lieka enabled; naujos automatikos nesukurtos.
+- Naujo grafiko realus veikimas dar LAUKIA rytojaus schedule įrodymo; push ir workflow_run paleidimai nėra schedule įrodymas.
