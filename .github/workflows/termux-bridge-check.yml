@@ -43,7 +43,10 @@ jobs:
           grep -Fq 'Device code login' tools/termux/setup-debian.sh
           grep -Fq 'ensure-npm.sh' tools/termux/setup-debian.sh
           ! grep -Fq 'BASH_SOURCE' tools/termux/setup-debian.sh
-          grep -Fq 'apt-get install --reinstall -y nodejs npm node-glob' tools/termux/ensure-npm.sh
+          grep -Fq 'registry.npmjs.org' tools/termux/ensure-npm.sh
+          grep -Fq 'SHA-512' tools/termux/ensure-npm.sh
+          grep -Fq 'npm install --global --prefix /usr/local' tools/termux/setup-debian.sh
+          ! grep -Fq 'apt-get install --reinstall -y nodejs npm node-glob' tools/termux/ensure-npm.sh
           grep -Fq 'Device code login' docs/TERMUX_CODEX_BRIDGE.md
           grep -Fq 'gh auth setup-git' tools/termux/setup-debian.sh
           grep -Fq 'proot-distro login "$DISTRO"' tools/termux/bootstrap.sh
