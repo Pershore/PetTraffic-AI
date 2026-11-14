@@ -414,3 +414,11 @@ Pirmiausia būtinas Cloudflare tokeno rotacijos ir GitHub secret atnaujinimo pat
 - Po PR #199 daily-suite tiesioginio cron įvedimo nustatyta papildoma priklausomybė: sync-control-api atpažino tik seną display_title „Scheduled daily suite from site-check #...“. Be pataisos naujo schedule GA4/GSC ir topic artefaktai nebūtų sinchronizuojami į D1.
 - Pakeista patikra į GitHub workflow_run API event == schedule; pridėtas regresijos testas. PR CI: snapshot sync test, central-control-center ir site-check – success.
 - Pirmas realus schedule + D1 write/read-back ciklas laukia 2026-11-15 06:10 UTC. Iki tol schedule veikimas dar nepatvirtintas.
+
+
+## 2026-11-14 – pagrindinio koordinatoriaus instrukcijų suderinimas
+
+- Pagrindinės ChatGPT priežiūros automatizacijos promptas atnaujintas pagal naują architektūrą: PR #197 agentų atsparumo pataisa, PR #199 direct daily-suite cron, PR #202 D1 snapshot sync.
+- Promptas nurodo tvarką: daily-suite 08:10 LT, Worker AI 10:20 LT, Control Center 10:40 LT, koordinatorius 11:00 LT; privaloma tikrinti tikrus schedule vykdymus ir D1 read-back.
+- Automatizacija lieka enabled, dublikatų nėra; next_run_time 2026-11-15 11:00 Europe/Vilnius.
+- PR #203 dokumentacijos pakeitimas sujungtas; po merge site-check ir Termux bridge – success.
