@@ -75,3 +75,5 @@ Spręsti pirmą aptiktą problemą: GA4 ir Search Console (warning). Suplanuotas
 - PR #183 Worker JSON pataisa įdiegta; naujas agentų ciklas po deploy dar neįvyko. Kitas numatytas ciklas – 2026-11-15 08:20 UTC (10:20 Europe/Vilnius), todėl veiksmingumas LAUKIA.
 - Issue #145 lieka OPEN; nėra atvirų PR. Termux CI patvirtina tik bootstrap scenarijus, ne telefono autentifikaciją. Worker `/v1/tasks*` API palikta tyčia išjungta.
 - Šios sesijos metu nebuvo keičiamas svetainės kodas, Worker/D1, DNS, secrets, Actions nustatymai, ARO Vet ar mokamos paslaugos.
+
+- Dokumentacijos audito PR #190 sujungtas commit `097f76c04c002cd41b1ec007d0e8b1e7e341b8c1`; PR site-check `43593401217` ir Cloudflare Pages preview – success; po merge main site-check `43593444358` – success. Atvirų PR nėra.
