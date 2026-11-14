@@ -406,3 +406,11 @@ Pirmiausia būtinas Cloudflare tokeno rotacijos ir GitHub secret atnaujinimo pat
 - Pirmas direct schedule paleidimas laukia 2026-11-15 06:10 UTC. Jei jis įvyks, tikrinti GA4/GSC, topic radar ir live-site job rezultatus bei artefaktus.
 - Vienintelė ChatGPT kasdienė priežiūros automatizacija perkelta iš 09:45 į 11:00 Europe/Vilnius; ji vykdysis po daily-suite 08:10, Worker AI ciklo 10:20 ir Control Center 10:40. Automatizacija išlieka įjungta; dublikatų nėra.
 - Worker /v1/tasks API lieka išjungta. Naujas grafikas neįrodo savavališko Codex vykdymo; jis užtikrina nuoseklią suplanuotų specialistų analizę ir koordinatoriaus peržiūrą.
+
+
+## 2026-11-14 – daily-suite D1 sinchronizavimo suderinimas
+
+- PR #202 sujungtas commit 073bc8d96d81e174c0873061dbffee9aa4162714: https://github.com/Pershore/PetTraffic-AI/pull/202
+- Po PR #199 daily-suite tiesioginio cron įvedimo nustatyta papildoma priklausomybė: sync-control-api atpažino tik seną display_title „Scheduled daily suite from site-check #...“. Be pataisos naujo schedule GA4/GSC ir topic artefaktai nebūtų sinchronizuojami į D1.
+- Pakeista patikra į GitHub workflow_run API event == schedule; pridėtas regresijos testas. PR CI: snapshot sync test, central-control-center ir site-check – success.
+- Pirmas realus schedule + D1 write/read-back ciklas laukia 2026-11-15 06:10 UTC. Iki tol schedule veikimas dar nepatvirtintas.
