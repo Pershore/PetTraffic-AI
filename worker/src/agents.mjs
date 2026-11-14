@@ -79,7 +79,7 @@ export async function callModel(env,system,input) {
   // GPT-OSS on Workers AI supports the Responses API on the Worker binding.
   // Low reasoning effort leaves more of the bounded output budget for the JSON result.
   const result=await env.AI.run(MODEL,{
-   input:[{role:"system",content:system},{role:"user",content:input.slice(0,MAX_INPUT_CHARS)}],
+   input:[{role:"system",content:system+"\n\nIšvesties ribos: grąžink vieną JSON objektą be Markdown ir be papildomo teksto. Privalomi laukai: status (string), findings (masyvas), recommendations (masyvas), evidence_gaps (masyvas). Kiekviename masyve daugiausia po 2 trumpus įrašus; kiekvienas įrašas iki 160 simbolių. Jei nėra faktų, naudok tuščius masyvus. Neįtrauk ilgų paaiškinimų."},{role:"user",content:input.slice(0,MAX_INPUT_CHARS)}],
    reasoning:{effort:"low"},
    max_output_tokens:MAX_OUTPUT_TOKENS,
   });
