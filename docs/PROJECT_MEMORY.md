@@ -320,7 +320,7 @@ Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama 
 - Maksimali riba lieka 5 AI kvietimai per UTC dieną; jokių papildomų kvietimų ši pataisa neprideda.
 
 ### Dabartinė reali būsena
-- Worker heartbeat veikia ir buvo patvirtintas gyvu /health atsakymu; po deploy paskutinis matytas heartbeat dar buvo 2026-11-14 14:00:47 UTC (prieš deploy). Kitas 15 min. heartbeat turi patvirtinti naujo deploy tęstinumą.
+- Worker heartbeat po naujo deploy PATIKRINTAS gyvu /health atsakymu 2026-11-14 14:15:47 UTC: site_ok=true, site_status=200, database_ok=true. Tai patvirtina naujo Worker deploy tęstinį cron vykdymą.
 - Gyvas /health po deploy: Worker ok=true, D1 connected, control-core schema connected, memory present. agent_orchestration vis dar rodo 2026-11-14 08:20 UTC ciklo gedimą model_content-review_model_output_invalid_json; jis įvyko prieš naują pataisą. Pataisos realus veikimas dar LAUKIA 2026-11-15 08:20 UTC (10:20 Europe/Vilnius) ciklo.
 - GitHub Actions schedule veikimas dalinis / nepatvirtintas. 2026-11-14 Google API connectivity schedule run #43602315641 – success. Analytics/topic radar/live monitor kasdienio rinkinio schedule paleidimas dar nepatvirtintas; push ir workflow_run įvykiai nelaikomi schedule įrodymu. Dabartinė GitHub jungtis nepateikia workflow-dispatch ar workflow aktyvumo nustatymų valdymo.
 - ChatGPT kasdienė priežiūros automatizacija lieka viena, enabled; dublikatų nėra.
