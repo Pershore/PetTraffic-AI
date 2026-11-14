@@ -1,6 +1,6 @@
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
-- Atnaujinta: 2026-11-14T08:54:43.241707+00:00
+- Atnaujinta: 2026-11-14T10:15:47.273Z (papildomas gyvas Worker health patikrinimas)
 - Būsena: **REIKIA DĖMESIO**
 - GitHub run: 43578010338
 - Šaltinio commit: 588314afcc46c0f157e452896a6f3c991bd86d70
@@ -11,7 +11,7 @@ Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataska
 
 ## Kitas veiksmas
 
-Spręsti pirmą aptiktą problemą: GA4 ir Search Console (warning). Suplanuotas ciklas nuo 2026-11-14 06:47 UTC dar neįvykdytas; suplanuotų paleidimų istorijoje nėra. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.
+Pirmiausia užbaigti PR #183 AI JSON išvesties pataisos testus; Worker runtime nediegti, kol nepatvirtinta Cloudflare tokeno rotacija. Toliau spręsti schedule-trigger paleidimų nebuvimą ir GA4/GSC nuskaitymo būseną.
 
 ## Patvirtinti procesai
 
@@ -20,7 +20,7 @@ Spręsti pirmą aptiktą problemą: GA4 ir Search Console (warning). Suplanuotas
 ## Problemos
 
 - **GA4 ir Search Console** (warning): Suplanuotas ciklas nuo 2026-11-14 06:47 UTC dar neįvykdytas; suplanuotų paleidimų istorijoje nėra. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia. – https://github.com/Pershore/PetTraffic-AI/actions/runs/43443849180
-- **Centrinės API sinchronizavimas** (failure): Paskutinis paleidimas nepavyko. – https://github.com/Pershore/PetTraffic-AI/actions/runs/43577927245
+- **Centrinės API sinchronizavimas**: ankstesnis run #43577927245 nepavyko dėl per didelės aplinkos reikšmės; vėlesnis run #43578044588 sėkmingas, D1 readback patvirtintas.
 - **Temų radaras** (warning): Suplanuotas ciklas nuo 2026-11-14 06:23 UTC dar neįvykdytas; suplanuotų paleidimų istorijoje nėra. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia. – https://github.com/Pershore/PetTraffic-AI/actions/runs/43422828353
 - **Svetainės stebėjimas** (warning): Suplanuotas ciklas nuo 2026-11-14 07:11 UTC dar neįvykdytas; suplanuotų paleidimų istorijoje nėra. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia. – https://github.com/Pershore/PetTraffic-AI/actions/runs/43422828198
 - **AI agentai + control-core atmintis** (failure): AI agentų ciklas nepavyko (2026-11-14); AI kvietimų: 4; klaida: model_content-review_model_output_invalid_json. – https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health
@@ -75,3 +75,18 @@ Spręsti pirmą aptiktą problemą: GA4 ir Search Console (warning). Suplanuotas
 - Telefono aplinkos būsena vis dar LAUKIA: dar nepatvirtinta, kad visas bootstrap užbaigėsi, GitHub CLI prisijungęs, Codex autentifikuotas, codex doctor sėkmingas ir repo klonas tvarkingas.
 - Kitas veiksmas: vartotojas pakartoja tą pačią bootstrap komandą Termux programoje. Jei Codex pažymimas WAITING, atlikti atskirą device-code prisijungimą tik įjungus Device code login (beta).
 - Jokių Cloudflare production, Worker/D1, DNS, secrets, ARO Vet ar mokamų paslaugų pakeitimų neatlikta.
+
+
+## 2026-11-14 – papildomas savarankiškas auditas (10:15–10:26 UTC)
+
+- Gyvas Worker health endpointas: `ok=true`; D1 ir control-core schema connected; heartbeat `2026-11-14T10:15:47.273Z`; svetainė HTTP 200; database_ok=true.
+- Control-core sprendimo JSON valid, memory present; dabartinis sprendimas `needs_evidence`, 4 evidence gaps, 0 recommendations.
+- AI agentų ciklas vis dar failed po 4 kvietimų: `model_content-review_model_output_invalid_json`.
+- PR #183 atidarytas: https://github.com/Pershore/PetTraffic-AI/pull/183. Įdėtos kompaktiško JSON išvesties taisyklės ir testai. Pirmas testas atskleidė seną tikslų prompt assertion; jis pataisytas, nauji PR patikrinimai dar vykdomi. Worker deploy praleistas; production nepakeista.
+- Main site-check #514 ir Termux bridge #39 – success. PR #182 sujungtas, stdin bootstrap klaida pašalinta.
+- Snapshot sync incidentas #43577927245 išspręstas vėlesniu sėkmingu run #43578044588.
+- Naujausiuose Actions run įrašuose nėra schedule-triggered vykdymų topic radar, analytics, live monitor ir control center. Workflow grafikai kode yra, bet Actions administravimo būsenos ši jungtis nerodo.
+- GA4/GSC naujo patvirtinto snapshot nėra; GA4 timeout nelaikomas nuliniu srautu.
+- Saugumo blokatorius: Cloudflare API tokenas laikomas galimai atskleistu; jį reikia išrotuoti Cloudflare ir atnaujinti GitHub secret. Dabartinė jungtis negali keisti Cloudflare paskyros ar GitHub secrets. PR #183 runtime kodo nejungti / nediegti iki rotacijos patvirtinimo.
+- Android Termux/Codex autentifikacija iš šios aplinkos nepasiekiama; CI patikra neįrodo telefono prisijungimo.
+- Issue #145 atnaujintas dabartine būsena. ARO Vet, DNS, Cloudflare production, D1 schema, viešas turinys ir mokamos paslaugos nepakeisti.
