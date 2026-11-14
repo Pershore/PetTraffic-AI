@@ -105,7 +105,7 @@
   ],
   "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.",
   "manual_audit": {
-    "audited_at": "2026-11-14T10:54:03Z",
+    "audited_at": "2026-11-14T10:56:42Z",
     "main_head_commit": "1aafc9348ea04ee42af9519e5fc8740249286094",
     "project_memory": {
       "status": "merged_and_ci_verified",
