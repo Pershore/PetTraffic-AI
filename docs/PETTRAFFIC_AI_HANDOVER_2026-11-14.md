@@ -336,3 +336,23 @@ Pirmiausia būtinas Cloudflare tokeno rotacijos ir GitHub secret atnaujinimo pat
 - Merge commit: `9eacbd44636a9110b74878e7735ee5536e5e6bdd`. Pakeitimai apsiribojo Termux diegimo skriptais, testais, CI ir dokumentacija; vieša svetainė turinio prasme, Worker/D1, DNS, secrets, ARO Vet ir mokamos paslaugos nekeistos.
 - **Telefono būsena lieka LAUKIA:** CI patvirtina scenarijaus logiką, bet ne vartotojo Ubuntu aplinkos atkūrimą, `gh auth` ar Codex autentifikaciją. Kitas žingsnis – vieną kartą pakartoti bootstrap iš Termux su atnaujintu `main` ir patikrinti tik ne slaptą galutinę išvestį.
 - Aktyvus darbo laikas ir vartotojo veiksmo trukmė nematuoti.
+
+## 2026-11-14 – Autonominių procesų paleidimo ir būklės perdavimas
+
+### Patvirtinta
+- `main` HEAD: `f964ea487a5bb1b259512816969954ec6234a4f3`; prieš šį dokumentacijos PR atvirų PR nebuvo (šis audito PR – #192).
+- Vartotojo pateikta Ubuntu patikra: `git status --short --branch` → `## main...origin/main`. Ubuntu Codex CLI 0.167.1 prisijungęs per ChatGPT.
+- GitHub Actions `event=schedule` istorijoje rasti du vykdymai – site-check `43594970279` (2026-11-14 12:28:10 UTC, success) ir site-check `43433299383` (2026-11-13 13:23:57 UTC, success). Taigi site-check grafikas bent kartą suveikė.
+- Analytics `43586027796`, topic-radar `43422828353` ir live-site-monitor `43422828198` yra sėkmingi push vykdymai, o ne schedule. Šių grafikų veikimas lieka NEPATVIRTINTAS.
+- Naujausias site-check `43597374771` – success. Vienas RSS timeout perspėjimas žurnale neužkirto kelio sėkmingam workflow.
+- Lighthouse `43517122731` – success; 10 mobile/desktop auditų artefaktas išsaugotas. Išvestuose mobile LCP rodikliuose apie 1.05–2.35 s, CLS 0, TBT 0–163 ms.
+- GA4/GSC snapshot `43586027796` (push): GA4 2026-11-07–13 – 7 aktyvūs naudotojai, 7 nauji, 24 sesijos, 88 peržiūros, 0 patvirtintų organinių sesijų. GSC 2026-11-05–11 – 0 parodymų, 0 paspaudimų, CTR 0, pozicija 0; sitemap pateiktas, apdorojimas pending; 5 prioritetiniai URL dar nežinomi Google indeksui.
+- Topic radar paskutinis sėkmingas vykdymas 2026-11-13; 31 unikali Google News RSS nuoroda. Tai nėra keyword volume ar Google paieškos paklausos įrodymas.
+- Gyvas Worker `/health`: HTTP 200, `ok=true`, D1 ir control-core schema connected; heartbeat 2026-11-14 13:00:46 UTC, svetainė HTTP 200. Control-core `needs_evidence`, 4 evidence gaps, memory present.
+- Agentų ciklas failed 2026-11-14 08:20:20 UTC po 4 AI kvietimų su `model_content-review_model_output_invalid_json`. Tai buvo prieš PR #183 Worker deploy 11:51 UTC; kitos dienos 08:20 UTC (10:20 LT) ciklas yra pirmas po diegimo ir turi patvirtinti pataisos veiksmingumą.
+
+### Apribojimai ir kitas veiksmas
+- GitHub jungtis gali skaityti Actions, bet nepateikia workflow-dispatch operacijos. Todėl analytics/topic-radar/live-monitor negalima saugiai paleisti rankiniu būdu per šią jungtį; dirbtinis commit vien tam, kad sužadintų push workflow, nekuriamas.
+- Worker `/v1/tasks*` API lieka tyčia išjungta; dienos agentų ciklo idempotentiškumas neapeinamas.
+- Kitas konkretus veiksmas: patikrinti 2026-11-15 08:20 UTC Worker agentų ciklą ir artimiausius realius GitHub schedule vykdymus; jeigu analytics, topic radar ar live monitor vis dar nepaleidžiami, tęsti tik skaitymo diagnostiką ir ieškoti autorizuoto workflow-dispatch kelio.
+- Jokie production, DNS, secrets, Worker/D1, ARO Vet, viešo turinio ar mokamų paslaugų pakeitimai neatlikti.
