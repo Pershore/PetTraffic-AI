@@ -108,6 +108,7 @@ test("repeated invalid model outputs use deterministic fallback and persist evid
  const{env,state}=mockEnv({modelResponse:'{"status":"reviewed"'});
  const result=await runAgentOrchestration(env);
  assert.equal(result.completed,true);
+ assert.equal(result.ai_calls,4,"return the actual reserved call count when coordinator is skipped");
  assert.equal(state.aiCalls,4,"skip the coordinator call when no specialist produced usable evidence");
  const completed=state.updates.find(x=>x.sql.includes("status='completed'"));
  assert.ok(completed);

@@ -217,7 +217,7 @@ export async function runAgentOrchestration(env) {
   await persistControlDecision(env,decision);
   stage="save_agent_report";
   await env.DB.prepare("UPDATE agent_runs SET status='completed',report_json=?,completed_at=? WHERE run_date=?").bind(JSON.stringify({...report,control_decision:decision}),new Date().toISOString(),date).run();
-  return {completed:true,run_date:date,ai_calls:MAX_DAILY_CALLS,control_core_version:decision.core_version};
+  return {completed:true,run_date:date,ai_calls:reservedCalls,control_core_version:decision.core_version};
  } catch(error) {
   const cause=(stage+":"+String(error?.message||"agent_run_failed")).replace(/[^A-Za-z0-9_.:-]/g,"_").slice(0,100);
   // Preserve partial operational knowledge even when a specialist reservation or model call fails.
