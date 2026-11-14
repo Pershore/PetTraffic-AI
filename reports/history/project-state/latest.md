@@ -1,13 +1,14 @@
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
-- Atnaujinta: 2026-11-14 (patikra po 10:38 UTC)
+- Atnaujinta: 2026-11-14 (rankinė tęstinumo patikra po PR #185 ir #186, 10:54 UTC)
 - Būsena: **REIKIA DĖMESIO**
-- GitHub run: 43586067171
-- Šaltinio commit: b0cfcbe1ad7e6d73673c86dc1b3c7052b9a80b3a
+- Paskutinis automatinis Control Center run: 43586067171
+- Naujausias main commit: 3c32740f052b33624b2f318a8be6aa8f5ebbfad5
+- Automatinio snapshot šaltinio commit: 2a7eaf09aedbccec4b26a5338b51a2198bf85518
 
 ## Paskutinis patikrintas etapas
 
-Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataskaitoje.
+Kanoninė projekto atmintis sukurta ir sujungta PR #185; po-merge dokumentų korekcijos PR #186 taip pat sujungtos. Main site-check #43587281754, Termux bridge #43587281810, PR #186 site-check #43587388813 ir bridge #43587388672 – success. Tai patvirtina dokumentacijos ir CI būklę, bet ne naują Worker AI sėkmingą ciklą ar telefono autentifikaciją.
 
 ## Kitas veiksmas
 
@@ -15,7 +16,7 @@ Pagrindinis kasdienis ChatGPT koordinatorius yra įjungtas ir kitą kartą numat
 
 ## Patvirtinti procesai
 
-- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 5 min.
+- Cloudflare Worker + D1: paskutinis gyvas /health įrodymas 2026-11-14 10:30:47 UTC rodė Worker, D1 ir control-core schemą connected, site HTTP 200. Naujas gyvas /health šiame audite neatliktas; nelaikyti heartbeat „prieš 5 min.“.
 
 ## Problemos
 
@@ -26,9 +27,9 @@ Pagrindinis kasdienis ChatGPT koordinatorius yra įjungtas ir kitą kartą numat
 
 ## Laukiančios patikros
 
-- Centrinės API sinchronizavimas: Vyksta (in_progress).
-- Lighthouse auditas: Workflow atnaujintas 2026-11-13 12:09 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.
-- Centrinis valdymo centras: Vyksta (in_progress).
+- Centrinės API sinchronizavimas: paskutinis žinomas run #43586103335 – success.
+- Lighthouse auditas: paskutinis žinomas run #43517122731 – success; laukiama kito suplanuoto ciklo.
+- Centrinis valdymo centras: paskutinis žinomas run #43586067171 – success.
 
 ## AI agentų ir atminties patikra
 
@@ -74,3 +75,14 @@ Pagrindinis kasdienis ChatGPT koordinatorius yra įjungtas ir kitą kartą numat
 - Cloudflare API tokenas laikomas galimai atskleistu; rotacijos ir GitHub Actions secret atnaujinimo įrodymo nėra. Jokių paslapčių keitimų neatlikta.
 - Issue #145 papildytas komentaru `6876095236`; handover ir work-log atnaujinti.
 - Kodo, repo nustatymų, Worker/D1, DNS, secrets, ARO Vet, viešo turinio ar mokamų paslaugų pakeitimų neatlikta.
+
+
+## 2026-11-14 – kanoninės atminties ir integracijų audito papildymas
+
+- Sukurtas ir sujungtas PR #185: `docs/PROJECT_MEMORY.md` tapo kanonine ilgalaike atmintimi; `docs/SESSION_START.md` sutrumpintas; darbo žurnalo nuorodos ir handover suderinti. Merge commit `245446cf123a25df76b212943353c76e6d3f6c69`.
+- PR #185 ir po-merge CI: site-check #43587205171 / #43587252733 success; Termux bridge #43587205112 / #43587252698 success; main site-check #43587281754 success; main bridge #43587281810 success.
+- PR #186 sujungtas commit `535fba9f44371eb17417c527518e655e1d0b73e5`, patikslinta PR #182 merge SHA ir atnaujinti memory/status dokumentai. PR #186 site-check #43587388813 ir bridge #43587388672 success.
+- Naujausias main commit po automatinio darbo žurnalo: `3c32740f052b33624b2f318a8be6aa8f5ebbfad5`.
+- GitHub integracija realiai veikia; Firecrawl įdiegtas. Tiesioginės Cloudflare paskyros, Android Termux shell ir Codex device-auth jungtys nėra patvirtintos. GA4/GSC nuskaitomi per GitHub Actions.
+- PR #183 tebėra open, deploy skipped iki Cloudflare tokeno rotacijos įrodymo. GitHub schedule paleidimų priežastis nepatvirtinta. Kasdienis ChatGPT koordinatorius enabled.
+- Jokių production, Worker/D1, DNS, secrets, ARO Vet, viešo turinio ar mokamų paslaugų pakeitimų neatlikta.
