@@ -356,3 +356,13 @@ Pirmiausia būtinas Cloudflare tokeno rotacijos ir GitHub secret atnaujinimo pat
 - Worker `/v1/tasks*` API lieka tyčia išjungta; dienos agentų ciklo idempotentiškumas neapeinamas.
 - Kitas konkretus veiksmas: patikrinti 2026-11-15 08:20 UTC Worker agentų ciklą ir artimiausius realius GitHub schedule vykdymus; jeigu analytics, topic radar ar live monitor vis dar nepaleidžiami, tęsti tik skaitymo diagnostiką ir ieškoti autorizuoto workflow-dispatch kelio.
 - Jokie production, DNS, secrets, Worker/D1, ARO Vet, viešo turinio ar mokamų paslaugų pakeitimai neatlikti.
+
+
+## 2026-11-14 – Tikras Android Termux bootstrap patvirtintas
+
+- Vartotojas pateikė galutinę `tools/termux/bootstrap.sh` išvestį iš Termux (`~ $`), o ne Ubuntu root prompt.
+- Patvirtinta: esama Linux proot aplinka, Git, GitHub CLI ir Codex CLI įdiegti; Codex autentifikacija `OK`; vietinės saugyklos būsena `## main...origin/main`.
+- Diagnostikos santrauka: 19 OK, 1 idle, 2 notes, 1 warning, 0 fail. Pilnas `--all` / `--json redacted report` turinys nepateiktas, todėl įspėjimo priežastis dar neidentifikuota.
+- Tai pirmas tikras telefono pusės diegimo ir autentifikacijos įrodymas. Tai **neįrodo** nuolatinio fono agento, automatinio GitHub užduočių paėmimo ar ChatGPT tiesioginio shell ryšio. Termux turi likti aktyvus; Codex užduotys dar paleidžiamos rankiniu būdu.
+- Saugumo sprendimas: Worker `/v1/tasks*` API paliekama išjungta, kol nėra atskiros agento tapatybės, siaurų leidimų, užduočių patikros ir saugaus PR-only vykdymo modelio. Cloudflare paslaptys į telefoną nekeliamos.
+- Kitas veiksmas: suprojektuoti ir patikrinti ribotą GitHub užduočių vykdymo modelį; prieš aktyvavimą atlikti threat-model, testus ir PR peržiūrą. AI agentų Worker ciklo pataisą patikrinti per 2026-11-15 08:20 UTC (10:20 Europe/Vilnius) suplanuotą ciklą.

@@ -275,3 +275,6 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 - Centrinės API sync paleidimai 43600907662, 43600987929 ir 43601193788 – success; D1 snapshot įrašymas ir perskaitymas atgal patvirtinti.
 - Likę darbai: 2026-11-15 05:37 UTC patikrinti pirmą tikrą daily-suite schedule ciklą; 07:27 UTC – Lighthouse; 08:20 UTC – Worker agentų ciklą po PR #183 deploy.
 - ARO Vet, svetainės turinys, DNS, Worker runtime / D1 schema ar konfigūracija, secrets ir mokamos paslaugos nekeistos. Aktyvaus darbo laikas neapskaičiuotas; automatinio laukimo ir įrankių trukmė neskaičiuota kaip aktyvus darbas.
+
+
+| 2026-11-14 | Tikras Android Termux bootstrap ir Codex autentifikacijos patvirtinimas | 15:57 Europe/Vilnius (vartotojo pateikta išvestis) | NEMATUOTA | NEMATUOTA | NETAikoma | NEAPSKAIČIUOTA | Bootstrap išvestis: esama Linux proot aplinka, Git, GitHub CLI ir Codex CLI įdiegti; Codex autentifikacija OK; `git status` – `## main...origin/main`; diagnostikos santrauka 19 OK, 1 idle, 2 notes, 1 warning, 0 fail. Tai patvirtina lokalią aplinką, bet ne nuolatinį foninį agentą ar automatinį GitHub užduočių paėmimą. Jokių paslapčių nepateikta. Kitas etapas – saugios užduočių eilės / agento tapatybės projektavimas; Worker `/v1/tasks*` lieka išjungtas.

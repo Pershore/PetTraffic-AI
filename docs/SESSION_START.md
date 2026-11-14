@@ -64,3 +64,8 @@ Atnaujinti `reports/work-log/README.md`, `reports/history/project-state/latest.m
 - PR #191 sujungtas: `9eacbd44636a9110b74878e7735ee5536e5e6bdd`.
 - Ubuntu npm/glob klaidos atkūrimo scenarijus dabar naudoja oficialų npm 10.9.10 su SHA-512 patikra; Termux CI, site-check ir Cloudflare Pages po merge – success.
 - Kitas žingsnis: vartotojui vieną kartą pakartoti bootstrap iš Termux. Iki realios telefono išvesties gh/Codex autentifikacija lieka LAUKIA.
+
+
+## Termux / Codex patikslinimas (2026-11-14)
+
+Tikras bootstrap iš Termux patvirtintas: Linux proot, Git, GitHub CLI, Codex CLI įdiegti; Codex autentifikacija OK; `main...origin/main`. Tai nėra nuolatinio fono agento ar automatinio GitHub užduočių paėmimo įrodymas. Kitas etapas – saugios užduočių eilės ir atskiros agento tapatybės projektavimas; `/v1/tasks*` palikti išjungtą iki saugumo patikros.
