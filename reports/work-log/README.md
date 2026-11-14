@@ -127,3 +127,18 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 - Vietinis smoke testas: PASS. PR Termux bridge run #38 (https://github.com/Pershore/PetTraffic-AI/actions/runs/43584318735) – success; site-check #512 (https://github.com/Pershore/PetTraffic-AI/actions/runs/43584318685) – success.
 - Dar nepatikrinta: vartotojo telefone pilnas bootstrap po PR #182, gh auth status, codex login status, codex doctor ir klonuotos saugyklos būsena. Kitas veiksmas – vieną kartą pakartoti bootstrap iš Termux ir įvertinti galutinę išvestį.
 - Cloudflare production, Worker/D1, DNS, secrets, ARO Vet ir mokamos paslaugos nepakeistos.
+
+
+## 2026-11-14 – Savarankiškas integracijų auditas ir AI agentų JSON pataisos PR
+
+- Privalomas darbo pradžios protokolas įvykdytas: perskaitytas `automation-history/reports/history/project-state/latest.md` ir `main/reports/work-log/README.md`; patikrinti naujausi commit, PR, Actions vykdymai ir atviras centrinis perspėjimas #145.
+- Patvirtinta: PR #182 jau sujungtas; po jo main Termux bridge run #39 ir site-check #514 – success. PR #182 pašalino `BASH_SOURCE[0]` klaidą vykdant setup per stdin.
+- Gyvas Worker `/health` patikrinimas (2026-11-14 10:15:47Z): `ok=true`, D1 ir control-core schema connected, site HTTP 200, heartbeat sėkmingas; atmintis present, sprendimo JSON valid.
+- AI agentų ciklas vis dar failed po 4 AI kvietimų: `model_content-review_model_output_invalid_json`. Parengtas PR #183: https://github.com/Pershore/PetTraffic-AI/pull/183 – pridedamos griežtos kompaktiško JSON išvesties ribos (iki 2 įrašų masyve, iki 160 simbolių įrašui) ir regresijos testai. Pirmasis PR testas aptiko pasenusį tikslaus system prompt assertion; testas pataisytas. Naujas PR test run #43585231045 laukia vykdymo; Cloudflare validation ir site-check sėkmingi, production deploy praleistas.
+- Snapshot sync run #43577927245 buvo failure dėl `Argument list too long`; vėlesnis run #43578044588 sėkmingai patvirtino D1 įrašymą / nuskaitymą. Šis konkretus sync gedimas laikomas atkurtu.
+- Naujausioje Actions istorijoje nerasta schedule-triggered paleidimų topic radar, analytics, live monitor ir control center. Workflow YAML grafikai yra, tačiau repo Actions nustatymų šia jungtimi patikrinti ar pakeisti negalima.
+- GA4/GSC naujas patvirtintas snapshot dar negautas; GA4 ankstesnis timeout nėra nulis. GSC ankstesni 0 parodymų / paspaudimų nėra laikomi galutiniu srauto įrodymu.
+- Saugumo blokatorius lieka: anksčiau Cloudflare API tokenas buvo siųstas Authorization antraštėje viešam Worker health URL. Reikia jį išrotuoti Cloudflare ir atnaujinti GitHub secret; šios paskyros / secrets operacijos per dabartinę jungtį nepasiekiamos. PR #183 Worker runtime kodo nejungti ir nediegti, kol tokeno rotacija nepatvirtinta.
+- Termux/Codex reali telefono sesija taip pat nepasiekiama nuotoliniam patikrinimui: CI testai patvirtina scenarijaus kodą, bet ne telefono autentifikaciją. Naujų telefono duomenų šiame etape nėra.
+- Atnaujintas centrinis perspėjimas #145 su dabartiniais įrodymais, išspręstu sync incidentu ir likusiais blokatoriais.
+- Nekeista ARO Vet aplinka, viešas turinys, DNS, Worker/D1 schema, Cloudflare production konfigūracija ar mokamos paslaugos. Aktyvus darbo laikas ir įrankių vykdymo trukmė atskirai neišmatuoti.
