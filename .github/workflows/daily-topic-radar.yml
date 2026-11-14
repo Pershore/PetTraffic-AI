@@ -1,8 +1,7 @@
 name: Pet traffic daily topic radar
 
 on:
-  schedule:
-    - cron: "23 6 * * *"
+  # Daily execution is orchestrated by daily-suite.yml after the confirmed site-check schedule.
   workflow_dispatch:
   # Also exercise the radar on relevant main-branch changes, not only cron.
   push:
