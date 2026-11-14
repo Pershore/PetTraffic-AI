@@ -22,8 +22,8 @@ MOCK
 cat > "$TMP/bin/apt-get" <<'MOCK'
 #!/usr/bin/env bash
 printf '%s\n' "$*" >> "$STATE_DIR/apt.log"
-if [ "${APT_REPAIR_FAIL:-0}" = "1" ]; then exit 1; fi
-touch "$STATE_DIR/repaired"
+if [ "${1:-}" = "install" ] && [ "${APT_REPAIR_FAIL:-0}" = "1" ]; then exit 1; fi
+if [ "${1:-}" = "install" ]; then touch "$STATE_DIR/repaired"; fi
 MOCK
 chmod +x "$TMP/bin/npm" "$TMP/bin/apt-get"
 
