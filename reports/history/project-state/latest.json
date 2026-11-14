@@ -106,7 +106,7 @@
   "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.",
   "manual_audit": {
     "audited_at": "2026-11-14T10:54:03Z",
-    "main_head_commit": "3c32740f052b33624b2f318a8be6aa8f5ebbfad5",
+    "main_head_commit": "1aafc9348ea04ee42af9519e5fc8740249286094",
     "project_memory": {
       "status": "merged_and_ci_verified",
       "pull_request": 185,
@@ -134,6 +134,21 @@
         "name": "memory-followup-termux-bridge",
         "run_id": "43587388672",
         "conclusion": "success"
+      },
+      {
+        "name": "coordinator-memory-pr-site-check",
+        "run_id": "43587606977",
+        "conclusion": "success"
+      },
+      {
+        "name": "coordinator-memory-main-site-check",
+        "run_id": "43587642755",
+        "conclusion": "success"
+      },
+      {
+        "name": "main-automatic-work-log",
+        "run_id": "43587642784",
+        "conclusion": "success"
       }
     ],
     "access_matrix": {
@@ -155,8 +170,14 @@
     "coordinator_prompt_changes": [
       "read docs/PROJECT_MEMORY.md at session start",
       "remove stale hard-coded Lighthouse metrics",
-      "preserve generated snapshot timestamps and distinguish manual audit"
+      "preserve generated snapshot timestamps and distinguish manual audit",
+      "documented in PR #187, merge commit 1aafc9348ea04ee42af9519e5fc8740249286094"
     ],
-    "coordinator_schedule": "daily 09:45 Europe/Vilnius; existing automation remains enabled; next run 2026-11-15T09:45:00+02:00"
+    "coordinator_schedule": "daily 09:45 Europe/Vilnius; existing automation remains enabled; next run 2026-11-15T09:45:00+02:00",
+    "latest_schedule_audit": {
+      "checked_at": "2026-11-14T10:56:42Z",
+      "runs_checked": 100,
+      "schedule_events": 0
+    }
   }
 }
