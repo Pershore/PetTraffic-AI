@@ -1,5 +1,5 @@
 name: Pet traffic daily automation suite
-run-name: ${{ github.event.workflow_run.event == 'schedule' && format('Scheduled daily suite from site-check #{0}', github.event.workflow_run.id) || format('Non-scheduled site-check run #{0}', github.event.workflow_run.id) }}
+run-name: "${{ github.event.workflow_run.event == 'schedule' && format('Scheduled daily suite from site-check #{0}', github.event.workflow_run.id) || format('Non-scheduled site-check run #{0}', github.event.workflow_run.id) }}"
 
 on:
   workflow_run:
