@@ -25,17 +25,18 @@ Jeigu privalomų istorijos failų perskaityti nepavyksta, pranešti apie tai ir 
 - Kodo / reikšmingus dokumentacijos pakeitimus daryti atskiroje šakoje per PR; nesujungti, kol privalomos patikros nebaigtos.
 - Po sujungimo patikrinti realų workflow ir gyvą rezultatą, jei taikoma.
 
-## Dabartiniai pagrindiniai blokatoriai (2026-11-14)
+## Dabartinė būsena po 2026-11-14 Worker diegimo
 
-Atminties konsolidavimo PR #185 sujungtas commit `245446cf123a25df76b212943353c76e6d3f6c69`; po merge site-check #43587281754 ir Termux bridge #43587281810 – success. Tai dokumentacijos patikra, ne įrodymas, kad Cloudflare ar Android integracijos prijungtos.
+1. Cloudflare API tokeno rotacija ir GitHub Actions secret CLOUDFLARE_API_TOKEN pakeitimas: vartotojas patvirtino abu veiksmus; pakartotinė CI patikra sėkminga.
+2. PR #183 sujungtas squash commit 6a285a5505e88853a77fb1e31c08fa4fb1d9ad63. Worker JSON išvesties pataisa įdiegta per Actions run #43592016509; Worker versija a34f8850-e1bf-42c0-a055-3e9c9c8714c0.
+3. Po deploy patvirtinta: D1 connected, control-core schema connected, /health ok=true, neautentifikuotas /v1/events grąžina 401. D1 migracijų taikyti nereikėjo.
+4. AI agentų pataisos veiksmingumas dar NEPATVIRTINTAS: gyvas /health vis dar rodo ankstesnį 2026-11-14 08:20 UTC ciklo gedimą model_content-review_model_output_invalid_json. Kitas numatytas agentų ciklas – 2026-11-15 08:20 UTC (10:20 Europe/Vilnius).
+5. GitHub Actions schedule problema lieka NEPATVIRTINTA / REIKIA DĖMESIO: YAML cron yra, bet ankstesnėje istorijoje suplanuotų paleidimų trūko; tiksli priežastis nežinoma. Nekeisti cron spėliojant.
+6. Android Termux / Codex autentifikacija ir lokalaus repo būsena telefone vis dar LAUKIA; CI bridge testai nėra telefono prisijungimo įrodymas.
+7. GA4 30 s timeout pataisa turi vieną sėkmingą realų analytics ciklą; ilgalaikį stabilumą reikia vertinti pagal kitus suplanuotus ciklus.
+8. Worker /v1/tasks* API lieka tyčia išjungta iki atskiros agentų tapatybės ir leidimų politikos.
 
-1. Cloudflare API tokenas laikomas galimai atskleistu. Rotacijos ir GitHub Actions secret `CLOUDFLARE_API_TOKEN` atnaujinimo įrodymo nėra. PR #183 Worker deploy lieka sustabdytas.
-2. GitHub Actions YAML grafikai egzistuoja, bet 2026-11-14 schedule paleidimai nepatvirtinti. Tiksli priežastis nežinoma; dabartinė GitHub jungtis neleidžia valdyti Actions nustatymų.
-3. Worker AI agentų paskutinis žinomas ciklas failed `model_content-review_model_output_invalid_json`; PR #183 atviras, jo production deploy job skipped.
-4. Android Termux / Codex CLI autentifikacija ir lokali repo būsena nepatvirtintos; ChatGPT neturi tiesioginės Android shell prieigos.
-5. GA4 timeout 30 s pataisa sujungta ir vienas realus analytics run success, bet ilgalaikis stabilumas dar neįrodytas.
-
-Prieš tęsiant šiuos punktus dar kartą perskaityti `docs/PROJECT_MEMORY.md` ir naujausius įrodymus. Neperrašyti jau patvirtintos būsenos spėjimais.
+Prieš tęsiant perskaityti docs/PROJECT_MEMORY.md 12 skyrių ir naujausius Actions / Worker įrodymus. Nelaikyti seno agentų gedimo naujos pataisos nesėkme – kol naujas ciklas neįvyko, būsena yra LAUKIA.
 
 ## Šakų paskirtys
 
