@@ -106,7 +106,7 @@
   "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.",
   "manual_audit": {
     "audited_at": "2026-11-14T11:35:00Z",
-    "main_head_commit": "84fc060947d7714d4622b6eab81298a3e593b0b6",
+    "main_head_commit": "97b2b4ac95989d1e70e6aa37398deccb97eda907",
     "project_memory": {
       "status": "merged_and_ci_verified",
       "pull_request": 185,
@@ -166,7 +166,7 @@
       "android_termux_codex_auth_unverified",
       "worker_task_api_intentionally_disabled_pending_agent_identity"
     ],
-    "note": "Manual audit appended separately; generated_at, run_id and source_commit above remain the last automatic Control Center snapshot and were not rewritten as a new automated run.",
+    "note": "PR #188 was merged after PR checks passed; post-merge site-check, work-log and Cloudflare Pages checks passed. The automatic snapshot generated_at/run_id/source_commit remains the last Control Center run, not a new automated snapshot.",
     "coordinator_prompt_updated_at": "2026-11-14T10:55:18.115977Z",
     "coordinator_prompt_changes": [
       "read docs/PROJECT_MEMORY.md at session start",
@@ -204,6 +204,27 @@
       {
         "name": "main-automatic-work-log",
         "run_id": "43587642784",
+        "conclusion": "success"
+      },
+      {
+        "name": "pr188-merged",
+        "pull_request": 188,
+        "merge_commit": "912f318728ffca04ab02df485e499dbedcac4bd1",
+        "conclusion": "merged"
+      },
+      {
+        "name": "post-merge-main-site-check",
+        "run_id": "43591058588",
+        "conclusion": "success"
+      },
+      {
+        "name": "post-merge-automatic-work-log",
+        "run_id": "43591058572",
+        "conclusion": "success"
+      },
+      {
+        "name": "post-merge-cloudflare-pages-check",
+        "commit": "912f318728ffca04ab02df485e499dbedcac4bd1",
         "conclusion": "success"
       }
     ],
