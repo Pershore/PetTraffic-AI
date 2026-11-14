@@ -233,3 +233,14 @@ Papildoma po-merge patikra: main site-check #526 (run `43586152253`) – success
 - Kodo, GitHub Actions nustatymų, secrets, Cloudflare Worker/D1, DNS, ARO Vet, viešo turinio ar mokamų paslaugų pakeitimų neatlikta.
 
 **Kitas veiksmas:** gauti patvirtinimą, kad Cloudflare tokenas išrotuotas ir GitHub Actions secret atnaujintas; atskirai išsiaiškinti, kodėl GitHub cron vykdymai neatsiranda. Iki tol PR #183 production deploy neaktyvuoti.
+
+
+## 14. Kanoninės projekto atminties konsolidavimas (2026-11-14)
+
+- Sukurtas `docs/PROJECT_MEMORY.md` kaip vienintelis kanoninis ilgalaikės projekto atminties dokumentas. Jame sujungti projekto tikslai, dabartinė svetainės kryptis, šaltinių hierarchija, architektūra, integracijų prieigos matrica, realiai patvirtintos metrikos, PR / workflow būsenos, saugumo blokatoriai ir prioritetiniai tolesni veiksmai.
+- `docs/SESSION_START.md` perrašytas į trumpą naujos sesijos protokolą, kuris nurodo perskaityti kanoninę atmintį ir naujausius GitHub įrodymus.
+- `reports/work-log/README.md` atnaujintos ilgalaikės atminties nuorodos; darbo žurnalas lieka tik `main` šakoje.
+- Aiškiai pažymėta, kad 2026-11-12 handover dokumento ARO Vet turinio / vaistinės kryptis yra istorinė ir ją pakeičia dabartinis `AGENTS.md`, kuris draudžia grąžinti ARO Vet turinį į viešą svetainę.
+- Prieigos auditas: GitHub prijungtas su repo admin/maintain/push/pull teisėmis; Firecrawl prijungtas; tiesioginės Cloudflare paskyros, Android Termux shell, Codex įrenginio autentifikacijos ir tiesioginės GA4/GSC paskyros jungtys nepatvirtintos. Mokamų SEO / analytics papildinių neaktyvuota.
+- PR #183 tebėra atviras: test ir Cloudflare validation success, deploy skipped; tokeno rotacija nepatvirtinta. GitHub schedule paleidimai 2026-11-14 nepatvirtinti. Kasdienis ChatGPT koordinatorius įjungtas.
+- Šie pakeitimai dokumentaciniai; production, Worker/D1, DNS, secrets, ARO Vet, viešas turinys ir mokamos paslaugos nekeistos.
