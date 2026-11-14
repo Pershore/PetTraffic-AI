@@ -366,3 +366,34 @@ Pirmiausia būtinas Cloudflare tokeno rotacijos ir GitHub secret atnaujinimo pat
 - Tai pirmas tikras telefono pusės diegimo ir autentifikacijos įrodymas. Tai **neįrodo** nuolatinio fono agento, automatinio GitHub užduočių paėmimo ar ChatGPT tiesioginio shell ryšio. Termux turi likti aktyvus; Codex užduotys dar paleidžiamos rankiniu būdu.
 - Saugumo sprendimas: Worker `/v1/tasks*` API paliekama išjungta, kol nėra atskiros agento tapatybės, siaurų leidimų, užduočių patikros ir saugaus PR-only vykdymo modelio. Cloudflare paslaptys į telefoną nekeliamos.
 - Kitas veiksmas: suprojektuoti ir patikrinti ribotą GitHub užduočių vykdymo modelį; prieš aktyvavimą atlikti threat-model, testus ir PR peržiūrą. AI agentų Worker ciklo pataisą patikrinti per 2026-11-15 08:20 UTC (10:20 Europe/Vilnius) suplanuotą ciklą.
+
+
+## 2026-11-14 – nuolatinių agentų patikimumo pataisa ir deploy
+
+### Pakeitimas
+- PR #197 sujungtas squash commit 6c88f7b3437a753973dfe45108874f4a6c4f4456: https://github.com/Pershore/PetTraffic-AI/pull/197
+- Vieno specialisto netaisyklingas JSON atsakymas nebestabdo likusių agentų ir koordinatoriaus.
+- Jei koordinatoriaus modelio išvestis netinkama, naudojamas deterministinis read-only sujungimas iš validžių specialistų rezultatų.
+- Jei visi keturi specialistai negrąžina tinkamos išvesties, penktas AI kvietimas praleidžiamas; išsaugoma fallback ataskaita ir evidence gaps.
+- Maksimali riba – 5 Workers AI kvietimai per UTC dieną; pataisa papildomų kvietimų neprideda.
+
+### Patikros
+- PR run #43603142925: Worker test + Python test + Cloudflare validation – success; deploy PR metu skipped.
+- PR site-check #43603142907 – success.
+- Main deploy run #43603199126 – success; D1 migrations: none; Worker upload/deploy success.
+- Įdiegta Worker versija: 71dfa69f-88bf-4c04-9b6c-5a124be3dbc9.
+- Post-deploy workflow patvirtino D1 ir control-core schema ryšį bei neautentifikuoto /v1/events atsakymą HTTP 401.
+- Gyvas /health po deploy: ok=true, D1 connected, control-core schema connected. Paskutinis agentų ciklas vis dar rodo seną 2026-11-14 08:20 UTC gedimą; jis įvyko prieš deploy. Naujas ciklas dar neįvyko, todėl pataisos veiksmingumas LAUKIA 2026-11-15 08:20 UTC (10:20 LT).
+
+### Autonomijos realios ribos
+- Worker heartbeat: kas 15 min. (site + D1). AI specialistų ciklas: kartą per dieną 10:20 Europe/Vilnius. Tai yra nuolat veikianti serverless stebėsena ir suplanuota analizė, ne nuolatinis AI mąstymas kiekvieną sekundę.
+- GitHub Actions daily-suite schedule dalis lieka nepatvirtinta; 2026-11-14 Google API connectivity schedule #43602315641 – success, bet analytics/topic/live monitor ciklo schedule dar nėra įrodymo.
+- Termux/Codex telefone patvirtinti, bet telefonas nėra nuolatinio agento hostas; ChatGPT neturi tiesioginės Android shell prieigos.
+- Worker /v1/tasks API lieka tyčia išjungta iki dedikuotos agento tapatybės ir audituojamos PR-only užduočių vykdymo politikos.
+- Nėra mokamų paslaugų aktyvavimo. 100 % nepertraukiamo veikimo garantuoti negalima; išoriniai scheduler, API ir modelio gedimai turi būti aptinkami ir fiksuojami.
+
+### Kitas konkretus veiksmas
+1. 2026-11-14 po 14:15 UTC patikrinti, kad naujo Worker deploy heartbeat tęsiasi.
+2. 2026-11-15 08:20 UTC (10:20 LT) patikrinti pirmą agentų ciklą po PR #197; tikrinti agentų statusą, specialistų degraded skaičių, control-core decision ir memory.
+3. Toliau diagnozuoti GitHub Actions schedule neatitikimą; nekurti dirbtinių push paleidimų ir nekeisti cron spėliojant.
+4. Tik po atskiros saugumo peržiūros spręsti, ar įjungti ribotą /v1/tasks eilę.

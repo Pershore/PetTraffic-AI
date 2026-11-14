@@ -307,3 +307,28 @@ Nesujungti / atviri PR ir issues tikrinami kiekvienos sesijos pradžioje. Po PR 
 Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama Linux proot aplinka, Git, GitHub CLI ir Codex CLI įdiegti, Codex autentifikacija `OK`, o vietinė saugykla rodo `## main...origin/main`. Diagnostikos santrauka: 19 OK, 1 idle, 2 notes, 1 warning, 0 fail; pilna įspėjimo informacija nepateikta.
 
 Šis įrodymas patvirtina lokalią kūrimo aplinką ir Codex prisijungimą, bet ne nuolatinį foninį agentą, automatinį GitHub užduočių paėmimą ar ChatGPT tiesioginį telefono shell ryšį. Worker `/v1/tasks*` lieka išjungtas iki atskiros agento tapatybės, ribotų teisių, užduočių validavimo ir PR-only vykdymo saugumo modelio. Cloudflare paslaptys į telefoną nekeliamos.
+
+
+## 14. Nuolatiniai agentai – reali architektūra ir 2026-11-14 patikra
+
+### Patvirtinta infrastruktūra
+- Cloudflare Worker pettraffic-control-api veikia kartu su D1 pettraffic-control ir Workers AI binding.
+- Worker Cron trigeriai po PR #197 deploy patvirtinti loguose: */15 * * * * ir 20 7,8 * * *. Pirmasis atlieka svetainės + D1 heartbeat kas 15 min.; antrasis paleidžia vieną AI specialistų ciklą 10:20 Europe/Vilnius, atsižvelgdamas į vasaros / žiemos laiką.
+- Deploy run #43603199126 – success; Worker versija 71dfa69f-88bf-4c04-9b6c-5a124be3dbc9. D1 migracijų nereikėjo. Post-deploy health patvirtino ok=true, D1 connected, control-core schema connected, neautentifikuotas /v1/events grąžina 401.
+- PR #197 sujungtas commit 6c88f7b3437a753973dfe45108874f4a6c4f4456. Worker Node.js ir Python testai, Cloudflare validation ir site-check – success.
+- Vieno specialisto netaisyklinga / tuščia AI išvestis nebestabdo kitų specialistų. Netinkami rezultatai išsaugomi su evidence gaps; netinkamo koordinatoriaus atveju naudojamas deterministinis read-only sujungimas. Jei visi keturi specialistai negrąžina naudingo rezultato, koordinatoriaus penktas AI kvietimas praleidžiamas, kad nebūtų švaistoma nemokama kvota.
+- Maksimali riba lieka 5 AI kvietimai per UTC dieną; jokių papildomų kvietimų ši pataisa neprideda.
+
+### Dabartinė reali būsena
+- Worker heartbeat veikia ir buvo patvirtintas gyvu /health atsakymu; po deploy paskutinis matytas heartbeat dar buvo 2026-11-14 14:00:47 UTC (prieš deploy). Kitas 15 min. heartbeat turi patvirtinti naujo deploy tęstinumą.
+- Gyvas /health po deploy: Worker ok=true, D1 connected, control-core schema connected, memory present. agent_orchestration vis dar rodo 2026-11-14 08:20 UTC ciklo gedimą model_content-review_model_output_invalid_json; jis įvyko prieš naują pataisą. Pataisos realus veikimas dar LAUKIA 2026-11-15 08:20 UTC (10:20 Europe/Vilnius) ciklo.
+- GitHub Actions schedule veikimas dalinis / nepatvirtintas. 2026-11-14 Google API connectivity schedule run #43602315641 – success. Analytics/topic radar/live monitor kasdienio rinkinio schedule paleidimas dar nepatvirtintas; push ir workflow_run įvykiai nelaikomi schedule įrodymu. Dabartinė GitHub jungtis nepateikia workflow-dispatch ar workflow aktyvumo nustatymų valdymo.
+- ChatGPT kasdienė priežiūros automatizacija lieka viena, enabled; dublikatų nėra.
+- Termux proot, Git, GitHub CLI, Codex CLI ir Codex autentifikacija patvirtinti pagal vartotojo 2026-11-14 išvestį. Tai nėra foninis agentas; tiesioginės Android shell prieigos iš ChatGPT pusės nėra.
+
+### Aiškūs autonomijos apribojimai
+- Tai nuolat veikianti serverless stebėsena su suplanuotais AI ciklais, o ne modelis, kuris nuolat mąsto kiekvieną sekundę. Worker heartbeat vyksta kas 15 min.; AI specialistų analizė – kartą per dieną 10:20 LT.
+- Worker /v1/tasks API lieka tyčia išjungta iki atskiros agento tapatybės, atskirų leidimų, validuojamos užduočių schemos, audito ir PR-only vykdymo modelio. Nėra savavališko komandų vykdymo ar automatinio PR sujungimo.
+- AI rekomendacijos patariamosios. Viešo turinio publikavimui, ARO Vet, DNS, production, Cloudflare teisių / secrets pakeitimams ir išlaidoms būtinas atskiras patvirtinimas.
+- 100 % veikimo garantijos negalima suteikti: GitHub/Cloudflare scheduler, išorinės API, Android foninis vykdymas ir AI modelio išvestys turi išorinių gedimo galimybių. Tikslas – automatinis aptikimas, dalinio rezultato išsaugojimas ir perspėjimas.
+- Jokio mokamo plano ar papildomos paslaugos neaktyvuota; Workers AI Free kvota turi ribas. Kai nemokama kvota pasiekiama, agentai turi degraduoti į read-only atsarginį rezultatą / aiškų perspėjimą, o ne pereiti prie mokamo naudojimo.
