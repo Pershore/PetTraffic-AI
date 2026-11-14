@@ -8,8 +8,10 @@ if npm --version >/dev/null 2>&1; then
 fi
 
 echo "Aptiktas neveikiantis npm. Atkuriami Node.js, npm ir glob paketai..."
-apt-get update
-apt-get install --reinstall -y nodejs npm node-glob
+if ! apt-get update || ! apt-get install --reinstall -y nodejs npm node-glob; then
+  echo "KLAIDA: nepavyko atkurti nodejs/npm/node-glob paketų." >&2
+  exit 1
+fi
 
 if ! npm --version >/dev/null 2>&1; then
   echo "KLAIDA: npm vis dar neveikia po paketų atkūrimo." >&2
