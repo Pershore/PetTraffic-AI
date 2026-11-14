@@ -1,9 +1,9 @@
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
-- Atnaujinta: 2026-11-14T13:39:52.962463+00:00
+- Atnaujinta: 2026-11-14T13:40:14.304912+00:00
 - Būsena: **REIKIA DĖMESIO**
-- GitHub run: 43600881652
-- Šaltinio commit: ba7385bf45ac4f091212556ffac80c6a82162583
+- GitHub run: 43600907668
+- Šaltinio commit: e3ae43425afc8849dc3c75ecbf9d904d9f9c373e
 
 ## Paskutinis patikrintas etapas
 
@@ -11,7 +11,7 @@ Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataska
 
 ## Kitas veiksmas
 
-Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (failure). AI agentų ciklas nepavyko (2026-11-14); AI kvietimų: 4; klaida: model_content-review_model_output_invalid_json.
+Spręsti pirmą aptiktą problemą: Centrinis valdymo centras (warning). Paskutinio paleidimo rezultatas: cancelled.
 
 ## Patvirtinti procesai
 
@@ -20,13 +20,13 @@ Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (failure)
 
 ## Problemos
 
+- **Centrinis valdymo centras** (warning): Paskutinio paleidimo rezultatas: cancelled. – https://github.com/Pershore/PetTraffic-AI/actions/runs/43600922156
 - **AI agentai + control-core atmintis** (failure): AI agentų ciklas nepavyko (2026-11-14); AI kvietimų: 4; klaida: model_content-review_model_output_invalid_json. – https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health
 
 ## Laukiančios patikros
 
 - GA4, temų radaras ir svetainės stebėjimas: Workflow atnaujintas 2026-11-14 13:39 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.
 - Lighthouse auditas: Workflow atnaujintas 2026-11-13 12:09 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.
-- Centrinis valdymo centras: Vyksta (in_progress).
 
 ## AI agentų ir atminties patikra
 
