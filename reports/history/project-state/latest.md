@@ -2,12 +2,12 @@
 
 - Atnaujinta: 2026-11-14T22:57:51+00:00
 - Būsena: **REIKIA DĖMESIO**
-- GitHub run: 43650277872
-- Šaltinio commit: 277335916dd7540f2ec1a5e3bfb8cd5578f7060d
+- GitHub run: 43650828568
+- Šaltinio commit: 309f40757e4105c2f202f526326dcae0db57ffbc
 
 ## Paskutinis patikrintas etapas
 
-2026-11-15 auditas: main HEAD `277335916dd7540f2ec1a5e3bfb8cd5578f7060d`; atvirų PR nėra; site-check #590 success. Worker atsparumo pataisa `6c88f7b` įdiegta per Deploy run #94; test, Cloudflare validation, deploy ir post-deploy health/auth patikros success.
+2026-11-15 auditas: main HEAD `309f40757e4105c2f202f526326dcae0db57ffbc`; atvirų PR nėra; site-check #590 ir #591 success. Worker atsparumo pataisa `6c88f7b` įdiegta per Deploy run #94; test, Cloudflare validation, deploy ir post-deploy health/auth patikros success.
 
 ## Kitas veiksmas
 
