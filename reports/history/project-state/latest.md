@@ -1,6 +1,6 @@
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
-- Atnaujinta: 2026-11-14T10:36:19.920760+00:00
+- Atnaujinta: 2026-11-14 (patikra po 10:38 UTC)
 - Būsena: **REIKIA DĖMESIO**
 - GitHub run: 43586067171
 - Šaltinio commit: 2a7eaf09aedbccec4b26a5338b51a2198bf85518
@@ -11,7 +11,7 @@ Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataska
 
 ## Kitas veiksmas
 
-Spręsti pirmą aptiktą problemą: GA4 ir Search Console (warning). Suplanuotas ciklas nuo 2026-11-14 06:47 UTC dar neįvykdytas; suplanuotų paleidimų istorijoje nėra. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.
+Pagrindinis kasdienis ChatGPT koordinatorius yra įjungtas ir kitą kartą numatytas 2026-11-15 09:45 Europe/Vilnius. GitHub Actions cron problema lieka nepaaiškinta: per 1 056 vykdymus (11 puslapių) rastas tik vienas `event=schedule` vykdymas 2026-11-13; 2026-11-14 schedule įvykių nėra. Patikrinti Actions workflow/repository aktyvumo nustatymus reikia per paskyros sąsają, nes dabartinė jungtis jų nepasiekia. Cloudflare tokeno rotacija ir GitHub secret atnaujinimas taip pat nepatvirtinti; PR #183 production deploy lieka sustabdytas.
 
 ## Patvirtinti procesai
 
@@ -63,3 +63,14 @@ Spręsti pirmą aptiktą problemą: GA4 ir Search Console (warning). Suplanuotas
 
 
 - Po analitikos ir istorijos dokumentavimo pakeitimų main site-check #526 (run `43586152253`) baigėsi success. Analytics run #46 (`43586027796`) ir centrinio valdymo run #127 (`43586067171`) taip pat success; sync-control-api run #138 (`43586103335`) success.
+
+
+## 2026-11-14 – papildoma autonomijos patikra
+
+- GitHub Actions API: patikrinta 1 056 vykdymų istorija per 11 puslapių. Vienintelis rastas `event=schedule` – site-check run `43433299383`, 2026-11-13 13:23:57 UTC, success. 2026-11-14 schedule įvykių nerasta.
+- Workflow YAML cron eilutės egzistuoja. Tiksli priežastis nenustatyta, nes GitHub integracija neleidžia skaityti ar keisti Actions workflow/repository aktyvumo nustatymų. Push / PR / workflow_run vykdymai nelaikomi suplanuotų ciklų įrodymu.
+- Pagrindinis ChatGPT koordinatorius „Pet traffic – kasdienė savarankiška priežiūra“: enabled; paskutinis vykdymas completed 2026-11-14 08:13:35 UTC; kitas 2026-11-15 09:45 Europe/Vilnius. Dubliuojantis agentas nesukurtas.
+- PR #183 lieka open; Worker testai ir Cloudflare token/resource validation success, tačiau deploy job skipped. Worker JSON pataisa neaktyvi produkcijoje.
+- Cloudflare API tokenas laikomas galimai atskleistu; rotacijos ir GitHub Actions secret atnaujinimo įrodymo nėra. Jokių paslapčių keitimų neatlikta.
+- Issue #145 papildytas komentaru `6876095236`; handover ir work-log atnaujinti.
+- Kodo, repo nustatymų, Worker/D1, DNS, secrets, ARO Vet, viešo turinio ar mokamų paslaugų pakeitimų neatlikta.
