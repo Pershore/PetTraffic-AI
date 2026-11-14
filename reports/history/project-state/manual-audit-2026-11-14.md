@@ -15,3 +15,10 @@
 
 ## Ribos
 Worker heartbeat kas 15 min. ir AI analizė kartą per dieną yra suplanuota serverless veikla, ne nuolatinis AI mąstymas. 100 % uptime negarantuojamas. Jokios mokamos paslaugos, DNS, ARO Vet ar secrets nebuvo keičiami.
+
+
+## Papildymas (2026-11-14 14:20 UTC)
+- PR #202 sujungtas commit 073bc8d96d81e174c0873061dbffee9aa4162714: sync-control-api dabar tikrina GitHub workflow_run.event == schedule, todėl naujo tiesioginio daily-suite schedule GA4/GSC ir topic artefaktai galės būti sinchronizuoti į D1.
+- PR #202 testai: snapshot sync, central-control-center ir site-check – success.
+- Pirmas realus daily-suite schedule + D1 read-back dar laukia 2026-11-15 06:10 UTC.
+- Paskutinis automatinis project-state snapshot atnaujintas 2026-11-14 14:20:43 UTC, run 43604361738; jis išsaugo seno AI ciklo klaidą kaip paskutinio vykdymo faktą. Naujo agentų ciklo po pataisos dar nėra.
