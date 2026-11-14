@@ -263,3 +263,15 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 - PR #126 jau atnaujino schedule registracijas; po šio pakeitimo schedule vis tiek nepatvirtintas. Cron nekeistas, nes priežastis nenustatyta. Dabartinė GitHub jungtis neturi workflow enable/disable nustatymų valdymo ir workflow-dispatch veiksmo.
 - Atviras centrinis įspėjimas issue #145 papildytas šios patikros faktais (komentaras 6877967835). Jokie production, Worker/D1, DNS, secrets, ARO Vet ar mokamų paslaugų pakeitimai neatlikti.
 - Kitas veiksmas: po kito suplanuoto Worker ciklo patikrinti JSON pataisos veiksmingumą; atskirai gauti GitHub Actions workflow aktyvumo nustatymų prieigą, tada spręsti schedule problemą. Termux/Codex lokali telefono būsena šiame patikrinime nekeista.
+
+
+## 2026-11-14 – kasdienio rinkinio ir valdymo centro pataisos
+
+- Patikrinta pradinė projekto būsena ir darbo žurnalas; peržiūrėti GitHub Actions paleidimai, PR, GA4/GSC istorija, temų radaro istorija ir Worker sveikatos būsena.
+- PR #194 (`ba7385b`) sujungtas po sėkmingų CI patikrų. Kasdienis GA4/GSC, temų radaro ir gyvos svetainės stebėjimo vykdymas sujungtas į vieną rinkinį, kuris paleidžiamas po patvirtinto `site-check` schedule. Ne suplanuoto įvykio bandymas patvirtino, kad darbai praleidžiami, o ne vykdomi be reikalo.
+- PR #195 (`7ab97db`) sujungtas po sėkmingų CI patikrų. Ištaisytas valdymo centro būsenos vertinimas, kai GitHub atšaukia eilėje laukiantį ne suplanuotą vykdymą; pašalinti pertekliniai workflow-run trigeriai.
+- Po-merge kontrolės paleidimas 43601159634 – success. Daily-suite būsena teisingai LAUKIA kito suplanuoto ciklo; Lighthouse taip pat laukia kito savaitinio ciklo. Valdymo centro klaidingas cancelled įspėjimas nebekartojamas.
+- Push patikros: GA4/GSC ataskaita, temų radaras, live-site monitor ir site-check – success. GA4: 7 aktyvūs naudotojai, 24 sesijos, 88 peržiūros; GSC: 0 parodymų ir 0 paspaudimų, sitemap pending, 5 URL nežinomi Google. Temų radaras surinko 31 unikalią Google News RSS nuorodą; tai nėra paieškos apimčių matavimas.
+- Centrinės API sync paleidimai 43600907662, 43600987929 ir 43601193788 – success; D1 snapshot įrašymas ir perskaitymas atgal patvirtinti.
+- Likę darbai: 2026-11-15 05:37 UTC patikrinti pirmą tikrą daily-suite schedule ciklą; 07:27 UTC – Lighthouse; 08:20 UTC – Worker agentų ciklą po PR #183 deploy.
+- ARO Vet, svetainės turinys, DNS, Worker runtime / D1 schema ar konfigūracija, secrets ir mokamos paslaugos nekeistos. Aktyvaus darbo laikas neapskaičiuotas; automatinio laukimo ir įrankių trukmė neskaičiuota kaip aktyvus darbas.
