@@ -86,3 +86,8 @@ Pagrindinis kasdienis ChatGPT koordinatorius yra įjungtas ir kitą kartą numat
 - GitHub integracija realiai veikia; Firecrawl įdiegtas. Tiesioginės Cloudflare paskyros, Android Termux shell ir Codex device-auth jungtys nėra patvirtintos. GA4/GSC nuskaitomi per GitHub Actions.
 - PR #183 tebėra open, deploy skipped iki Cloudflare tokeno rotacijos įrodymo. GitHub schedule paleidimų priežastis nepatvirtinta. Kasdienis ChatGPT koordinatorius enabled.
 - Jokių production, Worker/D1, DNS, secrets, ARO Vet, viešo turinio ar mokamų paslaugų pakeitimų neatlikta.
+
+
+## 2026-11-14 – kasdienio koordinatoriaus atminties sinchronizavimas
+
+- Pagrindinio kasdienio ChatGPT koordinatoriaus prompt atnaujintas 2026-11-14 10:55 UTC: dabar privalomai skaito `docs/PROJECT_MEMORY.md`, pašalinti pasenę į prompt įrašyti Lighthouse rodikliai, aiškiai atskiriami automatiniai snapshot'ai ir rankinis auditas. Esama automatizacija palikta įjungta; naujas dublikatas nesukurtas. Kitas suplanuotas vykdymas 2026-11-15 09:45 Europe/Vilnius.
