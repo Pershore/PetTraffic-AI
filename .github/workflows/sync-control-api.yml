@@ -115,7 +115,7 @@ jobs:
             --output-dir events \
             --run-id "$SOURCE_RUN_ID"
       - name: Authenticate with short-lived GitHub OIDC and publish snapshots
-        if: steps.config.outputs.enabled == 'true'
+        if: steps.config.outputs.enabled == 'true' && (github.event.workflow_run.name != 'Pet traffic daily automation suite' || steps.suite-source.outputs.scheduled == 'true')
         env:
           API_URL: ${{ vars.PETTRAFFIC_CONTROL_API_URL || 'https://pettraffic-control-api.pauliusgrubliauskis.workers.dev' }}
         run: |
