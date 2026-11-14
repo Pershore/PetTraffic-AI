@@ -194,3 +194,16 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 - Atnaujinti kanoninę atmintį ir handover su aiškiai atskirtomis būsenomis. Automatinio snapshot generated_at, run_id, source_commit neperrašyti.
 - Šiame etape jokio kodo, secrets, Actions nustatymų, Worker/D1, DNS, ARO Vet ar viešo turinio pakeitimų neatlikta; papildomų mokamų paslaugų neaktyvuota.
 - Aktyvaus darbo laikas nebuvo atskirai matuotas.
+
+
+## 2026-11-14 – Cloudflare tokeno rotacijos patikra ir PR #183 Worker production deploy
+
+- Vartotojas patvirtino, kad išrotavo seną Cloudflare API tokeną ir atnaujino GitHub Actions secret CLOUDFLARE_API_TOKEN; naujo rakto reikšmė pokalbyje neprašyta.
+- Pakartotinai paleistas tik PR #183 validate-cloudflare job 132438435986 – success. Patikrintas Cloudflare tokenas, paskyra, D1, Worker ir Worker Cron schedule.
+- PR #183 sujungtas squash commit 6a285a5505e88853a77fb1e31c08fa4fb1d9ad63.
+- Deploy workflow run #43592016509 – success: test job success, Cloudflare validation success, deploy success. D1 migracijų taikyti nereikėjo. Worker versija a34f8850-e1bf-42c0-a055-3e9c9c8714c0; registruoti cron */15 * * * * ir 20 7,8 * * *.
+- Po diegimo patvirtinta gyva Worker /health: ok=true, D1 connected, control-core schema connected; apsaugotas /v1/events be auth grąžino 401.
+- Papildomas live /health nuskaitymas vis dar rodo ankstesnį 08:20 UTC agentų ciklo gedimą model_content-review_model_output_invalid_json; naujas ciklas po pataisos dar neįvyko. Kitas numatytas ciklas – 2026-11-15 08:20 UTC (10:20 Europe/Vilnius); jo rezultatas būtinas pataisos veiksmingumui patvirtinti.
+- Po deploy centrinio valdymo centro run #43592057614 pakartotinis vykdymas: unit tests, report generation, artifact upload ir history archive – success. Jo būsena išlaiko ankstesnius AI agentų ir GitHub Actions schedule perspėjimus.
+- GitHub Actions schedule problema, Termux/Codex telefono autentifikacija ir GA4/GSC ilgalaikis stabilumas lieka atskiri atviri klausimai. Worker task API sąmoningai palikta išjungta.
+- Jokių ARO Vet, DNS, viešo turinio ar mokamų paslaugų pakeitimų neatlikta.

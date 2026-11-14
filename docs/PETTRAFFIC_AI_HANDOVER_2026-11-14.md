@@ -295,3 +295,32 @@ Papildoma po-merge patikra: main site-check #526 (run `43586152253`) – success
 
 ### Kitas konkretus etapas
 Pirmiausia būtinas Cloudflare tokeno rotacijos ir GitHub secret atnaujinimo patvirtinimas. Tada – GitHub Actions aktyvumo patikra, PR #183 kontroliuojamas Worker deploy ir realaus AI/D1 ciklo patvirtinimas. Termux/Codex telefone tikrinti atskirai, neapsimetant, kad CI tai jau įrodė.
+
+
+## 18. 2026-11-14 – Cloudflare tokeno patvirtinimas ir PR #183 Worker diegimas
+
+### Saugumo blokatorius pašalintas
+- Vartotojas patvirtino, kad išrotavo seną Cloudflare API tokeną ir atnaujino GitHub Actions secret CLOUDFLARE_API_TOKEN nauja reikšme.
+- Naujų paslapčių pokalbyje neprašyta ir jos nebuvo rodomos.
+- PR #183 validate-cloudflare job pakartotinai paleistas atskirai; job 132438435986 – success. Patvirtintas tokenas, Cloudflare paskyra, D1, Worker ir Cron schedule prieinamumas.
+
+### PR ir produkcinis diegimas
+- PR #183 „Constrain Workers AI agent JSON output“ sujungtas squash: 6a285a5505e88853a77fb1e31c08fa4fb1d9ad63.
+- Main deploy workflow run #43592016509 – success. Worker testai ir Cloudflare validation – success; D1 migracijų nereikėjo; Worker deploy – success.
+- Worker versija: a34f8850-e1bf-42c0-a055-3e9c9c8714c0.
+- Diegimo logas patvirtina Cron triggerius */15 * * * * ir 20 7,8 * * *.
+- Po deploy patikrinta: /health ok=true, D1 connected, control-core schema connected; neautentifikuotas /v1/events grąžino 401.
+- Deploy workflow: https://github.com/Pershore/PetTraffic-AI/actions/runs/43592016509
+
+### Dar nepatvirtinta
+- Live /health po deploy rodo seną 2026-11-14 08:20 UTC agentų ciklo gedimą model_content-review_model_output_invalid_json. Tai įvyko prieš naujos pataisos diegimą. Naujas agentų ciklas po pataisos dar neįvyko.
+- Kitas numatytas agentų ciklas: 2026-11-15 08:20 UTC (10:20 Europe/Vilnius). Tada patikrinti status, error_code, AI calls ir D1 memory timestamp.
+- GitHub Actions schedule paleidimų problema lieka neišspręsta; PR/push/workflow_run įvykiai nėra schedule įrodymas.
+- Termux/Codex telefone autentifikacija nepatvirtinta. Worker task API lieka tyčia išjungta.
+
+### Sesijos klasifikacija
+- Cloudflare tokenas: PATVIRTINTA + CI PATIKRINTA.
+- PR #183: ATLIKTA.
+- Worker deploy: ATLIKTA + PATIKRINTA pagal deploy job ir gyvą health/auth testą.
+- Naujo AI agentų ciklo sėkmė: LAUKIA.
+- GitHub Actions schedule stabilumas: NEPATVIRTINTA.
