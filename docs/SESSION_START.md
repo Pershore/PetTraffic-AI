@@ -27,6 +27,8 @@ Jeigu privalomų istorijos failų perskaityti nepavyksta, pranešti apie tai ir 
 
 ## Dabartiniai pagrindiniai blokatoriai (2026-11-14)
 
+Atminties konsolidavimo PR #185 sujungtas commit `245446cf123a25df76b212943353c76e6d3f6c69`; po merge site-check #43587281754 ir Termux bridge #43587281810 – success. Tai dokumentacijos patikra, ne įrodymas, kad Cloudflare ar Android integracijos prijungtos.
+
 1. Cloudflare API tokenas laikomas galimai atskleistu. Rotacijos ir GitHub Actions secret `CLOUDFLARE_API_TOKEN` atnaujinimo įrodymo nėra. PR #183 Worker deploy lieka sustabdytas.
 2. GitHub Actions YAML grafikai egzistuoja, bet 2026-11-14 schedule paleidimai nepatvirtinti. Tiksli priežastis nežinoma; dabartinė GitHub jungtis neleidžia valdyti Actions nustatymų.
 3. Worker AI agentų paskutinis žinomas ciklas failed `model_content-review_model_output_invalid_json`; PR #183 atviras, jo production deploy job skipped.

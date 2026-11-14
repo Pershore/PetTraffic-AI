@@ -244,3 +244,14 @@ Papildoma po-merge patikra: main site-check #526 (run `43586152253`) – success
 - Prieigos auditas: GitHub prijungtas su repo admin/maintain/push/pull teisėmis; Firecrawl prijungtas; tiesioginės Cloudflare paskyros, Android Termux shell, Codex įrenginio autentifikacijos ir tiesioginės GA4/GSC paskyros jungtys nepatvirtintos. Mokamų SEO / analytics papildinių neaktyvuota.
 - PR #183 tebėra atviras: test ir Cloudflare validation success, deploy skipped; tokeno rotacija nepatvirtinta. GitHub schedule paleidimai 2026-11-14 nepatvirtinti. Kasdienis ChatGPT koordinatorius įjungtas.
 - Šie pakeitimai dokumentaciniai; production, Worker/D1, DNS, secrets, ARO Vet, viešas turinys ir mokamos paslaugos nekeistos.
+
+
+## 15. PR #185 sujungimas ir po-merge patikra (2026-11-14, 10:52 UTC)
+
+- PR #185 „Consolidate canonical project memory and session startup“ sujungtas squash commit `245446cf123a25df76b212943353c76e6d3f6c69`.
+- Pagrindinėje šakoje yra `docs/PROJECT_MEMORY.md`, atnaujintas `docs/SESSION_START.md`, atnaujintos ilgalaikės atminties nuorodos darbo žurnale ir šis perdavimo įrašas.
+- PR patikros: site-check #43587205171 ir #43587252733 – success; Termux bridge #43587205112 ir #43587252698 – success.
+- Po merge: main site-check #43587281754 – success; main Termux bridge #43587281810 – success; automatinio darbo žurnalo run #43587281778 – success.
+- Atminties dokumente patikslinta PR #182 tikroji merge SHA `740323047dab1b5e671092f1a4e42a31a0b7b28`; PR #185 dabar uždarytas / sujungtas.
+- Tai patvirtina dokumentų nuoseklumą ir CI, bet neįjungia tiesioginės Cloudflare paskyros prieigos, Android Termux nuotolinio valdymo ar GitHub Actions administravimo.
+- Jokių Worker/D1, DNS, secrets, ARO Vet, viešo turinio ar mokamų paslaugų pakeitimų neatlikta.
