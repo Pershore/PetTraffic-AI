@@ -1,46 +1,43 @@
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
-- Atnaujinta: 2026-11-14T22:57:51+00:00
-- Būsena: **REIKIA DĖMESIO**
-- GitHub run: 43650828568
-- Šaltinio commit: 5de175352602838e618a43382f6fd5c3b2cf1ded
+- Atnaujinta: 2026-11-14T23:04:22.051185+00:00
+- Būsena: **VYKSTA / LAUKIAMA**
+- GitHub run: 43651346440
+- Šaltinio commit: 105949c6774a639e202a29f95d3a14c2ba3803cb
 
 ## Paskutinis patikrintas etapas
 
-2026-11-15 auditas: main HEAD `309f40757e4105c2f202f526326dcae0db57ffbc`; atvirų PR nėra; site-check #590 ir #591 success. Worker atsparumo pataisa `6c88f7b` įdiegta per Deploy run #94; test, Cloudflare validation, deploy ir post-deploy health/auth patikros success.
+Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataskaitoje.
 
 ## Kitas veiksmas
 
-Patikrinti pirmą agentų ciklą PO Worker pataisos: 2026-11-15 08:20 UTC (10:20 Europe/Vilnius). Iki tol senas `failed` įrašas yra ankstesnio ciklo būsena, ne naujos versijos gedimo įrodymas. Taip pat patikrinti pirmą daily-suite schedule 2026-11-15 06:10 UTC (08:10 Europe/Vilnius).
+Tęsti laukiančių patikrų stebėseną: GA4, temų radaras ir svetainės stebėjimas.
 
 ## Patvirtinti procesai
 
 - Centrinės API sinchronizavimas: Paskutinis paleidimas sėkmingas.
-- Cloudflare Worker + D1: gyvas /health HTTP 200, D1 ir control-core schema connected; paskutinis heartbeat 2026-11-14 22:45:46 UTC patvirtino svetainės HTTP 200.
+- Centrinis valdymo centras: Paskutinis paleidimas sėkmingas.
+- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 3 min.
 
 ## Problemos
 
-- **AI agentų paskutinio vykdymo įrašas**: 2026-11-14 `failed`, `model_content-review_model_output_invalid_json`, 4 AI kvietimai. Pataisa jau įdiegta; po pataisos ciklas dar nepaleistas, todėl galutinis atkūrimas LAUKIA.
+- Šiame cikle problemų nenustatyta.
 
 ## Laukiančios patikros
 
-- Daily-suite (GA4, temų radaras, live-site): pirmas tikras schedule laukia 2026-11-15 06:10 UTC (08:10 Europe/Vilnius).
-- Worker AI agentų ciklas po pataisos laukia 2026-11-15 08:20 UTC (10:20 Europe/Vilnius).
-- Centrinio valdymo centro naujausia patikra po šio audito dar neatlikta.
+- GA4, temų radaras ir svetainės stebėjimas: Workflow atnaujintas 2026-11-14 14:41 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.
+- Lighthouse auditas: Workflow atnaujintas 2026-11-13 12:09 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.
+- AI agentai + control-core atmintis: Ankstesnis AI agentų ciklas nepavyko; laukiama šiandienos 10:20 Lietuvos laiku ciklo.
 
 ## AI agentų ir atminties patikra
 
-- Gyvas `/health`: HTTP 200; D1 ir control-core schema connected; control-core atmintis present, būsena `needs_evidence`.
-- Paskutinis agentų įrašas: 2026-11-14 `failed`, klaida `model_content-review_model_output_invalid_json` (įvyko prieš pataisos diegimą).
-- Pataisa `6c88f7b` leidžia tęsti ciklą su netinkamu specialistų atsakymu, išsaugo evidence gap ir naudoja deterministinį fallback; kai visi specialistai neveikia, praleidžia koordinatoriaus kvietimą.
-- Deploy run #94: test, Cloudflare validation, deploy ir post-deploy `/health` + 401 auth ribos patikra – success. `npm test` ir Worker Python testai – success.
-- Pataisos veiksmingumas realiame suplanuotame agentų cikle dar LAUKIA 2026-11-15 08:20 UTC.
+- Būsena: **waiting** – Ankstesnis AI agentų ciklas nepavyko; laukiama šiandienos 10:20 Lietuvos laiku ciklo.
+- Patikros šaltinis: https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health
 
 ## Rekomendacijos
 
 - **[medium] Patikrinti Google paieškos matomumą** – Patikrinti URL indeksavimo būseną, sitemap apdorojimą ir ar svarbiausi puslapiai prieinami Googlebot.
 - **[info] Stebėti Google sitemap apdorojimą** – Pakartotinai patikrinti kitame cikle; sitemap pakartotinai neteikti, jei jis jau pateiktas.
-- **[high] Pašalinti automatizacijų būklės problemas** – Atidaryti centrinio valdymo GitHub įspėjimą ir taisyti konkretaus proceso klaidą.
 
 ## Nekeičiamos saugumo ribos
 
@@ -51,36 +48,3 @@ Patikrinti pirmą agentų ciklą PO Worker pataisos: 2026-11-15 08:20 UTC (10:20
 - AI rekomendacijos yra patariamosios; modelio išvestys nesuteikia vykdymo teisių.
 
 > Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.
-
-## Darbo žurnalo saugojimo vieta – patikslinta 2026-11-15
-
-- `reports/history/project-state/latest.md` ir kiti ilgalaikiai istorijos archyvai skaitomi / atnaujinami šakoje `automation-history`.
-- `reports/work-log/README.md` yra pagrindinėje šakoje `main`; šio failo nebuvimas `automation-history` šakoje yra numatyta struktūra, o ne klaida.
-- Darbo priežiūros automatizacija pataisyta, kad skaitytų kiekvieną failą iš teisingos šakos. Niekada nekopijuoti `reports/work-log/README.md` į `automation-history`.
-- Patvirtinimas: `main` medyje yra `reports/work-log/README.md`; `automation-history` medyje yra `reports/history/...` archyvai ir nėra `reports/work-log/` katalogo.
-- 2026-11-15: kasdienės greičio priežiūros automatizacijos promptas atnaujintas sėkmingai; kodo, infrastruktūros ir produkcijos pakeitimų neatlikta.
-
-
-## 2026-11-15 – klaidų audito patikslinimas
-
-- Gyvas Worker heartbeat patvirtino svetainės HTTP 200 ir D1 ryšį.
-- Ankstesnė AI agento klaida buvo pataisyta ir Worker versija įdiegta; automatinių testų ir deploy patikros rezultatai success.
-- Iki kito suplanuoto ciklo agentų paskutinio vykdymo būsena lieka istorinė `failed`; jos negalima žymėti kaip atkurtos, kol naujas ciklas neužbaigtas.
-- Site-check #590 success; atvirų PR nėra. Kitas būtinas patikrinimas – 2026-11-15 08:20 UTC Worker agentų ciklas.
-
-
-## 2026-11-15 – klaidų audito patikslinimas
-
-- Gyvas Worker heartbeat patvirtino svetainės HTTP 200 ir D1 ryšį.
-- Ankstesnė AI agento klaida buvo pataisyta ir Worker versija įdiegta; automatinių testų ir deploy patikros rezultatai success.
-- Iki kito suplanuoto ciklo agentų paskutinio vykdymo būsena lieka istorinė `failed`; jos negalima žymėti kaip atkurtos, kol naujas ciklas neužbaigtas.
-- Site-check #590 success; atvirų PR nėra. Kitas būtinas patikrinimas – 2026-11-15 08:20 UTC Worker agentų ciklas.
-
-
-## 2026-11-15 – central control-center CI pranešimo diagnozė
-
-- Ekrano nuotraukoje matytas 16:41 GitHub pranešimas atitiko PR run #151 (`pull_request`), ne produkcinį central control-center suplanuotą vykdymą.
-- Gedimas: `tests/test_control_center.py` turėjo trapius eilučių tikrinimus, ieškojusius pažodinės `\\n` sekos; dėl to nepraėjo `Run control-center unit tests`, o report artifact upload nepavyko, nes ataskaita nebuvo sukurta.
-- Pataisa pateikta PR #208, šaka `fix/control-center-schedule-test-assertions`. Run #155 (#43651182430): testai, ataskaitos generavimas ir artifact upload – success. Site-check #593 – success.
-- PR #208 atviras ir mergeable, bet dar nesujungtas į main. Jokių produkcinių pakeitimų neatlikta.
-- Firecrawl paskyros pranešimas: sunaudota 80% iš 1 000 nemokamų kreditų. Mokėjimo metodo nepridėti; laikytis 0 €/mėn. biudžeto.
