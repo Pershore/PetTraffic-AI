@@ -106,7 +106,7 @@
   "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.",
   "manual_audit": {
     "audited_at": "2026-11-14T10:56:42Z",
-    "main_head_commit": "1aafc9348ea04ee42af9519e5fc8740249286094",
+    "main_head_commit": "84fc060947d7714d4622b6eab81298a3e593b0b6",
     "project_memory": {
       "status": "merged_and_ci_verified",
       "pull_request": 185,
@@ -178,6 +178,7 @@
       "checked_at": "2026-11-14T10:56:42Z",
       "runs_checked": 100,
       "schedule_events": 0
-    }
+    },
+    "main_auto_worklog_commit": "84fc060947d7714d4622b6eab81298a3e593b0b6"
   }
 }
