@@ -158,13 +158,18 @@ def evaluate_workflow(
     base = {"name": name, "url": latest.get("html_url"), "created_at": created_raw}
     age = now.astimezone(timezone.utc) - created
     if status in ("queued", "in_progress", "waiting", "pending"):
-        return {**base, "state": "running", "detail": f"Vyksta ({status})."}
+        # A push/manual run must not hide the state of the daily schedule.
+        if not schedule or is_scheduled_run(latest):
+            return {**base, "state": "running", "detail": f"Vyksta ({status})."}
     if status != "completed":
         return {**base, "state": "unknown", "detail": f"Nežinoma būsena: {status}."}
     if conclusion == "failure":
         return {**base, "state": "failure", "detail": "Paskutinis paleidimas nepavyko."}
     if conclusion in ("cancelled", "timed_out", "action_required", "startup_failure"):
-        return {**base, "state": "warning", "detail": f"Paskutinio paleidimo rezultatas: {conclusion}."}
+        # GitHub may cancel a queued non-scheduled run when another run enters
+        # the same concurrency group. Judge the cron run below instead.
+        if not (schedule and conclusion == "cancelled" and not is_scheduled_run(latest)):
+            return {**base, "state": "warning", "detail": f"Paskutinio paleidimo rezultatas: {conclusion}."}
     if conclusion not in ("success", "neutral", "skipped"):
         return {**base, "state": "unknown", "detail": f"Nežinoma išvada: {conclusion}."}
     if schedule:
