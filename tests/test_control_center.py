@@ -424,6 +424,27 @@ class ControlCenterTests(unittest.TestCase):
         self.assertNotIn("daily-topic-radar.yml", [item[0] for item in WORKFLOWS])
         self.assertNotIn("live-site-monitor.yml", [item[0] for item in WORKFLOWS])
 
+    def test_daily_suite_has_an_independent_direct_cron(self):
+        with open(".github/workflows/daily-suite.yml", encoding="utf-8") as stream:
+            workflow = stream.read()
+        self.assertIn('    - cron: "10 6 * * *"', workflow)
+        self.assertNotIn("workflow_run:", workflow)
+        self.assertIn("github.event_name == 'schedule'", workflow)
+
+    def test_daily_suite_direct_schedule_counts_as_scheduled_run(self):
+        now = datetime(2026, 11, 14, 8, 10, tzinfo=timezone.utc)
+        scheduled = {
+            "created_at": "2026-11-14T07:50:00Z",
+            "event": "schedule",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/example/run/suite",
+        }
+        schedule = {"frequency": "daily", "hour": 6, "minute": 10, "grace_minutes": 60}
+        result = evaluate_workflow("Daily suite", [scheduled], now, 36, schedule,
+            workflow_updated_at="2026-11-14T05:00:00Z")
+        self.assertEqual(result["state"], "success")
+
     def test_daily_suite_schedule_proxy_counts_as_scheduled_run(self):
         now = datetime(2026, 11, 14, 8, 10, tzinfo=timezone.utc)
         scheduled = {
@@ -434,7 +455,7 @@ class ControlCenterTests(unittest.TestCase):
             "conclusion": "success",
             "html_url": "https://github.com/example/run/suite",
         }
-        schedule = {"frequency": "daily", "hour": 5, "minute": 37, "grace_minutes": 60}
+        schedule = {"frequency": "daily", "hour": 6, "minute": 10, "grace_minutes": 60}
         result = evaluate_workflow(
             "Daily suite", [scheduled], now, 36, schedule,
             workflow_updated_at="2026-11-14T05:00:00Z",
@@ -478,7 +499,7 @@ class ControlCenterTests(unittest.TestCase):
         schedule = {"frequency": "daily", "hour": 5, "minute": 37, "grace_minutes": 60}
         result = evaluate_workflow(
             "Daily suite", [], now, 36, schedule,
-            workflow_updated_at="2026-11-14T06:00:00Z",
+            workflow_updated_at="2026-11-14T06:20:00Z",
         )
         self.assertEqual(result["state"], "waiting")
         self.assertIn("laukiama kito ciklo", result["detail"])
