@@ -48,3 +48,17 @@ Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (failure)
 - AI rekomendacijos yra patariamosios; modelio išvestys nesuteikia vykdymo teisių.
 
 > Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.
+
+
+## Rankinis auditas po Worker deploy (2026-11-14 14:15:47 UTC)
+
+Šis skyrius yra rankinis papildymas; automatinio snapshot metaduomenys aukščiau nekeičiami.
+
+- PR #196 sujungtas: Termux / Codex lokali aplinka patvirtinta pagal vartotojo bootstrap išvestį; tai nėra foninis agentas.
+- PR #197 sujungtas ir production Worker įdiegtas. Worker versija 71dfa69f-88bf-4c04-9b6c-5a124be3dbc9; deploy run #43603199126 success; D1 migracijų nereikėjo.
+- Post-deploy gyvas heartbeat PATIKRINTAS 2026-11-14 14:15:47 UTC: svetainė HTTP 200, D1 connected, control-core schema connected.
+- Nauja agentų atsparumo logika CI patikrinta: blogas vieno specialisto JSON nebestabdo ciklo; blogo koordinatoriaus atveju naudojamas deterministinis read-only fallback; jei visi specialistai blogi, penktas AI kvietimas praleidžiamas. Pirmas realus po-deploy AI ciklas dar laukia 2026-11-15 08:20 UTC.
+- PR #199 sujungtas: daily-suite tiesioginis cron 06:10 UTC (08:10 LT), nepriklausomas nuo site-check. Pirmas realus schedule paleidimas laukia 2026-11-15 06:10 UTC.
+- Vienintelė ChatGPT priežiūros automatizacija perkelta į 11:00 Europe/Vilnius; ji lieka įjungta, dublikatų nėra.
+- Worker heartbeat kas 15 min. ir dienos AI ciklas 10:20 LT yra realiai užregistruoti Cron trigeriai. Tai nėra nuolatinis AI mąstymas kiekvieną sekundę.
+- Worker /v1/tasks API lieka tyčia išjungta iki atskiros agento tapatybės ir PR-only užduočių vykdymo saugumo peržiūros. 100 % uptime garantuoti negalima.

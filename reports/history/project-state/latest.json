@@ -89,5 +89,24 @@
     "Nekeisti DNS, Cloudflare teisių ar produkcinės infrastruktūros be atskiro patvirtinimo.",
     "AI rekomendacijos yra patariamosios; modelio išvestys nesuteikia vykdymo teisių."
   ],
-  "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių."
+  "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.",
+  "manual_audit": {
+    "audited_at": "2026-11-14T14:15:47Z",
+    "kind": "manual_post_deploy_audit",
+    "source": "GitHub PR #196/#197/#199, deploy run #43603199126, live Worker /health",
+    "verified": [
+      "Termux proot, Git, GitHub CLI, Codex CLI and Codex authentication confirmed by user-provided bootstrap output.",
+      "Worker version 71dfa69f-88bf-4c04-9b6c-5a124be3dbc9 deployed successfully.",
+      "Post-deploy heartbeat at 2026-11-14T14:15:47Z: site HTTP 200, D1 connected, control-core schema connected.",
+      "Agent degraded-fallback code and tests passed in PR CI.",
+      "Daily-suite direct cron configured at 06:10 UTC; PR #199 merged.",
+      "Single ChatGPT coordinator automation rescheduled to 11:00 Europe/Vilnius and remains enabled."
+    ],
+    "pending": [
+      "First real post-deploy AI agent cycle: 2026-11-15T08:20:00Z.",
+      "First direct daily-suite schedule run: 2026-11-15T06:10:00Z.",
+      "Worker task API remains intentionally disabled pending a dedicated least-privilege agent identity and PR-only execution model."
+    ],
+    "note": "Manual audit supplements this generated snapshot. Original generated_at, run_id, source_commit and automated findings are preserved."
+  }
 }
