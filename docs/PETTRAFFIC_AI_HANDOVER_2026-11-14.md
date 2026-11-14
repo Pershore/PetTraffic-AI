@@ -146,3 +146,23 @@ Naujo tokeno niekada nesiųsti pokalbyje.
 4. Kai schedule atsinaujins, patikrinti naują GA4 ir GSC snapshot. GA4 ReadTimeout laikyti trūkstamais duomenimis, ne nuliu.
 5. Jei schedule vis dar nevyksta, tęsti read-only diagnostiką ir nekurti fiktyvių rezultatų ar rankinių pakartojimų.
 
+
+
+## 10. Termux / Codex diegimo atkūrimas (2026-11-14, 10:10 UTC)
+
+Vartotojas pakartojo bootstrap komandą Termux aplinkoje. Patvirtinta, kad esama Ubuntu proot aplinka sėkmingai aptinkama ir naudojama. Pirmas diegimo bandymas sustojo Ubuntu npm klaida:
+`Cannot find module '/usr/share/node_modules/glob/dist/cjs/src/index.js'`.
+
+PR #181 „Fix Termux npm recovery and avoid Codex device-auth timeout“ sujungtas:
+- Merge commit: `07dab98a82a9573c41a6c5c77071d8e45b06b85b`.
+- Pridėtas `tools/termux/ensure-npm.sh`: patikrina npm; neveikiant vieną kartą atkuria Ubuntu/Debian `nodejs`, `npm`, `node-glob`; aiškiai sustoja, jei atkūrimas nepavyksta.
+- Pridėti testai sveikai npm būsenai, sėkmingam atkūrimui ir atkūrimo klaidai.
+- Codex device-code prisijungimo nebandoma automatiškai laukti 15 min. Jei Codex neprisijungęs, setup pažymi `WAITING`, užbaigia GitHub autentifikacijos / saugyklos paruošimo dalį ir nurodo paleisti `codex login --device-auth` tik įjungus ChatGPT Settings → Security → Device code login (beta).
+- PR bridge CI #35 ir site-check #508 success. Po merge main bridge #36, site-check #509 ir work-log #36 success:
+  - https://github.com/Pershore/PetTraffic-AI/actions/runs/43583926135
+  - https://github.com/Pershore/PetTraffic-AI/actions/runs/43583926102
+  - https://github.com/Pershore/PetTraffic-AI/actions/runs/43583926103
+
+**Dabartinė telefono būsena: LAUKIA.** CI patikros neįrodo, kad telefono Ubuntu npm jau atkurtas ar kad GitHub/Codex CLI prisijungę. Vartotojas turi dar kartą paleisti atnaujintą bootstrap iš Termux. Po to tikrinti tik ne slaptą galutinę išvestį. Device code, slaptažodžių, MFA ar tokenų neprašyti.
+
+Jokie Cloudflare production nustatymai, Worker/D1, DNS, secrets, ARO Vet ar mokamos paslaugos nepakeisti. Cloudflare Pages automatinis branch preview nėra production deploy.
