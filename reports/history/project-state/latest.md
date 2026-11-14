@@ -102,3 +102,11 @@ Spręsti pirmą aptiktą problemą: GA4 ir Search Console (warning). Suplanuotas
 - Production, Worker/D1 konfigūracija/duomenys, DNS, secrets, Actions nustatymai, ARO Vet ir mokamos paslaugos nepakeistos.
 
 > Šis įrašas yra rankinis auditas. Viršutiniai automatinio snapshot laukai `generated_at`, `run_id` ir `source_commit` palikti nepakeisti.
+
+## Po-audit PR #192 sujungimo patikra
+
+- PR #192 `docs: record autonomous process verification` sujungtas squash commit `3d7d132b98688857b906ff182673458806c7ce00`.
+- PR patikros: site-check `43598948829` – success; Cloudflare Pages preview – success.
+- Po merge: site-check `43599004500` – success; automatinis darbo žurnalas `43599004495` – success; Cloudflare Pages deploy check `132459566528` – success.
+- Po automatinio darbo žurnalo commit `cd95e0e071a140bc5e57c7f08bf1edb6a80aac02` Cloudflare Pages check `132459632616` – success.
+- Atvirų PR po sujungimo nėra. Tai dokumentacijos ir CI patikra; viešas svetainės turinys nekeistas.
