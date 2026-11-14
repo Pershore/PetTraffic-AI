@@ -105,7 +105,7 @@
   ],
   "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.",
   "manual_audit": {
-    "updated_at": "2026-11-14T12:05:00Z",
+    "updated_at": "2026-11-14T12:10:10Z",
     "source": "ChatGPT/GitHub CI and live Worker verification",
     "merged_pr": 183,
     "merge_commit": "6a285a5505e88853a77fb1e31c08fa4fb1d9ad63",
@@ -122,8 +122,8 @@
     "open_issues": [
       145
     ],
-    "documentation_pr": 189,
-    "documentation_merge_commit": "6ec622d1eb1ecbcc4f832c1e1b05a152cae9d3ac",
+    "documentation_pr": 190,
+    "documentation_merge_commit": "097f76c04c002cd41b1ec007d0e8b1e7e341b8c1",
     "verification_session": "read-only verification",
     "main_head": "3c76d9b810c715d59783600e98c6f44646638ee9",
     "pr_131": "merged",
@@ -159,6 +159,9 @@
       "Android Termux/Codex authentication and local repository state remain unverified; no Android shell access.",
       "GA4/GSC scheduled-cycle reliability remains unverified despite one successful push-triggered snapshot.",
       "Worker task API intentionally disabled."
-    ]
+    ],
+    "documentation_pr_checks": "site-check and Cloudflare Pages preview success",
+    "post_merge_site_check": 43593444358,
+    "main_head_after_audit": "097f76c04c002cd41b1ec007d0e8b1e7e341b8c1"
   }
 }
