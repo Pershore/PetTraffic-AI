@@ -1,0 +1,77 @@
+{
+  "date": "2026-11-14",
+  "snapshots": [
+    {
+      "run_id": "43586027796",
+      "generated_at": "2026-11-14T10:36:06.339494+00:00",
+      "ga4_status": "available",
+      "ga4_period": "2026-11-07 – 2026-11-13",
+      "search_console_status": "available",
+      "search_console_period": "2026-11-05 – 2026-11-11 (duomenys gali vėluoti kelias dienas).",
+      "search_console_details": {
+        "sitemap": {
+          "status": "submitted",
+          "path": "https://pettraffic-ai.pages.dev/sitemap.xml",
+          "last_submitted": "2026-11-10T07:22:24.861Z",
+          "last_downloaded": "dar nenurodyta",
+          "submitted_urls": null,
+          "indexed_urls": null,
+          "is_pending": true
+        },
+        "priority_url_inspections": [
+          {
+            "url_path": "/",
+            "verdict": "NEUTRAL",
+            "coverage": "URL nežinomas „Google“",
+            "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
+            "indexing_state": "INDEXING_STATE_UNSPECIFIED",
+            "last_crawl": "Dar netikrinta"
+          },
+          {
+            "url_path": "/articles/kate-negali-pasislapinti-skubi-pagalba.html",
+            "verdict": "NEUTRAL",
+            "coverage": "URL nežinomas „Google“",
+            "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
+            "indexing_state": "INDEXING_STATE_UNSPECIFIED",
+            "last_crawl": "Dar netikrinta"
+          },
+          {
+            "url_path": "/articles/kate-viduriuoja-ka-daryti.html",
+            "verdict": "NEUTRAL",
+            "coverage": "URL nežinomas „Google“",
+            "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
+            "indexing_state": "INDEXING_STATE_UNSPECIFIED",
+            "last_crawl": "Dar netikrinta"
+          },
+          {
+            "url_path": "/articles/suo-viduriuoja-ka-daryti.html",
+            "verdict": "NEUTRAL",
+            "coverage": "URL nežinomas „Google“",
+            "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
+            "indexing_state": "INDEXING_STATE_UNSPECIFIED",
+            "last_crawl": "Dar netikrinta"
+          },
+          {
+            "url_path": "/articles/kada-kreiptis-i-veterinara.html",
+            "verdict": "NEUTRAL",
+            "coverage": "URL nežinomas „Google“",
+            "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
+            "indexing_state": "INDEXING_STATE_UNSPECIFIED",
+            "last_crawl": "Dar netikrinta"
+          }
+        ]
+      },
+      "metrics": {
+        "active_users": 7.0,
+        "new_users": 7.0,
+        "sessions": 24.0,
+        "page_views": 88.0,
+        "organic_sessions_verified": 0.0,
+        "search_impressions": 0.0,
+        "search_clicks": 0.0,
+        "search_ctr": 0.0,
+        "average_position": 0.0
+      }
+    }
+  ]
+}
