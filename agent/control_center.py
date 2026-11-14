@@ -16,7 +16,7 @@ TOKEN = os.environ.get("GITHUB_TOKEN", "").strip()
 # GitHub Actions cron expressions use UTC. A 60-minute grace avoids alerting
 # on normal scheduler delays while still detecting a missed daily/weekly cycle.
 WORKFLOWS = [
-    ("daily-suite.yml", "GA4, temų radaras ir svetainės stebėjimas", 36, {"frequency": "daily", "hour": 5, "minute": 37, "grace_minutes": 60}),
+    ("daily-suite.yml", "GA4, temų radaras ir svetainės stebėjimas", 36, {"frequency": "daily", "hour": 6, "minute": 10, "grace_minutes": 60}),
     ("sync-control-api.yml", "Centrinės API sinchronizavimas", 36, None),
     ("lighthouse-audit.yml", "Lighthouse auditas", 9 * 24, {"frequency": "weekly", "weekday": 0, "hour": 7, "minute": 27, "grace_minutes": 60}),
     ("control-center.yml", "Centrinis valdymo centras", 36, {"frequency": "daily", "hour": 8, "minute": 40, "grace_minutes": 60}),
