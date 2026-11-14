@@ -374,6 +374,71 @@ class ControlCenterTests(unittest.TestCase):
         result = evaluate_workflow("Analytics", [current], now, 36, schedule)
         self.assertEqual(result["state"], "success")
 
+    def test_daily_suite_is_the_monitored_schedule_source(self):
+        self.assertIn("daily-suite.yml", [item[0] for item in WORKFLOWS])
+        self.assertNotIn("analytics-snapshot.yml", [item[0] for item in WORKFLOWS])
+        self.assertNotIn("daily-topic-radar.yml", [item[0] for item in WORKFLOWS])
+        self.assertNotIn("live-site-monitor.yml", [item[0] for item in WORKFLOWS])
+
+    def test_daily_suite_schedule_proxy_counts_as_scheduled_run(self):
+        now = datetime(2026, 11, 14, 8, 10, tzinfo=timezone.utc)
+        scheduled = {
+            "created_at": "2026-11-14T07:50:00Z",
+            "event": "workflow_run",
+            "display_title": "Scheduled daily suite from site-check #123",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/example/run/suite",
+        }
+        schedule = {"frequency": "daily", "hour": 5, "minute": 37, "grace_minutes": 60}
+        result = evaluate_workflow(
+            "Daily suite", [scheduled], now, 36, schedule,
+            workflow_updated_at="2026-11-14T05:00:00Z",
+        )
+        self.assertEqual(result["state"], "success")
+
+    def test_non_scheduled_suite_run_does_not_count_as_daily_cycle(self):
+        now = datetime(2026, 11, 14, 8, 10, tzinfo=timezone.utc)
+        pushed = {
+            "created_at": "2026-11-14T07:50:00Z",
+            "event": "workflow_run",
+            "display_title": "Non-scheduled site-check run #123",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/example/run/non-scheduled",
+        }
+        schedule = {"frequency": "daily", "hour": 5, "minute": 37, "grace_minutes": 60}
+        result = evaluate_workflow("Daily suite", [pushed], now, 36, schedule)
+        self.assertEqual(result["state"], "warning")
+        self.assertIn("suplanuotų paleidimų istorijoje nėra", result["detail"])
+
+    def test_suite_run_after_workflow_edit_counts_for_current_cycle(self):
+        now = datetime(2026, 11, 14, 14, 0, tzinfo=timezone.utc)
+        scheduled = {
+            "created_at": "2026-11-14T13:00:00Z",
+            "event": "workflow_run",
+            "display_title": "Scheduled daily suite from site-check #123",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/example/run/suite",
+        }
+        schedule = {"frequency": "daily", "hour": 5, "minute": 37, "grace_minutes": 60}
+        result = evaluate_workflow(
+            "Daily suite", [scheduled], now, 36, schedule,
+            workflow_updated_at="2026-11-14T12:00:00Z",
+        )
+        self.assertEqual(result["state"], "success")
+
+    def test_daily_suite_waits_if_its_file_was_updated_after_due_and_no_run_exists(self):
+        now = datetime(2026, 11, 14, 8, 0, tzinfo=timezone.utc)
+        schedule = {"frequency": "daily", "hour": 5, "minute": 37, "grace_minutes": 60}
+        result = evaluate_workflow(
+            "Daily suite", [], now, 36, schedule,
+            workflow_updated_at="2026-11-14T06:00:00Z",
+        )
+        self.assertEqual(result["state"], "waiting")
+        self.assertIn("laukiama kito ciklo", result["detail"])
+
     def test_event_driven_workflow_missing_run_is_not_a_schedule_alert(self):
         result = evaluate_workflow("Centrinės API sinchronizavimas", [], self.now, 36, None)
         self.assertEqual(result["state"], "missing")

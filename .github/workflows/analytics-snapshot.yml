@@ -1,6 +1,7 @@
 name: Pet traffic analytics snapshot
 
 on:
+  # Daily execution is orchestrated by daily-suite.yml after the confirmed site-check schedule.
   push:
     branches: [main]
     paths:
@@ -9,14 +10,12 @@ on:
       - 'tests/test_analytics_history.py'
       - 'tests/test_analytics_timeout_policy.py'
       - '.github/workflows/analytics-snapshot.yml'
-  schedule:
-    - cron: "47 6 * * *"
   workflow_dispatch:
 
 permissions:
   contents: write
 
-# Keep scheduled and push-triggered snapshots queued rather than cancelling an active GA4/GSC collection.
+# Keep push-triggered snapshots queued rather than cancelling an active GA4/GSC collection.
 concurrency:
   group: pettraffic-analytics-${{ github.ref }}
   cancel-in-progress: false

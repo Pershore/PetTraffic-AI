@@ -16,10 +16,8 @@ TOKEN = os.environ.get("GITHUB_TOKEN", "").strip()
 # GitHub Actions cron expressions use UTC. A 60-minute grace avoids alerting
 # on normal scheduler delays while still detecting a missed daily/weekly cycle.
 WORKFLOWS = [
-    ("analytics-snapshot.yml", "GA4 ir Search Console", 36, {"frequency": "daily", "hour": 6, "minute": 47, "grace_minutes": 60}),
+    ("daily-suite.yml", "GA4, temų radaras ir svetainės stebėjimas", 36, {"frequency": "daily", "hour": 5, "minute": 37, "grace_minutes": 60}),
     ("sync-control-api.yml", "Centrinės API sinchronizavimas", 36, None),
-    ("daily-topic-radar.yml", "Temų radaras", 36, {"frequency": "daily", "hour": 6, "minute": 23, "grace_minutes": 60}),
-    ("live-site-monitor.yml", "Svetainės stebėjimas", 36, {"frequency": "daily", "hour": 7, "minute": 11, "grace_minutes": 60}),
     ("lighthouse-audit.yml", "Lighthouse auditas", 9 * 24, {"frequency": "weekly", "weekday": 0, "hour": 7, "minute": 27, "grace_minutes": 60}),
     ("control-center.yml", "Centrinis valdymo centras", 36, {"frequency": "daily", "hour": 8, "minute": 40, "grace_minutes": 60}),
 ]
@@ -84,6 +82,17 @@ def latest_schedule_due(now: datetime, schedule: dict) -> datetime:
     raise ValueError(f"Unsupported schedule frequency: {frequency}")
 
 
+def is_scheduled_run(item: dict) -> bool:
+    """Accept a direct cron run or the suite explicitly marked as cron-triggered."""
+    if item.get("event") == "schedule":
+        return True
+    title = str(item.get("display_title", ""))
+    return (
+        item.get("event") == "workflow_run"
+        and title.startswith("Scheduled daily suite from site-check #")
+    )
+
+
 def evaluate_workflow(
     name: str,
     runs: list[dict],
@@ -109,6 +118,28 @@ def evaluate_workflow(
                 second=0,
                 microsecond=0,
             )
+            if workflow_updated_at:
+                try:
+                    workflow_updated = parse_time(workflow_updated_at)
+                except (TypeError, ValueError):
+                    return {
+                        "name": name,
+                        "state": "unknown",
+                        "detail": "GitHub Actions workflow atnaujinimo data neatpažinta.",
+                        "url": None,
+                        "created_at": None,
+                    }
+                if workflow_updated > due:
+                    return {
+                        "name": name,
+                        "state": "waiting",
+                        "detail": (
+                            f"Workflow atnaujintas {workflow_updated.strftime('%Y-%m-%d %H:%M')} UTC "
+                            "po paskutinio suplanuoto laiko; laukiama kito ciklo."
+                        ),
+                        "url": None,
+                        "created_at": None,
+                    }
             return {
                 "name": name,
                 "state": "warning",
@@ -138,27 +169,7 @@ def evaluate_workflow(
         return {**base, "state": "unknown", "detail": f"Nežinoma išvada: {conclusion}."}
     if schedule:
         due = latest_schedule_due(now, schedule)
-        # A workflow created or edited after today's scheduled time cannot have
-        # run that earlier cycle. Wait for the first cycle after the latest edit.
-        if workflow_updated_at:
-            try:
-                workflow_updated = parse_time(workflow_updated_at)
-            except (TypeError, ValueError):
-                return {
-                    **base,
-                    "state": "unknown",
-                    "detail": "GitHub Actions workflow atnaujinimo data neatpažinta.",
-                }
-            if workflow_updated > due:
-                return {
-                    **base,
-                    "state": "waiting",
-                    "detail": (
-                        f"Workflow atnaujintas {workflow_updated.strftime('%Y-%m-%d %H:%M')} UTC "
-                        "po paskutinio suplanuoto laiko; laukiama kito ciklo."
-                    ),
-                }
-        scheduled_runs = [item for item in runs if item.get("event") == "schedule"]
+        scheduled_runs = [item for item in runs if is_scheduled_run(item)]
         scheduled_latest = max(
             scheduled_runs,
             key=lambda item: item.get("created_at", ""),
@@ -173,6 +184,28 @@ def evaluate_workflow(
                 "state": "unknown",
                 "detail": "Suplanuoto paleidimo data neatpažinta.",
             }
+        if workflow_updated_at:
+            try:
+                workflow_updated = parse_time(workflow_updated_at)
+            except (TypeError, ValueError):
+                return {
+                    **base,
+                    "state": "unknown",
+                    "detail": "GitHub Actions workflow atnaujinimo data neatpažinta.",
+                }
+            # A current schedule-backed run after the latest workflow edit is valid,
+            # even when the edit itself happened after the nominal cron time.
+            if workflow_updated > due and (
+                scheduled_created is None or scheduled_created < workflow_updated
+            ):
+                return {
+                    **base,
+                    "state": "waiting",
+                    "detail": (
+                        f"Workflow atnaujintas {workflow_updated.strftime('%Y-%m-%d %H:%M')} UTC "
+                        "po paskutinio suplanuoto laiko; laukiama kito ciklo."
+                    ),
+                }
         if scheduled_created is None or scheduled_created < due:
             scheduled_detail = (
                 f"paskutinis suplanuotas paleidimas buvo {scheduled_created_raw}"
