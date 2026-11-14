@@ -115,3 +115,15 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 - Išmatuotas aktyvaus darbo laikas: dabartinės sesijos aktyvus darbas ir įrankių vykdymas atskirai neišmatuoti.
 - Istorinis 2026-11-09–2026-11-12 laikas: nežinomas; nebus išgalvojamas.
 - ARO Vet PR #66 paliktas nepaliestas; ARO Vet svetainė ir kodas nekeisti.
+
+
+## 2026-11-14 – Termux bootstrap paleidimo per stdin klaidos taisymas
+
+- Vartotojas pakartojo curl bootstrap.sh | bash ir gavo BASH_SOURCE[0]: unbound variable bei cd: null directory.
+- Priežastis: setup-debian.sh vykdomas iš standartinės įvesties su set -u; šiame režime BASH_SOURCE[0] gali būti neapibrėžtas. Tai nėra Node.js/npm klaida.
+- PR #182 sujungtas: https://github.com/Pershore/PetTraffic-AI/pull/182; merge commit 740323047dab1b5e671092b533c50e719a0b7b28.
+- Pataisa: ensure-npm.sh parsiunčiamas į fiksuotą /tmp kelią; po npm patikros išvedama versija; galutiniame pranešime teisingai išplečiama CODEX_AUTH būsena.
+- Pridėtas test-setup-debian-stdin.sh regresijos testas ir workflow patikra, kad setup-debian.sh nebūtų BASH_SOURCE priklausomybės.
+- Vietinis smoke testas: PASS. PR Termux bridge run #38 (https://github.com/Pershore/PetTraffic-AI/actions/runs/43584318735) – success; site-check #512 (https://github.com/Pershore/PetTraffic-AI/actions/runs/43584318685) – success.
+- Dar nepatikrinta: vartotojo telefone pilnas bootstrap po PR #182, gh auth status, codex login status, codex doctor ir klonuotos saugyklos būsena. Kitas veiksmas – vieną kartą pakartoti bootstrap iš Termux ir įvertinti galutinę išvestį.
+- Cloudflare production, Worker/D1, DNS, secrets, ARO Vet ir mokamos paslaugos nepakeistos.
