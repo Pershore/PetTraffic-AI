@@ -21,15 +21,13 @@ printf 'deb [arch=%s signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg
 apt-get update
 apt-get install -y gh
 
-# Ubuntu's packaged npm can be present but broken when node-glob files are missing.
-# Repair the distro packages once before installing Codex.
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-if [ ! -f "$SCRIPT_DIR/ensure-npm.sh" ]; then
-  curl -fsSL https://raw.githubusercontent.com/Pershore/PetTraffic-AI/main/tools/termux/ensure-npm.sh -o /tmp/pettraffic-ensure-npm.sh
-  bash /tmp/pettraffic-ensure-npm.sh
-else
-  bash "$SCRIPT_DIR/ensure-npm.sh"
-fi
+# This setup is normally streamed into bash (curl | bash), so BASH_SOURCE
+# may be empty under set -u. Fetch the helper to a fixed temporary path.
+# The helper repairs Ubuntu/Debian's packaged npm dependency tree if needed.
+curl -fsSL https://raw.githubusercontent.com/Pershore/PetTraffic-AI/main/tools/termux/ensure-npm.sh \
+  -o /tmp/pettraffic-ensure-npm.sh
+bash /tmp/pettraffic-ensure-npm.sh
+npm --version
 
 # Codex CLI uses the ChatGPT sign-in flow; no API key is required for this setup.
 npm install --global @openai/codex
@@ -78,7 +76,7 @@ else
 fi
 git -C "$WORKDIR" status --short --branch
 
-cat <<'EOF'
+cat <<EOF
 
 ĮDIEGTA: esama Linux proot aplinka + Git + GitHub CLI + Codex CLI.
 Codex autentifikacija: ${CODEX_AUTH}.
