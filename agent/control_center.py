@@ -157,21 +157,27 @@ def evaluate_workflow(
     status, conclusion = latest.get("status"), latest.get("conclusion")
     base = {"name": name, "url": latest.get("html_url"), "created_at": created_raw}
     age = now.astimezone(timezone.utc) - created
-    if status in ("queued", "in_progress", "waiting", "pending"):
-        # A push/manual run must not hide the state of the daily schedule.
-        if not schedule or is_scheduled_run(latest):
-            return {**base, "state": "running", "detail": f"Vyksta ({status})."}
+    pending_status = status in ("queued", "in_progress", "waiting", "pending")
+    latest_is_scheduled = is_scheduled_run(latest)
+    if pending_status and (not schedule or latest_is_scheduled):
+        return {**base, "state": "running", "detail": f"Vyksta ({status})."}
     if status != "completed":
-        return {**base, "state": "unknown", "detail": f"Nežinoma būsena: {status}."}
-    if conclusion == "failure":
-        return {**base, "state": "failure", "detail": "Paskutinis paleidimas nepavyko."}
-    if conclusion in ("cancelled", "timed_out", "action_required", "startup_failure"):
-        # GitHub may cancel a queued non-scheduled run when another run enters
-        # the same concurrency group. Judge the cron run below instead.
-        if not (schedule and conclusion == "cancelled" and not is_scheduled_run(latest)):
-            return {**base, "state": "warning", "detail": f"Paskutinio paleidimo rezultatas: {conclusion}."}
-    if conclusion not in ("success", "neutral", "skipped"):
-        return {**base, "state": "unknown", "detail": f"Nežinoma išvada: {conclusion}."}
+        # A pending push/manual run must not mask a missed or successful cron run.
+        if not (schedule and pending_status and not latest_is_scheduled):
+            return {**base, "state": "unknown", "detail": f"Nežinoma būsena: {status}."}
+    else:
+        if conclusion == "failure":
+            return {**base, "state": "failure", "detail": "Paskutinis paleidimas nepavyko."}
+        ignored_cancelled_non_schedule = (
+            schedule and conclusion == "cancelled" and not latest_is_scheduled
+        )
+        if conclusion in ("cancelled", "timed_out", "action_required", "startup_failure"):
+            # GitHub may cancel a queued non-scheduled run when another run enters
+            # the same concurrency group. Judge the cron run below instead.
+            if not ignored_cancelled_non_schedule:
+                return {**base, "state": "warning", "detail": f"Paskutinio paleidimo rezultatas: {conclusion}."}
+        if conclusion not in ("success", "neutral", "skipped") and not ignored_cancelled_non_schedule:
+            return {**base, "state": "unknown", "detail": f"Nežinoma išvada: {conclusion}."}
     if schedule:
         due = latest_schedule_due(now, schedule)
         scheduled_runs = [item for item in runs if is_scheduled_run(item)]
