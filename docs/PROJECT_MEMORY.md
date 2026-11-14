@@ -332,3 +332,11 @@ Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama 
 - AI rekomendacijos patariamosios. Viešo turinio publikavimui, ARO Vet, DNS, production, Cloudflare teisių / secrets pakeitimams ir išlaidoms būtinas atskiras patvirtinimas.
 - 100 % veikimo garantijos negalima suteikti: GitHub/Cloudflare scheduler, išorinės API, Android foninis vykdymas ir AI modelio išvestys turi išorinių gedimo galimybių. Tikslas – automatinis aptikimas, dalinio rezultato išsaugojimas ir perspėjimas.
 - Jokio mokamo plano ar papildomos paslaugos neaktyvuota; Workers AI Free kvota turi ribas. Kai nemokama kvota pasiekiama, agentai turi degraduoti į read-only atsarginį rezultatą / aiškų perspėjimą, o ne pereiti prie mokamo naudojimo.
+
+
+## 15. Daily-suite nepriklausomas grafikas ir pagrindinio agento laikas (2026-11-14)
+
+- PR #199 sujungtas commit abcd5072e51c98d0b68d2d6a948fd09488245c5b. Daily-suite nebėra priklausomas nuo site-check workflow_run įvykio; turi tiesioginį schedule 06:10 UTC (08:10 Europe/Vilnius) ir workflow_dispatch rankiniam paleidimui. Rinkinyje išlieka GA4/GSC, topic radar ir live-site patikros.
+- Control Center WORKFLOWS tvarkaraštis atnaujintas į 06:10 UTC; išlaikytas senų schedule-proxy workflow_run įrašų suderinamumas istorijai. PR #199 CI: central-control-center ir site-check – success; po merge site-check ir central-control-center push vykdymai – success. Pirmas tikras direct schedule paleidimas laukia 2026-11-15 06:10 UTC.
+- Vienintelė aktyvi ChatGPT koordinatoriaus automatizacija (Automation_533d7bb79b20819185c3fc2e1e1fbb85) perkelta į 11:00 Europe/Vilnius, kad apdorotų jau užbaigtus dienos procesus: daily-suite 08:10, Worker AI 10:20, Control Center 10:40. Ji lieka enabled; jokių dubliuojančių automatikų nesukurta.
+- Naujas grafikas dar nėra PATIKRINTAS realiu schedule paleidimu; pirmas įrodymas bus 2026-11-15. Iki tol žymėti LAUKIA.
