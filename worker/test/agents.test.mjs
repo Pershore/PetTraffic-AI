@@ -104,15 +104,19 @@ test("invalid coordinator output uses deterministic read-only aggregation",async
  assert.ok(report.coordinator.evidence_gaps.some(x=>x.includes("deterministic aggregation")));
 });
 
-test("invalid model output fails the orchestration and persists partial memory",async()=>{
+test("repeated invalid model outputs use deterministic fallback and persist evidence-aware memory",async()=>{
  const{env,state}=mockEnv({modelResponse:'{"status":"reviewed"'});
  const result=await runAgentOrchestration(env);
- assert.equal(result.completed,false);
- assert.match(result.error,/model_analytics:model_output_invalid_json/);
- assert.equal(result.memory_persisted,true);
- assert.ok(state.updates.some(x=>x.sql.includes("status='failed'")));
+ assert.equal(result.completed,true);
+ assert.equal(state.aiCalls,5);
+ const completed=state.updates.find(x=>x.sql.includes("status='completed'"));
+ assert.ok(completed);
+ const report=JSON.parse(completed.values[0]);
+ assert.equal(report.coordinator.status,"fallback");
+ assert.ok(Object.values(report.specialists).every(item=>item.status==="invalid_json"));
+ assert.ok(report.coordinator.evidence_gaps.length>0);
  assert.ok(state.updates.some(x=>x.sql.includes("control_core_memory")));
- assert.equal(state.updates.some(x=>x.sql.includes("status='completed'")),false);
+ assert.equal(state.updates.some(x=>x.sql.includes("status='failed'")),false);
 });
 
 test("Workers AI receives enough output budget for the complete JSON response",async()=>{
