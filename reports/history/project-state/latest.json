@@ -1,17 +1,24 @@
 {
   "schema_version": 1,
   "project": "PetTraffic AI",
-  "generated_at": "2026-11-14T10:36:19.920760+00:00",
-  "run_id": "43586067171",
-  "source_commit": "2a7eaf09aedbccec4b26a5338b51a2198bf85518",
+  "generated_at": "2026-11-14T11:51:57.541064+00:00",
+  "run_id": "43592016579",
+  "source_commit": "6a285a5505e88853a77fb1e31c08fa4fb1d9ad63",
   "overall_status": "needs_attention",
   "last_verified_stage": "Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataskaitoje.",
   "next_action": "Spręsti pirmą aptiktą problemą: GA4 ir Search Console (warning). Suplanuotas ciklas nuo 2026-11-14 06:47 UTC dar neįvykdytas; suplanuotų paleidimų istorijoje nėra. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.",
   "verified_processes": [
     {
+      "name": "Centrinės API sinchronizavimas",
+      "state": "success",
+      "detail": "Paskutinis paleidimas sėkmingas.",
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43586103335",
+      "created_at": "2026-11-14T10:36:40Z"
+    },
+    {
       "name": "Cloudflare Worker + D1",
       "state": "success",
-      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 5 min.",
+      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 6 min.",
       "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
       "created_at": null
     }
@@ -48,13 +55,6 @@
   ],
   "pending_checks": [
     {
-      "name": "Centrinės API sinchronizavimas",
-      "state": "running",
-      "detail": "Vyksta (in_progress).",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43586067175",
-      "created_at": "2026-11-14T10:36:12Z"
-    },
-    {
       "name": "Lighthouse auditas",
       "state": "waiting",
       "detail": "Workflow atnaujintas 2026-11-13 12:09 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.",
@@ -65,8 +65,8 @@
       "name": "Centrinis valdymo centras",
       "state": "running",
       "detail": "Vyksta (in_progress).",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43586067171",
-      "created_at": "2026-11-14T10:36:12Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43592016579",
+      "created_at": "2026-11-14T11:51:45Z"
     }
   ],
   "ai_agent_memory_check": {
@@ -103,147 +103,5 @@
     "Nekeisti DNS, Cloudflare teisių ar produkcinės infrastruktūros be atskiro patvirtinimo.",
     "AI rekomendacijos yra patariamosios; modelio išvestys nesuteikia vykdymo teisių."
   ],
-  "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.",
-  "manual_audit": {
-    "audited_at": "2026-11-14T11:35:00Z",
-    "main_head_commit": "97b2b4ac95989d1e70e6aa37398deccb97eda907",
-    "project_memory": {
-      "status": "merged_and_ci_verified",
-      "pull_request": 185,
-      "merge_commit": "245446cf123a25df76b212943353c76e6d3f6c69",
-      "followup_pull_request": 186,
-      "followup_merge_commit": "535fba9f44371eb17417c527518e655e1d0b73e5"
-    },
-    "checks": [
-      {
-        "name": "main-site-check",
-        "run_id": "43587281754",
-        "conclusion": "success"
-      },
-      {
-        "name": "main-termux-bridge",
-        "run_id": "43587281810",
-        "conclusion": "success"
-      },
-      {
-        "name": "memory-followup-site-check",
-        "run_id": "43587388813",
-        "conclusion": "success"
-      },
-      {
-        "name": "memory-followup-termux-bridge",
-        "run_id": "43587388672",
-        "conclusion": "success"
-      },
-      {
-        "name": "coordinator-memory-pr-site-check",
-        "run_id": "43587606977",
-        "conclusion": "success"
-      },
-      {
-        "name": "coordinator-memory-main-site-check",
-        "run_id": "43587642755",
-        "conclusion": "success"
-      },
-      {
-        "name": "main-automatic-work-log",
-        "run_id": "43587642784",
-        "conclusion": "success"
-      }
-    ],
-    "access_matrix": {
-      "github": "connected_repo_admin",
-      "firecrawl": "installed",
-      "cloudflare_dashboard": "not_connected",
-      "android_termux": "not_connected",
-      "codex_device_auth": "unverified",
-      "ga4_gsc": "via_github_actions"
-    },
-    "open_blockers": [
-      "cloudflare_token_rotation_unconfirmed",
-      "github_actions_schedule_not_verified",
-      "worker_ai_agent_json_output_invalid_not_deployed",
-      "android_termux_codex_auth_unverified",
-      "worker_task_api_intentionally_disabled_pending_agent_identity"
-    ],
-    "note": "PR #188 was merged after PR checks passed; post-merge site-check, work-log and Cloudflare Pages checks passed. The automatic snapshot generated_at/run_id/source_commit remains the last Control Center run, not a new automated snapshot.",
-    "coordinator_prompt_updated_at": "2026-11-14T10:55:18.115977Z",
-    "coordinator_prompt_changes": [
-      "read docs/PROJECT_MEMORY.md at session start",
-      "remove stale hard-coded Lighthouse metrics",
-      "preserve generated snapshot timestamps and distinguish manual audit",
-      "documented in PR #187, merge commit 1aafc9348ea04ee42af9519e5fc8740249286094"
-    ],
-    "coordinator_schedule": "daily 09:45 Europe/Vilnius; existing automation remains enabled; next run 2026-11-15T09:45:00+02:00",
-    "latest_schedule_audit": {
-      "checked_at": "2026-11-14T11:35:00Z",
-      "total_runs_reported": 1074,
-      "schedule_events_found": 1,
-      "only_schedule_run": {
-        "id": "43433299383",
-        "name": "Pet traffic site checks",
-        "created_at": "2026-11-13T13:23:57Z",
-        "conclusion": "success"
-      },
-      "expected_crons_utc": {
-        "site_check": "37 5 * * *",
-        "topic_radar": "23 6 * * *",
-        "analytics": "47 6 * * *",
-        "live_site_monitor": "11 7 * * *",
-        "control_center": "40 8 * * *"
-      },
-      "note": "No 2026-11-14 schedule events found. Workflow activation/settings could not be read through the connected GitHub integration; root cause remains unknown."
-    },
-    "main_auto_worklog_commit": "84fc060947d7714d4622b6eab81298a3e593b0b6",
-    "latest_checks": [
-      {
-        "name": "main-site-check",
-        "run_id": "43587642755",
-        "conclusion": "success"
-      },
-      {
-        "name": "main-automatic-work-log",
-        "run_id": "43587642784",
-        "conclusion": "success"
-      },
-      {
-        "name": "pr188-merged",
-        "pull_request": 188,
-        "merge_commit": "912f318728ffca04ab02df485e499dbedcac4bd1",
-        "conclusion": "merged"
-      },
-      {
-        "name": "post-merge-main-site-check",
-        "run_id": "43591058588",
-        "conclusion": "success"
-      },
-      {
-        "name": "post-merge-automatic-work-log",
-        "run_id": "43591058572",
-        "conclusion": "success"
-      },
-      {
-        "name": "post-merge-cloudflare-pages-check",
-        "commit": "912f318728ffca04ab02df485e499dbedcac4bd1",
-        "conclusion": "success"
-      }
-    ],
-    "open_pull_requests": [
-      {
-        "number": 183,
-        "title": "Constrain Workers AI agent JSON output",
-        "head": "fb93f62341437d2f3428ddf1a4e42a31b76780e6",
-        "state": "open",
-        "mergeable": true,
-        "checks": {
-          "worker_test": "success",
-          "cloudflare_validation": "success",
-          "static_site_checks": "success",
-          "pages_preview": "success",
-          "worker_deploy": "skipped"
-        }
-      }
-    ],
-    "stale_snapshot_note": "The automatic snapshot fields generated_at/run_id/source_commit and pending_checks are preserved as historical output from run 43586067171 at 2026-11-14T10:36:19Z. Current manual observations are recorded here and in the appended latest.md section."
-  }
+  "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių."
 }
