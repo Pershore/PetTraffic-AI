@@ -89,3 +89,16 @@ Spręsti pirmą aptiktą problemą: GA4 ir Search Console (warning). Suplanuotas
 - Merge commit: `9eacbd44636a9110b74878e7735ee5536e5e6bdd`. Pakeitimai apsiribojo Termux diegimo skriptais, testais, CI ir dokumentacija; vieša svetainė turinio prasme, Worker/D1, DNS, secrets, ARO Vet ir mokamos paslaugos nekeistos.
 - **Telefono būsena lieka LAUKIA:** CI patvirtina scenarijaus logiką, bet ne vartotojo Ubuntu aplinkos atkūrimą, `gh auth` ar Codex autentifikaciją. Kitas žingsnis – vieną kartą pakartoti bootstrap iš Termux su atnaujintu `main` ir patikrinti tik ne slaptą galutinę išvestį.
 - Aktyvus darbo laikas ir vartotojo veiksmo trukmė nematuoti.
+
+## Rankinis auditas – 2026-11-14 (autonominių procesų patikra)
+
+- `main` HEAD `f964ea487a5bb1b259512816969954ec6234a4f3`; atvirų PR nėra.
+- GitHub `event=schedule` istorijoje rasti du vykdymai – site-check `43594970279` (2026-11-14 12:28:10 UTC, success) ir `43433299383` (2026-11-13 13:23:57 UTC, success). Kiti trys pagrindiniai procesai paskutinį kartą vykdyti per push: analytics `43586027796`, topic-radar `43422828353`, live-site-monitor `43422828198`; jų schedule veikimas nepatvirtintas.
+- Naujausias site-check `43597374771` success; Lighthouse `43517122731` success (10 auditų, mobile LCP apie 1.05–2.35 s, CLS 0, TBT 0–163 ms).
+- GA4 2026-11-07–13: 7 aktyvūs naudotojai, 24 sesijos, 88 puslapių peržiūros, 0 patvirtintų organinių sesijų. GSC 2026-11-05–11: 0 parodymų / paspaudimų, sitemap pending, 5 prioritetiniai URL Google dar nežinomi.
+- Worker /health 2026-11-14 13:00:46 UTC: HTTP 200, D1 connected, control-core schema connected, svetainė HTTP 200. Control-core `needs_evidence`, 4 spragos, memory present. Agentų ciklas failed 08:20:20 UTC su `model_content-review_model_output_invalid_json`, prieš 11:51 UTC Worker deploy; kitas ciklas 2026-11-15 08:20 UTC.
+- Ubuntu Codex CLI 0.167.1 ir švari, sinchronizuota vietinė kopija patvirtinti pagal vartotojo terminalo išvestį.
+- GitHub jungtis neturi workflow-dispatch operacijos; Worker `/v1/tasks*` API tyčia išjungta. Jokių dirbtinių push ar apsaugų apėjimų neatlikta.
+- Production, Worker/D1 konfigūracija/duomenys, DNS, secrets, Actions nustatymai, ARO Vet ir mokamos paslaugos nepakeistos.
+
+> Šis įrašas yra rankinis auditas. Viršutiniai automatinio snapshot laukai `generated_at`, `run_id` ir `source_commit` palikti nepakeisti.
