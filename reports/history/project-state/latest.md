@@ -62,3 +62,16 @@ Spręsti pirmą aptiktą problemą: GA4 ir Search Console (warning). Suplanuotas
 - GitHub Actions schedule problema lieka NEPATVIRTINTA; Termux/Codex telefono autentifikacija nepatvirtinta; GA4/GSC ilgalaikis stabilumas laukia daugiau suplanuotų ciklų; Worker task API tyčia išjungta.
 - Dokumentacija atnaujinta PR #189, sujungta commit 6ec622d1eb1ecbcc4f832c1e1b05a152cae9d3ac.
 - Automatiniai snapshot laukai generated_at, run_id ir source_commit palikti nepakeisti; ši informacija atskirta manual_audit lauke.
+
+
+## Rankinis auditas – 2026-11-14 14:05 Europe/Vilnius
+
+- `main` HEAD: `3c76d9b810c715d59783600e98c6f44646638ee9`; PR #131 patvirtintas kaip MERGED; šiuo metu atvirų PR nėra.
+- Naujausi po-merge patikrinimai: site-check run `43592320377` – success; Termux/Codex bridge CI `43592320390` – success; automatinis darbo žurnalas `43592320374` – success. Centrinės API sinchronizavimas `43592176751` – success.
+- Worker deploy run `43592016509` – test, Cloudflare validation ir deploy success; gyvas health ir autentifikacijos ribos patikrinimas sėkmingas. Worker versija `a34f8850-e1bf-42c0-a055-3e9c9c8714c0`.
+- Analytics snapshot run `43586027796` – success; artefaktas `pettraffic-analytics-7d` egzistuoja ir nėra pasibaigęs. GA4 2026-11-07–13: 7 aktyvūs / 7 nauji naudotojai, 24 sesijos, 88 peržiūros. GSC 2026-11-05–11: 0 parodymų, 0 paspaudimų; sitemap pateiktas, apdorojimas pending.
+- Actions `event=schedule` užklausa grąžino tik vieną istorijos įrašą – site-check `43433299383` (2026-11-13 13:23:57 UTC); 2026-11-14 suplanuotų paleidimų nėra. YAML cron įrašai egzistuoja, bet workflow aktyvumo nustatymai per dabartinę jungtį nepasiekiami. Priežastis lieka NEPATVIRTINTA.
+- Centrinio valdymo centro run `43592057614` baigėsi success kaip workflow, tačiau jo ataskaitoje išliko schedule perspėjimai ir ankstesnis AI agentų gedimas; tai nėra įrodymas, kad šie blokatoriai pašalinti.
+- PR #183 Worker JSON pataisa įdiegta; naujas agentų ciklas po deploy dar neįvyko. Kitas numatytas ciklas – 2026-11-15 08:20 UTC (10:20 Europe/Vilnius), todėl veiksmingumas LAUKIA.
+- Issue #145 lieka OPEN; nėra atvirų PR. Termux CI patvirtina tik bootstrap scenarijus, ne telefono autentifikaciją. Worker `/v1/tasks*` API palikta tyčia išjungta.
+- Šios sesijos metu nebuvo keičiamas svetainės kodas, Worker/D1, DNS, secrets, Actions nustatymai, ARO Vet ar mokamos paslaugos.
