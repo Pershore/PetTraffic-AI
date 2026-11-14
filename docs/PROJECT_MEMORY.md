@@ -234,3 +234,30 @@ Nesujungti / atviri PR ir issues tikrinami kiekvienos sesijos pradžioje. Po PR 
 3. Po saugumo patvirtinimo peržiūrėti PR #183, suplanuoti Worker deploy ir patikrinti naują AI ciklą bei D1 atminties įrašą.
 4. Atskirai užbaigti vienkartinį Termux/Codex telefono patikrinimą; tik po to projektuoti apribotą vietinį pollerį.
 5. Tik po šių įrodymų aktyvuoti ribotą užduočių eilę; iki tol palikti ją išjungtą.
+
+
+## 12. Worker JSON pataisos diegimas ir nauja saugumo būsena (2026-11-14)
+
+### Patvirtinti veiksmai
+- Vartotojas patvirtino, kad senasis Cloudflare API tokenas išrotuotas ir GitHub Actions secret CLOUDFLARE_API_TOKEN atnaujintas. Nauja reikšmė pokalbyje nepateikta ir nebuvo prašoma.
+- Po patvirtinimo pakartotinai paleista tik PR #183 validate-cloudflare užduotis (job 132438435986); Cloudflare tokeno, paskyros, D1, Worker ir Worker Cron schedule patikra – success. Worker diegimas šioje PR patikroje nebuvo paleistas.
+- PR #183 sujungtas squash į main: commit 6a285a5505e88853a77fb1e31c08fa4fb1d9ad63.
+- Main push workflow #43592016509: test – success; Cloudflare validation – success; deploy – success. Worker versija a34f8850-e1bf-42c0-a055-3e9c9c8714c0 įdiegta.
+- Deploy log patvirtina: D1 migracijų taikyti nereikėjo (No migrations to apply); Worker įkeltas ir Cron triggeriai registruoti: */15 * * * * bei 20 7,8 * * *.
+- Po deploy workflow patikrino gyvą /health: Worker ok=true, D1 connected, control-core schema connected; apsaugotas /v1/events be autentifikacijos grąžino HTTP 401.
+- Viešas gyvas /health patikrinimas po deploy (Firecrawl live fetch, 2026-11-14): Worker ir D1 veikia, bet agent_orchestration vis dar rodo ankstesnį 08:20 UTC ciklo gedimą model_content-review_model_output_invalid_json. Naujas agentų ciklas po pataisos dar neįvyko, todėl AI pataisa produkcijoje įdiegta, bet jos veiksmingumas realiu agentų ciklu dar NEPATVIRTINTAS.
+- Centrinio valdymo centro run #43592057614 po deploy pakartotinai paleistas; testai, ataskaita, istorijos archyvavimas ir sync sėkmingi. Ataskaita išsaugo ankstesnį AI agentų gedimą ir GitHub Actions schedule perspėjimus – jų nelaikyti išspręstais.
+
+### Dabartinė būsena
+- Cloudflare tokeno rotacija + GitHub secret: PATVIRTINTA vartotojo teiginiu ir PATIKRINTA CI.
+- PR #183: ATLIKTA / MERGED.
+- Worker JSON pataisa: ATLIKTA produkcijoje, realaus naujo agentų ciklo rezultatas LAUKIA.
+- Worker + D1 + control-core schema + apsaugoto API riba: PATIKRINTA po deploy.
+- GitHub Actions kasdieniai schedule: NEPATVIRTINTA / REIKIA DĖMESIO; 2026-11-14 ankstesnėse patikrose schedule event trūko. Push ir workflow_run nėra schedule įrodymas.
+- Termux / Codex telefono autentifikacija: LAUKIA, nes nėra Android shell jungties.
+- Worker /v1/tasks* API lieka tyčia išjungta iki dedikuotos agentų tapatybės ir leidimų modelio.
+
+### Kitas konkretus veiksmas
+- Patikrinti kitą Worker agentų ciklą, numatytą 2026-11-15 08:20 UTC (10:20 Europe/Vilnius): /health agent_orchestration status, error_code, AI calls ir D1 memory timestamp. Tik sėkmingas naujas ciklas įrodo JSON pataisos veiksmingumą.
+- Toliau tirti GitHub Actions schedule nevykdymą nekeičiant cron spėliojant; tikrinti workflow aktyvumo nustatymus per prieinamą autorizuotą kelią.
+- Toliau tikrinti GA4/GSC atskirus suplanuotus ciklus ir Termux/Codex tik tada, kai atsiranda reali telefono prieiga.
