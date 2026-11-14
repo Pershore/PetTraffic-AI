@@ -208,3 +208,15 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 - Po deploy centrinio valdymo centro run #43592057614 pakartotinis vykdymas: unit tests, report generation, artifact upload ir history archive – success. Jo būsena išlaiko ankstesnius AI agentų ir GitHub Actions schedule perspėjimus.
 - GitHub Actions schedule problema, Termux/Codex telefono autentifikacija ir GA4/GSC ilgalaikis stabilumas lieka atskiri atviri klausimai. Worker task API sąmoningai palikta išjungta.
 - Jokių ARO Vet, DNS, viešo turinio ar mokamų paslaugų pakeitimų neatlikta.
+
+
+## 2026-11-14 – tęstinis read-only patikrų auditas (14:05 Europe/Vilnius)
+
+- Patikrintas `main` HEAD `3c76d9b810c715d59783600e98c6f44646638ee9`; PR #131 MERGED; atvirų PR nėra; issue #145 lieka OPEN.
+- Naujausias site-check `43592320377`, Termux/Codex bridge CI `43592320390` ir automatinis work-log `43592320374` – success. Centrinės API sync `43592176751` – success.
+- Worker production deploy `43592016509`: test, Cloudflare validation ir deploy success; po deploy patvirtinta /health, D1, control-core schema ir 401 neautentifikuotam /v1/events. Worker versija `a34f8850-e1bf-42c0-a055-3e9c9c8714c0`.
+- Analytics run `43586027796` – success; artefaktas `pettraffic-analytics-7d` yra ir nepasibaigęs. GA4 2026-11-07–13: 7 aktyvūs / 7 nauji naudotojai, 24 sesijos, 88 peržiūros. GSC 2026-11-05–11: 0 parodymų, 0 paspaudimų; sitemap pateiktas, apdorojimas pending.
+- `event=schedule` istorijoje rastas tik site-check `43433299383` (2026-11-13 13:23:57 UTC); 2026-11-14 suplanuotų vykdymų nerasta. Cron YAML yra, tačiau Actions aktyvumo nustatymų per dabartinę jungtį perskaityti negalima; priežastis NEPATVIRTINTA.
+- Control-center workflow `43592057614` baigėsi success, bet ataskaitoje paliko schedule perspėjimus ir ankstesnį AI agentų gedimą. PR #183 pataisa įdiegta, tačiau pirmas naujas agentų ciklas dar LAUKIA 2026-11-15 08:20 UTC.
+- Termux CI nėra telefono autentifikacijos įrodymas; Worker task API lieka tyčia išjungta. Jokių produkcijos, DNS, secrets, Actions nustatymų, ARO Vet ar mokamų paslaugų pakeitimų neatlikta.
+- Automatinio / rankinio darbo laiko atskirai išmatuoti nepavyko; aktyvus laikas NEMATUOTAS.
