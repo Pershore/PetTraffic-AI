@@ -12,7 +12,7 @@ if npm --version >/dev/null 2>&1; then
 fi
 
 NODE_VERSION="$(node --version 2>/dev/null || true)"
-if [[ ! "$NODE_VERSION" =~ ^v(20\.(1[7-9]|[2-9][0-9])|2[1-9]\.|[3-9][0-9]\.) ]]; then
+if [[ ! "$NODE_VERSION" =~ ^v(20\.(1[7-9]|[2-9][0-9])|22\.([9]|[1-9][0-9])|2[3-9]\.|[3-9][0-9]\.) ]]; then
   echo "KLAIDA: npm ${NPM_VERSION} reikia Node.js 20.17+ arba 22.9+. Rasta: ${NODE_VERSION:-nerasta}" >&2
   exit 1
 fi
