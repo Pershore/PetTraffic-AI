@@ -63,3 +63,15 @@ Spręsti pirmą aptiktą problemą: GA4 ir Search Console (warning). Suplanuotas
 - **Telefono Termux/Codex būsena vis dar LAUKIA**: dar nėra naujos vartotojo pateiktos išvesties po PR #181, todėl npm atkūrimas, `gh auth status`, Codex prisijungimas ir `codex doctor` telefone nepatvirtinti.
 - Kitas konkretus veiksmas: pakartoti atnaujintą bootstrap iš Termux; jei Codex būsena `WAITING`, įjungti Device code login (beta) ir tada paleisti `codex login --device-auth`.
 - Nekeista Cloudflare production, Worker/D1, DNS, secrets, ARO Vet ar mokamų paslaugų konfigūracija. Pages preview nėra production deploy.
+
+
+## 2026-11-14 – Termux bootstrap stdin klaidos pataisa
+
+- Vartotojo pakartotinis bootstrap pasiekė Ubuntu paketų paruošimą, bet setup-debian.sh nutrūko: BASH_SOURCE[0]: unbound variable; cd: null directory.
+- Nustatyta priežastis: setup-debian.sh vykdomas per curl | bash, todėl BASH_SOURCE[0] su set -u nėra patikimas. Node.js 22.22.1 ir npm 9.2.0 paketai jau buvo įdiegti; ši klaida kilo vėlesniame shell žingsnyje.
+- PR #182 sujungtas į main, merge commit 740323047dab1b5e671092b533c50e719a0b7b28: https://github.com/Pershore/PetTraffic-AI/pull/182.
+- Pataisyta: ensure-npm.sh visada parsiunčiamas į fiksuotą /tmp kelią; npm versija išvedama po patikros; galutinis CODEX_AUTH pranešimas išplečiamas teisingai.
+- Pridėtas stdin regresijos testas. Vietinis testas PASS; Termux bridge PR run #38 43584318735 – success; site-check #512 43584318685 – success.
+- Telefono aplinkos būsena vis dar LAUKIA: dar nepatvirtinta, kad visas bootstrap užbaigėsi, GitHub CLI prisijungęs, Codex autentifikuotas, codex doctor sėkmingas ir repo klonas tvarkingas.
+- Kitas veiksmas: vartotojas pakartoja tą pačią bootstrap komandą Termux programoje. Jei Codex pažymimas WAITING, atlikti atskirą device-code prisijungimą tik įjungus Device code login (beta).
+- Jokių Cloudflare production, Worker/D1, DNS, secrets, ARO Vet ar mokamų paslaugų pakeitimų neatlikta.
