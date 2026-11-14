@@ -1,6 +1,6 @@
 # Pet traffic – sistemos auditas ir perdavimas
 
-**Data ir laikas:** 2026-11-14, 00:31 Europe/Vilnius  
+**Data ir laikas:** 2026-11-14, 09:52 Europe/Vilnius  
 **Saugykla:** `Pershore/PetTraffic-AI`  
 **Svetainė:** https://pettraffic-ai.pages.dev/
 
@@ -125,11 +125,24 @@ Naujo tokeno niekada nesiųsti pokalbyje.
 - Worker/D1 production kodas ir konfigūracija, D1 duomenys, DNS, Cloudflare paskyros teisės ir ARO Vet nepakeisti.
 - Viešas turinys nepublikuotas.
 
-## 8. Kitas veiksmas
+## 8. Naujausias tęstinumo patikrinimas (2026-11-14, 09:52 Europe/Vilnius)
 
-1. Vartotojas pakeičia Cloudflare API tokeną ir atnaujina GitHub secret.
-2. Užbaigti run #43518529439 Wrangler tail stebėseną ir patvirtinti, ar joje matomas scheduled įvykis.
-3. Po 08:47 analitikos ciklo nustatyti, ar GA4 ReadTimeout pasikartojo; Search Console duomenis išsaugoti nepriklausomai.
-4. Po 10:20 AI agentų ciklo patikrinti `run_date`, `status`, `ai_calls`, `error_code`, control-core ir D1 atminties būseną; 10:35 memory check ir 10:40 control-center turi patvirtinti galutinį rezultatą.
-5. Jei AI ciklas sėkmingas, tik tada žymėti control-core atmintį kaip PATIKRINTA.
-6. Termux/Codex telefono susiejimui reikės vieno vietinio bootstrap ir device-code login veiksmo.
+- `main` head: `179289de1978bcf422187dd591729f924a36df20`; atvirų PR nėra.
+- Site-check #43521446141 success, visi 89 testai praėjo. Vieši pagrindiniai puslapiai, keturi gidai, about, privacy, robots ir sitemap veikia; 404 elgsena teisinga.
+- Lighthouse #43517122731: 10 auditų success; Accessibility / Best Practices / SEO 100, Performance 98–100. Homepage mobile LCP 1.05 s, TBT 163 ms, CLS 0. Kitų puslapių mobile LCP 1.86–2.35 s, TBT 0, CLS 0. Kol kas nekeisti kodo pagal vieną svyruojantį TBT matavimą.
+- GitHub Actions YAML cron grafikai galioja, default branch yra `main`, tačiau iki 09:52 LT nėra šiandienos schedule įvykių site-check (05:37 UTC), topic radar (06:23), analytics (06:47) ir live monitor (07:11). Vienintelis API rastas schedule run yra senesnis, 2026-11-13. GitHub Status 2026-11-14 rodo visus servisus veikiančius; aktyvumo priežastis nepatvirtinta, nes administravimo būsena per dabartinę integraciją nematoma.
+- GA4/GSC paskutinis snapshot #43443849180: GA4 ReadTimeout, Search Console API available, tačiau 0 impressions / 0 clicks ir prioritetiniai URL dar nežinomi Google indeksui; sitemap pending. Naujo dienos snapshot nėra.
+- Worker /health HTTP 200, D1 connected, heartbeat 07:45:47Z. AI agentų ankstesnė dienos klaida dar nepatvirtina šiandienos ciklo; 10:20 LT ciklas WAITING.
+- Wrangler tail run #43521123258 neužfiksavo Cron įvykių per 17 min., nors šviežias D1 heartbeat rodo veikiančią Worker sveikatos grandinę. Diagnostikos išvada nepakankama.
+- Viešo turinio ARO Vet / affiliate / partnerių sekimo nerasta. GA4 skriptas paleidžiamas tik gavus sutikimą.
+- Saugumo blokatorius: senesnė diagnostikos versija siuntė Cloudflare tokeną Authorization antraštėje viešam Worker /health endpoint. Tokeno reikšmė loguose nebuvo išspausdinta, bet jis laikomas galimai atskleistu; vartotojas turi jį išrotuoti ir atnaujinti GitHub secret. Nėra patvirtinimo, kad tai jau atlikta.
+- Šio patikrinimo metu jokie kodas, secrets, permissions, DNS, Worker/D1 ar production nustatymai nekeisti.
+
+## 9. Kitas veiksmas
+
+1. Vartotojas išrotuoja Cloudflare API tokeną ir atnaujina GitHub Actions secret `CLOUDFLARE_API_TOKEN`; naujo rakto pokalbyje nesiųsti.
+2. Vartotojas GitHub Actions sąsajoje patikrina, ar suplanuoti workflow aktyvūs; agentas nekeičia repo nustatymų.
+3. Po 10:20 LT patikrinti AI agentų ciklą; po 10:35 – atmintį; po 10:40 – control-center. Iki suplanuotų laikų palikti WAITING.
+4. Kai schedule atsinaujins, patikrinti naują GA4 ir GSC snapshot. GA4 ReadTimeout laikyti trūkstamais duomenimis, ne nuliu.
+5. Jei schedule vis dar nevyksta, tęsti read-only diagnostiką ir nekurti fiktyvių rezultatų ar rankinių pakartojimų.
+
