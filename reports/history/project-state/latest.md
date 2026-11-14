@@ -1,9 +1,9 @@
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
-- Atnaujinta: 2026-11-14T08:53:06.637441+00:00
+- Atnaujinta: 2026-11-14T08:54:43.241707+00:00
 - Būsena: **REIKIA DĖMESIO**
-- GitHub run: 43577893028
-- Šaltinio commit: bfb8620fe37772a4f79fda9e2d169c479c8afa47
+- GitHub run: 43578010338
+- Šaltinio commit: 588314afcc46c0f157e452896a6f3c991bd86d70
 
 ## Paskutinis patikrintas etapas
 
@@ -15,12 +15,12 @@ Spręsti pirmą aptiktą problemą: GA4 ir Search Console (warning). Suplanuotas
 
 ## Patvirtinti procesai
 
-- Centrinės API sinchronizavimas: Paskutinis paleidimas sėkmingas.
-- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 7 min.
+- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 9 min.
 
 ## Problemos
 
 - **GA4 ir Search Console** (warning): Suplanuotas ciklas nuo 2026-11-14 06:47 UTC dar neįvykdytas; suplanuotų paleidimų istorijoje nėra. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia. – https://github.com/Pershore/PetTraffic-AI/actions/runs/43443849180
+- **Centrinės API sinchronizavimas** (failure): Paskutinis paleidimas nepavyko. – https://github.com/Pershore/PetTraffic-AI/actions/runs/43577927245
 - **Temų radaras** (warning): Suplanuotas ciklas nuo 2026-11-14 06:23 UTC dar neįvykdytas; suplanuotų paleidimų istorijoje nėra. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia. – https://github.com/Pershore/PetTraffic-AI/actions/runs/43422828353
 - **Svetainės stebėjimas** (warning): Suplanuotas ciklas nuo 2026-11-14 07:11 UTC dar neįvykdytas; suplanuotų paleidimų istorijoje nėra. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia. – https://github.com/Pershore/PetTraffic-AI/actions/runs/43422828198
 - **AI agentai + control-core atmintis** (failure): AI agentų ciklas nepavyko (2026-11-14); AI kvietimų: 4; klaida: model_content-review_model_output_invalid_json. – https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health
