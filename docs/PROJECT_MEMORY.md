@@ -340,3 +340,11 @@ Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama 
 - Control Center WORKFLOWS tvarkaraštis atnaujintas į 06:10 UTC; išlaikytas senų schedule-proxy workflow_run įrašų suderinamumas istorijai. PR #199 CI: central-control-center ir site-check – success; po merge site-check ir central-control-center push vykdymai – success. Pirmas tikras direct schedule paleidimas laukia 2026-11-15 06:10 UTC.
 - Vienintelė aktyvi ChatGPT koordinatoriaus automatizacija (Automation_533d7bb79b20819185c3fc2e1e1fbb85) perkelta į 11:00 Europe/Vilnius, kad apdorotų jau užbaigtus dienos procesus: daily-suite 08:10, Worker AI 10:20, Control Center 10:40. Ji lieka enabled; jokių dubliuojančių automatikų nesukurta.
 - Naujas grafikas dar nėra PATIKRINTAS realiu schedule paleidimu; pirmas įrodymas bus 2026-11-15. Iki tol žymėti LAUKIA.
+
+
+## 16. Direct daily-suite snapshot sinchronizavimo pataisa (2026-11-14)
+
+- PR #202 sujungtas commit 073bc8d96d81e174c0873061dbffee9aa4162714. Po PR #199 daily-suite tiesioginio cron 06:10 UTC įvedimo, sync-control-api dar ieškojo seno display_title „Scheduled daily suite from site-check #...“; tai būtų blokavę suplanuotų GA4/GSC ir topic artefaktų sinchronizavimą į D1.
+- Pataisyta kilmės patikra: daily-suite laikomas suplanuotu tik pagal GitHub workflow_run API lauką event == schedule. Senasis pavadinimas nebenaudojamas sync sprendimui. Pridėtas regresijos testas.
+- PR CI: worker snapshot sync test, central-control-center ir site-check – success. Po merge push site-check ir control-center paleisti; tai nėra schedule įrodymas.
+- Pirmas tikras daily-suite schedule ir D1 read-back laukia 2026-11-15 06:10 UTC (08:10 Europe/Vilnius).
