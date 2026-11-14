@@ -1,0 +1,207 @@
+name: Pet traffic daily automation suite
+run-name: \${{ github.event.workflow_run.event == 'schedule' && format('Scheduled daily suite from site-check #{0}', github.event.workflow_run.id) || format('Non-scheduled site-check run #{0}', github.event.workflow_run.id) }}
+
+on:
+  workflow_run:
+    workflows:
+      - "Pet traffic site checks"
+    types: [completed]
+    branches: [main]
+
+concurrency:
+  group: pettraffic-daily-suite
+  cancel-in-progress: false
+
+jobs:
+  analytics:
+    if: github.event.workflow_run.event == 'schedule'
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - name: Run analytics unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Install Google API authentication
+        run: python -m pip install --disable-pip-version-check google-auth requests
+      - name: Fetch aggregated GA4 and Search Console metrics
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: \${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GA4_PROPERTY_ID: \${{ vars.GA4_PROPERTY_ID || '563539278' }}
+          GSC_SITE_URL: \${{ vars.GSC_SITE_URL || 'https://pettraffic-ai.pages.dev/' }}
+        run: python agent/analytics_report.py
+      - name: Upload analytics report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: pettraffic-analytics-7d
+          path: reports/analytics-7d.md
+          if-no-files-found: error
+          retention-days: 30
+      - name: Add analytics report to job summary
+        if: always()
+        run: |
+          if [ -f reports/analytics-7d.md ]; then
+            cat reports/analytics-7d.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'Analitikos ataskaita nesukurta; patikrink ankstesnių žingsnių žurnalus.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Archive aggregate analytics history
+        if: always() && hashFiles('reports/analytics-7d.md') != ''
+        env:
+          GITHUB_RUN_ID: \${{ github.run_id }}
+        run: |
+          git fetch origin automation-history
+          git archive origin/automation-history reports/history | tar -x -C .
+          python agent/analytics_history.py
+          mkdir -p /tmp/pettraffic-history
+          cp -R reports/history/analytics /tmp/pettraffic-history/
+          rm -rf reports/history
+          git fetch origin automation-history
+          git checkout -B automation-history origin/automation-history
+          git ls-files -z | python -c 'import sys; nul=bytes([0]); paths=sys.stdin.buffer.read().split(nul); [sys.stdout.buffer.write(p+nul) for p in paths if p and not p.startswith(b"reports/history/")]' | xargs -0 -r git rm -f --
+          mkdir -p reports/history
+          cp -R /tmp/pettraffic-history/analytics reports/history/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reports/history/analytics
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: archive aggregate analytics history"
+            git pull --rebase origin automation-history
+            git push origin automation-history
+          else
+            echo "No new analytics snapshot to archive."
+          fi
+
+  topic-radar:
+    if: github.event.workflow_run.event == 'schedule'
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+      - name: Run topic history unit tests
+        run: python -m unittest discover -s tests -p 'test_topic_history.py' -v
+      - name: Collect Lithuanian pet-topic headlines
+        run: python agent/topic_radar.py
+      - name: Upload daily topic report
+        uses: actions/upload-artifact@v7
+        with:
+          name: pettraffic-topic-radar
+          path: reports/topic-radar.md
+          if-no-files-found: error
+          retention-days: 30
+      - name: Add topic report to job summary
+        if: always()
+        run: |
+          if [ -f reports/topic-radar.md ]; then
+            cat reports/topic-radar.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'Temų ataskaita nesukurta; patikrink ankstesnių žingsnių žurnalus.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Archive topic-radar aggregate history
+        if: success()
+        env:
+          GITHUB_RUN_ID: \${{ github.run_id }}
+        run: |
+          git fetch origin automation-history
+          git archive origin/automation-history reports/history | tar -x -C .
+          python agent/topic_history.py
+          mkdir -p /tmp/pettraffic-history
+          cp -R reports/history/topic-radar /tmp/pettraffic-history/
+          rm -rf reports/history
+          git fetch origin automation-history
+          git checkout -B automation-history origin/automation-history
+          git ls-files -z | python -c 'import sys; nul=bytes([0]); paths=sys.stdin.buffer.read().split(nul); [sys.stdout.buffer.write(p+nul) for p in paths if p and not p.startswith(b"reports/history/")]' | xargs -0 -r git rm -f --
+          mkdir -p reports/history
+          cp -R /tmp/pettraffic-history/topic-radar reports/history/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reports/history/topic-radar
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: archive topic-radar history"
+            git pull --rebase origin automation-history
+            git push origin automation-history
+          else
+            echo "No new topic-radar snapshot to archive."
+          fi
+
+  live-check:
+    if: github.event.workflow_run.event == 'schedule'
+    permissions:
+      contents: read
+      issues: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+      - name: Check production website
+        run: python agent/check_live_site.py
+      - name: Open or refresh one issue when the live check fails
+        if: failure()
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const title = "PetTraffic: production health check failed";
+            const body = [
+              "The automated production-site monitor detected a problem.",
+              "",
+              "Review the failing run and its logs:",
+              context.serverUrl + "/" + owner + "/" + repo + "/actions/runs/" + context.runId,
+              "",
+              "The monitor checks published pages, internal links, sitemap.xml, robots.txt and the custom 404 response. External-source failures are warnings and do not fail the check.",
+              "",
+              "This issue is refreshed rather than duplicated on subsequent failing runs. It will be closed automatically after a successful recovery check."
+            ].join("\n");
+            const { data: openIssues } = await github.rest.issues.listForRepo({
+              owner, repo, state: "open", per_page: 100
+            });
+            const existing = openIssues.find(issue => issue.title === title && !issue.pull_request);
+            if (existing) {
+              await github.rest.issues.update({ owner, repo, issue_number: existing.number, body });
+              core.info("Refreshed existing site-health issue #" + existing.number);
+            } else {
+              const created = await github.rest.issues.create({ owner, repo, title, body });
+              core.info("Created site-health issue #" + created.data.number);
+            }
+      - name: Close the site-health issue after recovery
+        if: success()
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const title = "PetTraffic: production health check failed";
+            const { data: openIssues } = await github.rest.issues.listForRepo({
+              owner, repo, state: "open", per_page: 100
+            });
+            const existing = openIssues.find(issue => issue.title === title && !issue.pull_request);
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner, repo, issue_number: existing.number,
+                body: "The production health check passed again. The issue is being closed automatically. Latest successful run: " + context.serverUrl + "/" + owner + "/" + repo + "/actions/runs/" + context.runId
+              });
+              await github.rest.issues.update({
+                owner, repo, issue_number: existing.number, state: "closed", state_reason: "completed"
+              });
+              core.info("Closed recovered site-health issue #" + existing.number);
+            } else {
+              core.info("No open site-health issue to close.");
+            }
