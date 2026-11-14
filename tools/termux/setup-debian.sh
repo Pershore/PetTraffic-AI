@@ -30,7 +30,7 @@ bash /tmp/pettraffic-ensure-npm.sh
 npm --version
 
 # Codex CLI uses the ChatGPT sign-in flow; no API key is required for this setup.
-npm install --global @openai/codex
+NPM_CONFIG_PREFIX=/usr/local npm install --global --prefix /usr/local @openai/codex
 
 if ! gh auth status --hostname github.com >/dev/null 2>&1; then
   echo
