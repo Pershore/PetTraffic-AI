@@ -139,6 +139,7 @@ Jokia jungtis nelaikoma prijungta vien dėl to, kad ji buvo paminėta, pasiūlyt
 
 ### Kasdienis ChatGPT koordinatorius
 - Esama automatizacija „Pet traffic – kasdienė savarankiška priežiūra“ yra **enabled**.
+- 2026-11-14 10:55 UTC atnaujintas jos prompt: kiekvienos sesijos pradžioje privalomai skaitomas `docs/PROJECT_MEMORY.md`, pašalinti pasenę hard-coded Lighthouse skaičiai, rankinis auditas atskiriamas nuo automatinio snapshot. Tvarkaraštis nepakeistas; kitas vykdymas 2026-11-15 09:45 Europe/Vilnius.
 - Paskutinis įrašytas vykdymas: suplanuota 2026-11-14 07:45 UTC, pradėta 07:52:07 UTC, baigta 08:13:35 UTC, status `completed`.
 - Kitas numatytas vykdymas: 2026-11-15 09:45 Europe/Vilnius.
 - Vienas koordinatorius; nedaryti dublikatų. Pokalbio asistentas neveikia tarp sesijų, tik realiai aktyvūs suplanuoti procesai gali dirbti fone.
