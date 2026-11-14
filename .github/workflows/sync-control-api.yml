@@ -67,8 +67,8 @@ jobs:
             --header "Authorization: Bearer $GH_TOKEN" \
             --header "Accept: application/vnd.github+json" \
             "https://api.github.com/repos/$REPOSITORY/actions/runs/$RUN_ID")"
-          title="$(python -c 'import json,sys; print(json.load(sys.stdin).get("display_title", ""))' <<< "$payload")"
-          if [[ "$title" == "Scheduled daily suite from site-check #"* ]]; then
+          event_name="$(python -c 'import json,sys; print(json.load(sys.stdin).get("event", ""))' <<< "$payload")"
+          if [[ "$event_name" == "schedule" ]]; then
             echo "scheduled=true" >> "$GITHUB_OUTPUT"
           else
             echo "scheduled=false" >> "$GITHUB_OUTPUT"
