@@ -110,3 +110,6 @@ test("agent cron ignores heartbeat events and missing scheduled timestamps",()=>
  assert.equal(isAgentScheduledEvent({cron:"*/15 * * * *",scheduledTime:Date.parse("2026-11-14T08:20:00.000Z")}),false);
  assert.equal(isAgentScheduledEvent({cron:"20 7,8 * * *"}),false);
 });
+
+
+test("model prompt constrains JSON size to reduce truncated specialist responses",async()=>{let prompt="";const env={AI:{run:async(model,options)=>{prompt=options.input[0].content;return{response:JSON.stringify({status:"reviewed",findings:[],recommendations:[],evidence_gaps:[]})};}}};await callModel(env,"Base role.","Short input");assert.match(prompt,/vieną JSON objektą be Markdown/);assert.match(prompt,/daugiausia po 2 trumpus įrašus/);assert.match(prompt,/iki 160 simbolių/);});
