@@ -188,21 +188,29 @@ export async function runAgentOrchestration(env) {
    // One malformed specialist response must not discard the other reviews or
    // prevent the coordinator from persisting a bounded, evidence-aware result.
   }
-  stage="reserve_coordinator";
-  if(!(await reserveNextCall()))throw new Error("daily_ai_call_cap_reached");
-  stage="model_coordinator";
-  const coordinatorResult=await callModel(env,"Tu esi Pet traffic centrinis koordinatorius. Sujunk keturių specialistų rezultatus į trumpą prioritetinę ataskaitą. Atsakyk tik validžiu JSON: {status:string,findings:string[],recommendations:string[],evidence_gaps:string[]}. Nespėliok. Jokio publikavimo, kodo keitimo ar infrastruktūros veiksmų; rekomendacijoms būtinas žmogaus patvirtinimas.",JSON.stringify({date_utc:date,specialist_results:specialists}));
-  const coordinator=isUsableModelResult(coordinatorResult)
-   ? coordinatorResult
-   : buildFallbackCoordinator(specialists,coordinatorResult.status||"invalid_model_output");
-  const degradedSpecialists=Object.entries(specialists)
+  const degradedSpecialistIds=Object.entries(specialists)
    .filter(([,result])=>!isUsableModelResult(result))
-   .flatMap(([id,result])=>(result.evidence_gaps||[]).map(gap=>`${id}: ${gap}`));
+   .map(([id])=>id);
+  const degradedSpecialists=degradedSpecialistIds.flatMap(id=>(specialists[id].evidence_gaps||[]).map(gap=>`${id}: ${gap}`));
+  let coordinator;
+  if(Object.values(specialists).some(isUsableModelResult)) {
+   stage="reserve_coordinator";
+   if(!(await reserveNextCall()))throw new Error("daily_ai_call_cap_reached");
+   stage="model_coordinator";
+   const coordinatorResult=await callModel(env,"Tu esi Pet traffic centrinis koordinatorius. Sujunk keturių specialistų rezultatus į trumpą prioritetinę ataskaitą. Atsakyk tik validžiu JSON: {status:string,findings:string[],recommendations:string[],evidence_gaps:string[]}. Nespėliok. Jokio publikavimo, kodo keitimo ar infrastruktūros veiksmų; rekomendacijoms būtinas žmogaus patvirtinimas.",JSON.stringify({date_utc:date,specialist_results:specialists}));
+   coordinator=isUsableModelResult(coordinatorResult)
+    ? coordinatorResult
+    : buildFallbackCoordinator(specialists,coordinatorResult.status||"invalid_model_output");
+  } else {
+   // If every specialist is unavailable, do not spend the fifth daily AI call
+   // on a coordinator that has no validated evidence to synthesize.
+   coordinator=buildFallbackCoordinator(specialists,"all_specialists_unavailable");
+  }
   coordinator.evidence_gaps=[...(coordinator.evidence_gaps||[]),...degradedSpecialists].slice(0,5);
   if(eventData.invalidPayloadCount>0) {
    coordinator.evidence_gaps=[...(coordinator.evidence_gaps||[]),`Skipped ${eventData.invalidPayloadCount} invalid stored event payload(s); source data requires review.`].slice(0,5);
   }
-  const report={date_utc:date,generated_at:new Date().toISOString(),model:MODEL,ai_calls:reservedCalls,specialists,coordinator,data_quality:{invalid_event_payload_count:eventData.invalidPayloadCount,degraded_specialist_count:degradedSpecialists.length},read_only:true,publication_enabled:false};
+  const report={date_utc:date,generated_at:new Date().toISOString(),model:MODEL,ai_calls:reservedCalls,specialists,coordinator,data_quality:{invalid_event_payload_count:eventData.invalidPayloadCount,degraded_specialist_count:degradedSpecialistIds.length},read_only:true,publication_enabled:false};
   stage="build_control_decision";
   const decision=buildControlDecision(report);
   stage="persist_control_decision";
