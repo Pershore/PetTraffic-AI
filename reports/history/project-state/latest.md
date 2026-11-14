@@ -75,3 +75,12 @@ Patikrinti pirmą agentų ciklą PO Worker pataisos: 2026-11-15 08:20 UTC (10:20
 - Ankstesnė AI agento klaida buvo pataisyta ir Worker versija įdiegta; automatinių testų ir deploy patikros rezultatai success.
 - Iki kito suplanuoto ciklo agentų paskutinio vykdymo būsena lieka istorinė `failed`; jos negalima žymėti kaip atkurtos, kol naujas ciklas neužbaigtas.
 - Site-check #590 success; atvirų PR nėra. Kitas būtinas patikrinimas – 2026-11-15 08:20 UTC Worker agentų ciklas.
+
+
+## 2026-11-15 – central control-center CI pranešimo diagnozė
+
+- Ekrano nuotraukoje matytas 16:41 GitHub pranešimas atitiko PR run #151 (`pull_request`), ne produkcinį central control-center suplanuotą vykdymą.
+- Gedimas: `tests/test_control_center.py` turėjo trapius eilučių tikrinimus, ieškojusius pažodinės `\\n` sekos; dėl to nepraėjo `Run control-center unit tests`, o report artifact upload nepavyko, nes ataskaita nebuvo sukurta.
+- Pataisa pateikta PR #208, šaka `fix/control-center-schedule-test-assertions`. Run #155 (#43651182430): testai, ataskaitos generavimas ir artifact upload – success. Site-check #593 – success.
+- PR #208 atviras ir mergeable, bet dar nesujungtas į main. Jokių produkcinių pakeitimų neatlikta.
+- Firecrawl paskyros pranešimas: sunaudota 80% iš 1 000 nemokamų kreditų. Mokėjimo metodo nepridėti; laikytis 0 €/mėn. biudžeto.
