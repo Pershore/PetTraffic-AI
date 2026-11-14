@@ -507,10 +507,9 @@ test("GPT-OSS is called through Responses API with low reasoning and bounded out
   }, "system prompt", "source data");
 
   assert.equal(model, "@cf/openai/gpt-oss-20b");
-  assert.deepEqual(request.input, [
-    { role: "system", content: "system prompt" },
-    { role: "user", content: "source data" },
-  ]);
+  assert.equal(request.input[0].role, "system");
+  assert.ok(request.input[0].content.startsWith("system prompt\n\nIšvesties ribos:"));
+  assert.deepEqual(request.input[1], { role: "user", content: "source data" });
   assert.deepEqual(request.reasoning, { effort: "low" });
   assert.equal(request.max_output_tokens, 1024);
   assert.equal(result.status, "reviewed");
