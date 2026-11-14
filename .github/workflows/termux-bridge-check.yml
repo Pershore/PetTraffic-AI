@@ -30,6 +30,8 @@ jobs:
         run: |
           bash -n tools/termux/bootstrap.sh
           bash -n tools/termux/setup-debian.sh
+          bash -n tools/termux/test-bootstrap.sh
+          bash tools/termux/test-bootstrap.sh
       - name: Check safe setup invariants
         run: |
           grep -Fq 'codex login --device-auth' tools/termux/setup-debian.sh
