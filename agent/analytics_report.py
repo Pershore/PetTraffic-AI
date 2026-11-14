@@ -13,7 +13,7 @@ import time
 import xml.etree.ElementTree as ET
 
 OUT = Path("reports/analytics-7d.md")
-GA4_REPORT_TIMEOUT_SECONDS = 15
+GA4_REPORT_TIMEOUT_SECONDS = 30
 
 
 def api_post(session, url: str, body: dict, *, retry_read_timeout: bool = True,
