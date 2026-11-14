@@ -274,7 +274,24 @@
         "Analytics, topic radar and live-site-monitor schedule runs not verified; latest runs were push-triggered.",
         "First post-deploy Worker AI agent cycle awaits 2026-11-15 08:20 UTC.",
         "No direct Android shell access from ChatGPT; local state verified only from user-provided output."
-      ]
+      ],
+      "documentation_pr": 192,
+      "documentation_pr_state": "merged",
+      "documentation_merge_commit": "3d7d132b98688857b906ff182673458806c7ce00",
+      "documentation_pr_checks": {
+        "site_check_run": 43598948829,
+        "post_merge_site_check_run": 43599004500,
+        "post_merge_worklog_run": 43599004495,
+        "cloudflare_pages_preview_check": 132459344714,
+        "cloudflare_pages_merge_check": 132459566528,
+        "cloudflare_pages_after_worklog_check": 132459632616,
+        "all": "success"
+      },
+      "main_head_after_audit": "cd95e0e071a140bc5e57c7f08bf1edb6a80aac02",
+      "open_pull_requests_after_audit": 0,
+      "post_merge_site_check": "success",
+      "post_merge_worklog": "success",
+      "cloudflare_pages_deployment": "success"
     }
   }
 }
