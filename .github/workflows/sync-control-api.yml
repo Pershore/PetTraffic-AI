@@ -103,18 +103,22 @@ jobs:
               --data-binary "@$file")"
             event_id="$(python -c 'import json,sys; print(json.load(sys.stdin)["id"])' <<< "$response")"
             kind="$(python -c 'import json,sys; print(json.load(sys.stdin)["kind"])' < "$file")"
-            readback="$(curl --fail-with-body --silent --show-error --get "$API_URL/v1/events" \
+            readback_file="$(mktemp)"
+            curl --fail-with-body --silent --show-error --get "$API_URL/v1/events" \
               --data-urlencode "kind=$kind" \
-              --header "Authorization: Bearer $API_TOKEN")"
-            READBACK_JSON="$readback" python - "$event_id" <<'PY'
-          import json, os, sys
-          payload = json.loads(os.environ["READBACK_JSON"])
-          expected_id = sys.argv[1]
+              --header "Authorization: Bearer $API_TOKEN" \
+              --output "$readback_file"
+            python - "$readback_file" "$event_id" <<'PY'
+          import json, sys
+          with open(sys.argv[1], encoding="utf-8") as stream:
+              payload = json.load(stream)
+          expected_id = sys.argv[2]
           if not any(str(item.get("id")) == expected_id for item in payload.get("events", [])):
               raise SystemExit("Snapshot was accepted but could not be read back from D1.")
           print("OK: D1 snapshot write/read verified.")
           PY
-            unset response event_id kind readback
+            rm -f "$readback_file"
+            unset response event_id kind readback_file
           done
           unset API_TOKEN
           echo "Privacy-filtered snapshots published and read back using short-lived GitHub OIDC identity."
