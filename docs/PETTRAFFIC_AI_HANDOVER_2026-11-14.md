@@ -324,3 +324,15 @@ Pirmiausia būtinas Cloudflare tokeno rotacijos ir GitHub secret atnaujinimo pat
 - Worker deploy: ATLIKTA + PATIKRINTA pagal deploy job ir gyvą health/auth testą.
 - Naujo AI agentų ciklo sėkmė: LAUKIA.
 - GitHub Actions schedule stabilumas: NEPATVIRTINTA.
+
+## 2026-11-14 – Termux npm/glob gedimo pataisa (#191)
+
+- Vartotojo Ubuntu proot diagnostika patvirtino npm 9.2.0 klaidą: `Cannot find module '/usr/share/node_modules/glob/dist/cjs/src/index.js'`. Pakartotinis `nodejs/npm/node-glob` apt paketų įdiegimas klaidos nepašalino.
+- PR #191 sujungtas squash commit `9eacbd44636a9110b74878e7735ee5536e5e6bdd`: https://github.com/Pershore/PetTraffic-AI/pull/191
+- `tools/termux/ensure-npm.sh` vietoje Ubuntu npm/glob pakartotinio perinstaliavimo įdiegia atskirą npm 10.9.10 iš oficialaus `registry.npmjs.org`; prieš išskleidimą patikrina HTTPS šaltinį, registry pateiktą SHA-512 `dist.integrity`, archyvo kelių saugumą ir Node.js suderinamumą. Sisteminiai Ubuntu paketai neliečiami.
+- `setup-debian.sh` Codex CLI diegia į aiškų `/usr/local` prefix. Pridėti testai sveikai npm būsenai, atsarginiam atkūrimui ir atsisiuntimo klaidai.
+- PR patikros: site-check 43597245360 – success; Termux bridge 43597245402 – success; Cloudflare Pages preview – success.
+- Po merge: Termux bridge 43597291536 – success; site-check 43597291486 – success; automatinis work-log 43597291234 – success; Cloudflare Pages check 132454466931 – success.
+- Merge commit: `9eacbd44636a9110b74878e7735ee5536e5e6bdd`. Pakeitimai apsiribojo Termux diegimo skriptais, testais, CI ir dokumentacija; vieša svetainė turinio prasme, Worker/D1, DNS, secrets, ARO Vet ir mokamos paslaugos nekeistos.
+- **Telefono būsena lieka LAUKIA:** CI patvirtina scenarijaus logiką, bet ne vartotojo Ubuntu aplinkos atkūrimą, `gh auth` ar Codex autentifikaciją. Kitas žingsnis – vieną kartą pakartoti bootstrap iš Termux su atnaujintu `main` ir patikrinti tik ne slaptą galutinę išvestį.
+- Aktyvus darbo laikas ir vartotojo veiksmo trukmė nematuoti.
