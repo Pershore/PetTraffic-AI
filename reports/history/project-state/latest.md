@@ -50,3 +50,15 @@ Spręsti pirmą aptiktą problemą: GA4 ir Search Console (warning). Suplanuotas
 - AI rekomendacijos yra patariamosios; modelio išvestys nesuteikia vykdymo teisių.
 
 > Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.
+
+
+## Rankinis auditas – 2026-11-14 13:56 Europe/Vilnius
+
+- PR #183 sujungtas commit 6a285a5505e88853a77fb1e31c08fa4fb1d9ad63; Worker JSON pataisa įdiegta per run 43592016509.
+- Cloudflare tokeno rotacija ir GitHub secret pakeitimas patvirtinti vartotojo; CI validation success.
+- Worker versija a34f8850-e1bf-42c0-a055-3e9c9c8714c0; D1 migrations no-op; Worker deploy success; Cron registruotas.
+- Po deploy patikrinta /health ok=true, D1 connected, control-core schema connected; neautentifikuotas /v1/events grąžino 401.
+- Naujas agentų ciklas po deploy dar neįvyko. Paskutinis 08:20 UTC gedimas įvyko prieš diegimą; pataisos veiksmingumas LAUKIA 2026-11-15 08:20 UTC ciklo.
+- GitHub Actions schedule problema lieka NEPATVIRTINTA; Termux/Codex telefono autentifikacija nepatvirtinta; GA4/GSC ilgalaikis stabilumas laukia daugiau suplanuotų ciklų; Worker task API tyčia išjungta.
+- Dokumentacija atnaujinta PR #189, sujungta commit 6ec622d1eb1ecbcc4f832c1e1b05a152cae9d3ac.
+- Automatiniai snapshot laukai generated_at, run_id ir source_commit palikti nepakeisti; ši informacija atskirta manual_audit lauke.
