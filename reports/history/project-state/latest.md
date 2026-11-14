@@ -110,3 +110,12 @@ Spręsti pirmą aptiktą problemą: GA4 ir Search Console (warning). Suplanuotas
 - Po merge: site-check `43599004500` – success; automatinis darbo žurnalas `43599004495` – success; Cloudflare Pages deploy check `132459566528` – success.
 - Po automatinio darbo žurnalo commit `cd95e0e071a140bc5e57c7f08bf1edb6a80aac02` Cloudflare Pages check `132459632616` – success.
 - Atvirų PR po sujungimo nėra. Tai dokumentacijos ir CI patikra; viešas svetainės turinys nekeistas.
+
+
+## Rankinis tęstinis auditas – 2026-11-14 14:30 Europe/Vilnius
+
+- PR #183 Worker JSON pataisa įtraukta į main ir deploy run 43592016509 baigėsi success. Įdiegimas PATIKRINTAS; runtime veiksmingumas dar LAUKIA kito agentų ciklo.
+- Gyvas /health: ok=true, D1 ir control-core schema connected, site heartbeat HTTP 200. Agentų klaida model_content-review_model_output_invalid_json priklauso 08:20 UTC ciklui iki 11:51 UTC deploy; po deploy naujo ciklo nėra. Kitas ciklas numatytas 2026-11-15 08:20 UTC.
+- Analytics, topic-radar ir live-site-monitor YAML turi cron schedule, bet GitHub Actions schedule įvykių sąraše yra tik du site-check vykdymai. PR #126 jau bandė atnaujinti schedule registracijas; problemos priežastis nenustatyta. Cron nekeistas. Reikia GitHub Actions workflow aktyvumo nustatymų prieigos; dabartinė jungtis jos nesuteikia ir neturi workflow-dispatch veiksmo.
+- Issue #145 atnaujintas komentaru 6877967835. Darbo žurnalo atnaujinimas pateiktas PR #193 (tik dokumentacija, laukia CI).
+- Jokių produkcijos, Worker/D1, DNS, secrets, ARO Vet ar mokamų paslaugų pakeitimų neatlikta.
