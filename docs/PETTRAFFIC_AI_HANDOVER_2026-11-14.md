@@ -340,7 +340,7 @@ Pirmiausia būtinas Cloudflare tokeno rotacijos ir GitHub secret atnaujinimo pat
 ## 2026-11-14 – Autonominių procesų paleidimo ir būklės perdavimas
 
 ### Patvirtinta
-- `main` HEAD: `f964ea487a5bb1b259512816969954ec6234a4f3`; atvirų PR nėra.
+- `main` HEAD: `f964ea487a5bb1b259512816969954ec6234a4f3`; prieš šį dokumentacijos PR atvirų PR nebuvo (šis audito PR – #192).
 - Vartotojo pateikta Ubuntu patikra: `git status --short --branch` → `## main...origin/main`. Ubuntu Codex CLI 0.167.1 prisijungęs per ChatGPT.
 - GitHub Actions `event=schedule` istorijoje rasti du vykdymai – site-check `43594970279` (2026-11-14 12:28:10 UTC, success) ir site-check `43433299383` (2026-11-13 13:23:57 UTC, success). Taigi site-check grafikas bent kartą suveikė.
 - Analytics `43586027796`, topic-radar `43422828353` ir live-site-monitor `43422828198` yra sėkmingi push vykdymai, o ne schedule. Šių grafikų veikimas lieka NEPATVIRTINTAS.
