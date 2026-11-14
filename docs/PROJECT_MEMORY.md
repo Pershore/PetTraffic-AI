@@ -144,7 +144,7 @@ Jokia jungtis nelaikoma prijungta vien dėl to, kad ji buvo paminėta, pasiūlyt
 - Vienas koordinatorius; nedaryti dublikatų. Pokalbio asistentas neveikia tarp sesijų, tik realiai aktyvūs suplanuoti procesai gali dirbti fone.
 
 ### Termux / Codex
-- PR #182 sujungtas commit `740323047dab1b5e671092f1a4e42a31a0b7b28` (pastaba: jei commit SHA neatitinka GitHub, patikslinti iš PR; nenaudoti kaip vienintelio identifikatoriaus). Bootstrap per stdin BASH_SOURCE klaidos pataisa ir testas sujungti.
+- PR #182 sujungtas; bootstrap per stdin BASH_SOURCE klaidos pataisa ir regresijos testas sujungti. Bootstrap per stdin BASH_SOURCE klaidos pataisa ir testas sujungti.
 - PR #181 taip pat sujungtas: npm atkūrimas ir Codex device-auth laukimo pataisa.
 - CI bridge run #39 ir site-check #514 buvo success.
 - Tai **neįrodo**, kad Android telefone dabar veikia npm, GitHub CLI autentifikacija, Codex prisijungimas ar `codex doctor`.
