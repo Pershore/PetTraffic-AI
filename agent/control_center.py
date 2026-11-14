@@ -413,6 +413,11 @@ def needs_attention(results: list[dict]) -> bool:
     """Only actionable failures and stale/uncertain checks create an alert."""
     return any(item["state"] in ("failure", "api_error", "stale", "warning", "unknown") for item in results)
 
+
+def recovery_confirmed(results: list[dict]) -> bool:
+    """An existing alert may be closed only when every monitored check is healthy."""
+    return bool(results) and all(item.get("state") == "success" for item in results)
+
 def render(results: list[dict], generated: datetime) -> str:
     labels = {"success":"GERAI","failure":"KLAIDA","warning":"ĮSPĖJIMAS","stale":"PASENĘ","missing":"LAUKIAMA PIRMŲ CIKLŲ","waiting":"LAUKIAMA KITO CIKLO","running":"VYKDOMA","unknown":"NEAIŠKU","api_error":"API KLAIDA"}
     lines = [
@@ -470,7 +475,7 @@ def main() -> int:
     results.extend(fetch_worker_health())
     report = render(results, now)
     OUT.write_text(report, encoding="utf-8")
-    OUT_JSON.write_text(json.dumps({"generated_at": now.isoformat(), "needs_attention": needs_attention(results), "results": results}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    OUT_JSON.write_text(json.dumps({"generated_at": now.isoformat(), "needs_attention": needs_attention(results), "recovery_confirmed": recovery_confirmed(results), "results": results}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(report)
     # Monitored workflow incidents are report data handled by the GitHub issue alert.
     # The control-center job itself succeeded if it fetched, evaluated and wrote the report.
