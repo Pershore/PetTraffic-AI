@@ -205,3 +205,31 @@ Patvirtinta ataskaita:
 
 
 Papildoma po-merge patikra: main site-check #526 (run `43586152253`) – success; central control-center #127 (`43586067171`) – success; control API sync #138 (`43586103335`) – success.
+
+
+## 13. Papildoma autonomijos patikra (2026-11-14, po 10:38 UTC)
+
+### GitHub Actions suplanuoti vykdymai
+- Per GitHub Actions API patikrinta 1 056 vykdymų istorija per 11 puslapių.
+- Rastas tik vienas `event=schedule` vykdymas: site-check #43433299383, 2026-11-13 13:23:57 UTC, success.
+- 2026-11-14 suplanuotų įvykių nerasta. Pagrindinių workflow YAML cron eilutės egzistuoja; push, pull_request ir workflow_run paleidimai nėra schedule įrodymas.
+- Tiksli priežastis nenustatyta. Dabartinė GitHub jungtis leidžia skaityti vykdymų istoriją, bet ne workflow/repository Actions aktyvumo nustatymus ir jų nekeičia. Repo nustatymai nekeisti.
+
+### Pagrindinis kasdienis koordinatorius
+- Esamas „Pet traffic – kasdienė savarankiška priežiūra“ automatizavimas yra įjungtas (is_enabled=true); naujo dubliuojančio agento nekūriau.
+- Paskutinis vykdymas: suplanuota 2026-11-14 07:45 UTC, pradėta 07:52:07 UTC, baigta 08:13:35 UTC, būsena completed.
+- Kitas vykdymas: 2026-11-15 09:45 Europe/Vilnius.
+- Paskutinio vykdymo rezultatas nurodė du laukiančius žmogaus veiksmus: galimai atskleisto Cloudflare API tokeno rotaciją su GitHub Actions secret atnaujinimu ir GitHub Actions nustatymų patikrą. Šių veiksmų atlikimas nepatvirtintas.
+
+### PR #183 ir Worker runtime
+- PR #183 lieka atviras, nesujungtas: https://github.com/Pershore/PetTraffic-AI/pull/183.
+- PR commit fb93f62341437d2f3428ddf1a4e42a31b76780e6; Worker testai, Cloudflare token/resource validation ir kitos PR patikros – success.
+- PR deploy workflow: test ir validate-cloudflare – success, deploy – skipped. Tai reiškia, kad Worker JSON pataisa nėra aktyvi produkcijoje ir runtime klaida dar nepatvirtinta kaip išspręsta.
+- Tokenas tebėra laikomas galimai atskleistu iki rotacijos patvirtinimo. Nekeisti secrets ir neprašyti rakto pokalbyje.
+
+### Šios sesijos sprendimas
+- Issue #145 papildytas komentaru #6876095236 su 1 056 vykdymų patikros įrodymais, aktyvaus kasdienio koordinatoriaus būsena ir PR #183 deploy blokatoriumi.
+- Darbo žurnalas atnaujintas commit 00a0a4d3b1d91b34593ab7234be758848edba02c.
+- Kodo, GitHub Actions nustatymų, secrets, Cloudflare Worker/D1, DNS, ARO Vet, viešo turinio ar mokamų paslaugų pakeitimų neatlikta.
+
+**Kitas veiksmas:** gauti patvirtinimą, kad Cloudflare tokenas išrotuotas ir GitHub Actions secret atnaujintas; atskirai išsiaiškinti, kodėl GitHub cron vykdymai neatsiranda. Iki tol PR #183 production deploy neaktyvuoti.
