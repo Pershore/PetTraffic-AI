@@ -4,7 +4,7 @@
 - Būsena: **PAGRINDINĖS CI KLAIDOS PATAISYTOS; AI AGENTŲ CIKLO PATVIRTINIMAS LAUKIA**
 - Main HEAD: `34b708b8e7ac0108daf5f3c7ce7924052ba7efe5`
 - Paskutinis patikrintas central control-center run: [#156](https://github.com/Pershore/PetTraffic-AI/actions/runs/43651346440) – success
-- Paskutinis patikrintas site-check: [#595](https://github.com/Pershore/PetTraffic-AI/actions/runs/43651346472) – success
+- Paskutinis patikrintas site-check: [#596](https://github.com/Pershore/PetTraffic-AI/actions/runs/43651422775) – success
 - Paskutinis central API sync: [#175](https://github.com/Pershore/PetTraffic-AI/actions/runs/43651378037) – success
 - PR #208: [sujungtas](https://github.com/Pershore/PetTraffic-AI/pull/208), merge commit `105949c6774a639e202a29f95d3a14c2ba3803cb`
 - Atvirų PR: 0
@@ -14,7 +14,7 @@
 1. Diagnozuota GitHub pranešimo 16:41 priežastis: control-center PR #151 CI nesėkmė kilo dėl pernelyg trapaus testo, kuris ieškojo pažodinės `\\n` sekos vietoje tikro YAML teksto. Ataskaitos įkėlimas taip pat nepavyko, nes ataskaita nebuvo sugeneruota.
 2. Testas pataisytas izoliuotoje šakoje `fix/control-center-schedule-test-assertions`: atskirai tikrinami job pavadinimai ir trijų suplanuotų job sąlygų skaičius.
 3. PR #208 peržiūrėtas; visi jo patikrinimai buvo sėkmingi: central control-center testai, statinės svetainės patikra ir Cloudflare Pages.
-4. PR #208 squash būdu sujungtas į `main`. Po sujungimo sėkmingai baigėsi control-center #156, site-check #595, automatinis darbo žurnalas #67 ir central API sync #175.
+4. PR #208 squash būdu sujungtas į `main`. Po sujungimo sėkmingai baigėsi control-center #156, site-check #595 ir #596, automatinis darbo žurnalas #67 ir central API sync #175.
 5. Darbo žurnalas `reports/work-log/README.md` atnaujintas `main` šakoje. Šis failas nepriklauso `automation-history` šakai.
 
 ## Patvirtinti procesai
