@@ -1,12 +1,11 @@
 name: Pet traffic daily automation suite
-run-name: "${{ github.event.workflow_run.event == 'schedule' && format('Scheduled daily suite from site-check #{0}', github.event.workflow_run.id) || format('Non-scheduled site-check run #{0}', github.event.workflow_run.id) }}"
+run-name: "${{ github.event_name == 'schedule' && 'Scheduled daily automation suite' || 'Manually triggered daily automation suite' }}"
 
 on:
-  workflow_run:
-    workflows:
-      - "Pet traffic site checks"
-    types: [completed]
-    branches: [main]
+  schedule:
+    # Run independently of site-check completion; the suite includes its own live-site check.
+    - cron: "10 6 * * *"
+  workflow_dispatch:
 
 concurrency:
   group: pettraffic-daily-suite
@@ -14,7 +13,7 @@ concurrency:
 
 jobs:
   analytics:
-    if: github.event.workflow_run.event == 'schedule'
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     permissions:
       contents: write
     runs-on: ubuntu-latest
