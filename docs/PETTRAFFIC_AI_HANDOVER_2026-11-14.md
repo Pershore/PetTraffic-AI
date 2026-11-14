@@ -188,3 +188,17 @@ PR #182 bootstrap pataisa sujungta; bridge CI #39 ir site-check #514 success. Ta
 **Saugumo ribos:** ARO Vet, viešas turinys, DNS, Cloudflare production, Worker/D1 schema, secrets ir mokamos paslaugos nepakeistos. Nuotolinis shell / savavališkas komandų vykdymas neįjungtas.
 
 **Kitas veiksmas:** sulaukti PR #184 CI patikrų (jau PASS), tada kitame realiame analytics cikle patikrinti GA4; PR #183 laikyti nediegtą iki tokeno rotacijos įrodymo; schedule ir telefono autentifikaciją žymėti WAITING, kol gaunami tikri įrodymai.
+
+
+## 12. GA4 timeout pataisa ir realaus nuskaitymo rezultatas (2026-11-14, 10:36 UTC)
+
+PR #184 sujungtas į `main` squash commit `1d23e3211748b8866767b2e1cbfa64506799afc3`. GA4 `runReport` read timeout padidintas nuo 15 iki 30 sekundžių, o regresijos testas atnaujintas.
+
+Po merge automatiškai paleistas analytics workflow #46 (run `43586027796`): visas workflow baigėsi success. Testai, GA4/GSC nuskaitymas, ataskaitos artefakto įkėlimas ir agreguotos istorijos archyvavimas – success.
+
+Patvirtinta ataskaita:
+- GA4 2026-11-07–13: 7 aktyvūs naudotojai, 7 nauji naudotojai, 24 sesijos, 88 puslapių peržiūros.
+- Kanalai: Direct 13 sesijų, AI Assistant 11; organinės paieškos sesijos 0.
+- Search Console 2026-11-05–11: 0 parodymų, 0 paspaudimų, CTR 0.0 %, vidutinė pozicija 0.0. Užklausų ir puslapių eilučių nepateikta. Sitemap pateiktas, Google atsisiuntimo laikas dar nenurodytas, apdorojimas laukia.
+
+**Svarbu:** GA4 nuskaitymas atkurtas per push-trigger ciklą. Tai neįrodo, kad GitHub cron schedule veikia; naujausių 100 Actions run vis dar nėra `event=schedule`. Ataskaitos artefaktas: https://github.com/Pershore/PetTraffic-AI/actions/runs/43586027796.
