@@ -264,3 +264,34 @@ Papildoma po-merge patikra: main site-check #526 (run `43586152253`) – success
 - Pašalinta sena prompt'e hard-coded Lighthouse diagnostika, kuri galėjo klaidinti; nurodyta remtis naujausiu patikimu artefaktu ir žymėti senus skaičius kaip istorinius.
 - Įrašyta taisyklė, kaip atnaujinti `automation-history/latest.md` ir `latest.json`, išsaugant automatinio snapshot `generated_at` ir `run_id`, o rankinį auditą žymint atskirai.
 - Automatizacija liko enabled, kitas vykdymas 2026-11-15 09:45 Europe/Vilnius. Naujo dublikato nekurta.
+
+
+## 17. Pilnas autonomijos trūkumų auditas (2026-11-14, 13:35 Europe/Vilnius)
+
+### Patikrinta
+- Main HEAD 84fc060947d7714d4622b6eab81298a3e593b0b6.
+- Main site-check run 43587642755 – success; automatic work-log run 43587642784 – success.
+- PR #183 lieka open, mergeable; head fb93f62341437d2f3428ddf1a4e42a31b76780e6. Worker test, Cloudflare validation, static site checks ir Cloudflare Pages preview success; Worker deploy skipped.
+- Actions run sąrašas: 1 074 bendri vykdymai; event=schedule užklausa grąžino vieną vykdymą – site-check 43433299383, 2026-11-13 13:23:57 UTC. 2026-11-14 schedule įvykių nėra.
+- YAML cron konfigūracijos patikrintos: site-check 05:37 UTC, topic radar 06:23 UTC, analytics 06:47 UTC, live monitor 07:11 UTC, control center 08:40 UTC. Workflow aktyvumo nustatymų per dabartinę GitHub jungtį perskaityti negalima; tikroji schedule priežastis nenustatyta.
+- Automatinis istorijos snapshot latest.json yra iš 10:36 UTC run 43586067171; jo pending_checks yra istorinė to momento būsena. Rankinis auditas turi būti atskiras.
+- Esama ChatGPT kasdienė priežiūros automatizacija lieka enabled, kitas vykdymas 2026-11-15 09:45 Europe/Vilnius. Tai nėra nuolatinis procesas.
+- Dar kartą patvirtinta: Termux bridge CI nėra telefono autentifikacijos įrodymas; ChatGPT neturi tiesioginės Android shell ar Cloudflare dashboard prieigos.
+
+### Trūkumų sąrašas
+1. Cloudflare API tokeno rotacija ir GitHub secret CLOUDFLARE_API_TOKEN atnaujinimas nepatvirtinti – PR #183 production deploy lieka blokuotas.
+2. GitHub Actions schedule YAML egzistuoja, bet tikrų schedule įvykių beveik nėra; Actions aktyvumo nustatymų prieiga nepasiekiama.
+3. Worker AI agentų paskutinis žinomas ciklas failed model_content-review_model_output_invalid_json; PR #183 pataisa paruošta, bet Worker deploy skipped.
+4. Android Termux / Codex autentifikacija ir lokali repo būsena nepatvirtintos; nuotolinės shell jungties nėra.
+5. Worker užduočių API tyčia grąžina 503 task_api_not_enabled; tai saugumo apsauga, ne atsitiktinis gedimas. Aktyvuoti tik sukūrus dedikuotą agentų tapatybę ir ribotą autorizacijos modelį.
+6. GA4 30 s timeout pataisa turi vieną sėkmingą realų nuskaitymą; stabilumas per kelis suplanuotus ciklus dar neįrodytas.
+7. Tiesioginės Cloudflare ir Google paskyrų jungtys nėra prijungtos; GA4/GSC pasiekiami tik per GitHub Actions.
+8. Firecrawl yra prijungtas; kiti naujai pasiūlyti programavimo įrankiai dar nėra patvirtinti kaip prijungti. Mokamų įrankių neaktyvuoti.
+
+### Saugiai atlikti veiksmai
+- Atnaujinta projekto atminties ir handover būsena pagal naujausius GitHub įrodymus.
+- Neišjungta jokia apsauga; nekeisti cron reikšmių spėliojant.
+- Nekeisti kodas, secrets, GitHub Actions nustatymai, Worker/D1, DNS, ARO Vet ar viešas turinys.
+
+### Kitas konkretus etapas
+Pirmiausia būtinas Cloudflare tokeno rotacijos ir GitHub secret atnaujinimo patvirtinimas. Tada – GitHub Actions aktyvumo patikra, PR #183 kontroliuojamas Worker deploy ir realaus AI/D1 ciklo patvirtinimas. Termux/Codex telefone tikrinti atskirai, neapsimetant, kad CI tai jau įrodė.

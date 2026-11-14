@@ -178,3 +178,17 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 
 
 | 2026-11-14 | Kasdienio koordinatoriaus atminties sinchronizavimas | Neišmatuota | NEMATUOTA | ChatGPT automation / GitHub automation-history | NEMATUOTA | NEAPSKAIČIUOTA | Atnaujintas esamas „Pet traffic – kasdienė savarankiška priežiūra“ prompt: privalomai skaito docs/PROJECT_MEMORY.md, pašalinti pasenę hard-coded Lighthouse rodikliai, aiškiai atskiria automatinius snapshot ir rankinius auditus. Tvarkaraštis nepakeistas, naujas agentas nesukurtas. Kitas vykdymas 2026-11-15 09:45 Europe/Vilnius. automation-history latest.md/latest.json atnaujinti rankinio audito lauku, originalus generated_at ir run_id išsaugoti. |
+
+
+## 2026-11-14 – pilnas autonomijos trūkumų auditas
+
+- Privaloma pradžios seka įvykdyta: perskaityti AGENTS.md, docs/SESSION_START.md, reports/history/project-state/latest.md iš automation-history, reports/work-log/README.md, docs/PROJECT_MEMORY.md ir naujausias handover. Taip pat peržiūrėti 1 074 Actions vykdymų sąrašą, atvirą PR #183, jo patikras ir penkių pagrindinių workflow cron konfigūracijas.
+- Main HEAD 84fc060947d7714d4622b6eab81298a3e593b0b6; main site-check #43587642755 success; automatinis darbo žurnalas #43587642784 success.
+- Atviras PR #183: Worker test, Cloudflare validation, static site checks ir Pages preview success; Worker production deploy skipped. Pataisa nėra aktyvi produkcijoje.
+- Schedule patikra: 1 074 bendri Actions vykdymai; event=schedule grąžino vieną įvykį – site-check #43433299383 (2026-11-13 13:23:57 UTC). 2026-11-14 schedule įvykių nėra. Cron YAML patikrintas, tačiau Actions workflow aktyvumo nustatymai per šią jungtį nepasiekiami, todėl priežastis nenustatyta.
+- Patvirtinti likę blokatoriai: galimai atskleisto Cloudflare tokeno rotacija ir GitHub secret pakeitimas nepatvirtinti; Worker AI ciklo paskutinė klaida model_content-review_model_output_invalid_json; Termux/Codex telefono autentifikacija nepatvirtinta; užduočių API tyčia išjungta iki dedikuotos agentų tapatybės ir leidimų modelio.
+- GA4 30 s timeout pataisa turi vieną sėkmingą realų push-trigger nuskaitymą; ilgalaikis stabilumas dar neįrodytas. GSC nulinių metrikų nelaikyti indeksavimo įrodymu.
+- Kasdienis ChatGPT koordinatorius enabled, bet vyksta tik kasdien; tai nėra nuolatinis darbas tarp vykdymų. Firecrawl prijungtas; tiesioginės Cloudflare/Android/Google jungtys nepatvirtintos.
+- Atnaujinti kanoninę atmintį ir handover su aiškiai atskirtomis būsenomis. Automatinio snapshot generated_at, run_id, source_commit neperrašyti.
+- Šiame etape jokio kodo, secrets, Actions nustatymų, Worker/D1, DNS, ARO Vet ar viešo turinio pakeitimų neatlikta; papildomų mokamų paslaugų neaktyvuota.
+- Aktyvaus darbo laikas nebuvo atskirai matuotas.
