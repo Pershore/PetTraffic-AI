@@ -74,6 +74,17 @@ function isUsableModelResult(result) {
   !["unavailable","invalid_response","invalid_json"].includes(result.status));
 }
 
+function buildFallbackCoordinator(specialists, reason) {
+ const entries=Object.entries(specialists);
+ const findings=entries.flatMap(([id,result])=>(result.findings||[]).map(item=>`${id}: ${item}`)).slice(0,5);
+ const recommendations=entries.flatMap(([id,result])=>(result.recommendations||[]).map(item=>`${id}: ${item}`)).slice(0,5);
+ const evidence_gaps=[
+  `Coordinator model output unavailable; deterministic aggregation used (${reason}).`,
+  ...entries.filter(([,result])=>!isUsableModelResult(result)).flatMap(([id,result])=>(result.evidence_gaps||[]).map(gap=>`${id}: ${gap}`)),
+ ];
+ return {status:"fallback",findings,recommendations,evidence_gaps:evidence_gaps.slice(0,5),requires_human_approval:true};
+}
+
 export async function callModel(env,system,input) {
  try {
   // GPT-OSS on Workers AI supports the Responses API on the Worker binding.
@@ -174,17 +185,32 @@ export async function runAgentOrchestration(env) {
    stage="model_"+agent.id;
    const result=await callModel(env,"Tu esi Pet traffic projekto read-only specialistas. Atsakyk tik validžiu JSON: {status:string,findings:string[],recommendations:string[],evidence_gaps:string[]}. Naudok tik pateiktus duomenis. Nekeisk svetainės ir neprašyk publikuoti. Jei duomenų nepakanka, aiškiai pasakyk.",JSON.stringify({task:agent.task,source}));
    specialists[agent.id]={label:agent.label,...result};
-   if(!isUsableModelResult(result))throw new Error("model_output_"+result.status);
+   // One malformed specialist response must not discard the other reviews or
+   // prevent the coordinator from persisting a bounded, evidence-aware result.
   }
-  stage="reserve_coordinator";
-  if(!(await reserveNextCall()))throw new Error("daily_ai_call_cap_reached");
-  stage="model_coordinator";
-  const coordinator=await callModel(env,"Tu esi Pet traffic centrinis koordinatorius. Sujunk keturių specialistų rezultatus į trumpą prioritetinę ataskaitą. Atsakyk tik validžiu JSON: {status:string,findings:string[],recommendations:string[],evidence_gaps:string[]}. Nespėliok. Jokio publikavimo, kodo keitimo ar infrastruktūros veiksmų; rekomendacijoms būtinas žmogaus patvirtinimas.",JSON.stringify({date_utc:date,specialist_results:specialists}));
-  if(!isUsableModelResult(coordinator))throw new Error("model_output_"+coordinator.status);
+  const degradedSpecialistIds=Object.entries(specialists)
+   .filter(([,result])=>!isUsableModelResult(result))
+   .map(([id])=>id);
+  const degradedSpecialists=degradedSpecialistIds.flatMap(id=>(specialists[id].evidence_gaps||[]).map(gap=>`${id}: ${gap}`));
+  let coordinator;
+  if(Object.values(specialists).some(isUsableModelResult)) {
+   stage="reserve_coordinator";
+   if(!(await reserveNextCall()))throw new Error("daily_ai_call_cap_reached");
+   stage="model_coordinator";
+   const coordinatorResult=await callModel(env,"Tu esi Pet traffic centrinis koordinatorius. Sujunk keturių specialistų rezultatus į trumpą prioritetinę ataskaitą. Atsakyk tik validžiu JSON: {status:string,findings:string[],recommendations:string[],evidence_gaps:string[]}. Nespėliok. Jokio publikavimo, kodo keitimo ar infrastruktūros veiksmų; rekomendacijoms būtinas žmogaus patvirtinimas.",JSON.stringify({date_utc:date,specialist_results:specialists}));
+   coordinator=isUsableModelResult(coordinatorResult)
+    ? coordinatorResult
+    : buildFallbackCoordinator(specialists,coordinatorResult.status||"invalid_model_output");
+  } else {
+   // If every specialist is unavailable, do not spend the fifth daily AI call
+   // on a coordinator that has no validated evidence to synthesize.
+   coordinator=buildFallbackCoordinator(specialists,"all_specialists_unavailable");
+  }
+  coordinator.evidence_gaps=[...(coordinator.evidence_gaps||[]),...degradedSpecialists].slice(0,5);
   if(eventData.invalidPayloadCount>0) {
    coordinator.evidence_gaps=[...(coordinator.evidence_gaps||[]),`Skipped ${eventData.invalidPayloadCount} invalid stored event payload(s); source data requires review.`].slice(0,5);
   }
-  const report={date_utc:date,generated_at:new Date().toISOString(),model:MODEL,ai_calls:MAX_DAILY_CALLS,specialists,coordinator,data_quality:{invalid_event_payload_count:eventData.invalidPayloadCount},read_only:true,publication_enabled:false};
+  const report={date_utc:date,generated_at:new Date().toISOString(),model:MODEL,ai_calls:reservedCalls,specialists,coordinator,data_quality:{invalid_event_payload_count:eventData.invalidPayloadCount,degraded_specialist_count:degradedSpecialistIds.length},read_only:true,publication_enabled:false};
   stage="build_control_decision";
   const decision=buildControlDecision(report);
   stage="persist_control_decision";
