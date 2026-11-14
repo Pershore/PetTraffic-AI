@@ -87,3 +87,9 @@ Tikras bootstrap iš Termux patvirtintas: Linux proot, Git, GitHub CLI, Codex CL
 - PR #199 sujungtas commit abcd5072e51c98d0b68d2d6a948fd09488245c5b. Daily suite dabar turi nepriklausomą GitHub Actions cron 06:10 UTC (08:10 Europe/Vilnius), atskirai nuo site-check; Control Center stebi šį naują laiką. Pirmas realus schedule paleidimas laukia 2026-11-15 06:10 UTC.
 - Esama vienintelė ChatGPT priežiūros automatizacija perkelta iš 09:45 į 11:00 Europe/Vilnius, kad vykdytųsi po daily-suite 08:10, Worker AI agentų 10:20 ir Control Center 10:40. Ji lieka enabled; naujos automatikos nesukurtos.
 - Naujo grafiko realus veikimas dar LAUKIA rytojaus schedule įrodymo; push ir workflow_run paleidimai nėra schedule įrodymas.
+
+
+## Daily-suite snapshot sinchronizavimo patikslinimas (2026-11-14)
+
+- PR #202 sujungtas commit 073bc8d96d81e174c0873061dbffee9aa4162714. sync-control-api dabar nustato daily-suite kilmę pagal GitHub workflow_run API lauką event=schedule, o ne seną display_title. Tai būtina, kad naujo tiesioginio 06:10 UTC grafiko GA4/GSC ir topic artefaktai būtų persiųsti į D1.
+- PR #202 Worker snapshot builder test, central-control-center ir site-check – success. Pirmas realus direct schedule + D1 read-back patikrinimas laukia 2026-11-15 06:10 UTC.
