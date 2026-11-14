@@ -110,7 +110,7 @@ Jokia jungtis nelaikoma prijungta vien dėl to, kad ji buvo paminėta, pasiūlyt
 
 ### Svetainė ir kokybė
 - Vieša svetainė: `https://pettraffic-ai.pages.dev/`.
-- Paskutinė šioje sesijoje gauta site-check run `43586691442`: job „Validate static website and automation code“ – **success** (2026-11-14 10:44 UTC).
+- Paskutinė po atminties PR #185 main patikra: site-check run `43587281754` – **success**; Termux bridge run `43587281810` – **success** (2026-11-14 10:52 UTC).
 - Anksčiau patikrinta: pagrindinis puslapis, keturi pagrindiniai straipsniai, about, privacy, robots.txt, sitemap.xml, 404, canonical, OG, JSON-LD, consent; Lighthouse dešimties auditų rezultatai Performance 98–100, SEO / Accessibility / Best Practices 100. Šie skaičiai yra ankstesnio matavimo, ne naujas šios sesijos Lighthouse testas.
 - Nėra leidimo automatiškai publikuoti turinį.
 
@@ -144,7 +144,7 @@ Jokia jungtis nelaikoma prijungta vien dėl to, kad ji buvo paminėta, pasiūlyt
 - Vienas koordinatorius; nedaryti dublikatų. Pokalbio asistentas neveikia tarp sesijų, tik realiai aktyvūs suplanuoti procesai gali dirbti fone.
 
 ### Termux / Codex
-- PR #182 sujungtas; bootstrap per stdin BASH_SOURCE klaidos pataisa ir regresijos testas sujungti. Bootstrap per stdin BASH_SOURCE klaidos pataisa ir testas sujungti.
+- PR #182 sujungtas commit `740323047dab1b5e671092f1a4e42a31a0b7b28`; bootstrap per stdin BASH_SOURCE klaidos pataisa ir regresijos testas sujungti.
 - PR #181 taip pat sujungtas: npm atkūrimas ir Codex device-auth laukimo pataisa.
 - CI bridge run #39 ir site-check #514 buvo success.
 - Tai **neįrodo**, kad Android telefone dabar veikia npm, GitHub CLI autentifikacija, Codex prisijungimas ar `codex doctor`.
@@ -161,8 +161,9 @@ Jokia jungtis nelaikoma prijungta vien dėl to, kad ji buvo paminėta, pasiūlyt
 - PR #181 / #182 – Termux bootstrap ir npm/device-auth patikimumo pataisos.
 - PR #183 – atviras, Worker JSON išvesties apribojimas, deploy skipped.
 - PR #184 – sujungtas, GA4 timeout 30 s, realus analytics run success.
+- PR #185 – sujungtas squash commit `245446cf123a25df76b212943353c76e6d3f6c69`; kanoninė projekto atmintis, sesijos protokolas ir darbo žurnalo nuorodos konsoliduotos. Site-check ir Termux bridge patikros po merge – success.
 
-Nesujungti / atviri PR ir issues tikrinami kiekvienos sesijos pradžioje; sąrašas šiame dokumente yra 2026-11-14 momentinė kopija.
+Nesujungti / atviri PR ir issues tikrinami kiekvienos sesijos pradžioje. Po PR #185 sujungimo vienintelis žinomas atviras PR yra #183, o centrinis alert issue #145 lieka open (2026-11-14 momentinė kopija).
 
 ## 8. Kiti darbai – prioriteto tvarka
 
