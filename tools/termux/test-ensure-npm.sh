@@ -41,7 +41,7 @@ run_case() {
     grep -Fq "install --reinstall -y nodejs npm node-glob" "$state/apt.log"
     grep -Fq "ATKURTA" "$state/output.log"
   else
-    grep -Fq "npm vis dar neveikia" "$state/output.log"
+    grep -Fq "nepavyko atkurti" "$state/output.log"
   fi
 }
 
