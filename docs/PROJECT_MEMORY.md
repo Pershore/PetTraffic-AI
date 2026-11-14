@@ -276,3 +276,27 @@ Nesujungti / atviri PR ir issues tikrinami kiekvienos sesijos pradžioje. Po PR 
 - Merge commit: `9eacbd44636a9110b74878e7735ee5536e5e6bdd`. Pakeitimai apsiribojo Termux diegimo skriptais, testais, CI ir dokumentacija; vieša svetainė turinio prasme, Worker/D1, DNS, secrets, ARO Vet ir mokamos paslaugos nekeistos.
 - **Telefono būsena lieka LAUKIA:** CI patvirtina scenarijaus logiką, bet ne vartotojo Ubuntu aplinkos atkūrimą, `gh auth` ar Codex autentifikaciją. Kitas žingsnis – vieną kartą pakartoti bootstrap iš Termux su atnaujintu `main` ir patikrinti tik ne slaptą galutinę išvestį.
 - Aktyvus darbo laikas ir vartotojo veiksmo trukmė nematuoti.
+
+## 19. 2026-11-14 – Autonominių procesų ir Codex būklės patikra
+
+### Patvirtinta
+- `main` HEAD `f964ea487a5bb1b259512816969954ec6234a4f3`; atvirų PR nėra.
+- Vartotojo pateikta Ubuntu išvestis patvirtina švarią, sinchronizuotą vietinę kopiją (`## main...origin/main`). Ubuntu `codex-cli 0.167.1` autentifikuotas per ChatGPT. GitHub CLI autentifikacija buvo patvirtinta Termux aplinkoje; jos Ubuntu aplinkoje atskirai neteigti.
+- GitHub Actions `event=schedule` istorijoje šiuo metu rasti du vykdymai: site-check `43594970279` (2026-11-14 12:28 UTC, success) ir site-check `43433299383` (2026-11-13 13:23 UTC, success). Tai patvirtina dalinį schedule veikimą, bet ne visų workflow grafikų veikimą.
+- Analytics `43586027796`, topic-radar `43422828353` ir live-site-monitor `43422828198` paskutiniai vykdymai buvo `push`, ne `schedule`; jų dieniniai grafikai lieka NEPATVIRTINTI.
+- Site-check `43594970279` ir naujausias push site-check `43597374771` – success. Naujausiame žurnale buvo neblokuojantis RSS timeout perspėjimas vienai užklausai.
+- Lighthouse `43517122731` – success, 10 mobile/desktop auditų. Žurnale matyti mobile LCP apie 1.05–2.35 s, CLS 0, TBT 0–163 ms; naujo schedule vykdymo nėra.
+- Analytics snapshot `43586027796` (push, success): GA4 2026-11-07–13 – 7 aktyvūs naudotojai, 7 nauji, 24 sesijos, 88 peržiūros, 0 patvirtintų organinių sesijų. Search Console 2026-11-05–11 – 0 parodymų, 0 paspaudimų, CTR 0, vidutinė pozicija 0; sitemap pateiktas, bet pending; penki prioritetiniai URL Google dar nežinomi.
+- Topic radar paskutinis vykdymas 2026-11-13 12:09:51 UTC: 31 unikali nuoroda iš Google News RSS. Tai antraščių stebėsena, ne paieškos apimties matavimas.
+- Gyvas Worker `/health` 2026-11-14 13:00:46 UTC: HTTP 200, `ok=true`, D1 ir control-core schema connected, heartbeat sėkmingas, svetainė HTTP 200. Control-core `needs_evidence`, evidence gaps 4, memory present.
+- Agentų ciklas failed 2026-11-14 08:20:20 UTC po 4 AI kvietimų su `model_content-review_model_output_invalid_json`. Šis ciklas įvyko prieš Worker deploy 11:51 UTC, todėl PR #183 pataisos veiksmingumas dar nepatvirtintas. Kitas numatytas ciklas – 2026-11-15 08:20 UTC (10:20 Europe/Vilnius).
+- Esama kasdienė „Pet traffic – kasdienė savarankiška priežiūra“ automatizacija įjungta; jos grafikas nepakeistas, dubliuojančios automatizacijos nesukurtos. Šioje sesijoje `run_now` pateikė inline užduotį, kuri vykdyta šiame pokalbyje.
+
+### Apribojimai
+- Dabartinė GitHub jungtis leidžia skaityti workflow vykdymus, bet nepateikia workflow-dispatch veiksmo. Todėl negalima teigti, kad analytics/topic-radar/live-monitor paleisti rankiniu būdu; dirbtinis push/no-op commit nenaudotas.
+- Worker `/v1/tasks*` API lieka tyčia išjungta. Dienos agentų ciklo idempotentiškumo užraktas neapeinamas.
+- Nėra tiesioginės ChatGPT prieigos prie Android Termux/Ubuntu shell; vietinė Codex autentifikacija ir repo būsena patvirtintos tik pagal vartotojo pateiktą terminalo išvestį.
+
+### Kitas konkretus veiksmas
+- Patikrinti 2026-11-15 08:20 UTC Worker agentų ciklą po JSON pataisos.
+- Stebėti realius GitHub `event=schedule` vykdymus analytics, topic-radar ir live-site-monitor workflow; jei jų nėra, tęsti tik skaitymo diagnostiką ir ieškoti autorizuoto workflow-dispatch kelio.
