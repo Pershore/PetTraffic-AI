@@ -202,3 +202,6 @@ Patvirtinta ataskaita:
 - Search Console 2026-11-05–11: 0 parodymų, 0 paspaudimų, CTR 0.0 %, vidutinė pozicija 0.0. Užklausų ir puslapių eilučių nepateikta. Sitemap pateiktas, Google atsisiuntimo laikas dar nenurodytas, apdorojimas laukia.
 
 **Svarbu:** GA4 nuskaitymas atkurtas per push-trigger ciklą. Tai neįrodo, kad GitHub cron schedule veikia; naujausių 100 Actions run vis dar nėra `event=schedule`. Ataskaitos artefaktas: https://github.com/Pershore/PetTraffic-AI/actions/runs/43586027796.
+
+
+Papildoma po-merge patikra: main site-check #526 (run `43586152253`) – success; central control-center #127 (`43586067171`) – success; control API sync #138 (`43586103335`) – success.
