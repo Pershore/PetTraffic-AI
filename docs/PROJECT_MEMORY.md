@@ -199,3 +199,38 @@ Nesujungti / atviri PR ir issues tikrinami kiekvienos sesijos pradžioje. Po PR 
 - Kad GSC 0 parodymų reiškia, jog svetainė neindeksuota.
 - Kad projektas dirba nuolat tarp ChatGPT sesijų – tik aktyvūs patikrinti schedule procesai gali.
 - Kad vartotojo „leidžiu viską“ panaikina saugumo, privatumo, biudžeto ar produkcijos patvirtinimo ribas.
+
+
+## 11. Pilnas autonomijos auditas (2026-11-14, 13:35 Europe/Vilnius)
+
+### Naujausi patikrinti įrodymai
+- main HEAD: 84fc060947d7714d4622b6eab81298a3e593b0b6.
+- Po PR #187 naujausia main site-check: run 43587642755 – success; automatinio darbo žurnalo run 43587642784 – success.
+- Atviras PR #183: head fb93f62341437d2f3428ddf1a4e42a31b76780e6, mergeable=true. Worker test, Cloudflare validation, static site checks ir Pages preview – success; Worker deploy – skipped. Pages preview nėra Worker production deploy įrodymas.
+- Naujausia Actions istorijos užklausa grąžino 1 074 vykdymus; atskira event=schedule užklausa rado vieną schedule vykdymą – site-check run 43433299383 (2026-11-13 13:23:57 UTC, success). 2026-11-14 suplanuotų vykdymų nerasta.
+- Pagrindinių workflow YAML cron konfigūracija egzistuoja: site-check 05:37 UTC, topic radar 06:23 UTC, analytics 06:47 UTC, live monitor 07:11 UTC, control center 08:40 UTC. GitHub integracija šiame kontekste neleidžia perskaityti Actions workflow aktyvumo nustatymų; negalima teigti, kad workflow išjungti ar tiksliai nustatyti scheduler gedimo priežastį.
+- reports/history/project-state/latest.json automatinis snapshot tebėra iš run 43586067171 (10:36 UTC). Jo pending_checks atspindi to momento būseną, todėl jų negalima laikyti dabartiniais vykdymais. Rankinis auditas turi būti laikomas atskirai, neperrašant automatinio generated_at, run_id ir source_commit.
+
+### Visų žinomų trūkumų klasifikacija
+1. Cloudflare tokeno saugumas – LAUKIA. Ankstesnis diagnostikos workflow siuntė tokeną Authorization antraštėje viešam Worker URL. Rotacijos ir GitHub secret atnaujinimo įrodymo nėra. PR #183 production deploy neleidžiamas, kol tai nepatvirtinta.
+2. GitHub Actions schedule – NEPATVIRTINTA / LAUKIA. Cron YAML yra, bet schedule įvykiai nevyksta pagal numatytą kadenciją. Workflow aktyvumo nustatymų jungtis nepateikia; nekeisti cron spėliojant.
+3. Worker AI agentų ciklas – NEVEIKIA (paskutinis žinomas rezultatas). Paskutinė žinoma klaida model_content-review_model_output_invalid_json. PR #183 turi kompaktiškos JSON išvesties sutartį ir regresijos testą, bet deploy praleistas, todėl pataisa produkcijoje neaktyvi.
+4. Termux / Codex telefone – LAUKIA. CI patikros patvirtina bootstrap scenarijų, bet ne vietinę Android npm, gh auth status, codex login status ar codex doctor būseną. Tiesioginės Android shell jungties nėra.
+5. Tiesioginė Cloudflare prieiga – NEPRIJUNGTA. Worker/D1 buvo anksčiau patikrinti per /health ir CI, bet ChatGPT neturi patvirtintos Cloudflare paskyros valdymo jungties.
+6. Užduočių eilė – TYČIA IŠJUNGTA. /v1/tasks* grąžina 503 task_api_not_enabled; neaktyvuoti be atskiros agentų tapatybės, užduočių leidimų sąrašo ir audituojamo patvirtinimo modelio.
+7. Analitika – DALINAI PATIKRINTA. GA4 30 s timeout pataisa sujungta; vienas push-trigger nuskaitymas sėkmingas. Ilgalaikis stabilumas dar neįrodytas. GA4 ir GSC laikotarpiai atskiri; GSC nulis nėra indeksavimo įrodymas.
+8. Kasdienis ChatGPT koordinatorius – PATIKRINTA kaip įjungtas, ne kaip nuolatinis procesas. Esama automatizacija enabled, kasdien 09:45 Europe/Vilnius. Ji nedirba tarp vykdymų ir nepakeičia GitHub specialistų schedule.
+9. Google tiesioginė jungtis – NEPRIJUNGTA. GA4/GSC duomenys pasiekiami per esamus GitHub Actions credentials, ne per tiesioginę ChatGPT paskyros jungtį.
+10. Papildomi įrankiai – DALINAI. Firecrawl prijungtas. Superpowers ir OpenAI Developers buvo pasiūlyti, bet jų įdiegimas / prijungimas nepatvirtintas. Mokami įrankiai neaktyvuoti; 0 €/mėn. biudžetas išlaikomas.
+
+### Šio audito atlikti pakeitimai
+- Kodas, Worker/D1, DNS, GitHub Actions nustatymai, secrets, ARO Vet ir viešas turinys nekeičiami.
+- Dokumentuose atskirtas paskutinis automatinis snapshot nuo naujo rankinio audito; senos vykdymų būsenos neperrašomos kaip dabartinės.
+- Pirmas būtinas išorinis veiksmas lieka Cloudflare tokeno rotacijos ir GitHub secret atnaujinimo patvirtinimas. Rakto reikšmės neprašyti.
+
+### Kiti veiksmai
+1. Patvirtinti tokeno rotaciją ir GitHub Actions secret atnaujinimą, neatskleidžiant rakto.
+2. GitHub paskyros sąsajoje patikrinti, ar penki suplanuoti workflow aktyvūs; tada atlikti vieną kontroliuojamą schedule ciklo stebėseną.
+3. Po saugumo patvirtinimo peržiūrėti PR #183, suplanuoti Worker deploy ir patikrinti naują AI ciklą bei D1 atminties įrašą.
+4. Atskirai užbaigti vienkartinį Termux/Codex telefono patikrinimą; tik po to projektuoti apribotą vietinį pollerį.
+5. Tik po šių įrodymų aktyvuoti ribotą užduočių eilę; iki tol palikti ją išjungtą.
