@@ -123,7 +123,7 @@ function renderAll(){
  setState("d1-status",state.health?.database==="connected"?"Connected":"Nežinoma",state.health?.database==="connected"?"good":"warn");
  setState("ai-arch-status",aiCycleStatus().label,aiCycleStatus().cls);
  setState("actions-status",state.runs.length?"Run istorija gauta":"Neprieinama",state.runs.length?"good":"warn");
- setState("coordinator-status","ChatGPT automation · statusas atskirai tikrinamas","protected");
+ setState("coordinator-status","ChatGPT automation · gyvas API statusas neprieinamas","protected");
 }
 async function loadAnalyticsArchive(kind){
  const today=localDate();const dates=[];
