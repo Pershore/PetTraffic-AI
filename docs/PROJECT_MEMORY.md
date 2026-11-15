@@ -456,3 +456,15 @@ Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama 
 - Dabartinis AI įrašas tebėra 2026-11-15 08:20 UTC senasis ciklas: completed, 5 AI calls, 2 rekomendacijos, 8 evidence gaps; PR #220 pataisos veikimas dar laukia kito pilno ciklo 2026-11-16 13:20 LT.
 - PR #223 [atidarytas](https://github.com/Pershore/PetTraffic-AI/pull/223). Pradiniai CI run #43703063670 (site checks) ir #43703063657 (Control Center) – success; site checks įvykdė validate_site.py, compileall, 22 agent testus ir 120 testų tests/ rinkinyje. Po šio dokumentų papildymo privaloma patikrinti naujausius PR checks dar kartą; nesujungti, kol visi baigti ir success.
 - Kiti veiksmai: patikrinti naujausius PR #223 check'us; po merge stebėti naują heartbeat diagnostiką; 2026-11-16 13:20 LT patikrinti naują AI ciklą ir D1 atmintį. 0 €/mėn. riba išlaikyta; ARO Vet, DNS, secrets, Worker production kodas/konfigūracija ir viešas turinys nekeisti.
+
+
+
+## 2026-11-15 – galutinė tęstinė patikra po PR #223
+
+- PR #223 sujungtas; po merge site-check #43703360121 success. Worker cron diagnostika #43703245674 success: Cloudflare registruoti `*/15 * * * *` ir `20 10,11 * * *` UTC; D1 heartbeat pažengė, schema/site/DB healthy.
+- Daily-suite catch-up #43696960921 buvo `workflow_dispatch`, visi 3 job success; tai nėra suplanuoto paleidimo įrodymas. GA4 2026-11-08–14: 7 naudotojai, 19 sesijų, 73 peržiūros, 0 organinių sesijų. GSC 2026-11-06–12: 0 parodymų/paspaudimų, sitemap pending, 5 prioritetiniai URL Google nežinomi. Temų radaras: 28 unikalios nuorodos iš 7 temų.
+- D1 analytics/topic snapshot write/readback #43698010982 ir Control Center/recommendation write/readback #43698006099 – success.
+- Daily-suite workflow ID 418322987 ir Control Center ID 416336983 yra `active`, tačiau 2026-11-15 daily-suite schedule event count=0; Control Center paskutinis schedule įvykis 2026-11-14 15:18:42 UTC. Repository Actions permissions API per turimą jungtį grąžino 401; tiksli scheduler priežastis nepatvirtinta ir Actions nustatymai nekeisti.
+- Worker /health HTTP 200, D1/schema connected; paskutinis AI ciklas tebėra prieš PR #220 deploy: completed, 5 calls, error=null, bet Control Core `needs_evidence`, 2 rekomendacijos, 8 gaps, memory present; specialist statuses yra seno ciklo duomenys. Kitas realus ciklas po PR #220 deploy laukiamas 2026-11-16 13:20 LT dėl vieno ciklo per dieną idempotency. Iki naujo ciklo PR #220 runtime veiksmingumas nepatvirtintas.
+- Issue #145 paliktas open. Termux/Codex CI parengties patikros nepakeičia tiesioginės ChatGPT Android shell prieigos; ji neprijungta, tačiau debesų automatizacijoms nereikalinga.
+- Saugumo ribos: 0 €/mėn.; jokio ARO Vet, DNS, Worker production config, D1 schemos, secrets ar viešo turinio pakeitimo; jokio automatinio publikavimo.
