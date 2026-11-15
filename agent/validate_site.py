@@ -13,6 +13,30 @@ import xml.etree.ElementTree as ET
 ROOT = Path(__file__).resolve().parents[1] / "site"
 BASE_URL = "https://pettraffic-ai.pages.dev"
 
+REQUIRED_RETIRED_ARTICLE_REDIRECTS = {
+    "/articles/augintiniai-ir-fejerverkai-kaip-padeti.html": "/articles/kada-kreiptis-i-veterinara.html",
+    "/articles/augintiniai-ir-fejerverkai-kaip-padeti": "/articles/kada-kreiptis-i-veterinara.html",
+    "/articles/augintinio-prieziura-po-operacijos.html": "/articles/kada-kreiptis-i-veterinara.html",
+    "/articles/augintinio-prieziura-po-operacijos": "/articles/kada-kreiptis-i-veterinara.html",
+    "/articles/kaip-issirinkti-gyvuno-maista.html": "/",
+    "/articles/kaip-issirinkti-gyvuno-maista": "/",
+    "/articles/kaip-maitinti-suni.html": "/",
+    "/articles/kaip-maitinti-suni": "/",
+    "/articles/kaip-paruosti-namus-kaciukui.html": "/",
+    "/articles/kaip-paruosti-namus-kaciukui": "/",
+    "/articles/kaip-pripratinti-kate-prie-transportavimo-dezes.html": "/articles/kada-kreiptis-i-veterinara.html",
+    "/articles/kaip-pripratinti-kate-prie-transportavimo-dezes": "/articles/kada-kreiptis-i-veterinara.html",
+    "/articles/kates-kvepavimas-miegant.html": "/articles/kada-kreiptis-i-veterinara.html",
+    "/articles/kates-kvepavimas-miegant": "/articles/kada-kreiptis-i-veterinara.html",
+    "/articles/kates-prieziura-namuose.html": "/articles/kada-kreiptis-i-veterinara.html",
+    "/articles/kates-prieziura-namuose": "/articles/kada-kreiptis-i-veterinara.html",
+    "/articles/suns-ir-kates-dantu-prieziura.html": "/articles/kada-kreiptis-i-veterinara.html",
+    "/articles/suns-ir-kates-dantu-prieziura": "/articles/kada-kreiptis-i-veterinara.html",
+    "/articles/suns-pagrindines-komandos.html": "/",
+    "/articles/suns-pagrindines-komandos": "/",
+}
+
+
 
 class PageParser(HTMLParser):
     def __init__(self) -> None:
@@ -301,6 +325,9 @@ def main() -> int:
         for source, destination in redirect_map.items():
             if destination in redirect_map:
                 errors.append(f"_redirects: chained redirect is not allowed: {source} -> {destination}")
+        for source, destination in REQUIRED_RETIRED_ARTICLE_REDIRECTS.items():
+            if redirect_map.get(source) != destination:
+                errors.append(f"_redirects: missing or incorrect required retired article redirect: {source} -> {destination}")
 
     robots = ROOT / "robots.txt"
     if not robots.exists():
