@@ -1,167 +1,50 @@
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
-- Atnaujinta: 2026-11-15T10:47+02:00
-- Būsena: **WORKER / D1 PATVIRTINTI; 10:20 AI AGENTŲ CIKLAS ATSISTATĖ; CONTROL CORE REIKIA ĮRODYMŲ; DAILY-SUITE CRON NEĮVYKĘS PO ATSARGOS LAIKO; CONTROL-CENTER DAR LAUKIA ATSARGOS LANGU**
-- Pagrindinė šaka: `main`
-- Paskutinis main commit audito metu: `c55599e0f4c8d740000ca69b7f04ac8f74838467`
-- PR #210 sujungtas: `0ac4f3e9be21d52df3a4d681e23b21c3a7b744a4`.
-- PR #211 sujungtas: `116070f78bc92e23b16e3a0e3244769190a5080b`; Cloudflare Pages ir `Validate static website and automation code` – success.
-- PR #211 patikroje 103 Python testai baigėsi `OK`; post-merge `Pet traffic site checks` (run 43686934069) – success; automatinis darbo žurnalas (run 43686934075) – success.
-- Atviras PR #212 `docs: refresh November 15 automation status` (CI success, 103 testai OK); atviras issue #145 „PetTraffic: central automation alert“.
+- Atnaujinta: 2026-11-15T09:07:08.944708+00:00
+- Būsena: **REIKIA DĖMESIO**
+- GitHub run: 43697658367
+- Šaltinio commit: aa602df939dfc4fee66b17211aa1fa8916d0a6e4
 
 ## Paskutinis patikrintas etapas
 
-2026-11-15 ryto tęstinumo auditas, papildytas 09:52 Lietuvos laiku. Dar kartą perskaityti perdavimo dokumentai ir darbo žurnalas; patikrinti GitHub Actions sąrašai, `daily-suite.yml`, jo kontrolės centro stebėjimo logika ir gyvas Worker health endpoint.
+Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataskaitoje.
+
+## Kitas veiksmas
+
+Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas (warning). Suplanuotas ciklas nuo 2026-11-15 06:10 UTC dar neįvykdytas; suplanuotų paleidimų istorijoje nėra. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.
 
 ## Patvirtinti procesai
 
-- GitHub repo ir `main` prieiga: veikia.
-- PR #210: merged; Cloudflare Pages check, `shell-validation` ir `Validate static website and automation code` – success.
-- PR #211: merged; Cloudflare Pages ir `Validate static website and automation code` – success; 103 Python testai `OK`.
-- Po sujungimo `PetTraffic automatic work log` – success.
-- Po sujungimo `Termux Codex bridge checks` – success.
-- Po PR #210 sujungimo `Pet traffic site checks` – success; HTML, nuorodų, SEO, sitemap, automation script compile, topic radar parser/error handling ir analytics history/API testai – success.
-- Po PR #211 sujungimo `Pet traffic site checks` run 43686934069 – success; `PetTraffic automatic work log` run 43686934075 – success.
-- Worker deploy #96 (run 43651631954): `npm test` – 53/53 passed; Worker Python tests – 6/6 passed; deployment, post-deploy health and unauthorized API 401 checks – success.
-- Worker health: HTTP 200, `ok=true`, `database=connected`, `control_core_schema=connected`.
-- Heartbeat: `2026-11-15T07:45:47.456Z` (09:45:47 Lietuvos laiku); `site_ok=true`, `site_status=200`, `database_ok=true`.
+- Centrinės API sinchronizavimas: Paskutinis paleidimas sėkmingas.
+- Centrinis valdymo centras: Paskutinis paleidimas sėkmingas.
+- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 6 min.
 
-## Laukiančios patikros ir problemos
+## Problemos
 
-1. **Daily automation suite:** `.github/workflows/daily-suite.yml` faile nustatytas cron `10 6 * * *` UTC (08:10 Lietuvos laiku). 09:52 Lietuvos laiku naujausių 40 Actions vykdymų sąraše vis dar nerasta 2026-11-15 `event=schedule` paleidimo; naujausi matomi vykdymai yra push / pull_request. Atskirame `event=schedule` sąraše naujausias įrašas tebėra 2026-11-14. Konfigūruotas cron nėra vykdymo įrodymas. Repo metaduomenys patvirtina `fork=false`, `archived=false`, `disabled=false`, `default_branch=main`; tai atmeta repo fork / archyvavimo / išjungimo priežastis. Pats workflow aktyvumo (`active` / `disabled`) endpointas per prijungtą GitHub prieigą nepasiekiamas, todėl jo būsena dar nepatvirtinta. Priežastis nenustatyta; rankinis vykdymas nepakeistų cron įrodymo.
-2. **AI agentų ciklas:** 10:27 LT gyvas Worker `/health` patvirtino naują `run_date=2026-11-15`, `status=completed`, `ai_calls=5`, `error_code=null`; ankstesnė 2026-11-14 JSON klaida nebesikartojo šiame naujame cikle.
-3. **Control Core atmintis:** naujas įrašas `run_date=2026-11-15`, `status=needs_evidence`, `recommendation_count=2`, `evidence_gap_count=8`, `memory_status=present`; sprendimo JSON validus. Rekomendacijos dar nėra patvirtintos išvados.
-4. GitHub issue #145 „PetTraffic: central automation alert“ lieka **open**; laukiama 10:40 LT Control Center patikros, kuri turi patvirtinti bendrą atsistatymą prieš automatinį uždarymą.
+- **GA4, temų radaras ir svetainės stebėjimas** (warning): Suplanuotas ciklas nuo 2026-11-15 06:10 UTC dar neįvykdytas; suplanuotų paleidimų istorijoje nėra. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia. – https://github.com/Pershore/PetTraffic-AI/actions/runs/43696960921
+- **AI agentai + control-core atmintis** (warning): AI agentų ciklas ir atminties įrašymas baigti; rekomendacijų: 2; trūksta įrodymų: 8. – https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health
 
-## 09:52 papildoma patikra
+## Laukiančios patikros
 
-- Tiesioginis Worker `/health` atsakymas: HTTP 200; D1 ir Control Core schema prijungtos; naujausias heartbeat 09:45:47 LT, svetainė HTTP 200, DB patikra sėkminga.
-- Agentų ciklas dar nepasikeitė: paskutinis įrašas 2026-11-14, `failed`, 4 AI kvietimai; Control Core atmintis yra, bet vis dar `needs_evidence` su 4 spragomis. Tai tikėtina prieš šiandienos 10:20 ciklą, todėl šiandienos ciklo gedimo dar neteigiame.
-- `daily-suite.yml` kode cron išlieka `10 6 * * *` UTC; workflow tiesioginis `schedule` paleidimas 2026-11-15 iki 09:52 LT nerastas. Workflow aktyvumo API būsena per turimą GitHub jungtį vis dar nepasiekiama.
-- GitHub `main` naujausi PR #210/#211 patikrinimai liko sėkmingi; issue #145 tebėra atviras.
+- Lighthouse auditas: Workflow atnaujintas 2026-11-13 12:09 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.
 
-## Kitas konkretus etapas
+## AI agentų ir atminties patikra
 
-- 10:20 Europe/Vilnius: patikrinti naują Worker AI agentų cron ciklą, tikrą statusą, AI kvietimų skaičių ir klaidos kodą.
-- 10:40 Europe/Vilnius: patikrinti Control Center, D1 atminties įrašą, įrodymų spragas ir issue #145 atnaujinimą.
-- 11:00 Europe/Vilnius: vienintelis ChatGPT priežiūros koordinatorius turi įvertinti realius automatinių vykdymų rezultatus.
-- Daily-suite cron problemą tirti atskirai; nekeisti grafiko ar workflow be nustatytos priežasties.
-
-## Paskutiniai išsaugoti SEO ir temų duomenys
-
-Šaltinis: `reports/history/analytics/2026-11-14.json`, paskutinis snapshot run `43600881631`, sugeneruotas 2026-11-14 13:40:11 UTC.
-
-- GA4 laikotarpis 2026-11-07–2026-11-13: 7 aktyvūs naudotojai, 7 nauji naudotojai, 24 sesijos, 88 puslapių peržiūros; patvirtintų organinių sesijų – 0.
-- Search Console laikotarpis 2026-11-05–2026-11-11: 0 parodymų, 0 paspaudimų, CTR 0, vidutinė pozicija 0. Duomenys gali vėluoti kelias dienas.
-- Sitemap `https://pettraffic-ai.pages.dev/sitemap.xml` pateiktas 2026-11-10; būsena `submitted`, `is_pending=true`, `last_downloaded` nenurodytas. Penkių prioritetinių URL patikroje visų aprėptis nurodyta „URL nežinomas Google“, paskutinis crawl „Dar netikrinta“. `submitted_urls` ir `indexed_urls` reikšmės nepateiktos – jų nelaikyti nuliu.
-- Naujo 2026-11-15 analytics snapshot nėra, nes daily-suite suplanuotas vykdymas dar nepatvirtintas.
-- Temų radaras (run `43600881695`, 2026-11-14 13:39:56 UTC): 31 unikali viešų Google News RSS straipsnių nuoroda, 7 temos patikrintos. Daugiausia antraščių: kačių priežiūra 8, šunų priežiūra 8, augintinio sveikata / veterinaras 6, mityba 6, šunų dantų priežiūra 5. Tai naujienų antraščių signalas, **ne** Google paieškų apimtis ar SEO paklausos matas.
+- Būsena: **warning** – AI agentų ciklas ir atminties įrašymas baigti; rekomendacijų: 2; trūksta įrodymų: 8.
+- Patikros šaltinis: https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health
 
 ## Rekomendacijos
 
-- **[high] Patvirtinti AI agentų atsistatymą** – nevertinti ankstesnio deploy kaip veikimo įrodymo; būtinas naujas suplanuotas vykdymas ir D1 atminties patikra.
-- **[high] Išsiaiškinti daily-suite schedule nevykdymą** – patikrinti GitHub workflow aktyvumo / schedule būseną ir pirmą tikrą `event=schedule` vykdymą.
-- **[medium] Patikrinti Google paieškos matomumą** – URL indeksavimo būseną, sitemap apdorojimą ir svarbiausių puslapių prieinamumą Googlebot.
+- **[medium] Patikrinti Google paieškos matomumą** – Patikrinti URL indeksavimo būseną, sitemap apdorojimą ir ar svarbiausi puslapiai prieinami Googlebot.
+- **[info] Stebėti Google sitemap apdorojimą** – Pakartotinai patikrinti kitame cikle; sitemap pakartotinai neteikti, jei jis jau pateiktas.
+- **[high] Pašalinti automatizacijų būklės problemas** – Atidaryti centrinio valdymo GitHub įspėjimą ir taisyti konkretaus proceso klaidą.
 
 ## Nekeičiamos saugumo ribos
 
 - ARO Vet svetainės, kodo ir infrastruktūros nekeisti be atskiro leidimo.
 - Svetainės turinio automatiškai nepublikuoti; būtinas vartotojo patvirtinimas.
-- Jokių mokamų API ar paslaugų be atskiro biudžeto patvirtinimo; išlaikyti 0 €/mėn.
-- Nekeisti DNS, Cloudflare teisių, Worker/D1 produkcinės konfigūracijos ar secrets be atskiro patvirtinimo.
+- Jokių mokamų API ar paslaugų be atskiro biudžeto patvirtinimo.
+- Nekeisti DNS, Cloudflare teisių ar produkcinės infrastruktūros be atskiro patvirtinimo.
 - AI rekomendacijos yra patariamosios; modelio išvestys nesuteikia vykdymo teisių.
-- Firecrawl nemokamų kreditų perspėjimas: sunaudota 80% iš 1 000; vengti nebūtinų scrape užklausų.
 
 > Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.
-
-
-## 10:24 Termux / Codex prisijungimo bandymas
-
-- Vartotojas išsiuntė vykdymo rezultatą: `cd ~/PetTraffic-AI` grąžino `No such file or directory` ir terminalas liko `~ $`.
-- Tai patvirtina, kad komanda buvo vykdoma pagrindinėje Termux aplinkoje, kurioje saugyklos katalogo nėra. Projekto dokumentuotas bootstrap klonuoja saugyklą į `$HOME/PetTraffic-AI` pasirinktoje Debian/Ubuntu proot aplinkoje; Termux pagrindinis shell ir proot shell yra atskiros failų sistemos / namų aplinkos.
-- Ankstesnė instrukcija praleido proot įėjimo žingsnį. Tai buvo koordinatoriaus klaida; vartotojui nebereikia kartoti tos pačios komandos.
-- GitHub `docs/PROJECT_MEMORY.md` aiškiai patvirtina, kad ChatGPT neturi tiesioginės Android/Termux shell prieigos, negali vykdyti telefono komandų ar patvirtinti vietinio Codex būsenos. GitHub CI „Termux Codex bridge checks“ tikrina diegimo skriptus, o ne vartotojo telefoną.
-- Būsena: GitHub integracija – PATIKRINTA; Termux lokali aplinka – anksčiau PATVIRTINTA pagal vartotojo 2026-11-14 išvestį; šio bandymo metu pateikta komanda – NEVYKDYTA dėl neteisingo shell/katalogo; tiesioginis ChatGPT–Termux ryšys – NEPRIJUNGTAS.
-- Nekeisti telefono ar produkcinės aplinkos; automatinis Codex užduočių paėmimas ir nuotolinis shell valdymas neįjungti. Toliau darbą tęsti per GitHub integraciją ir esamus GitHub Actions; vietinį Codex naudoti tik tada, kai egzistuoja reali nuotolinio vykdymo jungtis.
-
-
-## 10:27 Worker AI ciklo patikra
-
-- Viešas Worker `/health`: HTTP 200; `ok=true`; D1 `connected`; `control_core_schema=connected`.
-- 2026-11-15 agentų ciklas: `completed`; 5 AI kvietimai; pradžia `2026-11-15T08:20:13.574Z`, pabaiga `2026-11-15T08:20:21.831Z`; klaidos nėra.
-- Control Core: `needs_evidence`; sprendimo JSON validus; 2 rekomendacijos; 8 įrodymų spragos; D1 atmintis `present`, atnaujinta `2026-11-15T08:20:21.568Z`.
-- Heartbeat: `2026-11-15T08:15:47.486Z` (10:15:47 LT), svetainė HTTP 200, DB OK.
-- GitHub Actions `event=schedule` sąraše naujausias vykdymas lieka 2026-11-14; 2026-11-15 `daily-suite.yml` 08:10 LT cron vykdymas nepatvirtintas. Patikrintas failas turi cron `10 6 * * *` UTC. Tiksli priežastis ir workflow aktyvumo būsena dar nenustatytos.
-- Issue #145 dar open; Control Center suplanuotas 10:40 LT dar laukiamas.
-- Ši patikra naudojo vieną Firecrawl scrape (1 kreditą); likutis prieš patikrą buvo 197 iš 1 000. Jokie kodo, Worker/D1 konfigūracijos, DNS, secrets, ARO Vet, viešo turinio ar mokamų paslaugų pakeitimai neatlikti.
-
-## Kitas konkretus etapas
-
-- 10:40 Europe/Vilnius: patikrinti Control Center run, D1 / atminties būseną, daily-suite alert ir issue #145; neuždaryti issue be aiškaus `recovery_confirmed=true` įrodymo.
-- Išsiaiškinti, kodėl 2026-11-15 daily-suite schedule neįvyko; workflow būseną tikrinti per prieinamą GitHub valdymo API, nekeisti cron spėliojant.
-
-
-## 10:30 GitHub patikra po šios sesijos istorijos įrašo
-
-- Naujausias `Pet traffic site checks` vykdymas `43694766334` (push po darbo žurnalo atnaujinimo) – **success**.
-- `Validate static website and automation code` job – success; 103 Python testai baigėsi `OK`, tarp jų daily-suite cron, schedule grace, workflow disabled, Control Center, Worker health ir projekto istorijos testai.
-- Tai patvirtina, kad dokumentacijos / darbo žurnalo atnaujinimas nesugadino patikros; tai nėra įrodymas, kad daily-suite suplanuotas vykdymas jau atsistatė.
-- 10:40 LT Control Center suplanuotas vykdymas dar laukiamas. Issue #145 paliekamas atviras iki `recovery_confirmed=true`.
-
-
-## 10:41 GitHub Actions ir Worker pakartotinė patikra
-
-- `daily-suite.yml` GitHub workflow metadata per viešą Actions API: `state=active`, ID `418322987`, sukurtas `2026-11-14T13:36:29Z`, `updated_at=2026-11-14T13:39:43Z`. Workflow nėra išjungtas.
-- `.github/workflows/daily-suite.yml` faktinis paskutinis failo commit: `7d9b48f2abc41574181cd189e82dae9bedd2e047`, `2026-11-14T14:41:16Z` – prieš 2026-11-15 06:10 UTC cron.
-- Daily-suite 06:10 UTC (08:10 LT) suplanuoto `event=schedule` vykdymo 10:41 LT vis dar nėra; jo 60 min. atsargos langas jau praėjęs. Būsena: **WARNING / NEPATVIRTINTA PRIEŽASTIS**. Workflow aktyvus, todėl išjungimas atmestas; GitHub scheduler / kitos priežasties dar negalima patvirtinti.
-- `control-center.yml` metadata: `state=active`, ID `416336983`; 08:40 UTC (10:40 LT) cron tuo metu tik ką suėjo, jo 60 min. atsargos langas galioja iki 09:40 UTC (11:40 LT). Dar nevertinti kaip praleisto.
-- GitHub Actions paskutinių vykdymų sąraše po 10:40 LT nėra naujo Control Center ar Daily-suite vykdymo; paskutinis schedule event lieka 2026-11-14 15:18 UTC (Control Center), o Daily-suite schedule event istorijoje nerastas.
-- Gyvas Worker `/health` 10:40 LT: HTTP 200; D1 ir Control Core schema connected; heartbeat `2026-11-15T08:30:47.274Z` (10:30:47 LT), site HTTP 200, DB OK. Agentų ciklas `2026-11-15` `completed`, 5 AI kvietimai, `error_code=null`; Control Core `needs_evidence`, 2 rekomendacijos, 8 evidence gaps, validus JSON, memory `present`.
-- Šios sesijos papildomi Firecrawl API patikrinimai sunaudojo 2 kreditus; likutis po ankstesnio audito buvo 197, todėl apytikslis likutis dabar 195 / 1 000. Jokių kodo, production, DNS, Worker/D1 konfigūracijos, ARO Vet ar mokamų paslaugų pakeitimų neatlikta.
-
-## Kitas konkretus etapas
-
-- Iki 11:40 LT stebėti Control Center `event=schedule` paleidimą ir jo ataskaitą; issue #145 neuždaryti, kol `recovery_confirmed=true`.
-- Daily-suite priežastis lieka nepatvirtinta: workflow aktyvus, bet suplanuotas ciklas neįvyko po 60 min. grace. GitHub Actions workflow-dispatch veiksmo šiame vykdymo įrankių rinkinyje nėra; nedaryti dirbtinio push/no-op commit ir nevadinti rankinio/push vykdymo schedule įrodymu.
-- Jei iki 11:40 LT Control Center irgi nepasileis, užregistruoti antrą praleistą aktyvaus workflow schedule; reikės GitHub Actions schedule nustatymų / GitHub platformos pusės diagnostikos, kurios šis ryšys tiesiogiai nepateikia.
-
-
-## 10:42 PR #212 dokumentacijos patikros rezultatas
-
-- PR #212 `docs/nov15-live-schedule-status` pakeičia tik `docs/PROJECT_MEMORY.md` ir `docs/PETTRAFFIC_AI_HANDOVER_2026-11-15.md`.
-- GitHub Actions run `43695723083`: `Validate static website and automation code` – **success**; HTML/SEO/sitemap patikra, Python compile ir testų grupės – success; 103 Python testai `OK`.
-- PR #212 mergeable=true, tačiau paliktas **open** pagal taisyklę nevykdyti automatinio PR sujungimo. Dokumentacijos pakeitimai nėra production deploy įrodymas.
-
-
-## 10:43 svetainės turinio ir techninio SEO peržiūra
-
-- Patikrinti homepage, about, privacy ir 4 pagrindiniai gidai: visi 7 HTML puslapiai turi title, meta description, canonical ir H1.
-- Title ilgiai: 32–71 simboliai; meta description: 99–144 simboliai. Ilgesnių straipsnių title yra 68–71 simbolio, tačiau naujos GSC užklausų / parodymų ataskaitos nėra, todėl nekeisti jų spėliojant.
-- Visi 4 pagrindiniai gidai turi šaltinių skyrius; kiekvienas turi vidinių nuorodų į susijusius puslapius. Veterinariniai skubumo perspėjimai ir informacinio turinio ribojimai matomi straipsniuose.
-- Sitemap yra 7 URL: homepage, about, privacy ir 4 pagrindiniai gidai. robots.txt leidžia crawlinti ir nurodo sitemap.
-- site/_redirects yra tuščias, bet tai sąmoningas PR #60 sprendimas: senų, semantiškai nesusijusių straipsnių URL neturi būti nukreipiami į bendrą puslapį ar nesusijusį gidą; jie turi grąžinti tikrą 404. PR #60 body ir diff tai patvirtina. 404 puslapis egzistuoja ir turi noindex,follow.
-- Kodo pakeitimų nereikia; SEO pakeitimus atidėti iki naujų GSC duomenų. Static validation 43695723083 patvirtino HTML/SEO/sitemap testus.
-
-
-## 10:47 gyvos būklės ir schedule pakartotinė patikra
-
-- Vieša pradžia https://pettraffic-ai.pages.dev/ HTTP 200; „Pet traffic“ turinys ir keturi pagrindiniai gidai matomi.
-- Worker /health HTTP 200; database=connected, control_core_schema=connected; heartbeat 2026-11-15T08:45:46.913Z (10:45:46 LT), site_ok=true, site_status=200, database_ok=true.
-- AI orchestration 2026-11-15 completed, 5 AI calls, error_code=null. Control Core needs_evidence, validus sprendimo JSON, 2 rekomendacijos, 8 evidence gaps, memory present.
-- GitHub Actions event=schedule vykdymų sąrašas (100 naujausių) grąžino 4 įrašus; naujausias – Control Center run 43609485305, 2026-11-14 15:18:42 UTC, success. 2026-11-15 daily-suite 08:10 LT schedule nėra, 60 min. grace praėjęs. 10:40 LT Control Center schedule 10:47 LT dar nėra, grace iki 11:40 LT. 10:41 LT workflow metaduomenys rodė abu workflow active; priežastis nepatvirtinta.
-- Naujausias site-check run 43695815389 buvo push, success; jis nėra schedule įrodymas. PR #212 CI run 43695723083 success, 103 testai OK; PR lieka open. Issue #145 atnaujintas komentaru 6891910501, paliktas open.
-- ChatGPT pagrindinė priežiūra enabled, kitas paleidimas 11:00 LT; greičio automatizacija enabled, pirmas paleidimas laukiamas 2026-11-16 09:00 LT; ARO Vet analitikos automatizacija enabled, kitas paleidimas 2026-11-15 18:24 LT. Penkios senesnės automatikos paused.
-- Firecrawl likutis prieš patikras 197/1 000; panaudoti 2 kreditai. Jokie produkciniai, Worker/D1, DNS, secrets, ARO Vet, viešo turinio ar mokamų paslaugų pakeitimai neatlikti.
-
-## Kitas veiksmas
-
-- Po 11:40 LT pakartotinai tikrinti Control Center schedule; issue #145 neuždaryti, kol Control Center nepatvirtina recovery_confirmed=true ir Control Core evidence būsena nėra pakankamai pagrįsta.
-- Daily-suite schedule problemos priežastis nepatvirtinta. Dabartinė GitHub jungtis neturi workflow-dispatch ar Actions nustatymų keitimo veiksmo; nedaryti netikro push/no-op commit.
-
-
-## 10:50 gyvų puslapių patikra
-
-- Vieši URL, patikrinti gyvai: homepage, about, privacy, keturi pagrindiniai gidai, robots.txt, sitemap.xml. Visi 8 endpointai HTTP 200.
-- HTML, robots ir sitemap grąžino tinkamus content-type; sitemap `application/xml`, robots `text/plain`.
-- Tai patvirtina pasiekiamumą, ne Google indeksavimą ar naują GA4/GSC duomenų rinkimą. Jokie svetainės ar produkcijos pakeitimai neatlikti.
-- Firecrawl kredito balansas po patikros: 197/1 000.
