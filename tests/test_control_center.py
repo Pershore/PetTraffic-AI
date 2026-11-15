@@ -2,7 +2,7 @@ import unittest
 import json
 from unittest.mock import patch
 from datetime import datetime, timezone, timedelta
-from agent.control_center import WORKFLOWS, evaluate_workflow, evaluate_worker_health, evaluate_agent_orchestration, fetch_runs, fetch_workflow_metadata, needs_attention, recovery_confirmed, render
+from agent.control_center import WORKFLOWS, evaluate_workflow, evaluate_on_demand_workflow, evaluate_worker_health, evaluate_agent_orchestration, fetch_runs, fetch_workflow_metadata, needs_attention, recovery_confirmed, render
 
 class ControlCenterTests(unittest.TestCase):
     def test_daily_suite_jobs_run_on_direct_schedule_events(self):
@@ -646,6 +646,52 @@ class ControlCenterTests(unittest.TestCase):
 
         friday = datetime(2026, 11, 20, 12, 0, tzinfo=timezone.utc)
         result = evaluate_workflow("Lighthouse", [], friday, 9 * 24, schedule)
+        self.assertEqual(result["state"], "warning")
+        self.assertTrue(needs_attention([result]))
+
+    def test_on_demand_task_runner_idle_is_not_a_stale_alert(self):
+        result = evaluate_on_demand_workflow("Task runner", [])
+        self.assertEqual(result["state"], "missing")
+        self.assertFalse(needs_attention([result]))
+
+    def test_on_demand_task_runner_success_is_reported_without_stale_age(self):
+        old_success = {
+            "created_at": "2026-10-01T10:00:00Z",
+            "event": "workflow_dispatch",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/example/run/1",
+        }
+        result = evaluate_on_demand_workflow("Task runner", [old_success])
+        self.assertEqual(result["state"], "success")
+        self.assertFalse(needs_attention([result]))
+
+    def test_on_demand_task_runner_failure_is_actionable(self):
+        failed = {
+            "created_at": "2026-11-15T17:00:00Z",
+            "event": "workflow_dispatch",
+            "status": "completed",
+            "conclusion": "failure",
+            "html_url": "https://github.com/example/run/2",
+        }
+        result = evaluate_on_demand_workflow("Task runner", [failed])
+        self.assertEqual(result["state"], "failure")
+        self.assertTrue(needs_attention([result]))
+
+    def test_on_demand_task_runner_running_state_is_visible(self):
+        running = {
+            "created_at": "2026-11-15T17:00:00Z",
+            "event": "workflow_dispatch",
+            "status": "in_progress",
+            "conclusion": None,
+            "html_url": "https://github.com/example/run/3",
+        }
+        result = evaluate_on_demand_workflow("Task runner", [running])
+        self.assertEqual(result["state"], "running")
+        self.assertFalse(needs_attention([result]))
+
+    def test_on_demand_task_runner_inactive_workflow_is_a_warning(self):
+        result = evaluate_on_demand_workflow("Task runner", [], workflow_state="disabled")
         self.assertEqual(result["state"], "warning")
         self.assertTrue(needs_attention([result]))
 

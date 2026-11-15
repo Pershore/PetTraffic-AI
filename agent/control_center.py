@@ -23,6 +23,11 @@ WORKFLOWS = [
     # Do not monitor a second, redundant cron for the same control-center report.
     ("control-center.yml", "Centrinis valdymo centras", 36, None),
 ]
+# On-demand workflows are observed only when actually invoked. An idle task runner
+# is not stale: no queued task means there is nothing it should execute.
+ON_DEMAND_WORKFLOWS = [
+    ("run-readonly-tasks.yml", "Debesijos read-only užduočių vykdytojas"),
+]
 
 def parse_time(value: str) -> datetime:
     parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
@@ -256,6 +261,59 @@ def evaluate_workflow(
         hours = int(age.total_seconds() // 3600)
         return {**base, "state": "stale", "detail": f"Paskutinis sėkmingas paleidimas prieš {hours} val.; tikėtasi per {max_age_hours} val."}
     return {**base, "state": "success", "detail": "Paskutinis paleidimas sėkmingas."}
+
+def evaluate_on_demand_workflow(
+    name: str,
+    runs: list[dict],
+    workflow_state: str = "active",
+) -> dict:
+    """Observe failures of event-driven workflows without flagging idle periods as stale."""
+    base = {"name": name, "url": None, "created_at": None}
+    if workflow_state != "active":
+        return {
+            **base,
+            "state": "warning",
+            "detail": f"GitHub Actions workflow neaktyvus (state: {workflow_state}).",
+        }
+    if not runs:
+        return {
+            **base,
+            "state": "missing",
+            "detail": "Dar nebuvo užduoties vykdymo; įvykių vykdytojas laukia eilėje esančio darbo.",
+        }
+
+    latest = max(runs, key=lambda item: item.get("created_at", ""))
+    created_raw = latest.get("created_at", "")
+    try:
+        created = parse_time(created_raw)
+    except (TypeError, ValueError):
+        return {
+            **base,
+            "state": "unknown",
+            "detail": "Naujausio užduoties vykdymo data neatpažinta.",
+            "url": latest.get("html_url"),
+            "created_at": created_raw,
+        }
+
+    current = {
+        **base,
+        "url": latest.get("html_url"),
+        "created_at": created_raw,
+    }
+    status = latest.get("status")
+    conclusion = latest.get("conclusion")
+    if status in ("queued", "in_progress", "waiting", "pending"):
+        return {**current, "state": "running", "detail": f"Vykdoma debesijos užduotis ({status})."}
+    if status != "completed":
+        return {**current, "state": "unknown", "detail": f"Nežinoma užduoties vykdytojo būsena: {status}."}
+    if conclusion == "success":
+        return {**current, "state": "success", "detail": "Paskutinis debesijos užduoties vykdymas sėkmingas."}
+    if conclusion == "failure":
+        return {**current, "state": "failure", "detail": "Paskutinis debesijos užduoties vykdymas nepavyko."}
+    if conclusion in ("cancelled", "timed_out", "action_required", "startup_failure"):
+        return {**current, "state": "warning", "detail": f"Užduoties vykdytojo rezultatas: {conclusion}."}
+    return {**current, "state": "unknown", "detail": f"Neatpažinta užduoties vykdytojo išvada: {conclusion}."}
+
 
 def fetch_runs(workflow_file: str) -> list[dict]:
     endpoint = f"https://api.github.com/repos/{REPO}/actions/workflows/{quote(workflow_file, safe='')}/runs?branch=main&per_page=100"
@@ -548,6 +606,26 @@ def main() -> int:
         except (HTTPError, URLError, TimeoutError, OSError, ValueError) as exc:
             item = {"name":label,"state":"api_error","detail":f"GitHub API patikra nepavyko ({type(exc).__name__}).","url":None,"created_at":None}
         results.append(item)
+    for filename, label in ON_DEMAND_WORKFLOWS:
+        try:
+            metadata = fetch_workflow_metadata(filename)
+            item = evaluate_on_demand_workflow(
+                label,
+                fetch_runs(filename),
+                workflow_state=metadata.get("state", "unknown"),
+            )
+            # No prior task is normal for an on-demand workflow; keep it out of
+            # recovery calculations until there is an actual execution to observe.
+            if item["state"] != "missing":
+                results.append(item)
+        except (HTTPError, URLError, TimeoutError, OSError, ValueError) as exc:
+            results.append({
+                "name": label,
+                "state": "api_error",
+                "detail": f"GitHub API patikra nepavyko ({type(exc).__name__}).",
+                "url": None,
+                "created_at": None,
+            })
     results.extend(fetch_worker_health())
     report = render(results, now)
     OUT.write_text(report, encoding="utf-8")
