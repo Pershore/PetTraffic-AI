@@ -487,3 +487,14 @@ Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama 
 - Dashboard read-only; jokių workflow dispatch / POST / PR merge / production pakeitimų. Viešas `noindex,nofollow`, be canonical ir ne sitemap; noindex nėra autentifikacija. Tik agreguoti duomenys.
 - Branch preview domenas nėra Worker CORS allowlist'e, todėl jame Worker būsena aiškiai žymima kaip preview CORS apribojimas; po PR merge oficialus `https://pettraffic-ai.pages.dev` origin yra Worker leidžiamas origin. Worker konfigūracija nekeista.
 - PR #225 nesujungti automatiškai. Produkcijos adresas bus `https://pettraffic-ai.pages.dev/control/` tik po atskiro merge ir production deploy patikros.
+
+## 2026-11-15 – Control Center dashboard paskelbtas produkcijoje
+
+- Dashboard PR #225 sujungtas 2026-11-15 13:33:09 UTC, merge commit `e8efb79cc800814f4862d36a2c198cd83c139cb5`.
+- Produkcinis adresas: `https://pettraffic-ai.pages.dev/control/`. Viešas puslapis patikrintas po deploy; patvirtintos architektūros, agentų/atminties, atvirų PR, svetainės puslapių ir įrankių skiltys.
+- Po merge site-check #43719590484 – success; Node `--check`, HTML/SEO/sitemap, compileall ir testų žingsniai success. Po merge Control Center #43719590317 – success.
+- Dashboard rodo GitHub Actions, PR/issue/commit, Worker/D1/Control Core, specialistų būsenas, GA4/GSC agregatus, RSS temų archyvą, Lighthouse run nuorodą, įrankių inventorių ir svetainės puslapių sąrašą. Atnaujinimas kas 5 min.; archyvų cache 30 min.
+- Dashboard yra read-only ir viešas; `noindex,nofollow` nėra autentifikacija. Rodo tik viešus / agreguotus duomenis, nėra secrets ar lankytojų lygmens metrikų; puslapis ne sitemap ir be canonical.
+- Worker CORS leidžia tik oficialų production origin; branch preview Worker būseną žymi kaip CORS apribotą. Production dashboard leidžiamas origin. Worker konfigūracija nekeista.
+- GitHub Actions ir statinio HTML / JS testai patvirtinti. Pilnas realaus naudotojo naršyklės E2E fetch/refresh patikrinimas dar nepatvirtintas; Firecrawl browser bandymas baigėsi timeout, todėl runtime veikimo pilno E2E teiginio nedarome.
+- Produkcija, DNS, Worker/D1, secrets, prieigos ir mokamos paslaugos nekeistos; dashboard veikia read-only.
