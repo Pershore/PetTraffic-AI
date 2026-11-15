@@ -427,3 +427,5 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 
 | 2026-11-15 | Atskiras gyvas Pet traffic Control Center dashboard | aktyvaus darbo laikas NEMATUOTAS | NEMATUOTA | CI success #43719429088; Pages preview success | NEMATUOTA | NEAPSKAIČIUOTA | PR #225 atviras, mergeable, nesujungtas. `/control/` dashboard su GitHub/Worker/GA4/GSC/RSS/Lighthouse duomenimis, architektūra, agentų/atminties būkle, PR ir svetainės puslapių sąrašu. Read-only, noindex, ne sitemap; viešas, be paslapčių. Branch preview veikia; Worker CORS leidžia tik production origin. |
 
+
+| 2026-11-15 | Control Center dashboard produkcijos publikavimas | aktyvaus darbo laikas NEMATUOTAS | NEMATUOTA | PR #225 merged; site-check #43719590484 success; Control Center #43719590317 success; production /control/ HTTP page verified | NEMATUOTA | NEAPSKAIČIUOTA | Dashboard gyvas produkcijoje: architektūra, įrankiai, automatizacijos, agentų/atminties būklė, agreguota analitika, PR ir puslapių sąrašas. Read-only, viešas noindex (ne autentifikacija), be secrets. Naršyklės pilnas JS E2E dar nepatvirtintas. |
