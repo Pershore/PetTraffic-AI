@@ -70,7 +70,7 @@ The GitHub PR workflow runs these tests. The deploy workflow runs only when manu
 
 ## Free-plan AI agent orchestration (merged; initial live run verified; post-sync schedule update pending)
 
-The internal daily orchestrator uses Cloudflare Workers AI and D1. It is configured for 13:20 Europe/Vilnius year-round: cron triggers at 10:20 and 11:20 UTC, and an IANA timezone gate allows exactly one invocation after the 11:45 coordinator's catch-up/sync and the Control Center grace period.
+The internal daily orchestrator uses Cloudflare Workers AI and D1. Its primary target is 13:20 Europe/Vilnius year-round: cron triggers at 10:20 and 11:20 UTC, with an IANA timezone gate for the one matching local time. Before reserving the daily run, the Worker checks that at least one analytics or topic snapshot from the current Vilnius day has reached D1. If the daily suite or D1 sync is delayed, later 15-minute heartbeat events after 13:20 repeat the readiness check and start the cycle once same-day data arrives. The unique `agent_runs.run_date` row keeps the cycle idempotent, so the catch-up path cannot run a second time that day.
 
 Five bounded inference calls are used per daily run: four read-only specialist reviews (analytics, topics, technical SEO, content review) and one coordinator synthesis. The report is stored in `agent_runs`. The run is idempotent per UTC day and has a hard application cap of five AI calls/day, with a maximum of 1024 generated tokens per call and bounded input text. Cloudflare Workers Free enforces its own daily Workers AI allocation; once exhausted, further requests fail instead of continuing on the Free plan.
 
