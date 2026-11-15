@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "project": "PetTraffic AI",
-  "generated_at": "2026-11-15T13:58:07.308439+00:00",
-  "run_id": "43721742441",
-  "source_commit": "9a3744f582b82b3fba09e2f4d4797b9cde98468f",
+  "generated_at": "2026-11-15T14:02:00.853408+00:00",
+  "run_id": "43722103604",
+  "source_commit": "8ff5fadb6a012280689d91eeae4da83c0aefb7ce",
   "overall_status": "needs_attention",
   "last_verified_stage": "Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataskaitoje.",
   "next_action": "Spręsti pirmą aptiktą problemą: Centrinis valdymo centras (warning). Suplanuotas ciklas nuo 2026-11-15 08:40 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-14T15:18:42Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.",
@@ -19,13 +19,13 @@
       "name": "Centrinės API sinchronizavimas",
       "state": "success",
       "detail": "Paskutinis paleidimas sėkmingas.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43721695370",
-      "created_at": "2026-11-15T13:57:20Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43721781615",
+      "created_at": "2026-11-15T13:58:23Z"
     },
     {
       "name": "Cloudflare Worker + D1",
       "state": "success",
-      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 13 min.",
+      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 1 min.",
       "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
       "created_at": null
     }
@@ -35,8 +35,8 @@
       "name": "Centrinis valdymo centras",
       "state": "warning",
       "detail": "Suplanuotas ciklas nuo 2026-11-15 08:40 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-14T15:18:42Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43721742441",
-      "created_at": "2026-11-15T13:57:54Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43722103604",
+      "created_at": "2026-11-15T14:01:55Z"
     },
     {
       "name": "AI agentai + control-core atmintis",
