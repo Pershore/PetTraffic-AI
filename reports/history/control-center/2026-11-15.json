@@ -147,6 +147,55 @@
           "created_at": null
         }
       ]
+    },
+    {
+      "run_id": "43698198893",
+      "generated_at": "2026-11-15T09:13:38.750192+00:00",
+      "needs_attention": true,
+      "results": [
+        {
+          "name": "GA4, temų radaras ir svetainės stebėjimas",
+          "state": "warning",
+          "detail": "Suplanuotas ciklas nuo 2026-11-15 06:10 UTC dar neįvykdytas; suplanuotų paleidimų istorijoje nėra. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.",
+          "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43696960921",
+          "created_at": "2026-11-15T08:58:25Z"
+        },
+        {
+          "name": "Centrinės API sinchronizavimas",
+          "state": "success",
+          "detail": "Paskutinis paleidimas sėkmingas.",
+          "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43698010982",
+          "created_at": "2026-11-15T09:11:15Z"
+        },
+        {
+          "name": "Lighthouse auditas",
+          "state": "waiting",
+          "detail": "Workflow atnaujintas 2026-11-13 12:09 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.",
+          "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43517122731",
+          "created_at": "2026-11-13T22:10:53Z"
+        },
+        {
+          "name": "Centrinis valdymo centras",
+          "state": "success",
+          "detail": "Paskutinis paleidimas sėkmingas.",
+          "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43698198893",
+          "created_at": "2026-11-15T09:13:30Z"
+        },
+        {
+          "name": "Cloudflare Worker + D1",
+          "state": "success",
+          "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 12 min.",
+          "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
+          "created_at": null
+        },
+        {
+          "name": "AI agentai + control-core atmintis",
+          "state": "warning",
+          "detail": "AI agentų ciklas ir atminties įrašymas baigti; rekomendacijų: 2; trūksta įrodymų: 8.",
+          "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
+          "created_at": null
+        }
+      ]
     }
   ]
 }
