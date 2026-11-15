@@ -31,7 +31,7 @@ class ControlDashboardTests(unittest.TestCase):
 
     def test_dashboard_contains_no_secret_values_or_secret_headers(self):
         combined = DASHBOARD.read_text(encoding="utf-8") + SCRIPT.read_text(encoding="utf-8")
-        self.assertNotRegex(combined, re.compile(r"\\bAI\\b"))
+        self.assertNotRegex(combined, re.compile(r"\bAI\b"))
         for forbidden in ("GOOGLE_SERVICE_ACCOUNT_JSON", "CLOUDFLARE_API_TOKEN", "Authorization: Bearer"):
             self.assertNotIn(forbidden, combined)
 
