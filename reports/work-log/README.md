@@ -580,3 +580,14 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 - Viešas `/control/` tebėra read-only; šis etapas dar nesukuria privataus vieno paspaudimo dashboard valdymo. Termux nėra nuolatinis agentas ir šiam debesijos vykdymo keliui nereikalingas.
 - Nekeičiau Worker produkcijos, D1, DNS, Cloudflare Access, Worker kintamųjų/secrets, GitHub repo variables, ARO Vet, viešo turinio, teisių, billing ar mokamų paslaugų.
 - Kitas žingsnis: peržiūrėti ir atskirai patvirtinti PR #249. Tik po patvirtinto merge, Worker deploy ir dviejų atskirų feature flag konfigūracijos galima atlikti ribotą realaus task ciklo smoke testą. Dashboard privataus valdymo kelias lieka atskiras darbas.
+
+
+## 2026-11-15 – autonomijos vykdytojo event-driven patikslinimas (PR #249)
+
+- Prieš pakeitimą perskaityti `AGENTS.md`, `docs/SESSION_START.md`, `docs/PROJECT_MEMORY.md`, `reports/history/project-state/latest.md` (automation-history) ir šį darbo žurnalą (main). Patikrintas atviras PR #249, jo esamas Worker OIDC kodas ir CI būsenos.
+- PR šakoje `feature/secure-task-control-plane` panaikintas 15 min. runner polling ir antro GitHub repo flag'o reikalavimas. Savininko tiksli komanda dabar sukuria užduotį ir iškart iškviečia debesijos runner workflow.
+- Worker pridėtas runner-only D1 readback endpointas `GET /v1/tasks/{id}`; `agent/run_task_worker.py` po completion perskaito įrašą atgal ir sutikrina task ID, statusą bei exit code.
+- `worker/wrangler.toml` pridėtas `TASK_API_ENABLED=true`; šis runtime nustatymas įsigalios tik po PR merge ir Worker deployment. OIDC role separation lieka privaloma. Viešas dashboard, svetainės turinys, DNS, ARO Vet ir billing nekeičiami.
+- Patikrų rezultatai naujausiam PR head `493f7a6be006bdba8d61fbdce5faf05b3362f77a`: Worker test + Cloudflare validation [#43739848100](https://github.com/Pershore/PetTraffic-AI/actions/runs/43739848100) – success; site/automation check [#43739848105](https://github.com/Pershore/PetTraffic-AI/actions/runs/43739848105) – success; snapshot-sync PR test [#43739848179](https://github.com/Pershore/PetTraffic-AI/actions/runs/43739848179) – success. Worker deploy ir D1 sync PR event metu teisingai skipped.
+- Aktyvus darbo laikas, bendras įrankių vykdymo laikas ir vartotojo laikas **NEMATUOTA**.
+- Statusas: PR pakeitimai **PARUOŠTA**, CI **PATIKRINTA**, produkcinis Worker deploy ir realus task lifecycle **LAUKIA**. Issue #248 lieka atviras iki enqueue → claim → execution → completion → D1 readback įrodymo.
