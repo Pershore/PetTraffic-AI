@@ -12,6 +12,11 @@ import sys
 import time
 import xml.etree.ElementTree as ET
 
+try:
+    from .analytics_history import classify_search_intent, search_theme_label
+except ImportError:
+    from analytics_history import classify_search_intent, search_theme_label
+
 OUT = Path("reports/analytics-7d.md")
 GA4_REPORT_TIMEOUT_SECONDS = 30
 
@@ -118,6 +123,26 @@ def gsc_query(session, url: str, start: date, end: date,
     if dimensions:
         body["dimensions"] = dimensions
     return api_post(session, url, body)
+
+
+def aggregate_search_intents(rows: list[dict]) -> dict[str, dict]:
+    """Classify phrases in memory and return aggregates with no raw phrase text."""
+    themes: dict[str, dict] = {}
+    for row in rows:
+        phrase = str(row.get("keys", [""])[0])
+        category = classify_search_intent(phrase)
+        item = themes.setdefault(category, {
+            "rows": 0, "clicks": 0.0, "impressions": 0.0,
+            "position_weighted": 0.0,
+        })
+        clicks = float(row.get("clicks", 0))
+        impressions = float(row.get("impressions", 0))
+        position = float(row.get("position", 0))
+        item["rows"] += 1
+        item["clicks"] += clicks
+        item["impressions"] += impressions
+        item["position_weighted"] += position * impressions
+    return themes
 
 
 
@@ -397,25 +422,29 @@ def main() -> int:
                 f"| CTR | {now_ctr:.1%} | {ctr_change} |" if now_ctr is not None else "| CTR | Duomenų nėra | nėra duomenų palyginimui |",
                 f"| Vidutinė pozicija | {now_pos:.1f} | {pos_change} |" if now_pos is not None else "| Vidutinė pozicija | Duomenų nėra | nėra duomenų palyginimui |",
                 "",
-                "### Populiariausios Google paieškos užklausos",
+                "### Apibendrintos Google paieškos temos",
                 "",
             ]
 
-            queries = gsc_query(session, gsc_url, gsc_start, gsc_end, ["query"], 10)
-            if queries.get("rows"):
+            # Classify phrases in memory only; only aggregate categories enter the report.
+            search_rows = gsc_query(session, gsc_url, gsc_start, gsc_end, ["query"], 100)
+            themes = aggregate_search_intents(search_rows.get("rows", []))
+            if themes:
                 lines += [
-                    "| Užklausa | Paspaudimai | Parodymai | CTR | Pozicija |",
-                    "|---|---:|---:|---:|---:|",
+                    "| Tema | Frazų eilučių | Paspaudimai | Parodymai | CTR | Vidutinė pozicija |",
+                    "|---|---:|---:|---:|---:|---:|",
                 ]
-                for row in queries["rows"]:
-                    query = row.get("keys", [""])[0].replace("|", "\\|")
+                for category, item in sorted(themes.items(), key=lambda pair: (-pair[1]["impressions"], pair[0])):
+                    impressions = item["impressions"]
+                    ctr = item["clicks"] / impressions if impressions else 0.0
+                    position = item["position_weighted"] / impressions if impressions else 0.0
                     lines.append(
-                        f"| {query} | {fmt(float(row.get('clicks', 0)))} | "
-                        f"{fmt(float(row.get('impressions', 0)))} | "
-                        f"{float(row.get('ctr', 0)):.1%} | {float(row.get('position', 0)):.1f} |"
+                        f"| {search_theme_label(category)} | {fmt(item['rows'])} | "
+                        f"{fmt(item['clicks'])} | {fmt(impressions)} | "
+                        f"{ctr:.1%} | {position:.1f} |"
                     )
             else:
-                lines.append("_Search Console užklausų eilučių nepateikė._")
+                lines.append("_Search Console temų eilučių nepateikė._")
 
             lines += ["", "### Puslapiai Google paieškoje", ""]
             pages = gsc_query(session, gsc_url, gsc_start, gsc_end, ["page"], 10)
@@ -425,7 +454,7 @@ def main() -> int:
                     "|---|---:|---:|---:|---:|",
                 ]
                 for row in pages["rows"]:
-                    page_url = row.get("keys", [""])[0].replace("|", "%7C")
+                    page_url = str(row.get("keys", [""])[0]).split("?", 1)[0].split("#", 1)[0].replace("|", "%7C")
                     lines.append(
                         f"| {page_url} | {fmt(float(row.get('clicks', 0)))} | "
                         f"{fmt(float(row.get('impressions', 0)))} | "

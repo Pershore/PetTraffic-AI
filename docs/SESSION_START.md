@@ -2,6 +2,11 @@
 
 Atnaujinta: 2026-11-15
 
+## Naujausi vartotojo sprendimai (2026-11-15)
+
+- Ankstesnis draudimas naudoti ARO Vet Vaistinės turinį panaikintas. Leidžiama naudoti jos viešą produktų informaciją, aprašymus ir produktų nuotraukas kaip pageidaujamo produktų šaltinio medžiagą Pet traffic svetainėje, tik kai produktas tiesiogiai aktualus. Pet traffic išlieka nepriklausomas prekės ženklas; nekopijuoti ARO Vet logo / viso dizaino, nenaudoti affiliate sekimo be atskiro leidimo. ARO Vet svetainės ir infrastruktūros nekeisti. Viešą Pet traffic turinį publikuoti tik gavus vartotojo patvirtinimą.
+- Sistema turi kiekvieną savaitę pateikti sujungtą augimo ataskaitą iš GA4, Search Console, RSS temų, Lighthouse, automatizacijų ir Worker AI būsenos. Naudoti esamus duomenis / nemokamą Python, nekurti naujos ChatGPT automatikos ar papildomo mokamo AI kvietimo.
+
 Šis dokumentas yra trumpas sesijos pradžios kontrolinis sąrašas. Visa ilgalaikė atmintis, sprendimai, architektūra, prieigų matrica ir blokatoriai laikomi `docs/PROJECT_MEMORY.md`.
 
 ## Privaloma skaitymo seka

@@ -7,6 +7,14 @@
 
 Šis dokumentas sujungia ilgalaikius sprendimus, patvirtintą architektūrą, dabartines integracijų būsenas, neišspręstus blokatorius ir kitus veiksmus. Jis nepakeičia GitHub testų ar realių vykdymų įrodymų. Kiekvieną būseną reikia tikrinti pagal naujausią commit, workflow run ir gyvą sistemos atsakymą.
 
+## 2026-11-15 – vartotojo sprendimas: ARO Vet Vaistinė vėl leidžiama
+
+Ankstesnis draudimas naudoti ARO Vet vaistinės turinį buvo vartotojo klaida ir šiuo įrašu panaikinamas. Nuo dabar Pet traffic gali naudoti ARO Vet Vaistinės viešą produktų informaciją, aprašymus ir produktų nuotraukas, kai tai tiesiogiai naudinga skaitytojui. ARO Vet Vaistinė yra pageidaujamas produktų šaltinis; nekuriami konkuruojančių parduotuvių pasiūlymai, nebent vartotojas nurodys kitaip. Produktų kortelės turi būti saikingos, su tiesiogine nuoroda į atitinkamą produktą, patikrinta kaina / prieinamumu ir be nepagrįstų gydomojo poveikio pažadų. Jokių komisinių ar affiliate sekimo be atskiro leidimo. Pet traffic lieka nepriklausomas prekės ženklas: nekopijuoti ARO Vet logotipo, viso dizaino ar neklaidinti dėl bendros nuosavybės. Šis leidimas nesuteikia teisės keisti ARO Vet svetainę, kodą, DNS, paskyras ar infrastruktūrą. Viešas Pet traffic turinio publikavimas vis tiek reikalauja vartotojo patvirtinimo.
+
+## 2026-11-15 – savaitinė augimo ataskaita
+
+Vartotojas pasirinko, kad sistema ne tik tikrintų infrastruktūrą, bet ir kiekvieną savaitę pateiktų sujungtą augimo analizę. Ataskaita turi apjungti GA4, Search Console, RSS temų signalus, Lighthouse, Control Center / Worker AI būseną ir 3 prioritetinius veiksmus. Naudoti esamą duomenų rinkimą ir standartinį Python; naujų mokamų AI kvietimų ar dubliuojančių ChatGPT automatizacijų nekurti. Search Console frazes saugoti tik agreguotomis temų kategorijomis, ne žaliu tekstu. Trūkstamus ar pasenusius šaltinius aiškiai žymėti.
+
 
 ## 2026-11-15 18:42 LT – senų URL peradresavimų atkūrimas ir gyvas monitoringas
 
@@ -45,7 +53,7 @@ Jei dokumentai nesutampa, vadovautis šia tvarka:
 5. Naujausias `docs/PETTRAFFIC_AI_HANDOVER_*.md` – konkrečios sesijos perdavimas ir jos įrodymai.
 6. `docs/SESSION_START.md` – trumpas privalomas naujos sesijos veiksmų sąrašas.
 
-**Svarbu dėl senesnių failų:** `docs/PETTRAFFIC_AI_HANDOVER_2026-11-12.md` yra istorinis dokumentas. Jo pradinė kryptis apie ARO Vet vaistinę ir nuorodas yra pasenusi ir ją pakeičia dabartinis `AGENTS.md`: ARO Vet turinys, reklama, affiliate nuorodos ir prekės ženklas į Pet traffic svetainę negrąžinami. ARO Vet svetainė ir jos infrastruktūra neliečiama.
+**Svarbu dėl senesnių failų:** `docs/PETTRAFFIC_AI_HANDOVER_2026-11-12.md` yra istorinis dokumentas. Jo pradinė kryptis apie ARO Vet vaistinę ir nuorodas iš dalies sutampa su dabar vėl patvirtinta kryptimi; ankstesnis draudimas naudoti ARO Vet produktų informaciją buvo panaikintas 2026-11-15 vartotojo sprendimu. Vadovautis aukščiau esančiu naujausiu ARO Vet leidimo bloku ir dabartiniu `AGENTS.md`. ARO Vet svetainės ir infrastruktūros nekeisti.
 
 Šakų paskirtys:
 - `main`: kodas, instrukcijos, dokumentacija, darbo žurnalas.
@@ -76,7 +84,7 @@ Niekada nepaversti `LAUKIA`, `PARUOŠTA` ar `NEPATVIRTINTA` į `PATIKRINTA` be n
   - `articles/suo-viduriuoja-ka-daryti.html`
 - Išlaikyti pagrindinį puslapį, apie puslapį, privatumo puslapį, sitemap, robots ir tik pagrįstus peradresavimus. Negrąžinti plono / užpildomojo turinio.
 - Tikslinė auditorija: Lietuvos gyvūnų šeimininkai; vietinis SEO gali orientuotis į Gargždus ir Klaipėdos rajoną, kai tai prasminga.
-- ARO Vet buvo ankstesnis vizualinis atskaitos taškas, bet dabartinės instrukcijos draudžia ARO Vet turinį, reklamą, vaistinės skiltį, affiliate nukreipimus ir svetimų prekės ženklo išteklių kopijavimą.
+- ARO Vet Vaistinė yra vartotojo patvirtintas prioritetinis produktų informacijos, produktų aprašymų, nuotraukų ir tiesioginių prekių nuorodų šaltinis, kai konkreti prekė naudinga skaitytojui. Pet traffic išlieka savarankiškas prekės ženklas; ARO Vet logotipas ir visas vizualinis identitetas nekopijuojamas.
 
 ## 3. Nekintamos saugumo ir biudžeto ribos
 
@@ -84,7 +92,7 @@ Niekada nepaversti `LAUKIA`, `PARUOŠTA` ar `NEPATVIRTINTA` į `PATIKRINTA` be n
 - Jokių mokamų API, prenumeratų, papildomų paslaugų ar mokamų priklausomybių be aiškaus biudžeto patvirtinimo.
 - Turinį galima rengti ir tikrinti automatiškai; viešai publikuoti tik po vartotojo patvirtinimo.
 - Nekeisti DNS, domeno, Cloudflare teisių, production secrets, Worker/D1 schemos ar produkcinės konfigūracijos be atskiro aiškaus leidimo ir rizikos patikros.
-- ARO Vet svetainės, kodo, DNS ir paskyros nekeisti; atskiras ARO Vet darbas reikalauja atskiro leidimo.
+- ARO Vet svetainės, kodo, DNS, paskyros ir infrastruktūros nekeisti. Leidimas naudoti viešą produktų turinį / produktų nuotraukas Pet traffic viduje nėra leidimas administruoti ar redaguoti ARO Vet.
 - Niekada neprašyti slaptažodžių, MFA / device-code prisijungimo kodų, GitHub tokenų, Cloudflare API raktų, Global API Key ar service-account JSON pokalbyje.
 - Jokių savavališkų shell komandų, neapribotų užduočių eilių, automatinio PR sujungimo ar modelio išvesties suteiktų vykdymo teisių.
 - Nesiųsti laiškų, nepirkti, neskelbti socialinių įrašų ir nekontaktuoti trečiųjų šalių.

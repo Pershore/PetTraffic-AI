@@ -10,6 +10,7 @@ on:
       - "Pet traffic Worker cron diagnostics"
       - "Pet traffic secure workflow dispatch"
       - "Pet traffic read-only task runner"
+      - "Pet traffic weekly growth review"
     types: [completed]
     branches: [main]
   push:
@@ -26,13 +27,17 @@ on:
       - "agent/topic_radar.py"
       - "agent/site_monitor.py"
       - "agent/summarize_lighthouse.py"
+      - "agent/lighthouse_history.py"
+      - "agent/weekly_growth_review.py"
+      - "agent/test_lighthouse_history.py"
+      - "agent/test_weekly_growth_review.py"
       - "worker/**"
       - "tests/test_control_center.py"
       - "tests/test_history_store.py"
-      - "tests/test_analytics_history.py"
       - "tests/test_topic_history.py"
       - "tests/test_recommendations.py"
       - "tests/test_project_state.py"
+      - "tests/test_analytics_history.py"
       - ".github/workflows/control-center.yml"
       - ".github/workflows/analytics-snapshot.yml"
       - ".github/workflows/daily-topic-radar.yml"
@@ -41,6 +46,7 @@ on:
       - ".github/workflows/sync-control-api.yml"
       - ".github/workflows/deploy-control-api.yml"
       - ".github/workflows/run-readonly-tasks.yml"
+      - ".github/workflows/weekly-growth-review.yml"
       - ".github/workflows/dispatch-daily-suite.yml"
   workflow_dispatch:
   pull_request:
@@ -51,7 +57,13 @@ on:
       - "agent/recommendations.py"
       - "agent/project_state.py"
       - "agent/analytics_history.py"
+      - "agent/lighthouse_history.py"
+      - "agent/weekly_growth_review.py"
       - "agent/topic_history.py"
+      - "agent/test_lighthouse_history.py"
+      - "agent/test_weekly_growth_review.py"
+      - ".github/workflows/weekly-growth-review.yml"
+      - ".github/workflows/lighthouse-audit.yml"
       - "tests/test_control_center.py"
       - "tests/test_history_store.py"
       - "tests/test_analytics_history.py"

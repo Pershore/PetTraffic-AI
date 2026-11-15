@@ -10,9 +10,11 @@ on:
       - "site/**"
       - ".github/workflows/lighthouse-audit.yml"
       - "agent/summarize_lighthouse.py"
+      - "agent/lighthouse_history.py"
+      - "agent/test_lighthouse_history.py"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: pettraffic-lighthouse-${{ github.ref }}
@@ -60,11 +62,45 @@ jobs:
       - name: Summarize scores
         if: always()
         run: python agent/summarize_lighthouse.py
+      - name: Load existing aggregate history
+        if: success()
+        run: |
+          git fetch origin automation-history
+          git archive origin/automation-history reports/history | tar -x -C .
+      - name: Persist privacy-safe Lighthouse history
+        if: success()
+        env:
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: python agent/lighthouse_history.py
+      - name: Publish aggregate Lighthouse history
+        if: success()
+        run: |
+          mkdir -p /tmp/pettraffic-lighthouse-history
+          cp -R reports/history/lighthouse /tmp/pettraffic-lighthouse-history/
+          rm -rf reports/history
+          git fetch origin automation-history
+          git checkout -B automation-history origin/automation-history
+          git ls-files -z | python -c 'import sys; nul=bytes([0]); paths=sys.stdin.buffer.read().split(nul); [sys.stdout.buffer.write(p+nul) for p in paths if p and not p.startswith(b"reports/history/")]' | xargs -0 -r git rm -f --
+          mkdir -p reports/history
+          cp -R /tmp/pettraffic-lighthouse-history/lighthouse reports/history/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reports/history/lighthouse
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: archive aggregate Lighthouse history"
+            git pull --rebase origin automation-history
+            git push origin automation-history
+          else
+            echo "No new Lighthouse snapshot to archive."
+          fi
       - name: Upload full HTML and JSON reports
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: lighthouse-reports
-          path: reports/
+          path: |
+            reports/*.report.html
+            reports/*.report.json
+            reports/lighthouse-summary.md
           if-no-files-found: warn
           retention-days: 30

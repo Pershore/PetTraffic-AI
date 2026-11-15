@@ -19,6 +19,9 @@ GA4 laikotarpis: 2026-11-05 – 2026-11-11
 | Puslapių peržiūros | 67 | +4 |
 Organinės paieškos sesijos: **3**
 
+### Daugiausia peržiūrėti puslapiai (GA4)
+- /articles/example.html – 67 peržiūrų
+
 ## Google paieška (Search Console)
 Laikotarpis: 2026-11-03 – 2026-11-09
 | Rodiklis | Paskutinės 7 d. | Pokytis |
@@ -34,6 +37,19 @@ Laikotarpis: 2026-11-03 – 2026-11-09
 - Google paskutinį kartą atsisiuntė: 2026-11-12T08:10:00Z
 - URL pateikta / indeksuota: 7 / 4
 - Laukia apdorojimo: ne
+
+### Apibendrintos Google paieškos temos
+
+| Tema | Frazų eilučių | Paspaudimai | Parodymai | CTR | Vidutinė pozicija |
+|---|---:|---:|---:|---:|---:|
+| Simptomai ir sveikata | 1 | 3 | 120 | 2.5% | 8.4 |
+| Maitinimas ir mityba | 1 | 2 | 80 | 2.5% | 6.0 |
+
+### Puslapiai Google paieškoje
+
+| Puslapis | Paspaudimai | Parodymai | CTR | Pozicija |
+|---|---:|---:|---:|---:|
+| https://pettraffic-ai.pages.dev/articles/kate-viduriuoja-ka-daryti.html?utm_source=test | 3 | 120 | 2.5% | 8.4 |
 
 ### Google indekso būklė (svarbiausi puslapiai)
 | Puslapis | Būsena | Google paaiškinimas | Robots.txt | Indeksavimas | Paskutinis tikrinimas |
@@ -61,6 +77,23 @@ class AnalyticsHistoryTests(unittest.TestCase):
         self.assertEqual(len(item["search_console_details"]["priority_url_inspections"]), 2)
         self.assertEqual(item["search_console_details"]["priority_url_inspections"][1]["indexing_state"], "NOT_INDEXED")
         self.assertNotIn("query", json.dumps(item).lower())
+
+    def test_archives_page_paths_and_aggregated_search_themes_without_raw_phrases(self):
+        item = parse_report(REPORT, "privacy-run", "2026-11-12T08:00:00Z")
+        self.assertEqual(item["ga4_top_pages"], [{"path": "/articles/example.html", "views": 67}])
+        self.assertEqual(len(item["search_console_top_pages"]), 1)
+        self.assertEqual(
+            item["search_console_top_pages"][0]["path"],
+            "/articles/kate-viduriuoja-ka-daryti.html",
+        )
+        self.assertIn("simptomai_ir_sveikata", item["search_intent_themes"])
+        self.assertIn("maitinimas_ir_mityba", item["search_intent_themes"])
+        self.assertEqual(item["search_intent_themes"]["simptomai_ir_sveikata"]["rows"], 1)
+        self.assertEqual(item["search_intent_themes"]["maitinimas_ir_mityba"]["impressions"], 80)
+        serialized = json.dumps(item, ensure_ascii=False).lower()
+        self.assertNotIn("užklausa", serialized)
+        self.assertNotIn("query", serialized)
+
 
     def test_marks_missing_metrics_as_null(self):
         item = parse_report("# Pet traffic\nBūsena: neprijungta", "run-2", "2026-11-12T08:00:00Z")

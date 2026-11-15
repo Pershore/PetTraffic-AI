@@ -8,6 +8,18 @@ import json
 import os
 import re
 import sys
+from urllib.parse import urlsplit
+import unicodedata
+
+SEARCH_THEME_LABELS = {
+    "simptomai_ir_sveikata": "Simptomai ir sveikata",
+    "maitinimas_ir_mityba": "Maitinimas ir mityba",
+    "veterinarine_pagalba": "Veterinarinė pagalba",
+    "prieziura_ir_higiena": "Priežiūra ir higiena",
+    "auginimas_ir_elgsena": "Auginimas ir elgsena",
+    "kita": "Kitos temos",
+}
+SEARCH_THEME_KEYS = {label: key for key, label in SEARCH_THEME_LABELS.items()}
 
 REPORT = Path("reports/analytics-7d.md")
 HISTORY_ROOT = Path("reports/history/analytics")
@@ -31,6 +43,123 @@ def number(value: str | None, percent: bool = False) -> float | None:
         return None
     parsed = float(match.group())
     return parsed / 100 if percent else parsed
+
+
+def page_path(value: str) -> str | None:
+    """Keep only a public URL path; discard query strings and fragments."""
+    raw = value.strip()
+    if not raw:
+        return None
+    try:
+        parsed = urlsplit(raw)
+        path = parsed.path if parsed.scheme or parsed.netloc else raw.split("?", 1)[0].split("#", 1)[0]
+    except ValueError:
+        return None
+    if not path.startswith("/"):
+        return None
+    return path[:300]
+
+
+def parse_ga4_top_pages(report: str) -> list[dict]:
+    marker = "### Daugiausia peržiūrėti puslapiai (GA4)"
+    if marker not in report:
+        return []
+    section = report.split(marker, 1)[1].split("## Google paieška", 1)[0]
+    pages = []
+    for line in section.splitlines():
+        match = re.match(r"^\s*-\s+(.+?)\s+–\s+([\d ]+)\s+peržiūrų\s*$", line)
+        if not match:
+            continue
+        path = page_path(match.group(1))
+        views = number(match.group(2))
+        if path is not None and views is not None:
+            pages.append({"path": path, "views": views})
+    return pages[:10]
+
+
+def fold_text(value: str) -> str:
+    normalized = unicodedata.normalize("NFKD", value.casefold())
+    return "".join(char for char in normalized if not unicodedata.combining(char))
+
+
+def classify_search_intent(value: str) -> str:
+    """Classify a phrase transiently; the phrase itself is never persisted."""
+    folded = fold_text(value)
+    patterns = (
+        ("simptomai_ir_sveikata", r"viduri|vem|slapin|krauj|kos|niez|niez|skausm|simptom|alerg"),
+        ("maitinimas_ir_mityba", r"maist|ed(al|el)|pasar|maitin|mityb|dieta|svor|skanest"),
+        ("veterinarine_pagalba", r"veterinar|klinika|skubi|gydytoj|kada kreiptis|konsult"),
+        ("prieziura_ir_higiena", r"prieziur|dant|kail|higien|aus|nag|kraik|maud"),
+        ("auginimas_ir_elgsena", r"suniuk|kaciuk|veisle|augin|dres|elges|socializ"),
+    )
+    for category, pattern in patterns:
+        if re.search(pattern, folded):
+            return category
+    return "kita"
+
+
+def search_theme_label(category: str) -> str:
+    return SEARCH_THEME_LABELS.get(category, SEARCH_THEME_LABELS["kita"])
+
+
+def parse_search_intent_themes(report: str) -> dict:
+    """Read aggregate topic rows only; raw Search Console phrases never enter history."""
+    marker = "### Apibendrintos Google paieškos temos"
+    if marker not in report:
+        return {}
+    section = report.split(marker, 1)[1].split("### Puslapiai Google paieškoje", 1)[0]
+    groups = {}
+    for line in section.splitlines():
+        stripped = line.strip()
+        if not stripped.startswith("|"):
+            continue
+        cells = [cell.strip() for cell in stripped.strip("|").split("|")]
+        if len(cells) != 6 or cells[0] in {"Tema", "---"}:
+            continue
+        category = SEARCH_THEME_KEYS.get(cells[0], cells[0])
+        if category not in SEARCH_THEME_LABELS:
+            continue
+        rows = number(cells[1])
+        clicks = number(cells[2])
+        impressions = number(cells[3])
+        ctr = number(cells[4], percent=True)
+        position = number(cells[5])
+        if rows is None or clicks is None or impressions is None:
+            continue
+        groups[category] = {
+            "rows": int(rows),
+            "clicks": clicks,
+            "impressions": impressions,
+            "ctr": ctr,
+            "average_position": position,
+        }
+    return groups
+
+
+def parse_search_console_top_pages(report: str) -> list[dict]:
+    marker = "### Puslapiai Google paieškoje"
+    if marker not in report:
+        return []
+    section = report.split(marker, 1)[1].split("### Svetainės žemėlapis", 1)[0]
+    pages = []
+    for line in section.splitlines():
+        stripped = line.strip()
+        if not stripped.startswith("|"):
+            continue
+        cells = stripped.strip("|").split("|")
+        if len(cells) != 5 or cells[0].strip() in {"Puslapis", "---"}:
+            continue
+        path = page_path(cells[0].strip())
+        clicks = number(cells[1])
+        impressions = number(cells[2])
+        ctr = number(cells[3], percent=True)
+        position = number(cells[4])
+        if path is not None and clicks is not None and impressions is not None:
+            pages.append({
+                "path": path, "clicks": clicks, "impressions": impressions,
+                "ctr": ctr, "average_position": position,
+            })
+    return pages[:10]
 
 
 def parse_report(report: str, run_id: str, generated_at: str | None = None) -> dict:
@@ -80,6 +209,9 @@ def parse_report(report: str, run_id: str, generated_at: str | None = None) -> d
             "priority_url_inspections": parse_priority_url_inspections(report),
         },
         "metrics": metrics,
+        "ga4_top_pages": parse_ga4_top_pages(report),
+        "search_intent_themes": parse_search_intent_themes(report),
+        "search_console_top_pages": parse_search_console_top_pages(report),
     }
 
 
