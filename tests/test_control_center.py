@@ -18,6 +18,7 @@ class ControlCenterTests(unittest.TestCase):
         with open(".github/workflows/control-center.yml", encoding="utf-8") as stream:
             workflow = stream.read()
         self.assertIn('      - "Deploy PetTraffic control API"', workflow)
+        self.assertIn('      - "Pet traffic Worker cron diagnostics"', workflow)
         self.assertIn("workflow_run:", workflow)
 
     def test_control_center_is_event_driven_not_a_duplicate_daily_cron(self):
