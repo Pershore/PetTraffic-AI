@@ -643,3 +643,13 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 - Search Console frazės klasifikuojamos atmintyje, bet neįrašomos į ilgalaikę istoriją ar viešą kasdienę ataskaitą. Pašalinami puslapių URL query parametrai. Trūkstami rodikliai rodomi kaip „duomenų nėra“, o ne nulis.
 - PR / CI patikros šiame darbo įraše bus papildytos tik gavus tikrus GitHub Actions rezultatus. Šiuo momentu PR, testų ir pirmojo suplanuoto weekly run būsena dar nepatvirtinta.
 - Nekeisti viešas Pet traffic turinys, ARO Vet svetainė, Worker/D1 produkcija, DNS, secrets, Cloudflare paskyros teisės, billing ar mokamos paslaugos. Aktyvaus darbo ir vartotojo laikas NEMATUOTAS.
+
+
+## 2026-11-15 20:46 LT – C strategijos ir canonical URL diagnostikos sesija
+
+- Vartotojas pasirinko C strategiją: autonomijos patikimumas ir SEO/organinis augimas vykdomi lygiagrečiai. Atnaujinta esama kasdienė pagrindinė priežiūros automatizacija su prioritetų planu ir periodine savaitės peržiūra; nauja dubliuojanti automatika nesukurta. Įrašyta į automatizacijos instrukciją sėkmingai.
+- PATIKRINTA Lighthouse run #43745229308, event=push, success; artefaktas #14173977237. 10 auditų; homepage mobile performance 81, TBT 769 ms, CLS 0; mobile gidai 98–99; SEO/a11y/best-practices 100. Ilga 994 ms užduotis pažymėta Unattributable – priežastis nepatvirtinta.
+- Aptikta URL neatitiktis: Lighthouse requested .html, finalUrl be .html; Cloudflare Pages dokumentacija patvirtina automatinį .html → extensionless peradresavimą. Esami canonical, sitemap, OG/JSON-LD ir vidiniai linkai deklaruoja .html; 20 301 paskirties adresų taip pat turi .html. Parengtas techninis taisymo planas, išsaugant redirect source paths.
+- 0 production / public content / DNS / Worker-D1 / secrets / ARO Vet / billing pakeitimų šiame etape. Tiesioginis URL fetch iš šios aplinkos nepavyko dėl DNS rezoliucijos apribojimo; reikalingas CI live monitor.
+- Kitas veiksmas: sukurti feature branch ir PR, kuris suvienodina canonical URL, sitemap, navigation ir redirect destinations; pridėti validator + live monitor regresijos testus. PR palikti review būsenai; viešas pakeitimas nepublikuojamas be atskiro sprendimo. Autonomijos pusėje laukti 2026-11-16 13:20 LT Worker AI ciklo ir patikrinti specialistų evidence / D1 readback.
+- Aktyvus darbo laikas, įrankių vykdymo laikas ir vartotojo laikas: NEMATUOTA.

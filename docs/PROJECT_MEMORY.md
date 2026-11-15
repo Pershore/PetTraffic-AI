@@ -1,20 +1,34 @@
 # Pet traffic – vienintelė kanoninė projekto atmintis
 
-**Atnaujinta:** 2026-11-15  
+**Atnaujinta:** 2026-11-15 20:46 Europe/Vilnius  
 **Saugykla:** https://github.com/Pershore/PetTraffic-AI  
 **Pagrindinė šaka:** `main`  
 **Tikslas:** vienas patikimas tęstinumo šaltinis ChatGPT, Codex ir būsimiems projekto agentams.
 
 Šis dokumentas sujungia ilgalaikius sprendimus, patvirtintą architektūrą, dabartines integracijų būsenas, neišspręstus blokatorius ir kitus veiksmus. Jis nepakeičia GitHub testų ar realių vykdymų įrodymų. Kiekvieną būseną reikia tikrinti pagal naujausią commit, workflow run ir gyvą sistemos atsakymą.
 
-## 2026-11-15 – vartotojo sprendimas: ARO Vet Vaistinė vėl leidžiama
+## 2026-11-15 – galiojanti ARO Vet riba (viršesnė už istorinius įrašus)
 
-Ankstesnis draudimas naudoti ARO Vet vaistinės turinį buvo vartotojo klaida ir šiuo įrašu panaikinamas. Nuo dabar Pet traffic gali naudoti ARO Vet Vaistinės viešą produktų informaciją, aprašymus ir produktų nuotraukas, kai tai tiesiogiai naudinga skaitytojui. ARO Vet Vaistinė yra pageidaujamas produktų šaltinis; nekuriami konkuruojančių parduotuvių pasiūlymai, nebent vartotojas nurodys kitaip. Produktų kortelės turi būti saikingos, su tiesiogine nuoroda į atitinkamą produktą, patikrinta kaina / prieinamumu ir be nepagrįstų gydomojo poveikio pažadų. Jokių komisinių ar affiliate sekimo be atskiro leidimo. Pet traffic lieka nepriklausomas prekės ženklas: nekopijuoti ARO Vet logotipo, viso dizaino ar neklaidinti dėl bendros nuosavybės. Šis leidimas nesuteikia teisės keisti ARO Vet svetainę, kodą, DNS, paskyras ar infrastruktūrą. Viešas Pet traffic turinio publikavimas vis tiek reikalauja vartotojo patvirtinimo.
+Į Pet traffic svetainę negrąžinti ARO Vet reklamos, produktų, kortelių, nuorodų, logotipų ar kitų ARO Vet elementų. ARO Vet svetainės, kodo, DNS, paskyrų ir infrastruktūros nekeisti. Ankstesnis 2026-11-15 dokumentuose užfiksuotas leidimas naudoti ARO Vet produktų turinį yra istorinis ir šiam projektui nebegalioja. Viešo turinio automatiškai nepublikuoti.
+
 
 ## 2026-11-15 – savaitinė augimo ataskaita
 
 Vartotojas pasirinko, kad sistema ne tik tikrintų infrastruktūrą, bet ir kiekvieną savaitę pateiktų sujungtą augimo analizę. Ataskaita turi apjungti GA4, Search Console, RSS temų signalus, Lighthouse, Control Center / Worker AI būseną ir 3 prioritetinius veiksmus. Naudoti esamą duomenų rinkimą ir standartinį Python; naujų mokamų AI kvietimų ar dubliuojančių ChatGPT automatizacijų nekurti. Search Console frazes saugoti tik agreguotomis temų kategorijomis, ne žaliu tekstu. Trūkstamus ar pasenusius šaltinius aiškiai žymėti.
 
+
+
+## 2026-11-15 20:46 LT – patvirtinta C strategija ir aktualūs prioritetai
+
+Vartotojas pasirinko lygiagrečią autonomijos ir SEO strategiją. Pagrindinė kasdienė priežiūros automatizacija atnaujinta; nauja ChatGPT automatika nekurta. Detalus planas saugomas docs/PRIORITIES_2026-11-15.md.
+
+- Autonomija – pirmas techninis vartas: 2026-11-16 13:20 LT patikrinti naują po-deploy Worker AI ciklą pagal vieną ir tą patį run_date: 5 kvietimai, status, error_code, specialistų atsakymai ir konkretūs įrodymai, Control Core sprendimas, evidence_gaps, D1 memory_updated_at ir readback. Vienas ciklas per dieną; Issue #145 neuždaryti be pilno įrodymo.
+- SEO – lygiagretus prioritetas: Cloudflare Pages numatytai peradresuoja .html HTML puslapius į extensionless URL. Oficiali dokumentacija: https://developers.cloudflare.com/pages/configuration/serving-pages/. Lighthouse #43745229308 requestedUrl article puslapiams baigėsi .html, finalUrl – be .html. Dabartinis sitemap, canonical, OG/JSON-LD ir vidinės nuorodos dar naudoja .html, todėl būtina suderinti į extensionless canonical kelią. 20 senųjų 301 šaltinių išsaugoti; jų paskirties kelius keisti į tiesioginius canonical URL.
+- Lighthouse: 2026-11-15 run #43745229308 buvo push ir success, ne schedule. 10 puslapio/įrenginio rezultatų; homepage mobile perf 81, TBT 769 ms, CLS 0; 4 gidų mobile 98–99. Vienas 994 ms long task Unattributable – priežastis nepatvirtinta; pakartoti matavimą po URL normalizavimo, nespėlioti.
+- GA4 istorinis langas 2026-11-08–14: 7 aktyvūs naudotojai, 24 sesijos, 88 peržiūros; GSC 2026-11-06–12: 0 parodymų / paspaudimų, sitemap pending, 5 URL Google nežinomi. Tai istorinis atskaitos taškas, ne dabartinis matavimas.
+- Schedule vėlavimai: Daily-suite event=schedule #43721211747 vėlavo apie 7 val. 42 min.; site-check event=schedule #43716344579 – apie 7 val. 19 min. Priežastis nepatvirtinta, atskirti eilės laukimą nuo job trukmės.
+- Valdymas ir saugumas: vieši /control/ ir /dashboard/ lieka READ-ONLY; noindex nėra autentifikacija. Issue #248 atviras. Be atskiro leidimo nekeisti Worker/D1 production, DNS, secrets, teisių, billing; 0 €/mėn.; nepublikuoti viešo turinio.
+- Canonical URL pataisų PR gali būti paruoštas, bet nejungiamas / nepublikuojamas be review ir atskiro sprendimo.
 
 ## 2026-11-15 18:42 LT – senų URL peradresavimų atkūrimas ir gyvas monitoringas
 
@@ -50,10 +64,11 @@ Jei dokumentai nesutampa, vadovautis šia tvarka:
 2. Šis `docs/PROJECT_MEMORY.md` – sujungta ilgalaikė atmintis ir integracijų žemėlapis.
 3. `reports/history/project-state/latest.md` ir `latest.json` iš `automation-history` – paskutinė automatiškai patikrinta techninė būsena.
 4. `reports/work-log/README.md` iš `main` – pakeitimų, testų ir vykdymų istorija.
-5. Naujausias `docs/PETTRAFFIC_AI_HANDOVER_*.md` – konkrečios sesijos perdavimas ir jos įrodymai.
-6. `docs/SESSION_START.md` – trumpas privalomas naujos sesijos veiksmų sąrašas.
+5. `docs/PRIORITIES_2026-11-15.md` – dabartinė patvirtinta C strategija ir prioritetų seka.
+6. Naujausias `docs/PETTRAFFIC_AI_HANDOVER_*.md` – konkrečios sesijos perdavimas ir jos įrodymai.
+7. `docs/SESSION_START.md` – trumpas privalomas naujos sesijos veiksmų sąrašas.
 
-**Svarbu dėl senesnių failų:** `docs/PETTRAFFIC_AI_HANDOVER_2026-11-12.md` yra istorinis dokumentas. Jo pradinė kryptis apie ARO Vet vaistinę ir nuorodas iš dalies sutampa su dabar vėl patvirtinta kryptimi; ankstesnis draudimas naudoti ARO Vet produktų informaciją buvo panaikintas 2026-11-15 vartotojo sprendimu. Vadovautis aukščiau esančiu naujausiu ARO Vet leidimo bloku ir dabartiniu `AGENTS.md`. ARO Vet svetainės ir infrastruktūros nekeisti.
+**Svarbu dėl senesnių failų:** ankstesni leidimai naudoti ARO Vet produktus, korteles ar nuorodas yra istoriniai ir nebegalioja. Vadovautis galiojančia ARO Vet riba šio dokumento pradžioje ir `AGENTS.md`: į Pet traffic negrąžinti jokių ARO Vet elementų.
 
 Šakų paskirtys:
 - `main`: kodas, instrukcijos, dokumentacija, darbo žurnalas.
@@ -84,7 +99,7 @@ Niekada nepaversti `LAUKIA`, `PARUOŠTA` ar `NEPATVIRTINTA` į `PATIKRINTA` be n
   - `articles/suo-viduriuoja-ka-daryti.html`
 - Išlaikyti pagrindinį puslapį, apie puslapį, privatumo puslapį, sitemap, robots ir tik pagrįstus peradresavimus. Negrąžinti plono / užpildomojo turinio.
 - Tikslinė auditorija: Lietuvos gyvūnų šeimininkai; vietinis SEO gali orientuotis į Gargždus ir Klaipėdos rajoną, kai tai prasminga.
-- ARO Vet Vaistinė yra vartotojo patvirtintas prioritetinis produktų informacijos, produktų aprašymų, nuotraukų ir tiesioginių prekių nuorodų šaltinis, kai konkreti prekė naudinga skaitytojui. Pet traffic išlieka savarankiškas prekės ženklas; ARO Vet logotipas ir visas vizualinis identitetas nekopijuojamas.
+- Į Pet traffic neįtraukti ARO Vet reklamos, produktų, kortelių, nuorodų, logotipų ar kitų elementų. ARO Vet svetainės ir infrastruktūros nekeisti.
 
 ## 3. Nekintamos saugumo ir biudžeto ribos
 

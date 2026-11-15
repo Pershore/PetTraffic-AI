@@ -356,3 +356,26 @@ Iki 11:40 LT patikrinti Control Center schedule įvykį ir jo ataskaitą. Jei jo
 - Savaitinės ataskaitos GitHub Actions grafikas numatytas pirmadienį 18:30 UTC; išvestis bus Actions suvestinėje, 90 dienų artefakte ir automation-history šakoje. Trūkstami šaltiniai žymimi „duomenų nėra“, o ne nuliu. Analizė deterministinė, papildomų mokamų AI/API kvietimų nėra.
 - Kodo ir dokumentų pakeitimai laikomi atskiroje šakoje feat/weekly-growth-review-and-arovet-source; produkcinis viešas turinys dar nepakeistas. ARO Vet svetainė, Worker/D1 produkcija, DNS, secrets, Cloudflare paskyros teisės ir billing nekeičiami.
 - Būsena: **PARUOŠTA PR peržiūrai; CI ir testų rezultatai laukiami**. Pirmasis realus savaitinės ataskaitos grafiko vykdymas dar neįvyko; nevadinti jos suplanuoto vykdymo įrodytu veikimu iki realaus pirmadienio paleidimo.
+
+
+## 2026-11-15 20:46 LT – vartotojas patvirtino C strategiją; SEO canonical neatitikimas
+
+### PATIKRINTA
+- Vartotojas pasirinko lygiagrečiai vykdyti autonomijos ir SEO strategiją. Esamos kasdienės pagrindinės priežiūros automatikos instrukcijos atnaujintos; naujos dubliuojančios automatikos nesukurta. Automation ID: Automation_533d7bb79b20819185c3fc2e1e1fbb85; atnaujinimas sėkmingas 2026-11-15 18:36:16Z.
+- Naujausias Lighthouse artefaktas: run #43745229308, event=push, success. Artefaktas lighthouse-reports #14173977237 išsaugotas 21 failu.
+- 10 Lighthouse matavimų: homepage mobile performance 81/100, TBT 769 ms, CLS 0; keturių gidų mobile performance 98–99/100. SEO, accessibility ir best-practices visi 100/100. Homepage mobile turi 994 ms Unattributable long task ir 70 ms puslapio užduotį; priežastis nepatvirtinta.
+- Lighthouse JSON rodo article requestedUrl su .html, bet finalUrl be .html. Cloudflare Pages oficiali dokumentacija patvirtina numatytąjį peradresavimą iš /page.html į /page: https://developers.cloudflare.com/pages/configuration/serving-pages/.
+- Repo dabartiniai canonical, sitemap, OG/JSON-LD ir vidiniai linkai dar naudoja .html. Tai neatitinka viešo extensionless URL elgesio. 20 senųjų 301 šaltinių apsaugoti, bet paskirties adresai su .html ir gali sukelti papildomą redirect.
+- GA4 istorinis langas 2026-11-08–14: 7 active users, 24 sessions, 88 page views. GSC 2026-11-06–12: 0 impressions, 0 clicks; sitemap pending, 5 svarbūs URL tuomet buvo URL nežinomi Google. Neperinterpretuoti kaip svetainės neveikimo.
+- Pagrindinės kasdienės priežiūros automatikos instrukcijoje išsaugotas C prioritetų planas; jokių papildomų išlaidų ar servisų.
+
+### NEPATVIRTINTA / LAUKIA
+- Nepriklausomas tiesioginis HTTP fetch šio audito metu nepavyko dėl DNS rezoliucijos apribojimo; finalUrl iš Lighthouse ir Cloudflare dokumentacija pagrindžia diagnostiką, bet PR turi įtraukti naują gyvo URL testą.
+- Worker po-deploy AI ciklas laukia 2026-11-16 13:20 LT; vienas ciklas per dieną, nekartoti. Issue #145 lieka atviras, kol nėra visų specialistų ir D1 readback įrodymų.
+- Savaitinis Lighthouse tikras event=schedule dar laukia 2026-11-16 09:27 LT. Ankstesnis run #43745229308 buvo push, ne schedule.
+- GitHub schedule eilės vėlavimų priežastis nepatvirtinta; žinomi vėlavimai: Daily-suite ~7 val. 42 min., site-check ~7 val. 19 min.
+
+### Kitas darbas
+- Parengti atskirą PR, kuris suvienodina viešus canonical URL į Cloudflare Pages extensionless formą: canonical, OG/JSON-LD, sitemap, vidinės nuorodos, 20 senųjų 301 paskirties kelių; atnaujinti validator ir live monitor, kad sutikrintų, jog canonical URL grąžina 200 be peradresavimo.
+- Į PR įtraukti regresijos testus ir pilną CI. Dėl viešų URL / SEO pakeitimų – nejungti ir nepublikuoti be atskiro patvirtinimo po review.
+- Vienu metu tęsti AI ciklo įrodymų patikrą po 2026-11-16 13:20 LT. Nevykdyti Worker/D1 production, DNS, secrets, teisių, billing ar ARO Vet pakeitimų.

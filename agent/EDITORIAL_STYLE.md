@@ -21,13 +21,10 @@ Pet traffic – nepriklausoma lietuviška informacinė svetainė šunų ir kači
 - Sveikatos turinyje atskirti faktus, bendras rekomendacijas ir požymius, kai būtina veterinaro apžiūra.
 - Remtis patikimais veterinariniais ar mokslo šaltiniais; pateikti nuorodas ir datą, kai svarbu.
 
-## Produktai ir komercinis turinys
-- ARO Vet Vaistinė yra vartotojo patvirtintas prioritetinis produktų informacijos ir tiesioginių nuorodų šaltinis Pet traffic svetainėje.
-- Galima naudoti ARO Vet viešus produktų aprašymus ir produktų nuotraukas pagal vartotojo suteiktą leidimą; neperkelti ARO Vet logotipo, svetainės dizaino ar viso puslapio turinio.
-- Produktą rodyti tik tada, kai jis tiesiogiai padeda skaitytojui konkrečioje temoje. Nepristatyti maisto, papildų ar priežiūros priemonių kaip ligos gydymo.
-- Tikrinti produkto paskirtį, dabartinę kainą, prieinamumą ir tiesioginę prekės nuorodą prieš publikavimo projektą. Nepatvirtintus duomenis pažymėti.
-- Pet traffic išlieka nepriklausomas prekės ženklas. Nenaudoti affiliate sekimo ar komisinių teiginių, kol tai atskirai nepatvirtinta.
-- Viešas produktų korteles ir jų turinį publikuoti tik po vartotojo patvirtinimo. Nekeisti pačios ARO Vet svetainės, kodo, DNS ar paskyros.
+## Komercinis turinys
+- Šiuo metu Pet traffic svetainėje neturi būti ARO Vet reklamos, produktų, kortelių, nuorodų, logotipų ar kitų ARO Vet elementų.
+- Bet kokį būsimą monetizacijos pasiūlymą pirmiausia pateikti kaip atskirą projektą peržiūrai; nieko viešai nepublikuoti be atskiro patvirtinimo.
+- Nenaudoti affiliate sekimo, komisinių teiginių, fiktyvių kainų, prieinamumo ar gydomojo poveikio pažadų.
 
 ## Patikimumas
 - Niekada nekurti fiktyvių atsiliepimų, ekspertų peržiūrų, statistikos ar šaltinių.

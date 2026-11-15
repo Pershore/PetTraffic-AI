@@ -4,8 +4,10 @@ Atnaujinta: 2026-11-15
 
 ## Naujausi vartotojo sprendimai (2026-11-15)
 
-- Ankstesnis draudimas naudoti ARO Vet Vaistinės turinį panaikintas. Leidžiama naudoti jos viešą produktų informaciją, aprašymus ir produktų nuotraukas kaip pageidaujamo produktų šaltinio medžiagą Pet traffic svetainėje, tik kai produktas tiesiogiai aktualus. Pet traffic išlieka nepriklausomas prekės ženklas; nekopijuoti ARO Vet logo / viso dizaino, nenaudoti affiliate sekimo be atskiro leidimo. ARO Vet svetainės ir infrastruktūros nekeisti. Viešą Pet traffic turinį publikuoti tik gavus vartotojo patvirtinimą.
-- Sistema turi kiekvieną savaitę pateikti sujungtą augimo ataskaitą iš GA4, Search Console, RSS temų, Lighthouse, automatizacijų ir Worker AI būsenos. Naudoti esamus duomenis / nemokamą Python, nekurti naujos ChatGPT automatikos ar papildomo mokamo AI kvietimo.
+- Galiojanti saugumo riba: į Pet traffic negrąžinti ARO Vet reklamos, produktų, kortelių, nuorodų, logotipų ar kitų elementų; ARO Vet svetainės, kodo, DNS, paskyrų ir infrastruktūros nekeisti. Ankstesni teigiami leidimai dokumentuose yra istoriniai ir nebegalioja.
+- Patvirtinta C strategija: lygiagrečiai vykdyti autonomijos patikimumo ir SEO/organinio augimo srautus, pirmumą teikiant AI ciklo / D1 įrodymams; naudoti esamas automatizacijas ir kassavaitinę GitHub augimo ataskaitą, nedubliuoti ChatGPT grafikų.
+
+Prioritetų detalės ir dabartinės įrodymų būsenos: docs/PRIORITIES_2026-11-15.md.
 
 Šis dokumentas yra trumpas sesijos pradžios kontrolinis sąrašas. Visa ilgalaikė atmintis, sprendimai, architektūra, prieigų matrica ir blokatoriai laikomi `docs/PROJECT_MEMORY.md`.
 
@@ -187,3 +189,14 @@ Tikras bootstrap iš Termux patvirtintas: Linux proot, Git, GitHub CLI, Codex CL
 - **Valdymo skydas / Termux:** `/control/` lieka viešas noindex komandų skydas su 7 fiksuotomis komandomis, kurios kopijuojamos į owner-only issue #145; tai nėra tiesioginis vieno paspaudimo valdymo API. `/v1/tasks*` sąmoningai lieka 503 iki atskiros agentų tapatybės ir privataus autentifikavimo. Termux bridge CI success patvirtina tik shell scenarijų validaciją, ne nuolatinę Android shell jungtį.
 - **Likutinė išvada:** pagrindinis tinklalapis, GA4/GSC ryšys, D1 snapshot kelias, Worker/heartbeat ir Control Center veikia. Visa autonominė grandinė **dar ne iki galo PATIKRINTA** dėl vėluojančių cron, 2 trūkstamų ChatGPT automatikų vykdymų ir laukiančio realaus po-deploy AI ciklo. Issue #145 lieka atviras.
 - Automation-history `latest.md` rankiniu būdu nekeistas, nes jis yra Control Center sugeneruotas snapshot ir paskutinis jo vykdymas vis dar pažymi `stale`; nauja būsena turi būti užrašyta tik po tikro naujo Control Center run. Jokio ARO Vet, DNS, Worker/D1 konfigūracijos, secrets, viešo turinio, billing ar mokamų paslaugų pakeitimo neatlikta.
+
+
+## 2026-11-15 20:46 LT – naujas prioritetų ir SEO URL tęstinumas
+
+- Vartotojas patvirtino C: autonomija ir SEO vykdomi lygiagrečiai, išlaikant saugumo ribas. Esama kasdienė pagrindinio koordinatoriaus automatizacija atnaujinta nauju prioritetų planu; nauja dubliuojanti automatika nesukurta.
+- Kitas AI įrodymų vartas: 2026-11-16 13:20 Europe/Vilnius Worker ciklas. Tikrinti tą patį run_date, laiką, 5 kvietimus, error_code, visų specialistų turinį ir įrodymus, Control Core, evidence_gaps, D1 memory_updated_at ir readback. Nekartoti dienos ciklo; Issue #145 neuždaryti be pilno įrodymo.
+- Cloudflare Pages dokumentuoja, kad HTML .html URL peradresuojami į extensionless URL. Naujausias Lighthouse JSON patvirtina, jog gidai galutinai atidaromi be .html, nors canonical, sitemap ir svetainės nuorodos dar naudoja .html. SEO neatitikimas identifikuotas; taisymas ruošiamas atskiru PR, dar nepublikuotas.
+- Lighthouse run #43745229308 buvo push, ne schedule; 10 matavimų artefakte. Pradinio puslapio mobile 81/100, TBT 769 ms; kiti mobile gidai 98–99/100. Viena 994 ms long task pažymėta Unattributable, todėl jos priežastis nepatvirtinta.
+- GA4 istorinis langas 2026-11-08–14: 7 naudotojai, 24 sesijos, 88 peržiūros. GSC 2026-11-06–12: 0 parodymų / paspaudimų, sitemap pending, 5 URL tuomet Google nežinomi. Šių skaičių neatnaujinti be naujo autorizuoto rinkinio.
+- Schedule vėlavimų priežastis lieka nepatvirtinta: Daily-suite tikras schedule run #43721211747 prasidėjo 7 val. 42 min. vėliau; site-check #43716344579 – 7 val. 19 min. vėliau.
+- Nekeisti viešo turinio, produkcinio Worker/D1, DNS, secrets, paskyrų teisių ar billing. SEO URL pakeitimai turi likti atskirame PR iki review ir atskiro sprendimo dėl publikavimo.
