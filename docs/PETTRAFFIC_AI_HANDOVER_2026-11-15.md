@@ -97,3 +97,12 @@ Iki 11:40 LT patikrinti Control Center schedule įvykį ir jo ataskaitą. Jei jo
 - sync-control-api.yml gauna workflow_dispatch source_run_id. Prieš atsisiųsdamas artefaktus patikrina daily-suite workflow ID 418322987, main šaką, event schedule/workflow_dispatch, completed status ir bent vieną sėkmingą analytics/topic-radar job. D1 įrašai lieka agreguoti, autentifikacija per trumpalaikį OIDC, po įrašymo daromas readback.
 - Control Center workflow jau turėjo workflow_dispatch, todėl bridge gali jį paleisti po 11:40 LT grace, tačiau tai bus manual run, ne schedule įrodymas.
 - Po PR #214 merge: paleisti sync-latest ir patikrinti D1 write/readback; paleisti Control Center ir patikrinti ataskaitą/issue #145. PR CI ir realus D1 sync dar laukia.
+
+
+## 2026-11-15 – Worker OIDC sync pataisa (PR #216)
+
+- Daily-suite catch-up run 43696960921 baigėsi success ir išsaugojo GA4/GSC bei topic radar artefaktus.
+- D1 sync workflow_dispatch run 43697692423 gavo HTTP 401. Patikrinus Worker kodą nustatyta tiksli priežastis: OIDC verifier leido tik event_name=workflow_run.
+- Įprastas workflow_run sync iš Control Center run 43697658367 sėkmingai įrašė 2 įvykius ir patvirtino D1 readback; tai nėra daily-suite sync įrodymas.
+- PR #216 leidžia papildomą event_name=workflow_dispatch tik jei workflow_ref lieka tiksliai sync-control-api.yml@refs/heads/main ir visi immutable repo ID, ref, audience, parašas bei exp patikrinimai praeina. Push, schedule, issue_comment ir kiti eventai lieka atmetami.
+- Worker testai papildyti priėmimo ir atmetimo atvejais. PR CI ir realus deploy / D1 retry dar laukia. Jokių naujų secrets ar platesnių Worker API teisių nėra.

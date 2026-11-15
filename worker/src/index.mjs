@@ -56,6 +56,7 @@ const GITHUB_REF = "refs/heads/main";
 // GitHub repositories created after 2026-07-15 use immutable owner/repository IDs in sub.
 const GITHUB_SUBJECT = `repo:Pershore@${GITHUB_REPOSITORY_OWNER_ID}/PetTraffic-AI@${GITHUB_REPOSITORY_ID}:ref:${GITHUB_REF}`;
 const GITHUB_WORKFLOW_REF = "Pershore/PetTraffic-AI/.github/workflows/sync-control-api.yml@refs/heads/main";
+const ALLOWED_GITHUB_EVENTS = new Set(["workflow_run", "workflow_dispatch"]);
 
 function decodeBase64Url(value) {
   const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
@@ -93,7 +94,7 @@ async function authorized(request) {
     String(claims.repository_id) !== GITHUB_REPOSITORY_ID ||
     claims.ref !== GITHUB_REF ||
     claims.workflow_ref !== GITHUB_WORKFLOW_REF ||
-    claims.event_name !== "workflow_run" ||
+    !ALLOWED_GITHUB_EVENTS.has(claims.event_name) ||
     !Number.isFinite(claims.exp) || claims.exp <= now ||
     (Number.isFinite(claims.nbf) && claims.nbf > now + 30)
   ) return false;

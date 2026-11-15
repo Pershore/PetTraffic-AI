@@ -95,3 +95,8 @@ Be factual, concise, and never overstate completion.
 - Read the latest applicable handover in `docs/` and continue from its first unresolved next action. Do not repeat verified work.
 - If the next action depends on a scheduled run that has not happened, mark it waiting and do not claim success.
 - Use one agent as coordinator; delegate only bounded, non-overlapping tasks. All code changes must return through a branch, pull request, and tests.
+
+
+## Snapshot sync OIDC policy
+- The Worker accepts GitHub OIDC only from the pinned sync-control-api.yml workflow on main, with the immutable repository/owner IDs, exact repository, ref, audience and signed short-lived token.
+- Allowed event names are restricted to workflow_run and workflow_dispatch. Push, schedule, issue_comment and other events remain rejected. Any change requires worker tests, PR review, CI and verified Worker deployment.

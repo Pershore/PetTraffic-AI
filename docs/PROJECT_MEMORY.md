@@ -405,3 +405,12 @@ Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama 
 - Control Center workflow jau palaiko workflow_dispatch; bridge jį iškviečia tik jei nėra neseno schedule / workflow_dispatch vykdymo. Rankinis paleidimas išlieka atskirtas nuo cron būsenos.
 - sync-control-api.yml gauna workflow_dispatch source_run_id; prieš D1 sinchronizaciją GitHub API patvirtina workflow ID 418322987, main branch, source event schedule/workflow_dispatch, completed status ir bent vieną sėkmingą analytics/topic-radar job. Tada parsina tik agreguotus artefaktus, siunčia per trumpalaikį OIDC tokeną ir patikrina D1 readback.
 - PR #214 laukia CI. Po merge reikia paleisti /pettraffic-sync-latest, patikrinti D1 write/readback, tada /pettraffic-run-control-center ir patikrinti issue #145 bei control-center artefaktą.
+
+
+## 2026-11-15 – Worker OIDC rankinis sync blokatorius ir pataisa (PR #216)
+
+- Realus D1 sync bandymas per workflow_dispatch (run 43697692423) buvo atmestas HTTP 401. Worker kodas tiksliai reikalavo event_name=workflow_run, nors visi kiti OIDC teiginiai buvo teisingi.
+- Įprastas OIDC kelias lieka veikiantis: sync-control-api workflow_run iš Control Center run 43697658367 sėkmingai įrašė 2 agreguotus įvykius ir patvirtino D1 readback. Tai nebuvo daily-suite duomenų sync.
+- PR #216 leidžia workflow_dispatch tik tam pačiam prisegtam sync-control-api.yml workflow_ref main šakoje. Išlieka privalomi immutable repository/owner ID, repo, ref, audience, parašas ir galiojimo laikas. Push, schedule, issue_comment ir kiti event_name lieka atmetami.
+- Pridėti Worker testai: workflow_dispatch leidžiamas tik su prisegtu workflow; push/issue_comment/schedule atmetami. Production deploy dar neatliktas; jis vyks tik po PR CI ir sujungimo per esamą deploy-control-api workflow.
+- PR #213 ir #215 sujungti; PR #214 uždarytas kaip pakartotinis CI bandymas. Daily-suite run 43696960921 success, bet D1 analytics/topic snapshot sync laukia PR #216.
