@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#101a2a">
+<title>Pet traffic Control Center</title>
+<meta name="description" content="Gyvas Pet traffic projekto architektūros, automatizacijų, analitikos ir sistemos būklės valdymo skydas.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/control/control.css">
+<script src="/control/control.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Pereiti prie turinio</a>
+<div class="app-shell">
+<aside class="sidebar" aria-label="Valdymo skydelio navigacija">
+  <a class="brand" href="/control/"><span class="brand-mark">P</span><span><strong>Pet traffic</strong><small>CONTROL CENTER</small></span></a>
+  <div class="side-label">PROJEKTAS</div>
+  <nav class="side-nav">
+    <button class="nav-item active" data-view="overview"><span>◫</span> Apžvalga</button>
+    <button class="nav-item" data-view="architecture"><span>⌘</span> Architektūra</button>
+    <button class="nav-item" data-view="automations"><span>⟳</span> Automatizacijos</button>
+    <button class="nav-item" data-view="analytics"><span>▥</span> Analitika ir SEO</button>
+    <button class="nav-item" data-view="tools"><span>◇</span> Įrankiai ir prieigos</button>
+    <button class="nav-item" data-view="history"><span>≋</span> Vykdymų istorija</button>
+  </nav>
+  <div class="side-bottom">
+    <div class="side-label">NUORODOS</div>
+    <a href="https://github.com/Pershore/PetTraffic-AI" target="_blank" rel="noopener">GitHub saugykla ↗</a>
+    <a href="https://pettraffic-ai.pages.dev/" target="_blank" rel="noopener">Vieša svetainė ↗</a>
+    <a href="https://github.com/Pershore/PetTraffic-AI/issues/145" target="_blank" rel="noopener">Pagrindinis alert #145 ↗</a>
+    <div class="privacy-note"><span class="lock">▣</span> Tik vieši ir agreguoti duomenys. Jokių raktų ar lankytojų asmens duomenų.</div>
+  </div>
+</aside>
+
+<main id="main" class="main-area">
+  <header class="topbar">
+    <div class="crumb"><span class="crumb-dot"></span> PET TRAFFIC <span>/</span> <strong id="view-title">Apžvalga</strong></div>
+    <div class="top-actions">
+      <span class="updated-label" id="last-updated">Dar nekrauta</span>
+      <button id="refresh-button" class="refresh-button" type="button"><span aria-hidden="true">↻</span> Atnaujinti</button>
+    </div>
+  </header>
+
+  <section class="page-heading">
+    <div><p class="eyebrow">GYVAS PROJEKTO VAIZDAS</p><h1 id="page-title">Visas projektas vienoje vietoje</h1><p id="page-subtitle">Tikri GitHub, Worker ir viešos svetainės duomenys. Būsenos atnaujinamos atidarius puslapį ir paspaudus „Atnaujinti“.</p></div>
+    <div class="live-pill"><span class="pulse"></span><span id="connection-state">Jungiamasi prie sistemų</span></div>
+  </section>
+
+  <section class="global-alert" id="global-alert" hidden aria-live="polite"></section>
+
+  <section class="view-panel active" id="view-overview">
+    <div class="stat-grid" id="stat-grid">
+      <article class="stat-card"><span class="stat-label">Vieša svetainė</span><strong id="stat-site">—</strong><small id="stat-site-detail">Tikrinama…</small></article>
+      <article class="stat-card"><span class="stat-label">GitHub Actions</span><strong id="stat-actions">—</strong><small id="stat-actions-detail">Tikrinama…</small></article>
+      <article class="stat-card"><span class="stat-label">Worker + D1</span><strong id="stat-worker">—</strong><small id="stat-worker-detail">Tikrinama…</small></article>
+      <article class="stat-card"><span class="stat-label">Atviri PR</span><strong id="stat-prs">—</strong><small id="stat-prs-detail">Tikrinama…</small></article>
+      <article class="stat-card"><span class="stat-label">AI agentų ciklas</span><strong id="stat-ai">—</strong><small id="stat-ai-detail">Tikrinama…</small></article>
+    </div>
+
+    <div class="section-row"><div><p class="eyebrow">SISTEMOS VAIZDAS</p><h2>Kaip viskas sujungta</h2></div><button class="text-button" data-go="architecture">Atverti pilną architektūrą ↗</button></div>
+    <div class="architecture-mini" id="architecture-mini">
+      <div class="arch-node user-node"><span class="node-icon">👤</span><strong>Tu / valdymo skydas</strong><small>Stebėjimas ir patvirtinimai</small></div>
+      <div class="arch-connector"><span>HTTPS / GitHub API</span><b>↓</b></div>
+      <div class="arch-row">
+        <div class="arch-node github-node"><span class="node-icon">⌘</span><strong>GitHub</strong><small>Kodas · PR · istorija</small></div>
+        <div class="arch-node pages-node"><span class="node-icon">▤</span><strong>Cloudflare Pages</strong><small>Vieša svetainė + šis skydas</small></div>
+        <div class="arch-node worker-node"><span class="node-icon">⚙</span><strong>Worker + D1</strong><small>Heartbeat · AI · atmintis</small></div>
+      </div>
+      <div class="arch-connector"><span>Automatizacijos ir duomenys</span><b>↓</b></div>
+      <div class="arch-row arch-bottom">
+        <div class="arch-node"><strong>GitHub Actions</strong><small>Patikros · analitika · SEO</small></div>
+        <div class="arch-node"><strong>GA4 + Search Console</strong><small>Agreguota statistika</small></div>
+        <div class="arch-node"><strong>Workers AI agentai</strong><small>5 specializuoti vaidmenys</small></div>
+        <div class="arch-node"><strong>D1 + istorija</strong><small>Snapshot'ai ir atmintis</small></div>
+      </div>
+    </div>
+
+    <div class="content-grid">
+      <section class="panel">
+        <div class="panel-heading"><div><p class="eyebrow">PASKUTINIAI VYKDYMAI</p><h2>Automatizacijų būklė</h2></div><button class="text-button" data-go="automations">Visos ↗</button></div>
+        <div id="workflow-summary" class="workflow-summary"><div class="loading-line"></div><div class="loading-line"></div><div class="loading-line"></div></div>
+      </section>
+      <section class="panel">
+        <div class="panel-heading"><div><p class="eyebrow">SVARBIAUSI RODIKLIAI</p><h2>Augimas ir kokybė</h2></div><button class="text-button" data-go="analytics">Analitika ↗</button></div>
+        <div class="metric-stack" id="metric-stack"><div class="loading-line"></div><div class="loading-line"></div><div class="loading-line"></div></div>
+      </section>
+    </div>
+
+    <section class="panel">
+      <div class="panel-heading"><div><p class="eyebrow">PASKUTINIS KONTROLĖS CIKLAS</p><h2>Kas reikalauja dėmesio</h2></div><a class="text-button" href="https://github.com/Pershore/PetTraffic-AI/issues/145" target="_blank" rel="noopener">Issue #145 ↗</a></div>
+      <div id="attention-list" class="attention-list"><div class="loading-line"></div></div>
+    </section>
+  </section>
+
+  <section class="view-panel" id="view-architecture">
+    <div class="section-row"><div><p class="eyebrow">SISTEMOS TOPOLOGIJA</p><h2>Visa Pet traffic architektūra</h2><p class="muted">Rodyklės žymi duomenų arba valdymo srautą. Žalia būsena rodoma tik gavus gyvą įrodymą.</p></div></div>
+    <div class="architecture-full">
+      <div class="arch-lane">
+        <div class="lane-label">VALDYMAS</div>
+        <div class="arch-node user-node"><span class="node-icon">👤</span><strong>Vartotojas</strong><small>Instrukcijos · sprendimai · leidimai</small></div>
+        <div class="flow-arrow">↔</div>
+        <div class="arch-node control-node"><span class="node-icon">◫</span><strong>ChatGPT koordinatorius</strong><small>11:45 LT · vienas pagrindinis agentas</small><em id="coordinator-status" class="state unknown">Būsena tikrinama</em></div>
+      </div>
+      <div class="down-arrow">↓ planavimas / ataskaitos ↓</div>
+      <div class="arch-lane">
+        <div class="lane-label">KODO IR UŽDUOČIŲ SLUOKSNIS</div>
+        <div class="arch-node github-node"><span class="node-icon">⌘</span><strong>GitHub · main</strong><small>Pershore/PetTraffic-AI</small><em class="state good">Saugykla pasiekiama</em><a href="https://github.com/Pershore/PetTraffic-AI" target="_blank" rel="noopener">Atverti repo ↗</a></div>
+        <div class="flow-arrow">↔</div>
+        <div class="arch-node actions-node"><span class="node-icon">⟳</span><strong>GitHub Actions</strong><small>Site · Daily · Control · Lighthouse · Sync</small><em id="actions-status" class="state unknown">Būsena tikrinama</em><a href="https://github.com/Pershore/PetTraffic-AI/actions" target="_blank" rel="noopener">Visi vykdymai ↗</a></div>
+      </div>
+      <div class="down-arrow">↓ deploy / HTTPS ↓</div>
+      <div class="arch-lane">
+        <div class="lane-label">VIEŠAS PATEIKIMAS</div>
+        <div class="arch-node pages-node"><span class="node-icon">▤</span><strong>Cloudflare Pages</strong><small>pettraffic-ai.pages.dev</small><em id="pages-status" class="state unknown">Būsena tikrinama</em><a href="https://pettraffic-ai.pages.dev/" target="_blank" rel="noopener">Atverti svetainę ↗</a></div>
+        <div class="flow-arrow">+</div>
+        <div class="arch-node dashboard-node"><span class="node-icon">▦</span><strong>Control Center</strong><small>/control/ · šis skydas</small><em class="state good">Puslapis įkeltas</em></div>
+        <div class="flow-arrow">↔</div>
+        <div class="arch-node worker-node"><span class="node-icon">⚙</span><strong>Cloudflare Worker</strong><small>pettraffic-control-api</small><em id="worker-arch-status" class="state unknown">Būsena tikrinama</em><a href="https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health" target="_blank" rel="noopener">Viešas /health ↗</a></div>
+      </div>
+      <div class="down-arrow">↓ cron / OIDC / SQL ↓</div>
+      <div class="arch-lane">
+        <div class="lane-label">DUOMENYS IR AI</div>
+        <div class="arch-node"><span class="node-icon">▥</span><strong>D1 duomenų bazė</strong><small>pettraffic-control</small><em id="d1-status" class="state unknown">Būsena tikrinama</em></div>
+        <div class="flow-arrow">↔</div>
+        <div class="arch-node"><span class="node-icon">✧</span><strong>Workers AI</strong><small>Coordinator · Analytics · Topics · SEO · Content</small><em id="ai-arch-status" class="state unknown">Būsena tikrinama</em></div>
+        <div class="flow-arrow">↔</div>
+        <div class="arch-node"><span class="node-icon">▤</span><strong>History branch</strong><small>automation-history · agreguoti snapshot'ai</small><em class="state good">GitHub istorija</em></div>
+      </div>
+      <div class="down-arrow">↑ agreguoti duomenys ↑</div>
+      <div class="arch-lane">
+        <div class="lane-label">IŠORINIAI DUOMENŲ ŠALTINIAI</div>
+        <div class="arch-node external-node"><strong>Google Analytics 4</strong><small>Property 563539278</small><em class="state protected">Per GitHub Actions secret</em></div>
+        <div class="arch-node external-node"><strong>Search Console</strong><small>pettraffic-ai.pages.dev</small><em class="state protected">Per GitHub Actions secret</em></div>
+        <div class="arch-node external-node"><strong>Google News RSS</strong><small>Viešos temų antraštės</small><em class="state good">Viešas RSS</em></div>
+        <div class="arch-node external-node"><strong>Lighthouse</strong><small>5 URL × mobile / desktop</small><em class="state good">GitHub Actions įrankis</em></div>
+      </div>
+      <div class="arch-lane secondary-lane">
+        <div class="lane-label">PAPILDOMI ĮRANKIAI</div>
+        <div class="arch-node muted-node"><strong>Termux + Codex</strong><small>Android aplinka · nevaldoma tiesiogiai iš šio skydelio</small></div>
+        <div class="arch-node muted-node"><strong>Firecrawl</strong><small>Viešų puslapių tyrimas · riboti kreditai</small></div>
+        <div class="arch-node muted-node"><strong>GitHub CLI / PR</strong><small>Šakos · peržiūros · testai</small></div>
+      </div>
+    </div>
+    <div class="legend"><span><i class="dot good"></i> Gyvai patvirtinta</span><span><i class="dot warn"></i> Reikia dėmesio</span><span><i class="dot protected"></i> Apsaugota / tik per workflow</span><span><i class="dot unknown"></i> Nežinoma / neprijungta</span></div>
+    <div class="panel"><h2>Duomenų ir valdymo ribos</h2><div class="boundary-grid"><div><strong>Kas vyksta automatiškai</strong><p>GitHub Actions patikros, agreguota analitika, temų RSS radaras, Lighthouse, Worker heartbeat, AI analizė ir snapshot sinchronizacija.</p></div><div><strong>Kas sąmoningai apribota</strong><p>Worker užduočių API išjungta. Nėra tiesioginės Android Termux, Cloudflare paskyros ar Google paskyros prieigos. Viešas turinys, produkcija, DNS ir paslaptys nekeičiami iš šio skydelio.</p></div></div></div>
+  </section>
+
+  <section class="view-panel" id="view-automations">
+    <div class="section-row"><div><p class="eyebrow">GITHUB ACTIONS + WORKER CRON</p><h2>Automatizacijų valdymas</h2><p class="muted">Grafikai rodo numatytą laiką. „Suplanuota“ būsena patvirtinama tik tikru event=schedule paleidimu.</p></div><a class="text-button" href="https://github.com/Pershore/PetTraffic-AI/actions" target="_blank" rel="noopener">Atverti GitHub Actions ↗</a></div>
+    <div class="workflow-grid" id="workflow-grid"><div class="loading-line"></div></div>
+    <div class="panel"><div class="panel-heading"><div><p class="eyebrow">PASKUTINIAI 20</p><h2>Vykdymų žurnalas</h2></div><select id="run-filter" aria-label="Filtruoti vykdymus"><option value="all">Visi įvykiai</option><option value="schedule">Tik schedule</option><option value="workflow_dispatch">Tik rankiniai</option><option value="failure">Nesėkmingi</option></select></div><div id="runs-table" class="table-wrap"><div class="loading-line"></div></div></div>
+  </section>
+
+  <section class="view-panel" id="view-analytics">
+    <div class="section-row"><div><p class="eyebrow">AGREGUOTI DUOMENYS</p><h2>Analitika, SEO ir greitis</h2><p class="muted">GA4 ir GSC laikotarpiai skiriasi – jų nelyginame kaip vienodo laikotarpio.</p></div></div>
+    <div id="analytics-panel" class="analytics-grid"><div class="loading-line"></div></div>
+    <div class="panel"><div class="panel-heading"><div><p class="eyebrow">TECHNINĖ KOKYBĖ</p><h2>Lighthouse</h2></div><a class="text-button" href="https://github.com/Pershore/PetTraffic-AI/actions/workflows/lighthouse-audit.yml" target="_blank" rel="noopener">Lighthouse workflow ↗</a></div><div id="lighthouse-panel" class="metric-stack"><div class="loading-line"></div></div></div>
+    <div class="panel"><div class="panel-heading"><div><p class="eyebrow">ORGANINIO TURINIO RADARAS</p><h2>Temų stebėsena</h2></div></div><div id="topics-panel" class="metric-stack"><div class="loading-line"></div></div></div>
+  </section>
+
+  <section class="view-panel" id="view-tools">
+    <div class="section-row"><div><p class="eyebrow">INTEGRACIJŲ INVENTORIZACIJA</p><h2>Įrankiai, ryšiai ir prieigos</h2><p class="muted">„Paruošta“ nereiškia, kad šiame puslapyje yra tiesioginė prieiga.</p></div></div>
+    <div class="tools-grid" id="tools-grid">
+      <article class="tool-card"><span class="tool-symbol">⌘</span><div><h3>GitHub</h3><p>Saugykla, šakos, PR, issues, Actions run'ai, artefaktai.</p><span class="state good">Skaitymas / PR įrankiai prijungti</span><a href="https://github.com/Pershore/PetTraffic-AI" target="_blank" rel="noopener">Atverti ↗</a></div></article>
+      <article class="tool-card"><span class="tool-symbol">▤</span><div><h3>Cloudflare Pages</h3><p>Statinė svetainė ir šis dashboard. Deploy vyksta per prijungtą Git integraciją.</p><span id="tool-pages" class="state unknown">Tikrinu gyvą puslapį</span><a href="https://pettraffic-ai.pages.dev/" target="_blank" rel="noopener">Atverti ↗</a></div></article>
+      <article class="tool-card"><span class="tool-symbol">⚙</span><div><h3>Cloudflare Worker</h3><p>Heartbeat, saugus OIDC priėmimas, agreguotų įvykių API.</p><span id="tool-worker" class="state unknown">Tikrinama</span><a href="https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health" target="_blank" rel="noopener">/health ↗</a></div></article>
+      <article class="tool-card"><span class="tool-symbol">▥</span><div><h3>D1</h3><p>Worker duomenų bazė ir Control Core atminties metaduomenys.</p><span id="tool-d1" class="state unknown">Tikrinama</span></div></article>
+      <article class="tool-card"><span class="tool-symbol">✧</span><div><h3>Workers AI</h3><p>Koordinatorius, analitika, temų, techninio SEO ir turinio specialistai.</p><span id="tool-ai" class="state unknown">Tikrinama</span></div></article>
+      <article class="tool-card"><span class="tool-symbol">G</span><div><h3>GA4 + Search Console</h3><p>Agreguoti naudotojų, sesijų, puslapių peržiūrų ir paieškos duomenys.</p><span class="state protected">Per GitHub Actions secret; raktai nerodomi</span><a href="https://analytics.google.com/" target="_blank" rel="noopener">Google Analytics ↗</a></div></article>
+      <article class="tool-card"><span class="tool-symbol">◷</span><div><h3>Lighthouse</h3><p>Penki puslapiai, mobilus ir desktop režimai, HTML/JSON artefaktai.</p><span class="state good">GitHub Actions workflow</span></div></article>
+      <article class="tool-card"><span class="tool-symbol">RSS</span><div><h3>Google News RSS</h3><p>Viešų naujienų antraščių temų stebėsena, ne paieškų apimčių matavimas.</p><span class="state good">Viešas RSS šaltinis</span></div></article>
+      <article class="tool-card"><span class="tool-symbol">⌁</span><div><h3>Termux + Codex</h3><p>Android / Ubuntu proot kūrimo aplinka.</p><span class="state warn">ChatGPT tiesioginė shell prieiga neprijungta</span></div></article>
+      <article class="tool-card"><span class="tool-symbol">F</span><div><h3>Firecrawl</h3><p>Viešų puslapių tyrimas ir turinio ištraukimas.</p><span class="state warn">Prijungtas įrankis; riboti kreditai</span></div></article>
+      <article class="tool-card"><span class="tool-symbol">◫</span><div><h3>ChatGPT automatikos</h3><p>Pagrindinis kasdienis koordinatorius ir atskiras greičio tikrintojas.</p><span class="state protected">Veikia pagal suplanuotus paleidimus, ne 24/7 sesiją</span></div></article>
+      <article class="tool-card"><span class="tool-symbol">🔒</span><div><h3>Worker task API</h3><p>Užduočių eilė /v1/tasks.</p><span class="state warn">Tyčia išjungta – 503 task_api_not_enabled</span></div></article>
+    </div>
+  </section>
+
+  <section class="view-panel" id="view-history">
+    <div class="section-row"><div><p class="eyebrow">AUDITUOJAMA ISTORIJA</p><h2>Vykdymų istorija ir įrodymai</h2><p class="muted">Kiekvienas įrašas turi nuorodą į originalų GitHub paleidimą.</p></div></div>
+    <div class="panel"><div class="panel-heading"><h2>Naujausi GitHub Actions įvykiai</h2><span class="subtle" id="history-count">—</span></div><div id="history-list" class="history-list"><div class="loading-line"></div></div></div>
+    <div class="panel"><h2>Istorijos saugojimas</h2><div class="boundary-grid"><div><strong>main šaka</strong><p>Kodas, dokumentacija ir darbo žurnalas. Pakeitimai siūlomi per atskirą šaką ir PR.</p></div><div><strong>automation-history šaka</strong><p>Privatumo požiūriu filtruoti agreguoti GA4/GSC, temų, Control Center ir projekto būsenos snapshot'ai.</p></div></div><a class="text-button" href="https://github.com/Pershore/PetTraffic-AI/tree/automation-history/reports/history" target="_blank" rel="noopener">Atverti archyvą ↗</a></div>
+  </section>
+
+  <footer class="footer"><span>Pet traffic Control Center · v1</span><span>Atnaujinimas rankiniu būdu arba kas 60 s, kol puslapis atidarytas · <a href="https://github.com/Pershore/PetTraffic-AI" target="_blank" rel="noopener">šaltinio kodas</a></span></footer>
+</main>
+</div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
