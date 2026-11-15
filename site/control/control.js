@@ -6,7 +6,8 @@ const WORKER = "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev";
 const SITE = "https://pettraffic-ai.pages.dev";
 const TZ = "Europe/Vilnius";
 const $ = (id) => document.getElementById(id);
-const state = { runs: [], prs: [], commit: null, issue: null, health: null, site: null, analytics: null, topics: null, loadedAt: null, loading: false };\nconst archiveCache = { analytics: { checkedAt: 0, value: null }, "topic-radar": { checkedAt: 0, value: null } };
+const state = { runs: [], prs: [], commit: null, issue: null, health: null, site: null, analytics: null, topics: null, loadedAt: null, loading: false };
+const archiveCache = { analytics: { checkedAt: 0, value: null }, "topic-radar": { checkedAt: 0, value: null } };
 const workflowDefinitions = [
  {key:"site",title:"Svetainės patikra",file:"site-check.yml",match:"site checks",cadence:"Kasdien 07:37 LT + push / PR",desc:"HTML, vidinės nuorodos, SEO, sitemap, Python testai"},
  {key:"daily",title:"Daily-suite",file:"daily-suite.yml",match:"daily automation suite",cadence:"Kasdien 08:10 LT",desc:"GA4 / GSC, temų radaras ir gyvos svetainės patikra"},
@@ -71,7 +72,8 @@ function renderAttention(){
  if(ai.cls!=="good")items.push({title:"Worker agentų ciklas: "+ai.label,detail:ai.detail,cls:ai.cls});
  const bad=state.runs.filter(r=>r.status==="completed"&&r.conclusion!=="success").slice(0,3);
  bad.forEach(r=>items.push({title:r.name+" · "+r.conclusion,detail:"#"+r.run_number+" · "+dateLT(r.created_at),cls:"bad",url:r.html_url}));
- if(state.prs.length)items.push({title:state.prs.length+" atviri PR",detail:state.prs.slice(0,3).map(p=>"#"+p.number+" "+p.title).join(" · "),cls:"warn",url:state.prs[0].html_url});\n if(state.issue?.state==="open")items.push({title:"Pagrindinis alert #145 atviras",detail:state.issue.title||"Reikia Control Center recovery įrodymo",cls:"warn",url:state.issue.html_url});
+ if(state.prs.length)items.push({title:state.prs.length+" atviri PR",detail:state.prs.slice(0,3).map(p=>"#"+p.number+" "+p.title).join(" · "),cls:"warn",url:state.prs[0].html_url});
+ if(state.issue?.state==="open")items.push({title:"Pagrindinis alert #145 atviras",detail:state.issue.title||"Reikia Control Center recovery įrodymo",cls:"warn",url:state.issue.html_url});
  if(!items.length)items.push({title:"Kritinių signalų iš gautų šaltinių nėra",detail:"Tai nėra pilnas visų paskyrų ar paslapčių auditas.",cls:"good"});
  $("attention-list").innerHTML=items.slice(0,8).map(x=>'<div class="attention-item '+(x.cls==="good"?"good":"")+'"><span class="signal"></span><div><strong>'+escapeHtml(x.title)+'</strong><small>'+escapeHtml(x.detail)+' '+(x.url?'<a href="'+escapeHtml(x.url)+'" target="_blank" rel="noopener">Atverti ↗</a>':"")+'</small></div></div>').join("");
 }
