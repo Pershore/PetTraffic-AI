@@ -44,3 +44,16 @@ Sulaukti suplanuotų vykdymų: daily-suite 08:10 LT, Worker AI 10:20 LT, Control
 - Daily-suite 08:10 LT cron vykdymo 08:43 LT dar nėra naujausių 100 Actions sąraše; priežastis nenustatyta. Grafiko nekeisti be priežasties; rankinis paleidimas nėra schedule įrodymas.
 - Issue #145 lieka open iki naujo sėkmingo agentų ciklo ir D1 atminties įrašo patvirtinimo.
 - Projekto būsenos snapshot atnaujintas `automation-history` šakoje, commit `aea2e6d85ca159d44a78f6f418397ac748aa4d92`.
+
+
+## 2026-11-15 10:41 LT – naujausia patikra
+
+- Daily-suite workflow metadata: active (ID 418322987), tačiau 06:10 UTC suplanuoto event=schedule vykdymo nėra; 60 min. grace jau praėjęs. Paskutinis failo pakeitimas buvo prieš numatytą ciklą. Priežastis nepatvirtinta.
+- Control Center workflow metadata: active (ID 416336983). 08:40 UTC ciklas 10:41 LT dar nematomas; grace galioja iki 11:40 LT.
+- Worker /health HTTP 200, D1 ir Control Core schema connected. 10:20 LT AI agentų ciklas completed, 5 kvietimai, klaidos nėra. Atmintis present, 2 rekomendacijos, 8 evidence gaps; statusas needs_evidence.
+- Issue #145 paliekamas atviras iki Control Center recovery_confirmed=true. GA4/GSC naujos ataskaitos nėra, kol daily-suite nepasileido.
+- Jokių produkcinių, DNS, secrets, ARO Vet ar viešo turinio pakeitimų. Papildomų paslaugų / išlaidų nėra.
+
+## Kitas veiksmas
+
+Iki 11:40 LT patikrinti Control Center schedule įvykį ir jo ataskaitą. Jei jo nėra, atskirai užregistruoti praleistą aktyvaus workflow schedule ir perduoti kaip GitHub Actions scheduler / administravimo prieigos blokatorių. Daily-suite priežastį tirti tik gavus papildomą GitHub workflow vykdymo / scheduler įrodymą.
