@@ -44,7 +44,8 @@ jobs:
               const cutoff = now - 20 * 60 * 60 * 1000;
               const recent = data.workflow_runs.find(run =>
                 Date.parse(run.created_at) >= cutoff &&
-                (run.event === "workflow_dispatch" ||
+                ((run.event === "workflow_dispatch" &&
+                    (run.status !== "completed" || run.conclusion === "success")) ||
                   (run.event === "schedule" &&
                     (run.status !== "completed" || run.conclusion === "success")))
               );
@@ -66,7 +67,7 @@ jobs:
               });
               const cutoff = now - 20 * 60 * 60 * 1000;
               const source = daily.data.workflow_runs.find(run =>
-                ["schedule", "workflow_dispatch"].includes(run.event) &&
+                run.event === "workflow_dispatch" &&
                 run.conclusion === "success" &&
                 Date.parse(run.created_at) >= cutoff
               );
@@ -79,7 +80,8 @@ jobs:
               });
               const displayTitle = "Sync daily-suite snapshot #" + source.id;
               const already = syncRuns.data.workflow_runs.find(run =>
-                run.event === "workflow_dispatch" && run.display_title === displayTitle
+                run.event === "workflow_dispatch" && run.display_title === displayTitle &&
+                (run.status !== "completed" || run.conclusion === "success")
               );
               if (already) {
                 core.notice("This daily-suite snapshot already has a sync run: " + already.html_url);
