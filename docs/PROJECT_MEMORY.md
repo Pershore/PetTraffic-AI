@@ -11,7 +11,7 @@
 
 ## 2026-11-15 dabartinis grafikas ir patikros būsena
 
-- Dienos seka: svetainės patikra 05:37 UTC; nepriklausomas kasdienis automatizacijų rinkinys 06:10 UTC (GA4 / GSC, temų radaras ir gyvos svetainės patikra); Lighthouse pirmadieniais 07:27 UTC; centrinis valdymo centras 08:40 UTC; Worker AI agentų ciklas 10:20 Lietuvos laiku; vienintelis ChatGPT koordinatorius 11:00 Lietuvos laiku.
+- Dienos seka: svetainės patikra 05:37 UTC; nepriklausomas kasdienis automatizacijų rinkinys 06:10 UTC (GA4 / GSC, temų radaras ir gyvos svetainės patikra); Lighthouse pirmadieniais 07:27 UTC; centrinis valdymo centras 08:40 UTC; Worker AI agentų ciklas 10:20 Lietuvos laiku; vienintelis ChatGPT koordinatorius 11:45 Lietuvos laiku.
 - **Daily-suite workflow aktyvus**, GitHub Actions metadata state=active, workflow ID 418322987. YAML cron yra 10 6 * * * UTC, o paskutinis failo pakeitimas 2026-11-14 14:41:16 UTC – prieš šiandienos suplanuotą paleidimą. 2026-11-15 10:41 LT vis dar nėra šios dienos event=schedule vykdymo; 60 min. atsargos langas jau praėjęs. Išjungimas atmestas, bet tikroji priežastis dar **NEPATVIRTINTA**; galimas GitHub scheduler / workflow event pristatymo sutrikimas, tačiau tai tik hipotezė.
 - **Worker AI ciklas PATIKRINTAS:** 2026-11-15 10:20 LT ciklas completed, 5 AI kvietimai, error_code=null. Gyvas /health 10:40 LT grąžino HTTP 200, D1 ir Control Core schema connected; heartbeat 10:30:47 LT, svetainė HTTP 200, DB OK.
 - **Control Core atmintis PATIKRINTA:** 2026-11-15 įrašas status=needs_evidence, validus decision JSON, 2 rekomendacijos, 8 evidence gaps, memory_status=present. Rekomendacijos nėra patvirtintos išvados; reikia papildomų duomenų.
@@ -96,7 +96,7 @@ Niekada nepaversti `LAUKIA`, `PARUOŠTA` ar `NEPATVIRTINTA` į `PATIKRINTA` be n
 - Lighthouse: pirmadieniais 07:27 UTC ir po reikšmingų svetainės pakeitimų.
 - Central control center: 08:40 UTC kasdien ir po daily-suite, Lighthouse ar Worker diegimo užbaigimo.
 - Worker heartbeat: kas 15 min.; agentų cron tikrina 07:20 ir 08:20 UTC, o Europe/Vilnius laiko vartai leidžia tik 10:20 vietos laiko agentų ciklą.
-- Vienintelis ChatGPT priežiūros koordinatorius: 11:00 Europe/Vilnius, po dienos automatinių patikrų.
+- Vienintelis ChatGPT priežiūros koordinatorius: 11:45 Europe/Vilnius, po Control Center 60 min. grace lango.
 
 **Konfigūruotas cron nėra vykdymo įrodymas.** Tikrinti tikrus `event=schedule` run, jų jobs, artifacts ir rezultatus. Push, PR, workflow_run ar rankinis vykdymas nėra suplanuoto ciklo pakaitalas.
 
@@ -151,10 +151,10 @@ Jokia jungtis nelaikoma prijungta vien dėl to, kad ji buvo paminėta, pasiūlyt
 - Issue #145 „PetTraffic: central automation alert“ lieka **OPEN** ir papildytas komentaru #6876095236.
 
 ### Kasdienis ChatGPT koordinatorius
-- Esama automatizacija „Pet traffic – kasdienė savarankiška priežiūra“ yra **enabled**; jos dabartinis grafikas – 11:00 Europe/Vilnius, po daily-suite, Worker AI ciklo ir Control Center.
-- 2026-11-14 10:55 UTC atnaujintas jos prompt: kiekvienos sesijos pradžioje privalomai skaitomas `docs/PROJECT_MEMORY.md`, pašalinti pasenę hard-coded Lighthouse skaičiai, rankinis auditas atskiriamas nuo automatinio snapshot. Tvarkaraštis nepakeistas; kitas vykdymas 2026-11-15 11:00 Europe/Vilnius.
+- Esama automatizacija „Pet traffic – kasdienė savarankiška priežiūra“ yra **enabled**; jos dabartinis grafikas – 11:45 Europe/Vilnius, po daily-suite, Worker AI ciklo ir Control Center 60 min. grace lango.
+- 2026-11-14 10:55 UTC atnaujintas jos prompt: kiekvienos sesijos pradžioje privalomai skaitomas `docs/PROJECT_MEMORY.md`, pašalinti pasenę hard-coded Lighthouse skaičiai, rankinis auditas atskiriamas nuo automatinio snapshot. Tvarkaraštis nepakeistas; kitas vykdymas 2026-11-15 11:45 Europe/Vilnius.
 - Paskutinis įrašytas vykdymas: suplanuota 2026-11-14 07:45 UTC, pradėta 07:52:07 UTC, baigta 08:13:35 UTC, status `completed`.
-- Kitas numatytas vykdymas: 2026-11-15 11:00 Europe/Vilnius.
+- Kitas numatytas vykdymas: 2026-11-15 11:45 Europe/Vilnius.
 - Vienas koordinatorius; nedaryti dublikatų. Pokalbio asistentas neveikia tarp sesijų, tik realiai aktyvūs suplanuoti procesai gali dirbti fone.
 
 ### Termux / Codex
