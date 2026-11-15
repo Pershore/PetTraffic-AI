@@ -66,8 +66,13 @@ export function parseResult(raw) {
  if(typeof value.status!=="string"||!required.slice(1).every(key=>Array.isArray(value[key]))) {
   return invalidResult("invalid_json","Model JSON did not contain the required status, findings, recommendations and evidence_gaps fields.");
  }
- const strings=k=>value[k].filter(x=>typeof x==="string").slice(0,5).map(x=>x.slice(0,400));
- return {status:value.status.slice(0,40),findings:strings("findings"),recommendations:strings("recommendations"),evidence_gaps:strings("evidence_gaps"),requires_human_approval:true};
+ const rawStatus=value.status.trim().toLowerCase().replace(/[\\s-]+/g,"_");
+ const statusAliases={reviewed:"reviewed",ok:"reviewed",complete:"reviewed",completed:"reviewed",needs_evidence:"needs_evidence",no_data:"needs_evidence",error:"needs_evidence",monitor:"needs_evidence"};
+ const status=statusAliases[rawStatus]||"needs_evidence";
+ const strings=k=>value[k].filter(x=>typeof x==="string").slice(0,1).map(x=>x.slice(0,120));
+ const evidence_gaps=strings("evidence_gaps");
+ if(!statusAliases[rawStatus]) evidence_gaps.unshift("Model returned an unsupported status; normalized to needs_evidence.");
+ return {status,findings:strings("findings"),recommendations:strings("recommendations"),evidence_gaps:evidence_gaps.slice(0,2),requires_human_approval:true};
 }
 function isUsableModelResult(result) {
  return Boolean(result && typeof result.status==="string" &&
@@ -90,7 +95,7 @@ export async function callModel(env,system,input) {
   // GPT-OSS on Workers AI supports the Responses API on the Worker binding.
   // Low reasoning effort leaves more of the bounded output budget for the JSON result.
   const result=await env.AI.run(MODEL,{
-   input:[{role:"system",content:system+"\n\nIšvesties ribos: grąžink vieną JSON objektą be Markdown ir be papildomo teksto. Privalomi laukai: status (string), findings (masyvas), recommendations (masyvas), evidence_gaps (masyvas). Kiekviename masyve daugiausia po 2 trumpus įrašus; kiekvienas įrašas iki 160 simbolių. Jei nėra faktų, naudok tuščius masyvus. Neįtrauk ilgų paaiškinimų."},{role:"user",content:input.slice(0,MAX_INPUT_CHARS)}],
+   input:[{role:"system",content:system+"\n\nIšvesties ribos: grąžink vieną JSON objektą be Markdown ir be papildomo teksto. Privalomi laukai: status (tiksliai „reviewed“ arba „needs_evidence“), findings (masyvas), recommendations (masyvas), evidence_gaps (masyvas). Kiekviename masyve daugiausia po 1 trumpą įrašą iki 120 simbolių. Jei duomenų nepakanka, naudok needs_evidence ir aiškiai nurodyk spragą. Jei nėra faktų, naudok tuščius masyvus. Neįtrauk ilgų paaiškinimų."},{role:"user",content:input.slice(0,MAX_INPUT_CHARS)}],
    reasoning:{effort:"low"},
    max_output_tokens:MAX_OUTPUT_TOKENS,
   });
@@ -183,7 +188,7 @@ export async function runAgentOrchestration(env) {
    stage="reserve_"+agent.id;
    if(!(await reserveNextCall()))throw new Error("daily_ai_call_cap_reached");
    stage="model_"+agent.id;
-   const result=await callModel(env,"Tu esi Pet traffic projekto read-only specialistas. Atsakyk tik validžiu JSON: {status:string,findings:string[],recommendations:string[],evidence_gaps:string[]}. Naudok tik pateiktus duomenis. Nekeisk svetainės ir neprašyk publikuoti. Jei duomenų nepakanka, aiškiai pasakyk.",JSON.stringify({task:agent.task,source}));
+   const result=await callModel(env,"Tu esi Pet traffic projekto read-only specialistas. Atsakyk tik validžiu JSON: {status:"reviewed"|"needs_evidence",findings:string[],recommendations:string[],evidence_gaps:string[]}. Statusą rinkis tik iš šių dviejų reikšmių. Naudok tik pateiktus duomenis. Nekeisk svetainės ir neprašyk publikuoti. Jei duomenų nepakanka, aiškiai pasakyk.",JSON.stringify({task:agent.task,source}));
    specialists[agent.id]={label:agent.label,...result};
    // One malformed specialist response must not discard the other reviews or
    // prevent the coordinator from persisting a bounded, evidence-aware result.
@@ -197,7 +202,7 @@ export async function runAgentOrchestration(env) {
    stage="reserve_coordinator";
    if(!(await reserveNextCall()))throw new Error("daily_ai_call_cap_reached");
    stage="model_coordinator";
-   const coordinatorResult=await callModel(env,"Tu esi Pet traffic centrinis koordinatorius. Sujunk keturių specialistų rezultatus į trumpą prioritetinę ataskaitą. Atsakyk tik validžiu JSON: {status:string,findings:string[],recommendations:string[],evidence_gaps:string[]}. Nespėliok. Jokio publikavimo, kodo keitimo ar infrastruktūros veiksmų; rekomendacijoms būtinas žmogaus patvirtinimas.",JSON.stringify({date_utc:date,specialist_results:specialists}));
+   const coordinatorResult=await callModel(env,"Tu esi Pet traffic centrinis koordinatorius. Sujunk keturių specialistų rezultatus į trumpą prioritetinę ataskaitą. Atsakyk tik validžiu JSON: {status:"reviewed"|"needs_evidence",findings:string[],recommendations:string[],evidence_gaps:string[]}. Statusą rinkis tik iš šių dviejų reikšmių. Nespėliok. Jokio publikavimo, kodo keitimo ar infrastruktūros veiksmų; rekomendacijoms būtinas žmogaus patvirtinimas.",JSON.stringify({date_utc:date,specialist_results:specialists}));
    coordinator=isUsableModelResult(coordinatorResult)
     ? coordinatorResult
     : buildFallbackCoordinator(specialists,coordinatorResult.status||"invalid_model_output");
