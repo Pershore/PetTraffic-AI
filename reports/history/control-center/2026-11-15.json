@@ -1225,6 +1225,55 @@
           "created_at": null
         }
       ]
+    },
+    {
+      "run_id": "43723293460",
+      "generated_at": "2026-11-15T14:14:53.020458+00:00",
+      "needs_attention": true,
+      "results": [
+        {
+          "name": "GA4, temų radaras ir svetainės stebėjimas",
+          "state": "success",
+          "detail": "Paskutinis paleidimas sėkmingas.",
+          "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43721211747",
+          "created_at": "2026-11-15T13:51:47Z"
+        },
+        {
+          "name": "Centrinės API sinchronizavimas",
+          "state": "success",
+          "detail": "Paskutinis paleidimas sėkmingas.",
+          "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43723246912",
+          "created_at": "2026-11-15T14:14:14Z"
+        },
+        {
+          "name": "Lighthouse auditas",
+          "state": "waiting",
+          "detail": "Workflow atnaujintas 2026-11-13 12:09 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.",
+          "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43723293496",
+          "created_at": "2026-11-15T14:14:46Z"
+        },
+        {
+          "name": "Centrinis valdymo centras",
+          "state": "success",
+          "detail": "Paskutinis paleidimas sėkmingas.",
+          "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43723210152",
+          "created_at": "2026-11-15T14:13:49Z"
+        },
+        {
+          "name": "Cloudflare Worker + D1",
+          "state": "success",
+          "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 14 min.",
+          "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
+          "created_at": null
+        },
+        {
+          "name": "AI agentai + control-core atmintis",
+          "state": "stale",
+          "detail": "Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-15.",
+          "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
+          "created_at": null
+        }
+      ]
     }
   ]
 }
