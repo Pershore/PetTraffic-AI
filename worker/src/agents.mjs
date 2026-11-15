@@ -188,7 +188,7 @@ export async function runAgentOrchestration(env) {
    stage="reserve_"+agent.id;
    if(!(await reserveNextCall()))throw new Error("daily_ai_call_cap_reached");
    stage="model_"+agent.id;
-   const result=await callModel(env,"Tu esi Pet traffic projekto read-only specialistas. Atsakyk tik validžiu JSON: {status:"reviewed"|"needs_evidence",findings:string[],recommendations:string[],evidence_gaps:string[]}. Statusą rinkis tik iš šių dviejų reikšmių. Naudok tik pateiktus duomenis. Nekeisk svetainės ir neprašyk publikuoti. Jei duomenų nepakanka, aiškiai pasakyk.",JSON.stringify({task:agent.task,source}));
+   const result=await callModel(env,`Tu esi Pet traffic projekto read-only specialistas. Atsakyk tik validžiu JSON: {status:"reviewed"|"needs_evidence",findings:string[],recommendations:string[],evidence_gaps:string[]}. Statusą rinkis tik iš šių dviejų reikšmių. Naudok tik pateiktus duomenis. Nekeisk svetainės ir neprašyk publikuoti. Jei duomenų nepakanka, aiškiai pasakyk.`,JSON.stringify({task:agent.task,source}));
    specialists[agent.id]={label:agent.label,...result};
    // One malformed specialist response must not discard the other reviews or
    // prevent the coordinator from persisting a bounded, evidence-aware result.
@@ -202,7 +202,7 @@ export async function runAgentOrchestration(env) {
    stage="reserve_coordinator";
    if(!(await reserveNextCall()))throw new Error("daily_ai_call_cap_reached");
    stage="model_coordinator";
-   const coordinatorResult=await callModel(env,"Tu esi Pet traffic centrinis koordinatorius. Sujunk keturių specialistų rezultatus į trumpą prioritetinę ataskaitą. Atsakyk tik validžiu JSON: {status:"reviewed"|"needs_evidence",findings:string[],recommendations:string[],evidence_gaps:string[]}. Statusą rinkis tik iš šių dviejų reikšmių. Nespėliok. Jokio publikavimo, kodo keitimo ar infrastruktūros veiksmų; rekomendacijoms būtinas žmogaus patvirtinimas.",JSON.stringify({date_utc:date,specialist_results:specialists}));
+   const coordinatorResult=await callModel(env,`Tu esi Pet traffic centrinis koordinatorius. Sujunk keturių specialistų rezultatus į trumpą prioritetinę ataskaitą. Atsakyk tik validžiu JSON: {status:"reviewed"|"needs_evidence",findings:string[],recommendations:string[],evidence_gaps:string[]}. Statusą rinkis tik iš šių dviejų reikšmių. Nespėliok. Jokio publikavimo, kodo keitimo ar infrastruktūros veiksmų; rekomendacijoms būtinas žmogaus patvirtinimas.`,JSON.stringify({date_utc:date,specialist_results:specialists}));
    coordinator=isUsableModelResult(coordinatorResult)
     ? coordinatorResult
     : buildFallbackCoordinator(specialists,coordinatorResult.status||"invalid_model_output");
