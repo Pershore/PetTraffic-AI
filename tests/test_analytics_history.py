@@ -19,6 +19,9 @@ GA4 laikotarpis: 2026-11-05 – 2026-11-11
 | Puslapių peržiūros | 67 | +4 |
 Organinės paieškos sesijos: **3**
 
+### Daugiausia peržiūrėti puslapiai (GA4)
+- /articles/example.html – 67 peržiūrų
+
 ## Google paieška (Search Console)
 Laikotarpis: 2026-11-03 – 2026-11-09
 | Rodiklis | Paskutinės 7 d. | Pokytis |
