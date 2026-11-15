@@ -188,3 +188,14 @@ Iki 11:40 LT patikrinti Control Center schedule įvykį ir jo ataskaitą. Jei jo
 - Branch preview origin nepatenka į Worker CORS allowlist, todėl preview režime Worker skiltis aiškiai rodo CORS apribojimą. Oficialus production origin yra leidžiamas; Worker konfigūracija nekeista.
 - Puslapis viešas ir tik noindex; tai nėra autentifikacija. Paslapčių ir lankytojų lygmens duomenų nėra; dashboard neįtrauktas į sitemap ir neturi canonical.
 - Kitas žingsnis: vartotojo patvirtinimas PR #225 sujungimui; po merge patikrinti production deploy ir `/control/` gyvus duomenis.
+
+## 2026-11-15 – Control Center dashboard paskelbtas produkcijoje
+
+- Dashboard PR #225 sujungtas 2026-11-15 13:33:09 UTC, merge commit `e8efb79cc800814f4862d36a2c198cd83c139cb5`.
+- Produkcinis adresas: `https://pettraffic-ai.pages.dev/control/`. Viešas puslapis patikrintas po deploy; patvirtintos architektūros, agentų/atminties, atvirų PR, svetainės puslapių ir įrankių skiltys.
+- Po merge site-check #43719590484 – success; Node `--check`, HTML/SEO/sitemap, compileall ir testų žingsniai success. Po merge Control Center #43719590317 – success.
+- Dashboard rodo GitHub Actions, PR/issue/commit, Worker/D1/Control Core, specialistų būsenas, GA4/GSC agregatus, RSS temų archyvą, Lighthouse run nuorodą, įrankių inventorių ir svetainės puslapių sąrašą. Atnaujinimas kas 5 min.; archyvų cache 30 min.
+- Dashboard yra read-only ir viešas; `noindex,nofollow` nėra autentifikacija. Rodo tik viešus / agreguotus duomenis, nėra secrets ar lankytojų lygmens metrikų; puslapis ne sitemap ir be canonical.
+- Worker CORS leidžia tik oficialų production origin; branch preview Worker būseną žymi kaip CORS apribotą. Production dashboard leidžiamas origin. Worker konfigūracija nekeista.
+- GitHub Actions ir statinio HTML / JS testai patvirtinti. Pilnas realaus naudotojo naršyklės E2E fetch/refresh patikrinimas dar nepatvirtintas; Firecrawl browser bandymas baigėsi timeout, todėl runtime veikimo pilno E2E teiginio nedarome.
+- Produkcija, DNS, Worker/D1, secrets, prieigos ir mokamos paslaugos nekeistos; dashboard veikia read-only.
