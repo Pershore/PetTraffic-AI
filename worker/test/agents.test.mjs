@@ -97,6 +97,27 @@ test("model JSON must contain every required schema field",()=>{
  assert.equal(parseResult('{"status":"reviewed","findings":[],"recommendations":[],"evidence_gaps":[]}').status,"reviewed");
 });
 
+test("model statuses are normalized to the control-core status contract",()=>{
+ const noData=parseResult(JSON.stringify({status:"no data",findings:["There is no verified topic demand."],recommendations:[],evidence_gaps:["No search-volume evidence."]}));
+ assert.equal(noData.status,"needs_evidence");
+ assert.equal(noData.evidence_gaps[0],"No search-volume evidence.");
+ const monitor=parseResult(JSON.stringify({status:"monitor",findings:[],recommendations:[],evidence_gaps:[]}));
+ assert.equal(monitor.status,"needs_evidence");
+ assert.match(monitor.evidence_gaps[0],/needs additional evidence/);
+ const unknown=parseResult(JSON.stringify({status:"observe",findings:[],recommendations:[],evidence_gaps:[]}));
+ assert.equal(unknown.status,"needs_evidence");
+ assert.match(unknown.evidence_gaps[0],/unsupported status/);
+ const completed=parseResult(JSON.stringify({status:"completed",findings:[],recommendations:[],evidence_gaps:[]}));
+ assert.equal(completed.status,"reviewed");
+});
+
+test("model output is bounded to one short item per array",()=>{
+ const result=parseResult(JSON.stringify({status:"reviewed",findings:["first","second"],recommendations:["first","second"],evidence_gaps:["first","second"]}));
+ assert.deepEqual(result.findings,["first"]);
+ assert.deepEqual(result.recommendations,["first"]);
+ assert.deepEqual(result.evidence_gaps,["first"]);
+});
+
 test("invalid specialist output is retained as an evidence gap and does not stop the daily cycle",async()=>{
  const valid=JSON.stringify({status:"reviewed",findings:[],recommendations:[],evidence_gaps:[]});
  const{env,state}=mockEnv({modelResponses:[valid,valid,valid,'{"status":"reviewed"',valid]});
@@ -167,4 +188,4 @@ test("agent cron ignores heartbeat events and missing scheduled timestamps",()=>
 });
 
 
-test("model prompt constrains JSON size to reduce truncated specialist responses",async()=>{let prompt="";const env={AI:{run:async(model,options)=>{prompt=options.input[0].content;return{response:JSON.stringify({status:"reviewed",findings:[],recommendations:[],evidence_gaps:[]})};}}};await callModel(env,"Base role.","Short input");assert.match(prompt,/vieną JSON objektą be Markdown/);assert.match(prompt,/daugiausia po 2 trumpus įrašus/);assert.match(prompt,/iki 160 simbolių/);});
+test("model prompt constrains JSON size to reduce truncated specialist responses",async()=>{let prompt="";const env={AI:{run:async(model,options)=>{prompt=options.input[0].content;return{response:JSON.stringify({status:"reviewed",findings:[],recommendations:[],evidence_gaps:[]})};}}};await callModel(env,"Base role.","Short input");assert.match(prompt,/vieną JSON objektą be Markdown/);assert.match(prompt,/status \(tiksliai „reviewed“ arba „needs_evidence“\)/);assert.match(prompt,/daugiausia po 1 trumpą įrašą/);assert.match(prompt,/iki 120 simbolių/);});
