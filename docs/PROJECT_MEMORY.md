@@ -423,3 +423,10 @@ Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama 
 - PR #217 perkelia vienintelį kasdienį AI ciklą į 13:20 Europe/Vilnius: Cloudflare UTC cron 10:20 ir 11:20, IANA timezone vartai leidžia vieną sezoninį įvykį. Tai po 11:45 LT koordinatoriaus, kuris prireikus atlieka daily-suite catch-up ir D1 sync.
 - Dabartinis run_date idempotency neleidžia antrą kartą vykdyti šiandienos ciklo, todėl naujas grafikas šiandienos jau atlikto ciklo nekartos. Po deploy kitas pilnas ciklas numatytas 2026-11-16 13:20 LT.
 - PR #217 CI ir Worker deploy dar laukia; iki post-deploy cron patikros pakeitimas PARUOŠTA.
+
+
+## 2026-11-15 11:18 LT – kasdienės automatizacijos galutinė seka
+
+- Trys aktyvios automatizacijos: pagrindinis catch-up koordinatorius 11:45 LT; esamas greičio stebėjimo agentas išplėstas post-cycle Worker AI patikra ir perkeltas į 14:00 LT; ARO Vet analitikos stebėjimas lieka 18:24 LT.
+- Nauja automatizacija nesukurta, nes planas leidžia 3 aktyvias užduotis. Post-cycle patikra integruota į esamą greičio agentą, todėl nepadidintas aktyvių užduočių skaičius.
+- 14:00 patikra tikrina 13:20 Worker AI ciklą per Control Center artefaktą; jei nėra sėkmingo report po 13:20, ji gali paleisti tik fiksuotą /pettraffic-run-control-center komandą per savininko bridge. Ji negali rankiniu būdu paleisti Worker AI ar išjungto /v1/tasks API.
