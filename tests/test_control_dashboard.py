@@ -32,8 +32,8 @@ class ControlDashboardTests(unittest.TestCase):
         self.assertIn("api.github.com/repos/", script)
         self.assertIn("/actions/runs?per_page=100", script)
         self.assertIn("/health", script)
-        self.assertNotIn("method:\\"POST\\"", script)
-        self.assertNotIn("method:\\"DELETE\\"", script)
+        self.assertNotIn('method:"POST"', script)
+        self.assertNotIn('method:"DELETE"', script)
         self.assertNotIn("createWorkflowDispatch", script)
 
     def test_dashboard_maps_live_sources_by_name(self):
