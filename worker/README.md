@@ -68,7 +68,7 @@ npm test
 The GitHub PR workflow runs these tests. The deploy workflow runs only when manually dispatched.
 
 
-## Free-plan AI agent orchestration (merged; live run awaiting verification)
+## Free-plan AI agent orchestration (merged; initial live run verified; post-sync schedule update pending)
 
 The internal daily orchestrator uses Cloudflare Workers AI and D1. It is configured for 13:20 Europe/Vilnius year-round: cron triggers at 10:20 and 11:20 UTC, and an IANA timezone gate allows exactly one invocation after the 11:45 coordinator's catch-up/sync and the Control Center grace period.
 
