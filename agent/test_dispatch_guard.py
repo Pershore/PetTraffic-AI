@@ -30,6 +30,9 @@ class DispatchGuardTests(unittest.TestCase):
             "/pettraffic-sync-latest": "sync-latest",
             "/pettraffic-run-control-center": "control-center",
             "/pettraffic-run-lighthouse": "lighthouse",
+            "/pettraffic-run-site-check": "site-check",
+            "/pettraffic-run-connectivity": "connectivity",
+            "/pettraffic-run-worker-diagnostics": "worker-diagnostics",
         }
         self.assertEqual(COMMAND_ACTIONS, expected)
         for command, action in expected.items():

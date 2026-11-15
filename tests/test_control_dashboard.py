@@ -68,6 +68,27 @@ class ControlDashboardTests(unittest.TestCase):
         self.assertIn('core.status==="needs_evidence"||gaps>0||degraded', script)
         self.assertIn('["error","no data","invalid_json","invalid json","failed"]', script)
 
+    def test_command_panel_exposes_only_owner_comment_commands(self):
+        html = DASHBOARD.read_text(encoding="utf-8")
+        script = SCRIPT.read_text(encoding="utf-8")
+        for command in (
+            "/pettraffic-run-daily-suite",
+            "/pettraffic-sync-latest",
+            "/pettraffic-run-control-center",
+            "/pettraffic-run-lighthouse",
+            "/pettraffic-run-site-check",
+            "/pettraffic-run-connectivity",
+            "/pettraffic-run-worker-diagnostics",
+        ):
+            with self.subTest(command=command):
+                self.assertIn(command, html)
+        self.assertIn('id="view-commands"', html)
+        self.assertIn('href="https://github.com/Pershore/PetTraffic&#45;&#65;&#73;/issues/145#new_comment_field"', html)
+        self.assertIn("data-copy-command", html)
+        self.assertIn("navigator.clipboard.writeText", script)
+        self.assertNotIn('method:"POST"', script)
+        self.assertNotIn("createWorkflowDispatch", script)
+
     def test_dashboard_contains_no_secret_values_or_secret_headers(self):
         combined = DASHBOARD.read_text(encoding="utf-8") + SCRIPT.read_text(encoding="utf-8")
         self.assertNotRegex(combined, re.compile(r"\bAI\b"))

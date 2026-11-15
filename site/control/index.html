@@ -21,6 +21,7 @@
     <button class="nav-item active" data-view="overview"><span>◫</span> Apžvalga</button>
     <button class="nav-item" data-view="architecture"><span>⌘</span> Architektūra</button>
     <button class="nav-item" data-view="automations"><span>⟳</span> Automatizacijos</button>
+    <button class="nav-item" data-view="commands"><span>⌁</span> Komandos</button>
     <button class="nav-item" data-view="analytics"><span>▥</span> Analitika ir SEO</button>
     <button class="nav-item" data-view="tools"><span>◇</span> Įrankiai ir prieigos</button>
     <button class="nav-item" data-view="history"><span>≋</span> Vykdymų istorija</button>
@@ -155,6 +156,30 @@
     <div class="section-row"><div><p class="eyebrow">GITHUB ACTIONS + WORKER CRON</p><h2>Automatizacijų valdymas</h2><p class="muted">Grafikai rodo numatytą laiką. „Suplanuota“ būsena patvirtinama tik tikru event=schedule paleidimu.</p></div><a class="text-button" href="https://github.com/Pershore/PetTraffic&#45;&#65;&#73;/actions" target="_blank" rel="noopener">Atverti GitHub Actions ↗</a></div>
     <div class="workflow-grid" id="workflow-grid"><div class="loading-line"></div></div>
     <div class="panel"><div class="panel-heading"><div><p class="eyebrow">PASKUTINIAI 20</p><h2>Vykdymų žurnalas</h2></div><select id="run-filter" aria-label="Filtruoti vykdymus"><option value="all">Visi įvykiai</option><option value="schedule">Tik schedule</option><option value="workflow_dispatch">Tik rankiniai</option><option value="failure">Nesėkmingi</option></select></div><div id="runs-table" class="table-wrap"><div class="loading-line"></div></div></div>
+  </section>
+
+  <section class="view-panel" id="view-commands">
+    <div class="section-row"><div><p class="eyebrow">SAUGUS KOMANDŲ KANALAS</p><h2>Komandų valdymas</h2><p class="muted">Pasirinkta komanda kopijuojama, o vykdymas patvirtinamas GitHub savininko paskyra. Šis viešas puslapis pats komandų nesiunčia.</p></div><a class="text-button" href="https://github.com/Pershore/PetTraffic&#45;&#65;&#73;/issues/145#new_comment_field" target="_blank" rel="noopener">Atverti komandų kanalą ↗</a></div>
+    <div class="command-grid">
+      <article class="command-card"><div><span class="command-kind">DUOMENYS</span><h3>Kasdienis duomenų rinkinys</h3><p>GA4, Search Console, temų radaras ir viešos svetainės patikra.</p><code>/pettraffic-run-daily-suite</code></div><button type="button" class="command-copy" data-copy-command="/pettraffic-run-daily-suite">Kopijuoti komandą</button></article>
+      <article class="command-card"><div><span class="command-kind">SINCHRONIZAVIMAS</span><h3>D1 duomenų sinchronizavimas</h3><p>Sinchronizuoja naujausią sėkmingą rankiniu būdu paleistą daily-suite ataskaitą; dubliuotas įrašas nepridedamas.</p><code>/pettraffic-sync-latest</code></div><button type="button" class="command-copy" data-copy-command="/pettraffic-sync-latest">Kopijuoti komandą</button></article>
+      <article class="command-card"><div><span class="command-kind">DIAGNOSTIKA</span><h3>Centrinė būklės patikra</h3><p>Atnaujina automatizacijų, istorijos ir rekomendacijų ataskaitą.</p><code>/pettraffic-run-control-center</code></div><button type="button" class="command-copy" data-copy-command="/pettraffic-run-control-center">Kopijuoti komandą</button></article>
+      <article class="command-card"><div><span class="command-kind">GREITIS</span><h3>Lighthouse auditas</h3><p>Patikrina penkis pagrindinius puslapius mobiliame ir kompiuterio režimuose. Vykdymas gali užtrukti iki 35 min.</p><code>/pettraffic-run-lighthouse</code></div><button type="button" class="command-copy" data-copy-command="/pettraffic-run-lighthouse">Kopijuoti komandą</button></article>
+      <article class="command-card"><div><span class="command-kind">SVETAINĖ</span><h3>Svetainės ir SEO patikra</h3><p>HTML, nuorodos, metaduomenys, sitemap, robots.txt ir automatizacijų testai.</p><code>/pettraffic-run-site-check</code></div><button type="button" class="command-copy" data-copy-command="/pettraffic-run-site-check">Kopijuoti komandą</button></article>
+      <article class="command-card"><div><span class="command-kind">GOOGLE API</span><h3>GA4 ir Search Console ryšio testas</h3><p>Atskira read-only diagnostika; nepakeičia analitikos ataskaitos.</p><code>/pettraffic-run-connectivity</code></div><button type="button" class="command-copy" data-copy-command="/pettraffic-run-connectivity">Kopijuoti komandą</button></article>
+      <article class="command-card"><div><span class="command-kind">CLOUDFLARE</span><h3>Worker cron diagnostika</h3><p>Tikrina registruotus cron grafikus ir heartbeat. Stebėjimo etapas gali trukti iki 17 min.</p><code>/pettraffic-run-worker-diagnostics</code></div><button type="button" class="command-copy" data-copy-command="/pettraffic-run-worker-diagnostics">Kopijuoti komandą</button></article>
+    </div>
+    <div class="panel command-boundaries">
+      <div class="panel-heading"><div><p class="eyebrow">SAUGUMO RIBOS</p><h2>Kas dar neįjungta</h2></div><span class="state warn">Apsaugota</span></div>
+      <div class="boundary-grid">
+        <div><strong>Worker užduočių eilė</strong><p>Lieka išjungta, kol neįdiegta atskira agentų tapatybė ir autentifikuotas valdymo pultas. Viešas puslapis negali priimti komandų.</p></div>
+        <div><strong>Agentų ciklas</strong><p>Vykdomas pagal Worker grafiką ir vieno ciklo per dieną ribą. Rankinis pakartojimas šios ribos neapeina.</p></div>
+        <div><strong>Produkcijos, DNS ir paslapčių pakeitimai</strong><p>Nėra įprastų komandų sąraše. Jiems reikalingas atskiras aiškus patvirtinimas ir saugi autorizacija.</p></div>
+        <div><strong>Turinio publikavimas</strong><p>Automatinis publikavimas išjungtas. Turinys gali būti parengtas peržiūrai, bet ne publikuojamas be patvirtinimo.</p></div>
+      </div>
+      <p class="muted command-help">Vykdymas: nukopijuok komandą → atverk GitHub issue #145 → įklijuok kaip atskirą komentarą. Priimamos tik tikslios komandos iš savininko paskyros Pershore.</p>
+      <a class="text-button" href="https://github.com/Pershore/PetTraffic&#45;&#65;&#73;/issues/145#new_comment_field" target="_blank" rel="noopener">Atverti saugų komandų kanalą ↗</a>
+    </div>
   </section>
 
   <section class="view-panel" id="view-analytics">
