@@ -89,5 +89,25 @@
     "Nekeisti DNS, Cloudflare teisių ar produkcinės infrastruktūros be atskiro patvirtinimo.",
     "AI rekomendacijos yra patariamosios; modelio išvestys nesuteikia vykdymo teisių."
   ],
-  "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių."
+  "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.",
+  "manual_audits": [
+    {
+      "audited_at": "2026-11-15T13:00:13Z",
+      "type": "manual_audit",
+      "source": "ChatGPT read-only reliability audit",
+      "main_commit": "539e05685e212ae03221e1fe79060e18f0d8af8c",
+      "site_check_run_id": "43716344579",
+      "daily_suite_run_id": "43696960921",
+      "d1_sync_run_id": "43698010982",
+      "control_center_run_id": "43715464297",
+      "lighthouse_run_id": "43699958471",
+      "worker_health_checked_at": "2026-11-15T13:00:13.484Z",
+      "daily_suite_schedule": "missing",
+      "control_center_schedule": "missing",
+      "site_check_schedule": "success",
+      "worker_ai_cycle": "stale",
+      "issue_145": "open",
+      "changes_made": false
+    }
+  ]
 }
