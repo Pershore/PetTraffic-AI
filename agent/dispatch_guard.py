@@ -15,6 +15,9 @@ COMMAND_ACTIONS = {
     "/pettraffic-sync-latest": "sync-latest",
     "/pettraffic-run-control-center": "control-center",
     "/pettraffic-run-lighthouse": "lighthouse",
+    "/pettraffic-run-site-check": "site-check",
+    "/pettraffic-run-connectivity": "connectivity",
+    "/pettraffic-run-worker-diagnostics": "worker-diagnostics",
 }
 
 
