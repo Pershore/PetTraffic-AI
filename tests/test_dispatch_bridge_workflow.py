@@ -15,10 +15,10 @@ class DispatchBridgeWorkflowTests(unittest.TestCase):
 
     def test_bridge_routes_only_four_fixed_workflows(self):
         workflow = Path(".github/workflows/dispatch-daily-suite.yml").read_text(encoding="utf-8")
-        for action in ("daily-suite", "sync-latest", "control-center", "lighthouse"):
+        for action in ("daily-suite", "sync-latest", "control-center", "lighthouse", "site-check", "connectivity", "worker-diagnostics"):
             with self.subTest(action=action):
                 self.assertIn(f'action === "{action}"', workflow)
-        for workflow_id in ("daily-suite.yml", "sync-control-api.yml", "control-center.yml", "lighthouse-audit.yml"):
+        for workflow_id in ("daily-suite.yml", "sync-control-api.yml", "control-center.yml", "lighthouse-audit.yml", "site-check.yml", "analytics-connectivity.yml", "worker-cron-diagnostic.yml"):
             with self.subTest(workflow_id=workflow_id):
                 self.assertIn(f'"{workflow_id}"', workflow)
         self.assertIn("github.rest.actions.createWorkflowDispatch", workflow)
@@ -32,6 +32,9 @@ class DispatchBridgeWorkflowTests(unittest.TestCase):
         workflow = Path(".github/workflows/dispatch-daily-suite.yml").read_text(encoding="utf-8")
         self.assertIn("20 * 60 * 60 * 1000", workflow)
         self.assertIn("60 * 60 * 1000", workflow)
+        self.assertIn("10 * 60 * 1000", workflow)
+        self.assertIn("6 * 60 * 60 * 1000", workflow)
+        self.assertIn("12 * 60 * 60 * 1000", workflow)
         self.assertNotIn("secrets.", workflow)
         self.assertNotIn("curl ", workflow)
 
