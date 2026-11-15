@@ -9,6 +9,7 @@ from typing import Any
 
 EXPECTED_ISSUE = 145
 EXPECTED_USER = "Pershore"
+EXPECTED_COMMAND = "/pettraffic-run-daily-suite"
 COMMAND_ACTIONS = {
     "/pettraffic-run-daily-suite": "daily-suite",
     "/pettraffic-sync-latest": "sync-latest",
