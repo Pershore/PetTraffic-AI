@@ -89,5 +89,64 @@
     "Nekeisti DNS, Cloudflare teisių ar produkcinės infrastruktūros be atskiro patvirtinimo.",
     "AI rekomendacijos yra patariamosios; modelio išvestys nesuteikia vykdymo teisių."
   ],
-  "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių."
+  "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.",
+  "manual_audit": {
+    "checked_at": "2026-11-15T10:17:00Z",
+    "source_commit": "e923a69458cf941fe3aaa3579205b5fb4c242530",
+    "completed": [
+      {
+        "name": "PR #223 AI cycle monitor and Worker cron diagnostic fix",
+        "status": "MERGED",
+        "merge_commit": "e923a69458cf941fe3aaa3579205b5fb4c242530"
+      },
+      {
+        "name": "PR head checks",
+        "status": "PATIKRINTA",
+        "checks": [
+          "Cloudflare Pages success",
+          "Pet traffic site checks success",
+          "Pet traffic central control center success"
+        ]
+      },
+      {
+        "name": "Post-merge checks",
+        "status": "PATIKRINTA",
+        "runs": [
+          "43703245667 site checks success",
+          "43703245663 automatic work log success",
+          "43703245658 Control Center success",
+          "43703281342 D1 sync success"
+        ]
+      }
+    ],
+    "pending": [
+      {
+        "name": "Worker cron D1 heartbeat diagnostic",
+        "status": "VYKDOMA",
+        "run_id": "43703245674",
+        "detail": "Cloudflare schedules API check passed; 15-minute persisted heartbeat observation not yet complete at last check."
+      },
+      {
+        "name": "GitHub daily-suite schedule",
+        "status": "NEPATVIRTINTA",
+        "detail": "No 2026-11-15 event=schedule run found; cron YAML exists, root cause not confirmed."
+      },
+      {
+        "name": "GitHub Control Center schedule",
+        "status": "NEPATVIRTINTA",
+        "detail": "No 2026-11-15 event=schedule run found; cron YAML exists, root cause not confirmed."
+      },
+      {
+        "name": "Next full AI agent cycle and D1 memory verification",
+        "status": "LAUKIA",
+        "due": "2026-11-16T13:20:00+02:00",
+        "detail": "Verify normalized specialist statuses, valid JSON output, recommendations, evidence gaps and persisted D1 memory."
+      }
+    ],
+    "guardrails": [
+      "0 €/mėn. papildomų paslaugų",
+      "ARO Vet, DNS, Worker production, D1 schema, secrets ir viešas turinys nekeisti",
+      "AI agentų rekomendacijos nesuteikia vykdymo teisių"
+    ]
+  }
 }
