@@ -100,3 +100,5 @@ Be factual, concise, and never overstate completion.
 ## Snapshot sync OIDC policy
 - The Worker accepts GitHub OIDC only from the pinned sync-control-api.yml workflow on main, with the immutable repository/owner IDs, exact repository, ref, audience and signed short-lived token.
 - Allowed event names are restricted to workflow_run and workflow_dispatch. Push, schedule, issue_comment and other events remain rejected. Any change requires worker tests, PR review, CI and verified Worker deployment.
+
+- Daily post-cycle verification: the existing performance automation also checks the Worker AI cycle after 13:20 LT at 14:00 LT. Keep the main catch-up coordinator at 11:45 LT; do not create duplicate scheduled tasks.
