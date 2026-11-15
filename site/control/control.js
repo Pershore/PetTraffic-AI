@@ -28,6 +28,7 @@ const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, ch => ({ "
 const dateLT = value => value ? new Intl.DateTimeFormat("lt-LT",{dateStyle:"medium",timeStyle:"short",timeZone:TZ}).format(new Date(value)) : "—";
 const fmt = value => new Intl.NumberFormat("lt-LT",{maximumFractionDigits:0}).format(Number(value)||0);
 const localDate = () => new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
+const localDateOf = value => new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date(value));
 const localMinutes = () => { const p=new Intl.DateTimeFormat("en-GB",{timeZone:TZ,hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(new Date()); return Number(p.find(x=>x.type==="hour").value)*60+Number(p.find(x=>x.type==="minute").value); };
 const statusClass = run => run?.status === "in_progress" || run?.status === "queued" ? "warn" : run?.conclusion === "success" ? "good" : run?.conclusion === "failure" || run?.conclusion === "cancelled" || run?.conclusion === "timed_out" ? "bad" : "unknown";
 const statusText = run => !run ? "Nėra duomenų" : run.status !== "completed" ? (run.status === "in_progress" ? "Vyksta" : "Eilėje") : run.conclusion === "success" ? "Sėkmingas" : run.conclusion === "failure" ? "Nesėkmingas" : run.conclusion || "Baigtas";
@@ -62,13 +63,19 @@ function aiCycleStatus(){
  if(run.status==="failed")return {label:"KLAIDA",cls:"bad",detail:run.error_code||"agentų ciklas nepavyko"};
  if(localMinutes()<13*60+20&&mins<13*60+20)return {label:"LAUKIA",cls:"warn",detail:"Dienos ciklas tikslinis 13:20 LT"};
  if(mins<13*60+20)return {label:"STALE",cls:"bad",detail:"Šiandienos ciklas pradėtas iki 13:20 LT"};
- if(run.status==="completed"&&Number(run.ai_calls)>=5&&run.error_code==null)return {label:"ATLIKTA",cls:"good",detail:"5 agentų kvietimai, klaidos nėra"};
+ if(run.status==="completed"&&Number(run.ai_calls)>=5&&run.error_code==null){
+  const core=state.health?.control_core||{};const gaps=Number(core.evidence_gap_count||0);
+  const specialistStatuses=Object.values(core.specialist_statuses||{}).map(value=>String(value).toLowerCase());
+  const degraded=specialistStatuses.some(value=>["error","no data","invalid_json","invalid json","failed"].includes(value));
+  if(core.status==="needs_evidence"||gaps>0||degraded)return {label:"REIKIA PERŽIŪROS",cls:"warn",detail:"Ciklas baigtas, bet yra "+gaps+" įrodymų spragų arba nepatvirtintų specialistų rezultatų"};
+  return {label:"ATLIKTA",cls:"good",detail:"5 agentų kvietimai, klaidos nėra"};
+ }
  return {label:String(run.status||"Nežinoma").toUpperCase(),cls:"warn",detail:Number(run.ai_calls||0)+" agentų kvietimų"};
 }
 function renderAttention(){
  const items=[];const daily=latestEvent("daily-suite.yml","schedule");const cc=latestEvent("control-center.yml","schedule");const ai=aiCycleStatus();
- if(!daily||new Date(daily.created_at).toDateString()!==new Date().toDateString())items.push({title:"Daily-suite schedule įrodymas",detail:daily?"Paskutinis schedule: "+dateLT(daily.created_at):"Naujausio sąrašo schedule paleidimo nerasta",cls:"warn"});
- if(!cc||new Date(cc.created_at).toDateString()!==new Date().toDateString())items.push({title:"Control Center schedule įrodymas",detail:cc?"Paskutinis schedule: "+dateLT(cc.created_at):"Naujausio sąrašo schedule paleidimo nerasta",cls:"warn"});
+ if(!daily||localDateOf(daily.created_at)!==localDate())items.push({title:"Daily-suite schedule įrodymas",detail:daily?"Paskutinis schedule: "+dateLT(daily.created_at):"Naujausio sąrašo schedule paleidimo nerasta",cls:"warn"});
+ if(!cc||localDateOf(cc.created_at)!==localDate())items.push({title:"Control Center schedule įrodymas",detail:cc?"Paskutinis schedule: "+dateLT(cc.created_at):"Naujausio sąrašo schedule paleidimo nerasta",cls:"warn"});
  if(ai.cls!=="good")items.push({title:"Worker agentų ciklas: "+ai.label,detail:ai.detail,cls:ai.cls});
  const bad=state.runs.filter(r=>r.status==="completed"&&r.conclusion!=="success").slice(0,3);
  bad.forEach(r=>items.push({title:r.name+" · "+r.conclusion,detail:"#"+r.run_number+" · "+dateLT(r.created_at),cls:"bad",url:r.html_url}));
