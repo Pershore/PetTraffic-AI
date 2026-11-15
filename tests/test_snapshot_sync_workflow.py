@@ -5,6 +5,7 @@ import unittest
 class SnapshotSyncWorkflowTests(unittest.TestCase):
     def test_sync_accepts_a_validated_daily_suite_run_input(self):
         workflow = Path(".github/workflows/sync-control-api.yml").read_text(encoding="utf-8")
+        self.assertIn("run-name: \"${{", workflow)
         self.assertIn("workflow_dispatch:", workflow)
         self.assertIn("source_run_id:", workflow)
         self.assertIn("run.workflow_id !== 418322987", workflow)
