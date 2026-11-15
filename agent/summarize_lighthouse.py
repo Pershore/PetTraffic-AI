@@ -128,6 +128,9 @@ def main() -> int:
             print(f"Could not parse {filename}: {exc}", file=sys.stderr)
             return 1
     summary = build_summary(reports)
+    report_path = Path("reports/lighthouse-summary.md")
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.write_text(summary + "\\n", encoding="utf-8")
     summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
     if summary_path:
         with open(summary_path, "a", encoding="utf-8") as output:
