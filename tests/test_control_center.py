@@ -35,6 +35,24 @@ class ControlCenterTests(unittest.TestCase):
         created = self.now - timedelta(hours=age_hours)
         return {"created_at": created.isoformat().replace("+00:00", "Z"), "status": status, "conclusion": conclusion, "html_url": "https://github.com/example/run/1"}
 
+    def test_fetch_runs_excludes_the_current_control_center_run(self):
+        class FakeResponse:
+            def __enter__(self):
+                return self
+            def __exit__(self, *args):
+                return False
+            def read(self):
+                return json.dumps({"workflow_runs": [
+                    {"id": 123, "status": "in_progress"},
+                    {"id": 122, "status": "completed"},
+                ]}).encode("utf-8")
+
+        with patch.dict("os.environ", {"GITHUB_RUN_ID": "123"}):
+            with patch("agent.control_center.urlopen", return_value=FakeResponse()):
+                runs = fetch_runs("control-center.yml")
+
+        self.assertEqual([run["id"] for run in runs], [122])
+
     def test_workflow_schedule_baseline_uses_last_file_commit(self):
         class FakeResponse:
             def __init__(self, payload):
