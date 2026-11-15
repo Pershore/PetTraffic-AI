@@ -334,3 +334,14 @@ Iki 11:40 LT patikrinti Control Center schedule įvykį ir jo ataskaitą. Jei jo
 - **Būsena:** pakeitimai **PARUOŠTA**, CI **PATIKRINTA**. PR #249 dar atviras; šie pakeitimai dar neįdiegti produkcijoje. Realus enqueue → claim → execution → complete → D1 readback ciklas dar **NEPATVIRTINTAS**. Issue #248 lieka atviras iki realaus smoke testo.
 - Viešas `/control/` lieka read-only; privatus grafinis valdymas yra atskiras darbas. Termux lieka pasirenkama vietinė kūrimo aplinka, ne debesijos vykdymo priklausomybė.
 - Kitas konkretus veiksmas: sujungti patikrintą PR #249, patikrinti Worker production deployment ir tik tada atlikti vieną savininko inicijuotą read-only task ciklą bei patvirtinti D1 readback.
+
+
+## 2026-11-15 19:20 LT – pirmas realus debesijos užduoties ciklas PATIKRINTAS
+
+- PR #249 sujungtas į `main`: `69ecef8f54043ce349505053816513bee65a16b3`. Event-driven runner nebenaudoja 15 min. polling ir atskiro `PETTRAFFIC_TASKS_ENABLED` repo kintamojo. Worker `TASK_API_ENABLED=true` diegiamas per `worker/wrangler.toml`; visos task operacijos lieka apsaugotos atskiromis OIDC tapatybėmis.
+- Worker deploy [#43740185093](https://github.com/Pershore/PetTraffic-AI/actions/runs/43740185093) – **PATIKRINTA / success**: Worker testai, Cloudflare validacija, D1 migracijos, Worker production deployment, `/health` D1 + Control Core schema, neautorizuoto `/v1/events` HTTP 401 ir tikrieji cron `*/15 * * * *`, `20 10,11 * * *`.
+- Savininko komanda `/pettraffic-enqueue-site-check` issue #145: bridge [#43740423454](https://github.com/Pershore/PetTraffic-AI/actions/runs/43740423454) – success. Savininko tapatybė ir exact command guard praėjo; D1 grąžino task `92819161-69e2-4c90-a11d-cb8b1a62099a`, runner workflow išsiųstas.
+- GitHub-hosted task runner [#43740434516](https://github.com/Pershore/PetTraffic-AI/actions/runs/43740434516) – **PATIKRINTA / success**. Job žurnalas patvirtina: fixed `agent/check_live_site.py` execution, exit code 0, D1 readback patvirtintas. Live check: 12 vidinių URL, core pages, sitemap, robots.txt, 404 behavior ir 20 permanent retired-article redirects – PASS.
+- Pirmojo etapo realus priėmimo ciklas **enqueue → claim → fixed execution → complete → D1 readback** įvykdytas. Termux nebuvo reikalingas; telefonas nėra serverio priklausomybė.
+- Viešas `/control/` tebėra read-only. Autentifikuoto privataus valdymo sąsaja ir task būsenos rodymas dashboard dar neįgyvendinti; issue #248 paliktas atviras šiai atskirai plėtrai. Issue #145 taip pat lieka atviras dėl kito, atskiro AI agentų / Control Core stale įspėjimo.
+- **Kitas kritinis veiksmas:** 2026-11-16 13:20 Europe/Vilnius patikrinti po-deploy kasdienį Worker AI ciklą: status=completed, 5 kvietimai, error_code=null, specialistų rezultatus ir Control Core D1 memory readback. Iki šio įrodymo AI analizės autonomijos nelaikyti patvirtinta.
