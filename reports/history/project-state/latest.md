@@ -48,3 +48,13 @@ Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas
 - AI rekomendacijos yra patariamosios; modelio išvestys nesuteikia vykdymo teisių.
 
 > Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.
+
+
+## 2026-11-15 – PR #223 sujungimas ir po-merge patikra
+
+- PR #223 sujungtas į `main`, merge commit `e923a69458cf941fe3aaa3579205b5fb4c242530`. Pataisyta AI ciklo tikrinimo riba į 13:20 Europe/Vilnius ir Worker cron diagnostika perkelta nuo Wrangler tail žurnalų prie D1 heartbeat laiko palyginimo.
+- PR head patikros: Cloudflare Pages, `Pet traffic site checks` ir `Pet traffic central control center` – visos success. Po merge `site checks` #43703245667, automatinis darbo žurnalas #43703245663, Control Center #43703245658 ir D1 sync #43703281342 – success.
+- Worker cron diagnostikos run #43703245674 paskutinės patikros metu dar vykdė vieno 15 min. intervalo D1 heartbeat stebėjimą; Cloudflare schedules API konfigūracijos žingsnis – success. Galutinio heartbeat diagnostikos rezultato dar nėra.
+- 2026-11-15 GitHub `event=schedule` paleidimų nerasta nei daily-suite (`10 6 * * *` UTC), nei Control Center (`40 8 * * *` UTC). YAML cron reikšmės patikrintos; workflow failai egzistuoja main šakoje. Tiksli GitHub scheduler priežastis nepatvirtinta, Actions administravimo nustatymų per turimą integraciją perskaityti nepavyko. Jokio repository Actions nustatymo nekeista.
+- Kitas AI ciklas laukiamas 2026-11-16 13:20 LT; statusų normalizavimo ir JSON pataisos realų veikimą reikia vertinti tik po naujo ciklo ir D1 atminties patikros.
+- Saugumo ribos išlaikytos: jokių Worker production, D1 schemos, DNS, secrets, ARO Vet, viešo turinio ar mokamų paslaugų pakeitimų.
