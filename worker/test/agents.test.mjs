@@ -204,10 +204,12 @@ test("heartbeat catch-up opens at 13:20 Vilnius in both winter and summer", () =
 test("daily orchestration waits for a same-day analytics or topic snapshot", async () => {
  const controller = { cron: "*/15 * * * *", scheduledTime: Date.parse("2026-11-15T11:30:00.000Z") };
  const makeEnv = ({existingRun=null,rows=[]}={}) => ({
-  DB: { prepare(sql) { return { bind() { return {
-   first: async () => sql.includes("FROM agent_runs") ? existingRun : null,
-   all: async () => ({results: rows}),
-  }; } }; } },
+  DB: { prepare(sql) {
+   return {
+    bind() { return { first: async () => sql.includes("FROM agent_runs") ? existingRun : null }; },
+    all: async () => ({results: rows}),
+   };
+  } },
  });
  const today = makeEnv({rows:[{kind:"analytics_snapshot",created_at:"2026-11-15T13:51:00.000Z"}]});
  const yesterday = makeEnv({rows:[{kind:"topic_snapshot",created_at:"2026-11-14T13:51:00.000Z"}]});
