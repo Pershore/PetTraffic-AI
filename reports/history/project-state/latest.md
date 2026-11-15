@@ -124,3 +124,10 @@
 - Iki 11:40 LT stebėti Control Center `event=schedule` paleidimą ir jo ataskaitą; issue #145 neuždaryti, kol `recovery_confirmed=true`.
 - Daily-suite priežastis lieka nepatvirtinta: workflow aktyvus, bet suplanuotas ciklas neįvyko po 60 min. grace. GitHub Actions workflow-dispatch veiksmo šiame vykdymo įrankių rinkinyje nėra; nedaryti dirbtinio push/no-op commit ir nevadinti rankinio/push vykdymo schedule įrodymu.
 - Jei iki 11:40 LT Control Center irgi nepasileis, užregistruoti antrą praleistą aktyvaus workflow schedule; reikės GitHub Actions schedule nustatymų / GitHub platformos pusės diagnostikos, kurios šis ryšys tiesiogiai nepateikia.
+
+
+## 10:42 PR #212 dokumentacijos patikros rezultatas
+
+- PR #212 `docs/nov15-live-schedule-status` pakeičia tik `docs/PROJECT_MEMORY.md` ir `docs/PETTRAFFIC_AI_HANDOVER_2026-11-15.md`.
+- GitHub Actions run `43695723083`: `Validate static website and automation code` – **success**; HTML/SEO/sitemap patikra, Python compile ir testų grupės – success; 103 Python testai `OK`.
+- PR #212 mergeable=true, tačiau paliktas **open** pagal taisyklę nevykdyti automatinio PR sujungimo. Dokumentacijos pakeitimai nėra production deploy įrodymas.
