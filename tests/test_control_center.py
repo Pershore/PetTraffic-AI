@@ -20,6 +20,14 @@ class ControlCenterTests(unittest.TestCase):
         self.assertIn('      - "Deploy PetTraffic control API"', workflow)
         self.assertIn("workflow_run:", workflow)
 
+    def test_control_center_is_event_driven_not_a_duplicate_daily_cron(self):
+        with open(".github/workflows/control-center.yml", encoding="utf-8") as stream:
+            workflow = stream.read()
+        self.assertNotIn("  schedule:", workflow)
+        self.assertIn('"Pet traffic daily automation suite"', workflow)
+        control = next(item for item in WORKFLOWS if item[0] == "control-center.yml")
+        self.assertIsNone(control[3])
+
     def setUp(self):
         self.now = datetime(2026, 11, 12, 10, 0, tzinfo=timezone.utc)
 
