@@ -397,3 +397,11 @@ Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama 
 - PR #214 taip pat prideda sync-control-api workflow_dispatch su source_run_id validacija: tik workflow ID 418322987, main šaka, schedule/workflow_dispatch šaltinis, baigtas run ir bent vienas sėkmingas analytics/topic-radar job. Snapshot'ai siunčiami per trumpalaikį GitHub OIDC ir tikrinami readback iš D1.
 - Vienintelė ChatGPT priežiūros automatizacija perkelta į 11:45 Europe/Vilnius, po Control Center 60 min. grace iki 11:40 LT. Ji lieka enabled; dublikatų nesukurta.
 - Būsena: PR #213 **PATIKRINTA**; daily-suite catch-up **PATIKRINTA**; D1 sync ir Control Center manual fallback **PARUOŠTA / LAUKIA PR #214 CI ir realaus bandymo**. Tikras GitHub cron event=schedule vis dar nepatvirtintas.
+
+
+## 2026-11-15 – D1 sync ir Control Center atsarginiai veiksmai (PR #214)
+
+- Saugus bridge išplečiamas trimis tiksliomis komandomis iš savininko Pershore issue #145: /pettraffic-run-daily-suite, /pettraffic-sync-latest, /pettraffic-run-control-center. Kiti vartotojai, PR komentarai, kiti issue ir laisvos komandos atmetamos.
+- Control Center workflow jau palaiko workflow_dispatch; bridge jį iškviečia tik jei nėra neseno schedule / workflow_dispatch vykdymo. Rankinis paleidimas išlieka atskirtas nuo cron būsenos.
+- sync-control-api.yml gauna workflow_dispatch source_run_id; prieš D1 sinchronizaciją GitHub API patvirtina workflow ID 418322987, main branch, source event schedule/workflow_dispatch, completed status ir bent vieną sėkmingą analytics/topic-radar job. Tada parsina tik agreguotus artefaktus, siunčia per trumpalaikį OIDC tokeną ir patikrina D1 readback.
+- PR #214 laukia CI. Po merge reikia paleisti /pettraffic-sync-latest, patikrinti D1 write/readback, tada /pettraffic-run-control-center ir patikrinti issue #145 bei control-center artefaktą.
