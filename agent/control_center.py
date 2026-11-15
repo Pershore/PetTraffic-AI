@@ -19,7 +19,9 @@ WORKFLOWS = [
     ("daily-suite.yml", "GA4, temų radaras ir svetainės stebėjimas", 36, {"frequency": "daily", "hour": 6, "minute": 10, "grace_minutes": 60}),
     ("sync-control-api.yml", "Centrinės API sinchronizavimas", 36, None),
     ("lighthouse-audit.yml", "Lighthouse auditas", 9 * 24, {"frequency": "weekly", "weekday": 0, "hour": 7, "minute": 27, "grace_minutes": 60}),
-    ("control-center.yml", "Centrinis valdymo centras", 36, {"frequency": "daily", "hour": 8, "minute": 40, "grace_minutes": 60}),
+    # This workflow is event-driven: it runs after daily-suite, Lighthouse and Worker deploy.
+    # Do not monitor a second, redundant cron for the same control-center report.
+    ("control-center.yml", "Centrinis valdymo centras", 36, None),
 ]
 
 def parse_time(value: str) -> datetime:

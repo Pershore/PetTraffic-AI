@@ -89,7 +89,7 @@ function renderWorkflowSummary(){
  $("workflow-summary").innerHTML=selected.map(file=>{const d=workflowDefinitions.find(x=>x.file===file);const r=latestFor(file);return '<div class="workflow-row"><div><strong>'+escapeHtml(d?.title||file)+'</strong><small>'+(r?escapeHtml(r.event)+" · "+escapeHtml(dateLT(r.created_at)):"Vykdymo nėra")+'</small></div>'+badge(statusText(r),statusClass(r))+'</div>';}).join("");
  $("workflow-grid").innerHTML=workflowDefinitions.map(d=>{
  const r=latestFor(d.file);const schedule=latestEvent(d.file,"schedule");
- const isScheduled=["site-check.yml","daily-suite.yml","control-center.yml","lighthouse-audit.yml"].includes(d.file);
+ const isScheduled=["site-check.yml","daily-suite.yml","lighthouse-audit.yml"].includes(d.file);
  const schedText=isScheduled?(schedule?"Paskutinis schedule: "+dateLT(schedule.created_at):"Schedule įrodymo sąraše nėra"):"Grafikas pagal workflow konfigūraciją";
  return '<article class="workflow-card"><h3>'+escapeHtml(d.title)+'</h3><p>'+escapeHtml(d.desc)+'</p><p><b>Numatyta:</b> '+escapeHtml(d.cadence)+'</p><div class="workflow-meta">'+badge(statusText(r),statusClass(r))+(isScheduled?badge(schedule?"schedule rastas":"schedule nepatvirtintas",schedule?"good":"warn"):badge("workflow", "unknown"))+'</div><p>Latest: '+escapeHtml(r?dateLT(r.created_at):"nėra vykdymo")+' · '+escapeHtml(r?.event||"—")+'</p><a href="https://github.com/'+REPO+'/actions/workflows/'+encodeURIComponent(d.file)+'" target="_blank" rel="noopener">Atverti workflow ↗</a>'+(r?' · <a href="'+escapeHtml(r.html_url)+'" target="_blank" rel="noopener">Run #'+escapeHtml(r.run_number)+' ↗</a>':"")+'</article>';
  }).join("");
