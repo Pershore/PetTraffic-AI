@@ -5,13 +5,18 @@ from __future__ import annotations
 from html.parser import HTMLParser
 from urllib.error import HTTPError, URLError
 from urllib.parse import urljoin, urlparse
-from urllib.request import Request, urlopen
+from urllib.request import Request, urlopen, HTTPRedirectHandler, build_opener
 import sys
 import xml.etree.ElementTree as ET
 
 BASE = "https://pettraffic-ai.pages.dev"
 TIMEOUT = 18
 USER_AGENT = "PetTrafficSiteMonitor/1.0 (+https://pettraffic-ai.pages.dev/)"
+
+try:
+    from .validate_site import REQUIRED_RETIRED_ARTICLE_REDIRECTS
+except ImportError:  # Running this file directly from the agent/ directory.
+    from validate_site import REQUIRED_RETIRED_ARTICLE_REDIRECTS
 
 
 class Links(HTMLParser):
@@ -38,6 +43,26 @@ def fetch(url: str) -> tuple[int, str, str]:
         return exc.code, body, exc.geturl()
     except (URLError, TimeoutError, OSError) as exc:
         return 0, "", str(exc)
+
+
+class NoRedirectHandler(HTTPRedirectHandler):
+    """Return the first redirect response so the monitor can verify its status."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+def fetch_redirect(url: str) -> tuple[int, str]:
+    """Fetch one URL without following redirects; return HTTP status and Location."""
+    request = Request(url, headers={"User-Agent": USER_AGENT})
+    opener = build_opener(NoRedirectHandler())
+    try:
+        with opener.open(request, timeout=TIMEOUT) as response:
+            return response.status, response.headers.get("Location", "")
+    except HTTPError as exc:
+        return exc.code, exc.headers.get("Location", "")
+    except (URLError, TimeoutError, OSError):
+        return 0, ""
 
 
 def main() -> int:
@@ -100,6 +125,20 @@ def main() -> int:
         elif status >= 400 and status not in {403, 429}:
             warnings.append(f"External source returned HTTP {status}: {url}")
 
+    # Verify the deployed Cloudflare Pages redirects, not just the static file.
+    for source, destination in REQUIRED_RETIRED_ARTICLE_REDIRECTS.items():
+        source_url = BASE + source
+        expected_location = BASE + ("/" if destination == "/" else destination)
+        redirect_status, raw_location = fetch_redirect(source_url)
+        actual_location = urljoin(source_url, raw_location) if raw_location else ""
+        if redirect_status != 301:
+            failures.append(f"Retired article URL should return HTTP 301, got {redirect_status}: {source}")
+        elif actual_location != expected_location:
+            failures.append(
+                f"Retired article redirect points to {actual_location or 'no Location header'}, "
+                f"expected {expected_location}: {source}"
+            )
+
     missing_url = BASE + "/pettraffic-monitor-expected-404"
     missing_status, missing_body, _ = fetch(missing_url)
     if missing_status != 404:
@@ -121,7 +160,7 @@ def main() -> int:
         for item in failures:
             print(f" - {item}")
         return 1
-    print("LIVE SITE CHECK PASSED: core pages, internal links, sitemap, robots.txt and 404 behavior.")
+    print("LIVE SITE CHECK PASSED: core pages, internal links, sitemap, robots.txt, 404 behavior and 20 permanent retired-article redirects.")
     return 0
 
 
