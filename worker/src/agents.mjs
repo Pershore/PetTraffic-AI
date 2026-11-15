@@ -72,6 +72,7 @@ export function parseResult(raw) {
  const strings=k=>value[k].filter(x=>typeof x==="string").slice(0,1).map(x=>x.slice(0,120));
  const evidence_gaps=strings("evidence_gaps");
  if(!statusAliases[rawStatus]) evidence_gaps.unshift("Model returned an unsupported status; normalized to needs_evidence.");
+ if(status==="needs_evidence"&&evidence_gaps.length===0) evidence_gaps.push("Specialist needs additional evidence; no specific gap was returned.");
  return {status,findings:strings("findings"),recommendations:strings("recommendations"),evidence_gaps:evidence_gaps.slice(0,2),requires_human_approval:true};
 }
 function isUsableModelResult(result) {
