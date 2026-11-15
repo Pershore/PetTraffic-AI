@@ -111,7 +111,7 @@ jobs:
               for item in schedule_payload.get("result", {}).get("schedules", [])
               if item.get("cron")
           })
-          expected_crons = {"*/15 * * * *", "20 7,8 * * *"}
+          expected_crons = {"*/15 * * * *", "20 10,11 * * *"}
           missing_crons = sorted(expected_crons - set(actual_crons))
           if missing_crons:
               print("BLOCKED: Expected Worker Cron Trigger schedules are missing: " + ", ".join(missing_crons))

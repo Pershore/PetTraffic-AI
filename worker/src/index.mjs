@@ -30,6 +30,31 @@ function response(data, status = 200, origin = null) {
   return new Response(JSON.stringify(data), { status, headers });
 }
 
+function summarizeEvidenceGapCategories(decision) {
+  const categories = {
+    model_output: 0,
+    source_data: 0,
+    source_unavailable: 0,
+    insufficient_evidence: 0,
+    other: 0,
+  };
+  for (const gap of Array.isArray(decision?.evidence_gaps) ? decision.evidence_gaps : []) {
+    const value = typeof gap === "string" ? gap.toLowerCase() : "";
+    let category = "other";
+    if (/invalid json|model output|model response|workers ai|specialist result/.test(value)) {
+      category = "model_output";
+    } else if (/analytics_snapshot|topic_snapshot|control_center_snapshot|recommendation_snapshot|snapshot|event payload/.test(value)) {
+      category = "source_data";
+    } else if (/unavailable|not found|http \d{3}|fetch failed|could not fetch|status 0/.test(value)) {
+      category = "source_unavailable";
+    } else if (/insufficient|not enough|missing|no data|evidence|source/.test(value)) {
+      category = "insufficient_evidence";
+    }
+    categories[category] += 1;
+  }
+  return Object.fromEntries(Object.entries(categories).filter(([, count]) => count > 0));
+}
+
 function safeObject(value, depth = 0) {
   if (!value || typeof value !== "object" || Array.isArray(value) || depth > 6) return false;
   for (const [key, child] of Object.entries(value)) {
@@ -194,11 +219,19 @@ async function handle(request, env) {
         decision_json_status: decisionJsonStatus,
         recommendation_count: Array.isArray(decision?.recommendations) ? decision.recommendations.length : 0,
         evidence_gap_count: Array.isArray(decision?.evidence_gaps) ? decision.evidence_gaps.length : 0,
+        specialist_statuses: decision?.specialist_statuses && typeof decision.specialist_statuses === "object"
+          ? Object.fromEntries(Object.entries(decision.specialist_statuses)
+            .filter(([id, status]) => ALLOWED_AGENTS.has(id) && typeof status === "string")
+            .map(([id, status]) => [id, status.slice(0, 40)]))
+          : {},
+        evidence_gap_categories: summarizeEvidenceGapCategories(decision),
         memory_status: controlCoreMemory ? "present" : "missing",
         memory_updated_at: controlCoreMemory?.updated_at || null,
       } : {
         status: "not_started",
         decision_json_status: decisionJsonStatus,
+        specialist_statuses: {},
+        evidence_gap_categories: {},
         memory_status: controlCoreMemory ? "present" : "missing",
         memory_updated_at: controlCoreMemory?.updated_at || null,
       };
