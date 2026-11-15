@@ -14,7 +14,7 @@ class DispatchBridgeWorkflowTests(unittest.TestCase):
 
     def test_bridge_dispatches_only_the_existing_main_daily_suite(self):
         workflow = Path(".github/workflows/dispatch-daily-suite.yml").read_text(encoding="utf-8")
-        self.assertIn('workflow_id: "daily-suite.yml"', workflow)
+        self.assertIn('const workflow_id = "daily-suite.yml"', workflow)
         self.assertIn('ref: "main"', workflow)
         self.assertIn("github.rest.actions.createWorkflowDispatch", workflow)
         self.assertIn('["schedule", "workflow_dispatch"]', workflow)
