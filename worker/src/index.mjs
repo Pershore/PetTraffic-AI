@@ -45,7 +45,7 @@ function summarizeEvidenceGapCategories(decision) {
       category = "model_output";
     } else if (/analytics_snapshot|topic_snapshot|control_center_snapshot|recommendation_snapshot|snapshot|event payload/.test(value)) {
       category = "source_data";
-    } else if (/unavailable|not found|http \\d{3}|fetch failed|could not fetch|status 0/.test(value)) {
+    } else if (/unavailable|not found|http \d{3}|fetch failed|could not fetch|status 0/.test(value)) {
       category = "source_unavailable";
     } else if (/insufficient|not enough|missing|no data|evidence|source/.test(value)) {
       category = "insufficient_evidence";
