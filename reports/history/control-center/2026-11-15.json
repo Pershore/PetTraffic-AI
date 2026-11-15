@@ -882,6 +882,55 @@
           "created_at": null
         }
       ]
+    },
+    {
+      "run_id": "43721654764",
+      "generated_at": "2026-11-15T13:57:00.372501+00:00",
+      "needs_attention": true,
+      "results": [
+        {
+          "name": "GA4, temų radaras ir svetainės stebėjimas",
+          "state": "success",
+          "detail": "Paskutinis paleidimas sėkmingas.",
+          "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43721211747",
+          "created_at": "2026-11-15T13:51:47Z"
+        },
+        {
+          "name": "Centrinės API sinchronizavimas",
+          "state": "success",
+          "detail": "Paskutinis paleidimas sėkmingas.",
+          "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43721348795",
+          "created_at": "2026-11-15T13:53:20Z"
+        },
+        {
+          "name": "Lighthouse auditas",
+          "state": "waiting",
+          "detail": "Workflow atnaujintas 2026-11-13 12:09 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.",
+          "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43721314230",
+          "created_at": "2026-11-15T13:52:56Z"
+        },
+        {
+          "name": "Centrinis valdymo centras",
+          "state": "warning",
+          "detail": "Suplanuotas ciklas nuo 2026-11-15 08:40 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-14T15:18:42Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.",
+          "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43721654764",
+          "created_at": "2026-11-15T13:56:50Z"
+        },
+        {
+          "name": "Cloudflare Worker + D1",
+          "state": "success",
+          "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 11 min.",
+          "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
+          "created_at": null
+        },
+        {
+          "name": "AI agentai + control-core atmintis",
+          "state": "stale",
+          "detail": "Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-15.",
+          "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
+          "created_at": null
+        }
+      ]
     }
   ]
 }
