@@ -7,6 +7,7 @@ on:
       - "Pet traffic daily automation suite"
       - "Pet traffic Lighthouse audits"
       - "Deploy PetTraffic control API"
+      - "Pet traffic Worker cron diagnostics"
     types: [completed]
     branches: [main]
   push:
