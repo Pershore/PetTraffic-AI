@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "project": "PetTraffic AI",
-  "generated_at": "2026-11-15T12:45:48.093025+00:00",
-  "run_id": "43715464297",
-  "source_commit": "682a2b4de2bc03546d3277b4aa8b2a1058399fe9",
+  "generated_at": "2026-11-15T13:33:18.024869+00:00",
+  "run_id": "43719590317",
+  "source_commit": "e8efb79cc800814f4862d36a2c198cd83c139cb5",
   "overall_status": "needs_attention",
   "last_verified_stage": "Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataskaitoje.",
   "next_action": "Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas (warning). Suplanuotas ciklas nuo 2026-11-15 06:10 UTC dar neįvykdytas; suplanuotų paleidimų istorijoje nėra. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.",
@@ -18,7 +18,7 @@
     {
       "name": "Cloudflare Worker + D1",
       "state": "success",
-      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 0 min.",
+      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 3 min.",
       "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
       "created_at": null
     }
@@ -35,8 +35,8 @@
       "name": "Centrinis valdymo centras",
       "state": "warning",
       "detail": "Suplanuotas ciklas nuo 2026-11-15 08:40 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-14T15:18:42Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43715464297",
-      "created_at": "2026-11-15T12:45:32Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43719590317",
+      "created_at": "2026-11-15T13:33:11Z"
     },
     {
       "name": "AI agentai + control-core atmintis",
@@ -51,8 +51,8 @@
       "name": "Lighthouse auditas",
       "state": "waiting",
       "detail": "Workflow atnaujintas 2026-11-13 12:09 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43699958471",
-      "created_at": "2026-11-15T09:35:11Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43719590331",
+      "created_at": "2026-11-15T13:33:11Z"
     }
   ],
   "ai_agent_memory_check": {
@@ -89,47 +89,5 @@
     "Nekeisti DNS, Cloudflare teisių ar produkcinės infrastruktūros be atskiro patvirtinimo.",
     "AI rekomendacijos yra patariamosios; modelio išvestys nesuteikia vykdymo teisių."
   ],
-  "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.",
-  "manual_audits": [
-    {
-      "audited_at": "2026-11-15T13:00:13Z",
-      "type": "manual_audit",
-      "source": "ChatGPT read-only reliability audit",
-      "main_commit": "539e05685e212ae03221e1fe79060e18f0d8af8c",
-      "site_check_run_id": "43716344579",
-      "daily_suite_run_id": "43696960921",
-      "d1_sync_run_id": "43698010982",
-      "control_center_run_id": "43715464297",
-      "lighthouse_run_id": "43699958471",
-      "worker_health_checked_at": "2026-11-15T13:00:13.484Z",
-      "daily_suite_schedule": "missing",
-      "control_center_schedule": "missing",
-      "site_check_schedule": "success",
-      "worker_ai_cycle": "stale",
-      "issue_145": "open",
-      "changes_made": false,
-      "docs_pr_number": 224,
-      "docs_pr_ci_run_id": "43717915888",
-      "docs_pr_ci_conclusion": "success",
-      "cloudflare_preview_conclusion": "success",
-      "production_deploy_changed": false
-    },
-    {
-      "audited_at": "2026-11-15T13:32:00Z",
-      "type": "manual_implementation_audit",
-      "source": "ChatGPT dashboard implementation verification",
-      "pr_number": 225,
-      "branch": "feature/live-control-dashboard",
-      "head_commit": "56b92ae68b185272226c1dd72cc8adcf9a6849f0",
-      "site_check_run_id": "43719429088",
-      "site_check_conclusion": "success",
-      "cloudflare_pages_preview": "success",
-      "preview_url": "https://feature-live-control-dashboa.pettraffic-ai.pages.dev/control/",
-      "production_deployed": false,
-      "merged": false,
-      "worker_preview_cors_restricted": true,
-      "cloudflare_pages_conclusion": "success",
-      "preview_verified_at": "2026-11-15T13:32:00Z"
-    }
-  ]
+  "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių."
 }
