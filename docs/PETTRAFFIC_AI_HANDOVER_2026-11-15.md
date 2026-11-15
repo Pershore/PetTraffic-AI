@@ -167,3 +167,12 @@ Iki 11:40 LT patikrinti Control Center schedule įvykį ir jo ataskaitą. Jei jo
 - Ekrano kopijoje **Workflow permissions** skiltis nematoma, todėl numatytųjų `GITHUB_TOKEN` teisių reikšmė nepatvirtinta. Ankstesnis 401 per GitHub integraciją lieka galiojantis apribojimas skaityti repo Actions administravimo nustatymus.
 - `daily-suite.yml`, `control-center.yml` ir `site-check.yml` patikrinti tiesiogiai `main` šakoje: cron įrašai yra, `workflow_dispatch` yra. `control-center.yml` turi aiškias job teises (`contents: write`, `actions: read`, `issues: write`); tai nepakeičia patikros dėl GitHub schedule įvykių.
 - Išvada: Actions policy apribojimas atmestas kaip tikėtina priežastis; suplanuotų paleidimų dingimo priežastis **dar nenustatyta**. Jokių nustatymų ar produkcinių sistemų nekeista.
+
+## 2026-11-15 – gyvo Control Center dashboard kūrimas
+
+- Sukurtas atskiras puslapis `site/control/index.html` su atskiru CSS/JS, architektūros žemėlapiu, GitHub workflow kortelėmis, run istorija, GA4/GSC agregatais, Lighthouse nuorodomis, įrankių ir prieigų inventoriumi.
+- Gyvi šaltiniai: GitHub REST, Worker `/health`, viešos svetainės HEAD, `automation-history` analytics/topic agregatai. Atnaujinimas kas 5 min.; GitHub REST užklausų skaičius sumažintas, istorijos archyvai cache'inami.
+- Viešas dashboard `noindex,nofollow`, neįtraukiamas į sitemap ir neturi canonical. Svarbu: noindex nėra prieigos kontrolė; puslapis viešas, todėl rodomi tik agreguoti / vieši duomenys.
+- Puslapis yra read-only: jokių workflow dispatch, API POST, secrets ar production pakeitimų. Worker `/v1/tasks*` lieka išjungtas. ChatGPT automatikų būsena ir Termux shell nėra tiesiogiai skaitomi.
+- Sukurtas regresijos testas dashboard privatumo / noindex / read-only riboms; site-check papildomas `node --check` JS sintaksei. CI rezultatas dar laukiamas.
+- Šaka `feature/live-control-dashboard`; production nepublikuota iki PR patikrų ir atskiro merge.
