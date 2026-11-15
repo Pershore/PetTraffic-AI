@@ -631,3 +631,14 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 - Realus priėmimo testas enqueue → claim → execution → complete → D1 readback **PATIKRINTAS**. Termux nenaudotas. Viešas `/control/` lieka read-only; privatus dashboard ir task statuso rodymas dar laukia.
 - Šios sesijos aktyvus darbo laikas ir bendras įrankių vykdymimo laikas – NEMATUOTA.
 - Likęs kritinis atskiras etapas: po-deploy Worker AI / Control Core kasdienio ciklo patikra 2026-11-16 13:20 Europe/Vilnius; šiuo metu issue #145 rodo stale AI agentų atminties ciklą.
+
+
+## 2026-11-15 – ARO Vet krypties atkūrimas ir savaitinės augimo peržiūros įgyvendinimas
+
+- Prieš keitimą perskaityti pagrindiniai tęstinumo failai iš teisingų šakų: AGENTS.md, docs/SESSION_START.md, docs/PROJECT_MEMORY.md, automation-history/reports/history/project-state/latest.md, main/reports/work-log/README.md ir naujausias handover. Patikrinta saugykla, naujausi PR / commit ir aktualios Actions būsenos.
+- Vartotojas panaikino ankstesnį draudimą naudoti ARO Vet Vaistinės turinį. Projektų taisyklėse atkurtas leidimas naudoti viešą produktų informaciją, aprašymus, nuotraukas ir tiesiogines produktų nuorodas Pet traffic viduje, kai produktas aktualus. ARO Vet svetainė, kodas, DNS, paskyros ir infrastruktūra neliečiami; Pet traffic lieka nepriklausomas prekės ženklas; viešo turinio publikavimui būtinas vartotojo patvirtinimas.
+- Sukurta šaka feat/weekly-growth-review-and-arovet-source nuo main commit 181cb250e8cc47f6ff277d88fd7a109829a1b134.
+- Pradėta įgyvendinti savaitinė augimo analizė: GA4 / Search Console lyginamieji rodikliai ir puslapių agregatai, privatumo požiūriu apibendrintos paieškų temų grupės, RSS temų signalas, Lighthouse balų / Web Vitals istorija, Control Center / Worker AI būklė ir trys įrodymais pagrįsti veiksmai. Naujas GitHub Actions grafikas – pirmadienį 18:30 UTC; papildomų mokamų AI kvietimų ar ChatGPT grafikų nėra.
+- Search Console frazės klasifikuojamos atmintyje, bet neįrašomos į ilgalaikę istoriją ar viešą kasdienę ataskaitą. Pašalinami puslapių URL query parametrai. Trūkstami rodikliai rodomi kaip „duomenų nėra“, o ne nulis.
+- PR / CI patikros šiame darbo įraše bus papildytos tik gavus tikrus GitHub Actions rezultatus. Šiuo momentu PR, testų ir pirmojo suplanuoto weekly run būsena dar nepatvirtinta.
+- Nekeisti viešas Pet traffic turinys, ARO Vet svetainė, Worker/D1 produkcija, DNS, secrets, Cloudflare paskyros teisės, billing ar mokamos paslaugos. Aktyvaus darbo ir vartotojo laikas NEMATUOTAS.
