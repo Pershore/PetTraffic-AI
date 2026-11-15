@@ -545,3 +545,13 @@ Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama 
 - Vieno paleidimo per dieną apsauga išlieka per esamą agent_runs unikalų run_date; /v1/tasks* neišjungiama iš saugaus 503 režimo ir neįjungiamas savavališkas veiksmų vykdymas.
 - **PATIKRINTA PR CI:** Worker Node testai 63/63, Worker Python testai 6/6; Cloudflare prieigos validacija success, deploy job skipped. Site-check: 9 HTML puslapių, compileall, 22 agent testai, 134 bendri testai – success. Sync PR testai – success.
 - **LAUKIA:** PR nesujungtas, Worker produkcijoje neįdiegtas. PR sujungimas paleistų automatinį Worker production deploy. Kitas etapas – atskiras vartotojo leidimas sujungti / diegti, tada tikras runtime bandymas ir D1 atminties readback.
+
+
+## 2026-11-15 – Worker diagnostikos perdavimas Centriniam valdymo centrui
+
+- Po PR #240 Worker deploy [#43730905048](https://github.com/Pershore/PetTraffic-AI/actions/runs/43730905048) ir cron diagnostika [#43730968913](https://github.com/Pershore/PetTraffic-AI/actions/runs/43730968913) patvirtino Worker/D1/Control Core, site ir 15 min. heartbeat. Heartbeat pažengė nuo 2026-11-15T15:30:13.536Z iki 15:45:13.608Z.
+- Nustatyta ataskaitų grandinės spraga: Control Center paleidžiamas po Worker deploy, bet neklausė vėliau pasibaigiančios „Pet traffic Worker cron diagnostics“ workflow. Todėl pirmoji ataskaita galėjo būti sugeneruota prieš heartbeat patikrą, o vėlesnis jos rezultatas nepatekdavo į naujausią automation-history snapshot ir issue #145.
+- PARUOŠTA PR: Control Center dabar turėtų perskaičiuoti būseną po cron diagnostikos. Pridėtas regresijos testas, atnaujintos orkestravimo instrukcijos.
+- AI ciklas šiandien nekartojamas: jau yra šios UTC dienos agent_runs įrašas, todėl vieno ciklo per dieną / 5 AI kvietimų riba lieka apsaugota. Pirmas naujas po-deploy ciklas laukiamas 2026-11-16 13:20 Europe/Vilnius; tuomet privaloma patikrinti agentų išvestis ir D1 memory readback.
+- Automation-history latest.md sąmoningai neatnaujinamas iki tikro Control Center vykdymo po šios pataisos sujungimo; dabartinis snapshot rodo ankstesnį stale nustatymą.
+- Saugumo ribos nekeičiamos: Worker /v1/tasks* lieka 503; nėra AI rankinio/perteklinio paleidimo, DNS/secret/permissions pakeitimų, ARO Vet pakeitimų, viešo turinio publikavimo ar mokamų paslaugų.

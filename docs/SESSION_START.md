@@ -144,3 +144,13 @@ Tikras bootstrap iš Termux patvirtintas: Linux proot, Git, GitHub CLI, Codex CL
 - Catch-up kodas dabar **įdiegtas produkcijoje**, bet jo realus pirmasis AI ciklas ir Control Core/D1 memory readback dar **LAUKIA** vėlesnio heartbeat vykdymo. Naujausia automation-history būsena #43730968824 fiksavo stale būseną prieš šio naujo ciklo patvirtinimą; jos nelaikyti klaidinga ar sėkmingu agentų ciklu.
 - Saugumo ribos išlaikytos: `/v1/tasks*` lieka 503, nėra savavališko užduočių vykdymo; nekeisti DNS, Worker secrets/permissions, ARO Vet, viešo turinio, billing ar mokamų paslaugų.
 - **Kitas konkretus veiksmas:** po artimiausio 15 min. heartbeat patikrinti /health `agent_orchestration`, specialistų būsenas, Control Core spragų skaičių ir `memory_updated_at`; jei ciklas dar nepasileido, nustatyti, ar tos pačios LT dienos snapshot įrašai yra D1.
+
+
+## 2026-11-15 – Worker diagnostikos perdavimas Centriniam valdymo centrui
+
+- Po PR #240 Worker deploy [#43730905048](https://github.com/Pershore/PetTraffic-AI/actions/runs/43730905048) ir cron diagnostika [#43730968913](https://github.com/Pershore/PetTraffic-AI/actions/runs/43730968913) patvirtino Worker/D1/Control Core, site ir 15 min. heartbeat. Heartbeat pažengė nuo 2026-11-15T15:30:13.536Z iki 15:45:13.608Z.
+- Nustatyta ataskaitų grandinės spraga: Control Center paleidžiamas po Worker deploy, bet neklausė vėliau pasibaigiančios „Pet traffic Worker cron diagnostics“ workflow. Todėl pirmoji ataskaita galėjo būti sugeneruota prieš heartbeat patikrą, o vėlesnis jos rezultatas nepatekdavo į naujausią automation-history snapshot ir issue #145.
+- PARUOŠTA PR: Control Center dabar turėtų perskaičiuoti būseną po cron diagnostikos. Pridėtas regresijos testas, atnaujintos orkestravimo instrukcijos.
+- AI ciklas šiandien nekartojamas: jau yra šios UTC dienos agent_runs įrašas, todėl vieno ciklo per dieną / 5 AI kvietimų riba lieka apsaugota. Pirmas naujas po-deploy ciklas laukiamas 2026-11-16 13:20 Europe/Vilnius; tuomet privaloma patikrinti agentų išvestis ir D1 memory readback.
+- Automation-history latest.md sąmoningai neatnaujinamas iki tikro Control Center vykdymo po šios pataisos sujungimo; dabartinis snapshot rodo ankstesnį stale nustatymą.
+- Saugumo ribos nekeičiamos: Worker /v1/tasks* lieka 503; nėra AI rankinio/perteklinio paleidimo, DNS/secret/permissions pakeitimų, ARO Vet pakeitimų, viešo turinio publikavimo ar mokamų paslaugų.
