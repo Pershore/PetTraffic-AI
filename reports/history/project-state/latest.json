@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "project": "PetTraffic AI",
-  "generated_at": "2026-11-15T09:46:38.707759+00:00",
-  "run_id": "43700841420",
-  "source_commit": "4b70c54df32cdd5f8ca77f731b5b29c52dd88d75",
+  "generated_at": "2026-11-15T10:16:17.089212+00:00",
+  "run_id": "43703245658",
+  "source_commit": "e923a69458cf941fe3aaa3579205b5fb4c242530",
   "overall_status": "needs_attention",
   "last_verified_stage": "Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataskaitoje.",
   "next_action": "Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas (warning). Suplanuotas ciklas nuo 2026-11-15 06:10 UTC dar neįvykdytas; suplanuotų paleidimų istorijoje nėra. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.",
@@ -12,8 +12,8 @@
       "name": "Centrinės API sinchronizavimas",
       "state": "success",
       "detail": "Paskutinis paleidimas sėkmingas.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43700805599",
-      "created_at": "2026-11-15T09:45:54Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43700887621",
+      "created_at": "2026-11-15T09:46:58Z"
     },
     {
       "name": "Cloudflare Worker + D1",
@@ -35,15 +35,8 @@
       "name": "Centrinis valdymo centras",
       "state": "warning",
       "detail": "Suplanuotas ciklas nuo 2026-11-15 08:40 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-14T15:18:42Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43700841420",
-      "created_at": "2026-11-15T09:46:22Z"
-    },
-    {
-      "name": "AI agentai + control-core atmintis",
-      "state": "warning",
-      "detail": "AI agentų ciklas ir atminties įrašymas baigti; rekomendacijų: 2; trūksta įrodymų: 8.",
-      "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
-      "created_at": null
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43703245658",
+      "created_at": "2026-11-15T10:16:08Z"
     }
   ],
   "pending_checks": [
@@ -53,12 +46,19 @@
       "detail": "Workflow atnaujintas 2026-11-13 12:09 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.",
       "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43699958471",
       "created_at": "2026-11-15T09:35:11Z"
+    },
+    {
+      "name": "AI agentai + control-core atmintis",
+      "state": "waiting",
+      "detail": "Paskutinis AI agentų ciklas dar neįvyko 13:20 Lietuvos laiku lange; laukiama šiandienos suplanuoto ciklo.",
+      "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
+      "created_at": null
     }
   ],
   "ai_agent_memory_check": {
     "name": "AI agentai + control-core atmintis",
-    "state": "warning",
-    "detail": "AI agentų ciklas ir atminties įrašymas baigti; rekomendacijų: 2; trūksta įrodymų: 8.",
+    "state": "waiting",
+    "detail": "Paskutinis AI agentų ciklas dar neįvyko 13:20 Lietuvos laiku lange; laukiama šiandienos suplanuoto ciklo.",
     "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
     "created_at": null
   },
@@ -89,108 +89,5 @@
     "Nekeisti DNS, Cloudflare teisių ar produkcinės infrastruktūros be atskiro patvirtinimo.",
     "AI rekomendacijos yra patariamosios; modelio išvestys nesuteikia vykdymo teisių."
   ],
-  "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.",
-  "manual_audit": {
-    "checked_at": "2026-11-15T09:52:16.385Z",
-    "source_commit": "69a545aef5009794b0c1f6b04defa02d16be36bc",
-    "note": "Rankinis sesijos tęsinys. Originalus automatinis generated_at, run_id ir source_commit nepakeisti.",
-    "completed": [
-      {
-        "name": "Lighthouse savininko dispatch ir 10 auditų",
-        "status": "PATIKRINTA",
-        "run_id": "43699958471",
-        "scores": {
-          "desktop_performance": [
-            100,
-            100,
-            100,
-            100,
-            100
-          ],
-          "mobile_performance": [
-            95,
-            98,
-            99,
-            99,
-            99
-          ],
-          "accessibility": 100,
-          "best_practices": 100,
-          "seo": 100
-        }
-      },
-      {
-        "name": "Worker privacy-safe evidence diagnostics",
-        "status": "PATIKRINTA",
-        "pr": "219",
-        "deploy_run": "43700250573"
-      },
-      {
-        "name": "AI agent status normalization and bounded JSON",
-        "status": "ATLIKTA / DEPLOY PATIKRINTAS",
-        "pr": "220",
-        "deploy_run": "43700775930",
-        "runtime_verification": "LAUKIA 2026-11-16 13:20 Europe/Vilnius"
-      },
-      {
-        "name": "Owner-only Lighthouse dispatch bridge",
-        "status": "PATIKRINTA",
-        "pr": "218",
-        "tests": "109/109"
-      }
-    ],
-    "live_health": {
-      "worker_http": 200,
-      "database": "connected",
-      "control_core_schema": "connected",
-      "heartbeat_site_http": 200,
-      "last_heartbeat": "2026-11-15T09:45:13.483Z",
-      "last_ai_run_date": "2026-11-15",
-      "last_ai_run_status": "completed",
-      "ai_calls": 5,
-      "recommendation_count": 2,
-      "evidence_gap_count": 8,
-      "specialist_statuses": {
-        "analytics": "error",
-        "topics": "no data",
-        "technical-seo": "monitor",
-        "content-review": "invalid_json"
-      }
-    },
-    "pending": [
-      {
-        "name": "GitHub daily-suite event=schedule",
-        "status": "NEPATVIRTINTA",
-        "detail": "2026-11-15 06:10 UTC event missing after grace; manual catch-up run 43696960921 succeeded and is not schedule proof."
-      },
-      {
-        "name": "GitHub Control Center event=schedule",
-        "status": "NEPATVIRTINTA",
-        "detail": "2026-11-15 08:40 UTC event missing after grace; successful push/workflow_run report is not schedule proof."
-      },
-      {
-        "name": "Next real AI cycle",
-        "status": "LAUKIA",
-        "due": "2026-11-16T13:20:00+02:00",
-        "detail": "Must verify normalized status contract, valid JSON, 5 AI calls, and D1 memory."
-      },
-      {
-        "name": "Worker cron diagnostics",
-        "status": "LAUKIA",
-        "run_id": "43700250618",
-        "detail": "15-minute live invocation observation was still running at the time of this snapshot."
-      },
-      {
-        "name": "Google organic visibility",
-        "status": "NEPATVIRTINTA",
-        "detail": "Latest GSC period 2026-11-06–12 shows 0 impressions/clicks; sitemap processing pending; priority URL index status unknown."
-      }
-    ],
-    "guardrails": [
-      "No paid services or APIs added.",
-      "No ARO Vet changes.",
-      "No DNS, secrets, account permissions, or content publication changes.",
-      "No repository Actions settings changed."
-    ]
-  }
+  "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių."
 }
