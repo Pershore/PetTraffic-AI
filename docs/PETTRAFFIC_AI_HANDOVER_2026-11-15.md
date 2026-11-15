@@ -222,3 +222,16 @@ Iki 11:40 LT patikrinti Control Center schedule įvykį ir jo ataskaitą. Jei jo
 - Nekeista Worker/D1, DNS, secrets, ARO Vet, viešas turinys, billing ar mokamos paslaugos. Nėra aktyvaus darbo laiko matavimo.
 
 **Kitas konkretus etapas:** suplanuotai 2026-11-16 13:20 LT patikrinti naują Worker agentų ciklą ir Control Core memory atnaujinimą; atskirai suplanuoti Cloudflare Access + dedicated agent OIDC architektūrą, neįjungiant /v1/tasks* iki jos saugumo testų.
+
+## 2026-11-15 16:17 LT – naujausia po-merge patikra ir automatizacijų suderinimas
+
+- PR #233 sujungtas: Control Center nebeturi atskiro daily cron; jis vykdomas po Daily-suite, Lighthouse ir Worker deploy įvykių. PR #234 sujungtas: dashboard neberodo seno 10:40 LT grafiko ir Control Center ataskaita nebeįtraukia savo paties vykdomo run kaip `in_progress`.
+- PR #234 patikros: Cloudflare Pages preview, site-check ir read-only Control Center – success. Po merge site-check #43723293494 – success; Control Center #43723293460 – success; D1 sync #43723329232 – success. Lighthouse #43723293496 paskutinės patikros metu dar vykdomas.
+- Live `/control/` JavaScript patikrintas: `Po daily-suite / Lighthouse / Worker deploy` cadence yra, seno `Kasdien 10:40 LT` teksto nėra; komandų panelė ir 7 fiksuotos komandos gyvos.
+- Daily-suite tikras schedule run [#43721211747](https://github.com/Pershore/PetTraffic-AI/actions/runs/43721211747) – visi 3 job success, bet startas 13:51:47 UTC (15:51:47 LT), apie 7 val. 42 min. po cron 06:10 UTC. GA4 2026-11-08–14: 7 aktyvūs naudotojai, 24 sesijos, 88 peržiūros, 0 patvirtintų organinių sesijų. GSC 2026-11-06–12: 0 parodymų/paspaudimų, sitemap pending, 5 prioritetiniai URL nežinomi Google. Temų radaras: 31 unikali nuoroda.
+- Google API connectivity [#43722887365](https://github.com/Pershore/PetTraffic-AI/actions/runs/43722887365) – success; GA4 ir Search Console API OK. Worker deploy [#43698484769](https://github.com/Pershore/PetTraffic-AI/actions/runs/43698484769) – test, Cloudflare token validation, D1 migrations ir deploy visi success; vartotojo patvirtinta tokeno rotacija ir secret atnaujinimas.
+- Worker /health HTTP 200, D1/schema connected. Dabartinis agentų įrašas 2026-11-15 08:20 UTC (10:20 LT) yra prieš 09:16 UTC deploy ir prieš 13:20 LT tikslinį laiką: 5 AI calls, completed, error_code null, tačiau Control Core `needs_evidence`, 8 gaps, memory present. Dėl vieno run_date per dieną idempotency šiandien nekartotas; kitas pilnas po-deploy ciklas 2026-11-16 13:20 LT. Issue #145 paliktas open iki realaus naujo ciklo ir atminties readback.
+- Trys esami ChatGPT procesai įjungti: pagrindinis koordinatorius 11:45 LT, būklės patikra 12:00 LT, greičio/post-cycle verifier 14:00 LT. Prompt'ai atnaujinti, kad Control Center nereikalautų atskiro schedule. Nauja automatika nesukurta.
+- Ribos: dashboard viešas/noindex, neautentifikuotas; komandų panelė kopijuoja komandą į issue #145, o ne siunčia tiesioginį POST. Worker `/v1/tasks*` lieka išjungtas iki atskiros agentų OIDC tapatybės ir privataus autentifikavimo. Termux shell neprijungtas. ARO Vet, viešas turinys, DNS, secrets, billing ir mokamos paslaugos šioje sesijoje nekeisti.
+
+**Kitas konkretus veiksmas:** 2026-11-16 13:20 LT patikrinti naują Worker AI ciklą, visų specialistų JSON kokybę ir Control Core/D1 atminties readback; tik tada spręsti dėl issue #145 uždarymo.
