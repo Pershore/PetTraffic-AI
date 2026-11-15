@@ -103,7 +103,10 @@ test("model statuses are normalized to the control-core status contract",()=>{
  assert.equal(noData.evidence_gaps[0],"No search-volume evidence.");
  const monitor=parseResult(JSON.stringify({status:"monitor",findings:[],recommendations:[],evidence_gaps:[]}));
  assert.equal(monitor.status,"needs_evidence");
- assert.match(monitor.evidence_gaps[0],/unsupported status/);
+ assert.match(monitor.evidence_gaps[0],/needs additional evidence/);
+ const unknown=parseResult(JSON.stringify({status:"observe",findings:[],recommendations:[],evidence_gaps:[]}));
+ assert.equal(unknown.status,"needs_evidence");
+ assert.match(unknown.evidence_gaps[0],/unsupported status/);
  const completed=parseResult(JSON.stringify({status:"completed",findings:[],recommendations:[],evidence_gaps:[]}));
  assert.equal(completed.status,"reviewed");
 });
