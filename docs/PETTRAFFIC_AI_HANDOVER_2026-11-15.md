@@ -235,3 +235,12 @@ Iki 11:40 LT patikrinti Control Center schedule įvykį ir jo ataskaitą. Jei jo
 - Ribos: dashboard viešas/noindex, neautentifikuotas; komandų panelė kopijuoja komandą į issue #145, o ne siunčia tiesioginį POST. Worker `/v1/tasks*` lieka išjungtas iki atskiros agentų OIDC tapatybės ir privataus autentifikavimo. Termux shell neprijungtas. ARO Vet, viešas turinys, DNS, secrets, billing ir mokamos paslaugos šioje sesijoje nekeisti.
 
 **Kitas konkretus veiksmas:** 2026-11-16 13:20 LT patikrinti naują Worker AI ciklą, visų specialistų JSON kokybę ir Control Core/D1 atminties readback; tik tada spręsti dėl issue #145 uždarymo.
+
+## 2026-11-15 17:35 LT – AI ciklo vėluojančių duomenų atkūrimo pataisa
+
+- Nustatyta tikroji suplanuoto AI ciklo grandinės rizika: Worker paleisdavo orkestravimą tik tiksliu 13:20 LT agentų cron įvykiu; vėluojant Daily-suite / D1 snapshot sinchronizacijai, vėlesni 15 min. heartbeat nebandydavo atkurti praleisto AI ciklo.
+- PR #240 (https://github.com/Pershore/PetTraffic-AI/pull/240) pakeičia seką: 13:20 ir vėlesni heartbeat patikrina, ar D1 jau yra bent vienas tos pačios Europe/Vilnius dienos analytics arba topic snapshot. Jei nėra, palieka ciklą laukiančiu; kai duomenys atsiranda, ciklą paleidžia. Esamas vieno agent_runs.run_date per dieną idempotency apsaugo nuo dublikatų.
+- PR Worker patikra #43730277368 – success: Node 63/63, Worker Python 6/6, Cloudflare access validation success; production deploy job skipped. Site-check #43730277297 – success: site validator, compileall, 22 agent testai, 134 testai. Snapshot-sync PR test #43730277289 – success.
+- PR liko open ir nesujungtas. Worker produkcija nepakito. Tai sąmoningas saugumo vartas: PR merge sukeltų automatinį Worker diegimą į Cloudflare.
+- Kiti duomenų kanalai šiuo metu patvirtinti: daily-suite #43721211747 3/3 success; D1 sync #43721301300 ir #43721348795 success su 2 event write/readback kiekviename. /v1/tasks* lieka 503; ARO Vet, DNS, secrets, viešas turinys ir mokamos paslaugos nepakeistos.
+- **Kitas būtinas veiksmas:** atskiras patvirtinimas PR #240 sujungimui ir Worker produkciniam diegimui. Po diegimo reikia patikrinti realų AI catch-up ciklą, specialistų išvestis ir Control Core/D1 atmintį.
