@@ -1,8 +1,6 @@
 name: Pet traffic read-only task runner
 
 on:
-  schedule:
-    - cron: "*/15 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -14,9 +12,7 @@ concurrency:
 
 jobs:
   run-one-task:
-    # Disabled until the Worker feature flag and this repository variable are
-    # both deliberately enabled after the separate OIDC identities are deployed.
-    if: vars.PETTRAFFIC_TASKS_ENABLED == 'true'
+    # This workflow is dispatched only after the owner-only bridge queues an allow-listed task.
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
