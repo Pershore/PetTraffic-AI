@@ -126,7 +126,7 @@ class WeeklyGrowthReviewTests(unittest.TestCase):
             self.assertEqual(review["next_actions"][0]["title"], "AI agentai")
             self.assertLessEqual(len(review["next_actions"]), 3)
             self.assertIn("kanalų pasiskirstymas nepatvirtintas", markdown)
-            self.assertIn("ne Google paieškų apimtis", markdown)
+            self.assertIn("o ne Google paieškų apimtys", markdown)
 
     def test_missing_sources_are_not_reported_as_zero(self):
         with tempfile.TemporaryDirectory() as directory:
