@@ -71,3 +71,10 @@ Iki 11:40 LT patikrinti Control Center schedule įvykį ir jo ataskaitą. Jei jo
 - Firecrawl kredito likutis prieš dvi gyvas patikras: 197/1 000; šios patikros panaudojo 2 kreditus. Jokie kodo, Worker/D1, DNS, secrets, ARO Vet, viešo turinio ar mokami pakeitimai neatlikti.
 
 **Kitas veiksmas:** po 11:40 LT patikrinti Control Center tikrą schedule įvykį; jei jo nėra, užregistruoti antrą praleistą aktyvaus workflow schedule. Daily-suite priežastis perduota kaip GitHub Actions scheduler / nustatymų prieigos blokatorius.
+
+## 2026-11-15 10:50 LT – visų viešų puslapių gyvas HTTP testas
+
+- Patikrinta 8 viešų URL: `about.html`, `privacy.html`, keturi pagrindiniai straipsniai, `robots.txt`, `sitemap.xml`. Visi atsakė HTTP 200.
+- HTML puslapių content-type `text/html; charset=utf-8`; robots `text/plain; charset=utf-8`; sitemap `application/xml`.
+- Kartu su 10:47 LT patikrinta pradžia ir Worker `/health`, viešos svetainės pasiekiamumas patvirtintas. Tai nepatvirtina Google indeksavimo ar naujų GA4/GSC duomenų.
+- Firecrawl kredito balansas po patikros: 197/1 000. Jokie svetainės ar produkcijos pakeitimai neatlikti.
