@@ -111,15 +111,33 @@ function renderAnalytics(){
  const lh=state.runs.find(r=>r.name.toLowerCase().includes("lighthouse")&&r.conclusion==="success");
  $("lighthouse-panel").innerHTML=lh?'<div class="metric-line"><span>Paskutinis sėkmingas auditas</span><strong>'+escapeHtml(dateLT(lh.updated_at||lh.created_at))+'</strong></div><div class="metric-line"><span>Vykdymas</span><a href="'+escapeHtml(lh.html_url)+'" target="_blank" rel="noopener">#'+escapeHtml(lh.run_number)+' ↗</a></div><div class="analytics-note">Pilni HTML/JSON rezultatai laikomi GitHub Actions artefakte. Dashboard nekuria išvestinių Lighthouse balų.</div>':'<p class="muted">Nerasta sėkmingo Lighthouse vykdymo paskutinių 100 run sąraše.</p>';
 }
+function renderAgents(){
+ const h=state.health;const orchestration=h?.agent_orchestration||{};const core=h?.control_core||{};const ai=aiCycleStatus();
+ const cards=[
+  {title:"Worker orchestration",value:ai.label,detail:ai.detail,cls:ai.cls},
+  {title:"Control Core",value:core.status||"Nežinoma",detail:"Run: "+(core.run_date||"—")+" · JSON: "+(core.decision_json_status||"—"),cls:core.status==="reviewed"?"good":core.status==="needs_evidence"?"warn":"unknown"},
+  {title:"D1 atmintis",value:core.memory_status||"Nežinoma",detail:"Atnaujinta: "+dateLT(core.memory_updated_at),cls:core.memory_status==="present"?"good":"warn"},
+  {title:"Rekomendacijos",value:fmt(core.recommendation_count),detail:"Patariamosios, ne automatiniai veiksmai",cls:"unknown"},
+  {title:"Įrodymų spragos",value:fmt(core.evidence_gap_count),detail:"Kategorijos: "+Object.entries(core.evidence_gap_categories||{}).map(([k,v])=>k+" "+v).join(" · "),cls:Number(core.evidence_gap_count)>0?"warn":"good"},
+  {title:"Paskutinis agentų ciklas",value:orchestration.status||"Nežinoma",detail:"Data: "+(orchestration.run_date||"—")+" · pradžia: "+dateLT(orchestration.started_at)+" · kvietimai: "+fmt(orchestration.ai_calls),cls:ai.cls}
+ ];
+ $("agent-panel").innerHTML=cards.map(x=>'<div class="agent-card"><strong>'+escapeHtml(x.title)+'</strong><small>'+escapeHtml(x.detail)+'</small>'+badge(x.value,x.cls)+'</div>').join("");
+ const specialists=Object.entries(core.specialist_statuses||{});
+ if(specialists.length)$("agent-panel").innerHTML+='<div class="specialist-list">'+specialists.map(([name,status])=>{const value=String(status);const cls=/^(ok|complete|completed|reviewed)$/i.test(value)?"good":/error|fail|invalid/i.test(value)?"bad":"warn";return '<div class="specialist"><strong>'+escapeHtml(name)+'</strong><small>'+escapeHtml(value)+'</small></div>';}).join("")+'</div>';
+}
+function renderPrs(){
+ $("pr-count").textContent=state.prs.length+" atviri";
+ $("prs-list").innerHTML=state.prs.length?state.prs.map(p=>'<div class="pr-row"><div><strong>#'+escapeHtml(p.number)+' · '+escapeHtml(p.title)+'</strong><small>'+escapeHtml(p.head?.ref||"")+' → '+escapeHtml(p.base?.ref||"main")+' · atnaujinta '+escapeHtml(dateLT(p.updated_at))+'</small></div><a href="'+escapeHtml(p.html_url)+'" target="_blank" rel="noopener">Peržiūrėti ↗</a></div>').join(""):'<p class="muted">Atvirų PR nėra.</p>';
+}
 function renderTools(){
  const h=state.health;
  setState("tool-pages",state.site?.ok?"Vieša svetainė HTTP 200":"Vieša svetainė nepatvirtinta",state.site?.ok?"good":"bad");
  setState("tool-worker",h?.ok?"Worker /health HTTP 200":"Worker neprieinamas",h?.ok?"good":"bad");
  setState("tool-d1",h?.database==="connected"?"D1 prijungta":"D1 nepatvirtinta",h?.database==="connected"?"good":"bad");
- setState("tool-ai",h?.agent_orchestration?.status?("Paskutinis ciklas: "+h.agent_orchestration.status):"Ciklo duomenų nėra",h?.agent_orchestration?.status==="completed"?"good":"warn");
+ const ai=aiCycleStatus();setState("tool-ai",ai.label+" · "+ai.detail,ai.cls);
 }
 function renderAll(){
- renderStats();renderAttention();renderWorkflowSummary();renderRuns($("run-filter")?.value||"all");renderHistory();renderAnalytics();renderTools();
+ renderStats();renderAttention();renderWorkflowSummary();renderRuns($("run-filter")?.value||"all");renderHistory();renderAnalytics();renderTools();renderAgents();renderPrs();
  setState("pages-status",state.site?.ok?"HTTP 200 · gyva":"Nepasiekiama",state.site?.ok?"good":"bad");
  setState("worker-arch-status",state.health?.ok?"HTTP 200":"Neatsako",state.health?.ok?"good":"bad");
  setState("d1-status",state.health?.database==="connected"?"Connected":"Nežinoma",state.health?.database==="connected"?"good":"warn");
