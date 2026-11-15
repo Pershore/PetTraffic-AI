@@ -426,5 +426,16 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 - Main darbo žurnalo atnaujinimas commit `fd9db38c8f6df32ded9e6758b4864647a8035f19` paleido site-check [#43716600080](https://github.com/Pershore/PetTraffic-AI/actions/runs/43716600080): **success**, 18 s. HTML/nuorodų/SEO validacija, agentų kompiliacija ir testų žingsniai visi success.
 - Kasdienė 14:00 LT greičio / patikimumo automatizacija jau yra įjungta (`Kasdien stebėti ir optimizuoti PetTraffic greitį`); naujos dubliuojančios automatikos kurti nepavyko dėl 3/3 aktyvių užduočių limito, bet jos kurti nereikia.
 
-| 2026-11-15 | Atskiras gyvas Pet traffic Control Center dashboard | aktyvaus darbo laikas NEMATUOTAS | NEMATUOTA | CI success #43719429088; Pages preview success | NEMATUOTA | NEAPSKAIČIUOTA | PR #225 atviras, mergeable, nesujungtas. `/control/` dashboard su GitHub/Worker/GA4/GSC/RSS/Lighthouse duomenimis, architektūra, agentų/atminties būkle, PR ir svetainės puslapių sąrašu. Read-only, noindex, ne sitemap; viešas, be paslapčių. Branch preview veikia; Worker CORS leidžia tik production origin. |
+| 2026-11-15 | Atskiras gyvas Pet traffic Control Center dashboard | aktyvaus darbo laikas NEMATUOTAS | NEMATUOTA | PR #225 merged; production /control/ HTTP 200; PR #226 pataisė 8 gyvų šaltinių susiejimą | NEMATUOTA | NEAPSKAIČIUOTA | Dashboard viešas noindex (ne autentifikacija), read-only, agreguoti duomenys; PR #226 merge ir post-merge CI success; pilnas browser E2E dar nepatvirtintas. `/control/` dashboard su GitHub/Worker/GA4/GSC/RSS/Lighthouse duomenimis, architektūra, agentų/atminties būkle, PR ir svetainės puslapių sąrašu. Read-only, noindex, ne sitemap; viešas, be paslapčių. Branch preview veikia; Worker CORS leidžia tik production origin. |
 
+
+| 2026-11-15 | Control Center dashboard produkcijos publikavimas | aktyvaus darbo laikas NEMATUOTAS | NEMATUOTA | PR #225 merged; site-check #43719590484 success; Control Center #43719590317 success; production /control/ HTTP page verified | NEMATUOTA | NEAPSKAIČIUOTA | Dashboard gyvas produkcijoje: architektūra, įrankiai, automatizacijos, agentų/atminties būklė, agreguota analitika, PR ir puslapių sąrašas. Read-only, viešas noindex (ne autentifikacija), be secrets. Naršyklės pilnas JS E2E dar nepatvirtintas. |
+
+## 2026-11-15 15:36 LT – Control Center dashboard pataisa ir post-merge patikra
+
+- PR #225 sujungtas commit e8efb79cc800814f4862d36a2c198cd83c139cb5; production /control/ HTML ir assets patikrinti HTTP 200.
+- Pirmas live source mapping auditas aptiko refresh() rezultatų indeksų klaidą. PR #226 pataisė 8 šaltinių vardinį susiejimą ir įtraukė issue #145 GET; merge commit 11438c15db521b2dd8bf02c3eb5450063dc91644.
+- PR #226 privalomi check'ai: site-check ir Cloudflare Pages preview – success. Post-merge site-check #43719820860 – success; Control Center #43719820823 – success; IndexNow #43719820885 – success. Lighthouse #43719820834 paskutinės patikros metu dar vykdėsi.
+- Production control.js HTTP 200; live failo turinyje yra const sources ir issue #145 užklausa, seno neteisingo priskyrimo nebėra. Worker /health HTTP 200, D1 / Control Core connected; GA4 ir topic-radar archyvai prieinami.
+- Dashboard viešas, noindex (ne autentifikacija), read-only. /v1/tasks* 503 task_api_not_enabled yra sąmoningai išjungta funkcija. Pilnas naudotojo naršyklės E2E refresh dar nepatvirtintas; to nevadiname PATIKRINTA.
+- Jokio Worker/D1, DNS, secrets, ARO Vet, Google prieigos, viešo turinio ar mokamų paslaugų pakeitimo. Aktyvus darbo laikas NEMATUOTAS.
