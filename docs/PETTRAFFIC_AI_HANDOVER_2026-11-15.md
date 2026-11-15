@@ -265,3 +265,14 @@ Iki 11:40 LT patikrinti Control Center schedule įvykį ir jo ataskaitą. Jei jo
 - AI ciklas šiandien nekartojamas: jau yra šios UTC dienos agent_runs įrašas, todėl vieno ciklo per dieną / 5 AI kvietimų riba lieka apsaugota. Pirmas naujas po-deploy ciklas laukiamas 2026-11-16 13:20 Europe/Vilnius; tuomet privaloma patikrinti agentų išvestis ir D1 memory readback.
 - Automation-history latest.md sąmoningai neatnaujinamas iki tikro Control Center vykdymo po šios pataisos sujungimo; dabartinis snapshot rodo ankstesnį stale nustatymą.
 - Saugumo ribos nekeičiamos: Worker /v1/tasks* lieka 503; nėra AI rankinio/perteklinio paleidimo, DNS/secret/permissions pakeitimų, ARO Vet pakeitimų, viešo turinio publikavimo ar mokamų paslaugų.
+
+
+## 2026-11-15 17:55 LT – Control Center po Worker diagnostikos grandinė
+
+- PR #242 sujungtas į main: `7f825508b26dfcb242fc4b86a9b1a5c95ce16690`. Jis įtraukė „Pet traffic Worker cron diagnostics“ į Control Center `workflow_run` trigerius, pridėjo regresijos testą ir atnaujino grafiko dokumentaciją.
+- PR #242 patikros: Control Center #43732338875, site-check #43732338883 ir Termux bridge #43732338884 – success. Po merge: Control Center #43732414652, site-check #43732414658, Termux bridge #43732414759 ir automatinis darbo žurnalas #43732414681 – success.
+- Po merge Control Center realiai sugeneravo ir įrašė naują automation-history būseną (`latest.md`, šaltinio commit `7f825508...`, laikas 2026-11-15T15:53:58Z). Worker + D1 + Control Core sveiki; naujausias patvirtintas heartbeat buvo apie 8 min. senumo. AI agentų būsena lieka **stale**, nes paskutinis įrašas yra 2026-11-15 prieš 13:20 LT langą; issue #145 sąmoningai paliktas open.
+- D1 snapshot sync po Control Center #43732452704 – success. Ankstesni du Daily-suite → D1 sinchronizavimai #43721301300 ir #43721348795 buvo išsamiai patikrinti: kiekvienas paruošė 2 privacy-filtered event ir abu D1 write/readback patvirtinti. Daily-suite #43721211747 buvo tikras `schedule` run; visi 3 job success, tačiau startavo apie 7 val. 42 min. vėliau nei numatytas cron.
+- **Svarbi riba:** PR #242 naujas `workflow_run` ryšys dabar sujungtas ir CI patikrintas, bet po sujungimo dar nebuvo naujo Worker cron diagnostikos vykdymo, kuris realiai iššauktų šį naują trigerį. Jis bus patvirtintas per kitą diagnostikos paleidimą.
+- AI ciklas šiandien rankiniu būdu nekartojamas: `agent_runs` jau turi šios UTC dienos įrašą, išsaugoma vieno ciklo per dieną ir 5 kvietimų riba. Kitas tikslinis AI ciklas – 2026-11-16 13:20 Europe/Vilnius; tuomet tikrinti specialistų išvestis, Control Core spragas, memory_updated_at ir D1 readback. Jei tos dienos duomenys vėluos, įdiegtas heartbeat catch-up turi bandyti po 13:20, kai tos pačios dienos snapshot pasiekia D1.
+- Saugumo ribos: `/v1/tasks*` lieka 503; DNS, Worker secrets / permissions, ARO Vet, viešas turinys, billing ir mokamos paslaugos nepakeistos.
