@@ -480,9 +480,9 @@ Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama 
 
 ## 2026-11-15 – Control Center dashboard PR #225 parengta
 
-- PR #225: https://github.com/Pershore/PetTraffic-AI/pull/225, šaka `feature/live-control-dashboard`, head `44245f22335e963c8e6180b6d870c0f0799fec07`, atviras, mergeable, nesujungtas.
+- PR #225: https://github.com/Pershore/PetTraffic-AI/pull/225, šaka `feature/live-control-dashboard`, head `56b92ae68b185272226c1dd72cc8adcf9a6849f0`, atviras, mergeable, nesujungtas.
 - Cloudflare Pages branch preview diegimas patvirtintas sėkmingu check; branch preview adresas `https://feature-live-control-dashboa.pettraffic-ai.pages.dev/control/`. Peržiūros HTML turinys patikrintas, jame yra architektūra, agentų/atminties panelė, atvirų PR sąrašas, viešų puslapių katalogas.
-- Site-check run #43719352800 – success: Node.js `node --check`, `agent/validate_site.py`, `python -m compileall -q agent`, agent testų žingsnis ir 124 `tests/` vienetų testai success.
+- Site-check run #43719429088 – success: Node.js `node --check`, `agent/validate_site.py`, `python -m compileall -q agent`, agent testų žingsnis ir 124 `tests/` vienetų testai success.
 - Dashboard gyvai skaito GitHub Actions (100 paskutinių run), PR, main commit, issue #145, viešos svetainės HEAD, Worker `/health` (tik oficialiame Pages domene), ir privatumo filtruotus GA4/GSC bei RSS archyvus. Kas 5 min. atnaujinimas, 30 min. archyvų cache.
 - Dashboard read-only; jokių workflow dispatch / POST / PR merge / production pakeitimų. Viešas `noindex,nofollow`, be canonical ir ne sitemap; noindex nėra autentifikacija. Tik agreguoti duomenys.
 - Branch preview domenas nėra Worker CORS allowlist'e, todėl jame Worker būsena aiškiai žymima kaip preview CORS apribojimas; po PR merge oficialus `https://pettraffic-ai.pages.dev` origin yra Worker leidžiamas origin. Worker konfigūracija nekeista.
