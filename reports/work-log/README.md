@@ -480,3 +480,8 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 - Esamų trijų ChatGPT automatikų prompt'ai suderinti su event-driven Control Center. Tvarkaraščiai nekeisti; naujų automatikų nesukurta.
 - Worker deploy #43698484769 – test, token validation, D1 migrations ir deploy success. Agentų post-deploy ciklas dar LAUKIA 2026-11-16 13:20 LT; šiandienos 10:20 LT įrašas yra prieš deploy, todėl neįrodo naujo kodo veiksmingumo.
 - Jokių ARO Vet, viešo turinio, DNS, Worker/D1 konfigūracijos, secrets, billing ar mokamų paslaugų pakeitimų šiame darbe nedaryta. Aktyvaus darbo laikas NEMATUOTAS.
+## 2026-11-15 16:20 LT – galutinė Lighthouse ir Control Center vykdymų patikra
+
+- Lighthouse push/site-change run #43723293496 – success. Tai patvirtina šio pakeitimų ciklo auditą, bet ne savaitinį event=schedule; kitas suplanuotas weekly paleidimas 2026-11-16 07:27 UTC (09:27 LT).
+- Naujausia automation-history būsena #43723668274: Control Center sėkmingas, D1/Worker connected, vienintelė aktyvi problema – laukiantis po-deploy Worker AI ciklas ir Control Core memory įrodymas. Issue #145 paliekamas atviras iki 2026-11-16 13:20 LT ciklo.
+- Nekeista produkcinė Worker/D1 konfigūracija, DNS, secrets, ARO Vet, viešas turinys, billing ar mokamos paslaugos.
