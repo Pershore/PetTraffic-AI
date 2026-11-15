@@ -8,7 +8,7 @@ The API provides:
 - `GET /health` – verifies the Worker can query D1 and returns the latest 15-minute site/D1 heartbeat (or `heartbeat: null` before the first scheduled check).
 - `POST /v1/events` – stores allow-listed aggregate snapshots and deduplicates repeated submissions by event kind and source workflow run ID.
 - `GET /v1/events` – reads the latest 100 aggregate events (optionally filtered by kind).
-- `POST /v1/tasks`, `POST /v1/tasks/claim`, and `POST /v1/tasks/{id}/complete` – scaffolded for future agents; intentionally return `503 task_api_not_enabled` until a separate agent identity and authorization policy are implemented.
+- `POST /v1/tasks`, `POST /v1/tasks/claim`, and `POST /v1/tasks/{id}/complete` – bounded task-queue routes. In the secure task-runner rollout they remain disabled by default (`503 task_api_not_enabled`) until the Worker runtime flag is deliberately enabled.
 
 Specialist names: `coordinator`, `analytics`, `topics`, `technical-seo`, `content-review`.
 
@@ -18,9 +18,9 @@ Task types are deliberately read-only. There is no article publishing, website e
 
 - All `/v1/*` routes require a short-lived GitHub Actions OIDC JWT.
 - The Worker verifies the JWT signature against GitHub's published JWKS and validates issuer, audience, expiry, repository name and immutable owner/repository IDs, main-branch ref, exact workflow path, and `workflow_run` event. This repository was created after GitHub's 2026-07-15 immutable-subject rollout, so the expected `sub` includes owner and repository IDs.
-- The current sync identity is restricted to `/v1/events`; task queue routes remain disabled until separate agent authentication is configured.
+- The snapshot-sync identity is restricted to `/v1/events`. Task creation and task execution use separate exact workflow OIDC identities and separate endpoint roles.
 - No long-lived PetTraffic API bearer token or `API_TOKEN` Worker secret is required.
-- Only the trusted sync job receives `id-token: write`; pull-request test jobs do not.
+- `id-token: write` is scoped to the snapshot-sync workflow, the owner-command dispatcher job, and the gated read-only task-runner job; pull-request test jobs do not receive it.
 - Request bodies are size-limited; payloads reject keys resembling personal identifiers, search query text, credentials, or cookies.
 - SQL values are parameterized.
 - CORS is restricted to the PetTraffic Pages origin; server-to-server GitHub Actions calls do not need CORS.
@@ -55,7 +55,7 @@ As of 2026-11-12, the live integration has been verified end-to-end:
 - The sync workflow reads each newly written event back from D1 and fails if the event ID is not present.
 - GitHub history remains the durable source of truth; no workflow has switched history storage to D1.
 
-Task enqueue/claim/complete remain deliberately disabled until a separate agent identity and authorization policy are implemented and tested.
+## Secure read-only task runner (prepared; disabled by default)\n\n- Three exact workflow identities are separated: `sync-control-api.yml` may use `/v1/events`; the owner-only `dispatch-daily-suite.yml` path may enqueue one fixed task; `run-readonly-tasks.yml` may claim and complete that task. All identities still require a valid short-lived GitHub OIDC signature, immutable repository/owner IDs, the main ref, the exact workflow path and the expected event type.\n- The only first-phase task is `check_site` for `technical-seo`, with the exact payload `{ target: public_site }`. The cloud runner maps it to the fixed `agent/check_live_site.py` script. Task data is never interpreted as a shell command.\n- The owner command is `/pettraffic-enqueue-site-check` on issue #145. The runner polls every 15 minutes, claims at most one task per run, and requests a fresh OIDC token for task completion. A pending/running site-check is deduplicated.\n- **Two independent off-switches remain off until deployment and explicit activation:** Cloudflare Worker runtime variable `TASK_API_ENABLED` must equal `true`, and GitHub repository variable `PETTRAFFIC_TASKS_ENABLED` must equal `true`. With either absent/false, the API returns 503 or the runner job is skipped. This PR/branch does not set either value or deploy the Worker.\n- This creates a safe cloud-side task path; it does not turn the public `/control/` dashboard into an authenticated one-click UI. `/control/` stays read-only until a separate private UI/authentication project is completed.\n\nThe task queue is not considered active or verified until both switches are deliberately enabled and a real enqueue → claim → fixed execution → completion → D1 readback test succeeds.
 
 ## Local tests
 
