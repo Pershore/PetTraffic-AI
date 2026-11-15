@@ -251,6 +251,27 @@ test("versioned endpoints reject OIDC tokens from another workflow", async () =>
   });
 });
 
+test("versioned endpoints reject OIDC tokens from unsupported trigger events", async () => {
+  for (const event_name of ["push", "issue_comment", "schedule"]) {
+    await withOidcJwks(async () => {
+      const response = await worker.fetch(new Request("https://api.example/v1/events", {
+        headers: { authorization: "Bearer " + oidcToken({ event_name }) },
+      }), env);
+      assert.equal(response.status, 401, event_name);
+    });
+  }
+});
+
+test("versioned endpoints accept workflow_dispatch only for the pinned snapshot sync workflow", async () => {
+  await withOidcJwks(async () => {
+    const response = await worker.fetch(new Request("https://api.example/v1/events", {
+      headers: { authorization: "Bearer " + oidcToken({ event_name: "workflow_dispatch" }) },
+    }), env);
+    assert.equal(response.status, 200);
+    assert.deepEqual(await response.json(), { events: [] });
+  });
+});
+
 test("versioned endpoints reject invalid JWT signatures", async () => {
   await withOidcJwks(async () => {
     const valid = oidcToken();
