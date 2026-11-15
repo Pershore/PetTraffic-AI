@@ -102,3 +102,20 @@ Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas
 - AI rekomendacijos yra patariamosios; modelio išvestys nesuteikia vykdymo teisių.
 
 > Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.
+
+
+---
+
+## Rankinis tęstinis auditas – 2026-11-15 15:00 LT
+
+> Šis blokas yra atskiras rankinis patikrinimas. Automatinio snapshot originalus `generated_at` ir `run_id` nekeisti.
+
+- `main` HEAD: `539e05685e212ae03221e1fe79060e18f0d8af8c`; atvirų PR nėra.
+- Site-check schedule [#43716344579](https://github.com/Pershore/PetTraffic-AI/actions/runs/43716344579) – success, 21 s; live-check [#43696960921](https://github.com/Pershore/PetTraffic-AI/actions/runs/43696960921) – 12 vidinių URL, core pages, nuorodos, sitemap, robots ir 404 PASS.
+- Daily-suite [#43696960921](https://github.com/Pershore/PetTraffic-AI/actions/runs/43696960921) – success per `workflow_dispatch`, visi 3 job success; tai nėra schedule įrodymas. GA4 2026-11-08–14: 7 aktyvūs naudotojai, 19 sesijų, 73 peržiūros, 0 organinių sesijų. GSC 2026-11-06–12: 0 parodymų / 0 paspaudimų, sitemap pending, 5 prioritetiniai URL nežinomi Google. Temų radaras: 28 RSS antraščių nuorodos iš 7 temų.
+- D1 sync [#43698010982](https://github.com/Pershore/PetTraffic-AI/actions/runs/43698010982) – success; du snapshot write/readback patvirtinimai.
+- 2026-11-15 daily-suite ir Control Center `event=schedule` nerasti; site-check schedule įvyko. Control Center manual [#43715464297](https://github.com/Pershore/PetTraffic-AI/actions/runs/43715464297) – success, 34 s, `recovery_confirmed=false`; issue #145 lieka open. Komandos nedubliuotos, nes daily-suite catch-up buvo per paskutines 20 val., o Control Center report – per paskutines 60 min.
+- Worker /health 2026-11-15 13:00:13 UTC – HTTP 200, D1/schema connected, heartbeat site 200 / DB OK. AI ciklas 08:20:13 UTC (10:20 LT), completed, 5 calls, error null, bet pradėtas iki 13:20 LT; po 13:20 naujo ciklo nėra, todėl būsena **STALE**. Control Core `needs_evidence`, memory present, 2 rekomendacijos, 8 spragos; specialist statusai atspindi seną ciklą, todėl post-PR #220 pataisos runtime veiksmingumas dar nepatvirtintas.
+- Lighthouse [#43699958471](https://github.com/Pershore/PetTraffic-AI/actions/runs/43699958471) – success, 10 ataskaitų. Desktop Performance 100; mobile homepage 95, emergency cat 98, kiti trys 99; Accessibility / Best Practices / SEO 100. Homepage mobile LCP 1.30 s, TBT 271 ms, CLS 0. Naujo palyginamo baseline šiame audite nėra.
+- Pagrindinė ChatGPT koordinatoriaus automatizacija įjungta, tačiau paskutinis užfiksuotas vykdymas 2026-11-14; 2026-11-15 įrašo nėra, kitas suplanuotas 2026-11-16 11:45 LT. Esamas 14:00 LT greičio verifier šiandien baigė 14:53 LT.
+- Nekeista produkcija, Worker/D1, DNS, secrets, teisės, turinys ar mokamos paslaugos. Kitas žingsnis: patikrinti 2026-11-16 daily-suite / Control Center schedule, pagrindinį koordinatoriaus paleidimą, 13:20 Worker ciklą ir 14:00 post-cycle ataskaitą.
