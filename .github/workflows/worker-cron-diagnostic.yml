@@ -2,10 +2,10 @@ name: Pet traffic Worker cron diagnostics
 
 on:
   workflow_dispatch:
-  push:
+  workflow_run:
+    workflows: ["Deploy PetTraffic control API"]
+    types: [completed]
     branches: [main]
-    paths:
-      - ".github/workflows/worker-cron-diagnostic.yml"
 
 permissions:
   contents: read
@@ -16,6 +16,7 @@ concurrency:
 
 jobs:
   verify-and-observe:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     name: Verify configured crons and persisted heartbeat
     runs-on: ubuntu-latest
     timeout-minutes: 22

@@ -102,22 +102,11 @@ jobs:
 
           get(f"/accounts/{account}/d1/database/{database}", "D1 database access")
           get(f"/accounts/{account}/workers/scripts/pettraffic-control-api/settings", "Worker access")
-          schedule_payload = get(
+          get(
               f"/accounts/{account}/workers/scripts/pettraffic-control-api/schedules",
-              "Worker Cron Trigger schedules",
+              "Worker Cron Trigger schedule API access",
           )
-          actual_crons = sorted({
-              item.get("cron", "")
-              for item in schedule_payload.get("result", {}).get("schedules", [])
-              if item.get("cron")
-          })
-          expected_crons = {"*/15 * * * *", "20 10,11 * * *"}
-          missing_crons = sorted(expected_crons - set(actual_crons))
-          if missing_crons:
-              print("BLOCKED: Expected Worker Cron Trigger schedules are missing: " + ", ".join(missing_crons))
-              sys.exit(1)
-          print("OK: Cloudflare Worker Cron Trigger schedules confirmed: " + ", ".join(actual_crons))
-          print("READY: Cloudflare token, account, D1 database, Worker and Cron schedules are reachable.")
+          print("READY: Cloudflare token, account, D1 database, Worker and schedule API are reachable.")
           PY
 
   deploy:
@@ -209,3 +198,33 @@ jobs:
           status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' "$API_URL/v1/events")"
           test "$status" = "401" || (echo "Expected unauthenticated API request to return HTTP 401; got $status." && exit 1)
           echo "OK: protected API rejects unauthenticated requests."
+
+      - name: Verify deployed Worker Cron schedules
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import sys
+          import urllib.request
+
+          token = os.environ.get("CLOUDFLARE_API_TOKEN", "")
+          account = os.environ.get("CLOUDFLARE_ACCOUNT_ID", "")
+          if not token or not account:
+              raise SystemExit("Cloudflare schedule verification settings are missing.")
+          url = f"https://api.cloudflare.com/client/v4/accounts/{account}/workers/scripts/pettraffic-control-api/schedules"
+          request = urllib.request.Request(url, headers={"Authorization": "Bearer " + token})
+          with urllib.request.urlopen(request, timeout=20) as response:
+              payload = json.loads(response.read())
+          if not payload.get("success"):
+              raise SystemExit("Cloudflare did not confirm deployed Worker schedules.")
+          actual = sorted({item.get("cron") for item in payload.get("result", {}).get("schedules", []) if item.get("cron")})
+          expected = {"*/15 * * * *", "20 10,11 * * *"}
+          missing = sorted(expected - set(actual))
+          print("Deployed Worker schedules: " + ", ".join(actual))
+          if missing:
+              raise SystemExit("Deployed Worker is missing expected schedules: " + ", ".join(missing))
+          print("OK: deployed Worker schedules match wrangler.toml.")
+          PY
