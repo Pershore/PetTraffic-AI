@@ -308,12 +308,33 @@ def fetch_workflow_metadata(workflow_file: str) -> dict:
     }
 
 
+def agent_run_matches_daily_window(agent: dict, local_now: datetime) -> bool:
+    """Return whether today's agent run started in the configured 13:20 Vilnius window."""
+    if agent.get("run_date") != local_now.date().isoformat():
+        return False
+    started_at = agent.get("started_at")
+    if not isinstance(started_at, str):
+        # Older test fixtures and historical records may not include started_at.
+        return True
+    try:
+        started = datetime.fromisoformat(started_at.replace("Z", "+00:00"))
+        if started.tzinfo is None:
+            started = started.replace(tzinfo=timezone.utc)
+    except ValueError:
+        return False
+    started_local = started.astimezone(ZoneInfo("Europe/Vilnius"))
+    return (
+        started_local.date() == local_now.date()
+        and started_local.hour * 60 + started_local.minute >= 13 * 60 + 20
+    )
+
+
 def evaluate_agent_orchestration(
     payload: dict,
     url: str | None = None,
     now: datetime | None = None,
 ) -> dict:
-    """Check the daily AI agent run and durable control-core memory after 10:40 Vilnius time."""
+    """Check the daily AI agent run and durable control-core memory after 13:20 Vilnius time."""
     base = {"name": "AI agentai + control-core atmintis", "url": url, "created_at": None}
     agent = payload.get("agent_orchestration") if isinstance(payload, dict) else None
     if not isinstance(agent, dict):
@@ -323,10 +344,11 @@ def evaluate_agent_orchestration(
     if current.tzinfo is None:
         current = current.replace(tzinfo=timezone.utc)
     local_now = current.astimezone(ZoneInfo("Europe/Vilnius"))
-    before_daily_check = (local_now.hour * 60 + local_now.minute) < (10 * 60 + 40)
+    before_daily_check = (local_now.hour * 60 + local_now.minute) < (13 * 60 + 20)
     today = local_now.date().isoformat()
     status = agent.get("status", "unknown")
     run_date = agent.get("run_date")
+    current_cycle = agent_run_matches_daily_window(agent, local_now)
 
     if run_date is not None:
         try:
@@ -335,16 +357,18 @@ def evaluate_agent_orchestration(
             return {**base, "state": "failure", "detail": "AI agent returned an invalid run_date."}
 
     if status == "failed":
-        if run_date != today and before_daily_check:
-            return {**base, "state": "waiting", "detail": "Ankstesnis AI agentų ciklas nepavyko; laukiama šiandienos 10:20 Lietuvos laiku ciklo."}
+        if not current_cycle and before_daily_check:
+            return {**base, "state": "waiting", "detail": "Ankstesnis AI agentų ciklas nepavyko; laukiama šiandienos 13:20 Lietuvos laiku ciklo."}
+        if run_date == today and not current_cycle:
+            return {**base, "state": "stale", "detail": "Iki 13:20 Lietuvos laiku įvykęs ankstesnis AI ciklas nepakeistas nauju suplanuotu vykdymu."}
         code = agent.get("error_code") or "unknown_error"
         calls = agent.get("ai_calls", "unknown")
         return {**base, "state": "failure", "detail": f"AI agentų ciklas nepavyko ({run_date or 'unknown date'}); AI kvietimų: {calls}; klaida: {code}."}
 
     if status in ("not_started", "unknown"):
         if before_daily_check:
-            return {**base, "state": "waiting", "detail": "AI agentų dienos ciklas dar neatėjo; tikrinimas numatytas po 10:20 Lietuvos laiku."}
-        return {**base, "state": "warning", "detail": "Po suplanuoto 10:20 Lietuvos laiku ciklo nėra AI agentų vykdymo įrašo."}
+            return {**base, "state": "waiting", "detail": "AI agentų dienos ciklas dar neatėjo; tikrinimas numatytas po 13:20 Lietuvos laiku."}
+        return {**base, "state": "warning", "detail": "Po suplanuoto 13:20 Lietuvos laiku ciklo nėra AI agentų vykdymo įrašo."}
 
     if status in ("running", "in_progress"):
         started_at = agent.get("started_at")
@@ -363,10 +387,10 @@ def evaluate_agent_orchestration(
     if status != "completed":
         return {**base, "state": "warning", "detail": f"Neatpažinta AI agentų ciklo būsena: {status}."}
 
-    if run_date != today:
+    if not current_cycle:
         if before_daily_check:
-            return {**base, "state": "waiting", "detail": "Paskutinis AI agentų ciklas yra iš ankstesnės dienos; laukiama šiandienos suplanuoto ciklo."}
-        return {**base, "state": "stale", "detail": f"Po 10:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: {run_date or 'unknown'}."}
+            return {**base, "state": "waiting", "detail": "Paskutinis AI agentų ciklas dar neįvyko 13:20 Lietuvos laiku lange; laukiama šiandienos suplanuoto ciklo."}
+        return {**base, "state": "stale", "detail": f"Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: {run_date or 'unknown'}."}
 
     core = payload.get("control_core") if isinstance(payload, dict) else None
     if not isinstance(core, dict):
