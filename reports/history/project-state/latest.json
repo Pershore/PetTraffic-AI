@@ -89,5 +89,108 @@
     "Nekeisti DNS, Cloudflare teisių ar produkcinės infrastruktūros be atskiro patvirtinimo.",
     "AI rekomendacijos yra patariamosios; modelio išvestys nesuteikia vykdymo teisių."
   ],
-  "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių."
+  "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.",
+  "manual_audit": {
+    "checked_at": "2026-11-15T09:52:16.385Z",
+    "source_commit": "69a545aef5009794b0c1f6b04defa02d16be36bc",
+    "note": "Rankinis sesijos tęsinys. Originalus automatinis generated_at, run_id ir source_commit nepakeisti.",
+    "completed": [
+      {
+        "name": "Lighthouse savininko dispatch ir 10 auditų",
+        "status": "PATIKRINTA",
+        "run_id": "43699958471",
+        "scores": {
+          "desktop_performance": [
+            100,
+            100,
+            100,
+            100,
+            100
+          ],
+          "mobile_performance": [
+            95,
+            98,
+            99,
+            99,
+            99
+          ],
+          "accessibility": 100,
+          "best_practices": 100,
+          "seo": 100
+        }
+      },
+      {
+        "name": "Worker privacy-safe evidence diagnostics",
+        "status": "PATIKRINTA",
+        "pr": "219",
+        "deploy_run": "43700250573"
+      },
+      {
+        "name": "AI agent status normalization and bounded JSON",
+        "status": "ATLIKTA / DEPLOY PATIKRINTAS",
+        "pr": "220",
+        "deploy_run": "43700775930",
+        "runtime_verification": "LAUKIA 2026-11-16 13:20 Europe/Vilnius"
+      },
+      {
+        "name": "Owner-only Lighthouse dispatch bridge",
+        "status": "PATIKRINTA",
+        "pr": "218",
+        "tests": "109/109"
+      }
+    ],
+    "live_health": {
+      "worker_http": 200,
+      "database": "connected",
+      "control_core_schema": "connected",
+      "heartbeat_site_http": 200,
+      "last_heartbeat": "2026-11-15T09:45:13.483Z",
+      "last_ai_run_date": "2026-11-15",
+      "last_ai_run_status": "completed",
+      "ai_calls": 5,
+      "recommendation_count": 2,
+      "evidence_gap_count": 8,
+      "specialist_statuses": {
+        "analytics": "error",
+        "topics": "no data",
+        "technical-seo": "monitor",
+        "content-review": "invalid_json"
+      }
+    },
+    "pending": [
+      {
+        "name": "GitHub daily-suite event=schedule",
+        "status": "NEPATVIRTINTA",
+        "detail": "2026-11-15 06:10 UTC event missing after grace; manual catch-up run 43696960921 succeeded and is not schedule proof."
+      },
+      {
+        "name": "GitHub Control Center event=schedule",
+        "status": "NEPATVIRTINTA",
+        "detail": "2026-11-15 08:40 UTC event missing after grace; successful push/workflow_run report is not schedule proof."
+      },
+      {
+        "name": "Next real AI cycle",
+        "status": "LAUKIA",
+        "due": "2026-11-16T13:20:00+02:00",
+        "detail": "Must verify normalized status contract, valid JSON, 5 AI calls, and D1 memory."
+      },
+      {
+        "name": "Worker cron diagnostics",
+        "status": "LAUKIA",
+        "run_id": "43700250618",
+        "detail": "15-minute live invocation observation was still running at the time of this snapshot."
+      },
+      {
+        "name": "Google organic visibility",
+        "status": "NEPATVIRTINTA",
+        "detail": "Latest GSC period 2026-11-06–12 shows 0 impressions/clicks; sitemap processing pending; priority URL index status unknown."
+      }
+    ],
+    "guardrails": [
+      "No paid services or APIs added.",
+      "No ARO Vet changes.",
+      "No DNS, secrets, account permissions, or content publication changes.",
+      "No repository Actions settings changed."
+    ]
+  }
 }
