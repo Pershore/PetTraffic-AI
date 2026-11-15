@@ -120,14 +120,16 @@
       "source": "ChatGPT dashboard implementation verification",
       "pr_number": 225,
       "branch": "feature/live-control-dashboard",
-      "head_commit": "44245f22335e963c8e6180b6d870c0f0799fec07",
-      "site_check_run_id": "43719352800",
+      "head_commit": "56b92ae68b185272226c1dd72cc8adcf9a6849f0",
+      "site_check_run_id": "43719429088",
       "site_check_conclusion": "success",
       "cloudflare_pages_preview": "success",
       "preview_url": "https://feature-live-control-dashboa.pettraffic-ai.pages.dev/control/",
       "production_deployed": false,
       "merged": false,
-      "worker_preview_cors_restricted": true
+      "worker_preview_cors_restricted": true,
+      "cloudflare_pages_conclusion": "success",
+      "preview_verified_at": "2026-11-15T13:32:00Z"
     }
   ]
 }
