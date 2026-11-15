@@ -1,11 +1,21 @@
 # Pet traffic – vienintelė kanoninė projekto atmintis
 
-**Atnaujinta:** 2026-11-14  
+**Atnaujinta:** 2026-11-15  
 **Saugykla:** https://github.com/Pershore/PetTraffic-AI  
 **Pagrindinė šaka:** `main`  
 **Tikslas:** vienas patikimas tęstinumo šaltinis ChatGPT, Codex ir būsimiems projekto agentams.
 
 Šis dokumentas sujungia ilgalaikius sprendimus, patvirtintą architektūrą, dabartines integracijų būsenas, neišspręstus blokatorius ir kitus veiksmus. Jis nepakeičia GitHub testų ar realių vykdymų įrodymų. Kiekvieną būseną reikia tikrinti pagal naujausią commit, workflow run ir gyvą sistemos atsakymą.
+
+
+
+## 2026-11-15 dabartinis grafikas ir patikros būsena
+
+- Dienos seka: svetainės patikra 05:37 UTC; nepriklausomas kasdienis automatizacijų rinkinys 06:10 UTC (GA4 / GSC, temų radaras ir gyvos svetainės patikra); Lighthouse pirmadieniais 07:27 UTC; centrinis valdymo centras 08:40 UTC; Worker AI agentų ciklas 10:20 Lietuvos laiku; vienintelis ChatGPT koordinatorius 11:00 Lietuvos laiku.
+- Daily-suite faile sukonfigūruotas cron `10 6 * * *`. 2026-11-15 08:26 Lietuvos laiku (06:26 UTC) naujausių 100 GitHub Actions vykdymų sąraše nebuvo naujo vykdymo po paskutinio 2026-11-14 23:08 UTC vykdymo. Todėl šios dienos pirmasis tiesioginis `event=schedule` paleidimas **NEPATVIRTINTAS / LAUKIA**. Rankinis paleidimas negali būti laikomas suplanuoto vykdymo įrodymu.
+- 2026-11-15 Worker AI ciklas 10:20 Lietuvos laiku audito metu dar nebuvo įvykęs. Ankstesnis agentų gedimas lieka istoriniu; šiandienos ciklą reikia patikrinti po numatyto laiko, kartu patikrinant Control Center ir D1 atminties įrašą.
+- GitHub issue #145 (centrinis automatizacijų perspėjimas) lieka atviras dėl ankstesnio agentų ciklo gedimo. Jo neuždaryti, kol naujas vykdymas nepatvirtins atsistatymo.
+- Šio audito metu nekeisti production, Worker/D1, DNS, secrets, ARO Vet, viešo turinio ar mokamų paslaugų. Išlaikyti 0 €/mėn. biudžetą.
 
 ## 1. Šaltinių hierarchija ir atminties taisyklės
 
@@ -78,12 +88,11 @@ Niekada nepaversti `LAUKIA`, `PARUOŠTA` ar `NEPATVIRTINTA` į `PATIKRINTA` be n
 ### GitHub Actions numatyta kadencija (YAML konfigūracija)
 
 - Site checks: 05:37 UTC kasdien ir push / PR.
-- Topic radar: 06:23 UTC kasdien.
-- Analytics snapshot: 06:47 UTC kasdien.
-- Live-site monitor: 07:11 UTC kasdien.
+- Daily automation suite: 06:10 UTC kasdien; vienas nepriklausomas suplanuotas paleidimas vykdo atskirus GA4 / GSC, temų radaro ir gyvos svetainės darbus.
 - Lighthouse: pirmadieniais 07:27 UTC ir po reikšmingų svetainės pakeitimų.
-- Central control center: 08:40 UTC kasdien ir po stebimų workflow.
-- Worker heartbeat: kas 15 min.; vidinis agentų ciklas numatytas apie 10:20 Europe/Vilnius per Worker cron + laiko zonos vartus.
+- Central control center: 08:40 UTC kasdien ir po daily-suite, Lighthouse ar Worker diegimo užbaigimo.
+- Worker heartbeat: kas 15 min.; agentų cron tikrina 07:20 ir 08:20 UTC, o Europe/Vilnius laiko vartai leidžia tik 10:20 vietos laiko agentų ciklą.
+- Vienintelis ChatGPT priežiūros koordinatorius: 11:00 Europe/Vilnius, po dienos automatinių patikrų.
 
 **Konfigūruotas cron nėra vykdymo įrodymas.** Tikrinti tikrus `event=schedule` run, jų jobs, artifacts ir rezultatus. Push, PR, workflow_run ar rankinis vykdymas nėra suplanuoto ciklo pakaitalas.
 
@@ -138,10 +147,10 @@ Jokia jungtis nelaikoma prijungta vien dėl to, kad ji buvo paminėta, pasiūlyt
 - Issue #145 „PetTraffic: central automation alert“ lieka **OPEN** ir papildytas komentaru #6876095236.
 
 ### Kasdienis ChatGPT koordinatorius
-- Esama automatizacija „Pet traffic – kasdienė savarankiška priežiūra“ yra **enabled**.
-- 2026-11-14 10:55 UTC atnaujintas jos prompt: kiekvienos sesijos pradžioje privalomai skaitomas `docs/PROJECT_MEMORY.md`, pašalinti pasenę hard-coded Lighthouse skaičiai, rankinis auditas atskiriamas nuo automatinio snapshot. Tvarkaraštis nepakeistas; kitas vykdymas 2026-11-15 09:45 Europe/Vilnius.
+- Esama automatizacija „Pet traffic – kasdienė savarankiška priežiūra“ yra **enabled**; jos dabartinis grafikas – 11:00 Europe/Vilnius, po daily-suite, Worker AI ciklo ir Control Center.
+- 2026-11-14 10:55 UTC atnaujintas jos prompt: kiekvienos sesijos pradžioje privalomai skaitomas `docs/PROJECT_MEMORY.md`, pašalinti pasenę hard-coded Lighthouse skaičiai, rankinis auditas atskiriamas nuo automatinio snapshot. Tvarkaraštis nepakeistas; kitas vykdymas 2026-11-15 11:00 Europe/Vilnius.
 - Paskutinis įrašytas vykdymas: suplanuota 2026-11-14 07:45 UTC, pradėta 07:52:07 UTC, baigta 08:13:35 UTC, status `completed`.
-- Kitas numatytas vykdymas: 2026-11-15 09:45 Europe/Vilnius.
+- Kitas numatytas vykdymas: 2026-11-15 11:00 Europe/Vilnius.
 - Vienas koordinatorius; nedaryti dublikatų. Pokalbio asistentas neveikia tarp sesijų, tik realiai aktyvūs suplanuoti procesai gali dirbti fone.
 
 ### Termux / Codex

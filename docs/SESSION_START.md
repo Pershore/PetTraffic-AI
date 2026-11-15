@@ -1,6 +1,6 @@
 # Pet traffic – naujos sesijos pradžios protokolas
 
-Atnaujinta: 2026-11-14
+Atnaujinta: 2026-11-15
 
 Šis dokumentas yra trumpas sesijos pradžios kontrolinis sąrašas. Visa ilgalaikė atmintis, sprendimai, architektūra, prieigų matrica ir blokatoriai laikomi `docs/PROJECT_MEMORY.md`.
 
@@ -93,3 +93,13 @@ Tikras bootstrap iš Termux patvirtintas: Linux proot, Git, GitHub CLI, Codex CL
 
 - PR #202 sujungtas commit 073bc8d96d81e174c0873061dbffee9aa4162714. sync-control-api dabar nustato daily-suite kilmę pagal GitHub workflow_run API lauką event=schedule, o ne seną display_title. Tai būtina, kad naujo tiesioginio 06:10 UTC grafiko GA4/GSC ir topic artefaktai būtų persiųsti į D1.
 - PR #202 Worker snapshot builder test, central-control-center ir site-check – success. Pirmas realus direct schedule + D1 read-back patikrinimas laukia 2026-11-15 06:10 UTC.
+
+
+## 2026-11-15 ryto patikra
+
+- Naujausia automatiškai patikrinta projekto būsena: `automation-history/reports/history/project-state/latest.md`, sugeneruota 2026-11-14 23:08 UTC. Ji patvirtina PR #208 ir #209 sujungimą, Worker deploy #96 sėkmę, D1 ryšį ir po-merge patikras.
+- Naujausias main commit audito metu: `7ae8d1370b679b47816820797f3f0ea97f41a450`. Atvirų PR nerasta; PR #131 patvirtintas kaip merged.
+- Daily-suite `10 6 * * *` (06:10 UTC / 08:10 LT) yra konfigūruotas, bet 08:26 LT naujo schedule vykdymo dar nerasta. Būsena **LAUKIA / NEPATVIRTINTA**; nenaudoti rankinio paleidimo kaip cron įrodymo.
+- Worker AI ciklas 10:20 LT dar laukia. Po jo patikrinti tikrą agentų rezultatą, D1 atminties įrašą ir Control Center; issue #145 palikti atvirą iki patvirtinto atsistatymo.
+- Vienintelis ChatGPT koordinatorius suplanuotas 11:00 LT. Nedaryti dublikatų.
+- Šio audito metu jokie kodo, Worker/D1, DNS, secrets, ARO Vet, viešo turinio ar mokamų paslaugų pakeitimai neatlikti.
