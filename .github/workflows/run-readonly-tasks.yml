@@ -1,0 +1,35 @@
+name: Pet traffic read-only task runner
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pettraffic-readonly-task-runner
+  cancel-in-progress: false
+
+jobs:
+  run-one-task:
+    # Disabled until the Worker feature flag and this repository variable are
+    # both deliberately enabled after the separate OIDC identities are deployed.
+    if: vars.PETTRAFFIC_TASKS_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      PETTRAFFIC_CONTROL_API_URL: ${{ vars.PETTRAFFIC_CONTROL_API_URL || 'https://pettraffic-control-api.pauliusgrubliauskis.workers.dev' }}
+    steps:
+      - name: Check out trusted main-branch code
+        uses: actions/checkout@v7
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+      - name: Claim and execute one bounded read-only task
+        run: python agent/run_task_worker.py
