@@ -1,3 +1,16 @@
+## Papildoma patikra – 2026-11-15 15:00 LT
+
+- Tikras site-check cron patvirtintas: [#43716344579](https://github.com/Pershore/PetTraffic-AI/actions/runs/43716344579), `event=schedule`, success, 21 s (14:55:59 LT). Visi job žingsniai success.
+- Daily-suite ir Control Center `event=schedule` šiandienos naujausių 100 Actions run sąraše nerasti. Abiejų workflow failuose cron deklaracijos yra; tiksli priežastis **NEPATVIRTINTA**. Site-check cron sėkmė rodo, kad scheduler nėra visiškai neveikiantis. Repo nustatymai / cron nekeisti.
+- Naujausias Control Center [#43715464297](https://github.com/Pershore/PetTraffic-AI/actions/runs/43715464297) – manual, success, 34 s; artefaktas 14:45:48 LT sukurtas prieš site-check schedule. `recovery_confirmed=false`; issue #145 lieka open.
+- Worker /health HTTP 200; D1/schema connected; heartbeat 14:45:13 LT, site 200, DB OK. Agent orchestration 2026-11-15 completed, 5 AI calls, error_code null, started_at 10:20:13 LT. Control Core `needs_evidence`, memory present, 2 recommendations, 8 evidence gaps (model_output 2 / insufficient_evidence 1 / other 5).
+- AI ciklo būsena **LAUKIA**: 10:20 LT startas yra prieš 13:20 LT; 2026-11-15 vienkartinė idempotency išimtis galioja. Kitas pilnas ciklas 2026-11-16 13:20 LT. Po PR #220 `content-review_model_output_invalid_json` dar nepatvirtintas / nepaneigtas nauju ciklu; health nerodo konkretaus content-review agento statuso. Repair retry buvimas **NEPATVIRTINTAS**.
+- Po Control Center run #43715464297 naujo sync-control-api `workflow_run` vykdymo nėra; paskutinis patvirtintas #43703281342 (success, 10 s). Triggerio reakcija **NEPATVIRTINTA**; rankinis sync neatliktas.
+- Atvirų PR nėra. Kodo, Worker/D1, Cloudflare, DNS, secrets, ARO Vet, viešo turinio ar mokamų paslaugų pakeitimų nėra. Aktyvus darbo laikas NEMATUOTAS.
+- Kitas žingsnis: daily-suite ir Control Center cron stebėsena; sync-control-api triggerio patikra; 2026-11-16 13:20 LT post-PR #220 AI ciklo ir JSON patikra. Issue #145 neuždaryti, kol daily-suite ir Control Center schedule veikia ir `recovery_confirmed=true`.
+
+---
+
 ## Galutinis patikrinimas – 2026-11-15 14:52 LT
 
 - Po antro darbo žurnalo įrašo commit main HEAD yra `8278c4245f84f081aab19f9378b0a5957680df2b`.
