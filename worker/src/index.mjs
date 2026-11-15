@@ -378,7 +378,7 @@ async function handle(request, env) {
       ) return response({ error: "invalid_completion" }, 400, origin);
       const result = await env.DB.prepare(
         "UPDATE tasks SET status = ?, result_json = ?, completed_at = ? " +
-        "WHERE id = ? AND status = 'running' AND claimed_by = 'technical-seo' "
+        "WHERE id = ? AND status = 'running' AND claimed_by = 'technical-seo' AND assigned_agent = 'technical-seo' AND task_type = 'check_site' "
       ).bind(body.status, JSON.stringify(body.result || {}), new Date().toISOString(), completion[1]).run();
       if (!result.meta?.changes) return response({ error: "task_not_owned_or_not_running" }, 409, origin);
       return response({ accepted: true, task_id: completion[1], status: body.status }, 200, origin);
