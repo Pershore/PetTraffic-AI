@@ -329,3 +329,6 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 - Issue #145 tebėra open; neuždaryti, kol nepatvirtintas naujas AI ciklas ir D1 atminties atnaujinimas.
 - Atnaujintas `automation-history/reports/history/project-state/latest.md` commit `aea2e6d85ca159d44a78f6f418397ac748aa4d92` su tiksliomis patikrintomis būsenomis ir laukiančiais veiksmais.
 - Jokie production, Worker/D1, DNS, secrets, ARO Vet, viešo turinio ar mokamų paslaugų pakeitimai neatlikti. Papildomos Firecrawl užklausos naudotos tik sveikatos ir workflow patikrai; išlaikomas 0 €/mėn. biudžetas.
+
+
+| 2026-11-15 | Tęstinumo auditas: perdavimo dokumentų, GitHub Actions, daily-suite cron ir Worker/D1 health pakartotinė patikra | 09:52 LT–neatskirta | NEMATUOTA | NEMATUOTA | Laukiama suplanuoto 10:20 ciklo; laukimo trukmė neapskaičiuota | NEAPSKAIČIUOTA | Worker `/health` HTTP 200; D1/schema connected; heartbeat 09:45:47 LT, site 200, DB OK. 2026-11-15 agentų ciklas dar neatėjo; daily-suite `event=schedule` paleidimo iki 09:52 nerasta. Jokių kodo ar production pakeitimų. |
