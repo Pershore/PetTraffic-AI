@@ -1,5 +1,5 @@
 name: Sync PetTraffic snapshots to central API
-run-name: ${{ github.event_name == 'workflow_dispatch' && format('Sync daily-suite snapshot #{0}', inputs.source_run_id) || 'Sync PetTraffic snapshots to central API' }}
+run-name: "${{ github.event_name == 'workflow_dispatch' && format('Sync daily-suite snapshot #{0}', inputs.source_run_id) || 'Sync PetTraffic snapshots to central API' }}"
 
 on:
   workflow_run:
