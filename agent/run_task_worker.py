@@ -68,6 +68,28 @@ def post_json(path: str, payload: dict, token: str) -> dict:
     return data
 
 
+def get_json(path: str, token: str) -> dict:
+    request = Request(
+        api_url() + path,
+        headers={
+            "Authorization": "Bearer " + token,
+            "Accept": "application/json",
+            "User-Agent": "PetTraffic-ReadOnly-TaskRunner/1.0",
+        },
+        method="GET",
+    )
+    try:
+        with urlopen(request, timeout=30) as response:
+            data = json.loads(response.read().decode("utf-8"))
+    except HTTPError as exc:
+        raise RuntimeError(f"Control API readback failed (HTTP {exc.code}).") from None
+    except (URLError, TimeoutError, OSError) as exc:
+        raise RuntimeError(f"Control API readback failed ({type(exc).__name__}).") from None
+    if not isinstance(data, dict):
+        raise RuntimeError("Control API returned an invalid readback response.")
+    return data
+
+
 def command_for_task(task: object) -> list[str]:
     """Map one exact task schema to a fixed script; never execute task-supplied commands."""
     if not isinstance(task, dict):
@@ -135,7 +157,24 @@ def main() -> int:
         )
         if completed.get("accepted") is not True:
             raise RuntimeError("Control API did not confirm task completion.")
-        print(f"Read-only task {task_id} completed with exit code {exit_code}.")
+
+        # Verify that the completion record is independently readable from D1.
+        readback_token = request_oidc_token()
+        readback = get_json(f"/v1/tasks/{task_id}", readback_token)
+        stored_task = readback.get("task")
+        if not isinstance(stored_task, dict):
+            raise RuntimeError("D1 readback did not return the completed task.")
+        expected_status = "completed" if exit_code == 0 else "failed"
+        stored_result = stored_task.get("result")
+        if (
+            stored_task.get("id") != task_id
+            or stored_task.get("status") != expected_status
+            or not isinstance(stored_result, dict)
+            or stored_result.get("exit_code") != exit_code
+        ):
+            raise RuntimeError("D1 readback did not match the task completion result.")
+
+        print(f"Read-only task {task_id} completed; D1 readback verified (exit code {exit_code}).")
         print(summary)
         return 0 if exit_code == 0 else 1
     except (HTTPError, URLError, TimeoutError, OSError, ValueError, RuntimeError, json.JSONDecodeError) as exc:
