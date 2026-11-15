@@ -5,10 +5,11 @@ Atskiras, read-only projekto stebėjimo puslapis: `https://pettraffic-ai.pages.d
 
 ## Duomenų šaltiniai
 - GitHub REST vieši repo endpointai: paskutiniai 100 Actions run, atviri PR, main commit ir issue #145.
-- Worker `GET /health`: tik vieši agreguoti sveikatos metaduomenys; Worker leidžia CORS tik `https://pettraffic-ai.pages.dev`.
+- Worker `GET /health`: tik vieši agreguoti sveikatos metaduomenys; Worker leidžia CORS tik `https://pettraffic-ai.pages.dev`. Todėl branch preview domenas Worker būsenos tiesiogiai neskaito ir aiškiai rodo preview CORS ribojimą; produkciniame Pages domene šis šaltinis leidžiamas.
 - Viešos svetainės `HEAD /` patikra.
 - `automation-history/reports/history/analytics/YYYY-MM-DD.json` ir `topic-radar/YYYY-MM-DD.json`: tik privatumo požiūriu filtruoti agregatai; bandomi naujausi 7 kalendorinių dienų archyvai.
 - Lighthouse naujausias sėkmingas GitHub Actions run rodomas kaip nuoroda į originalų įrodymą; balai neišgalvojami ir neperrašomi.
+- Agentų skiltyje rodomi Worker orchestration, Control Core, D1 atminties metaduomenys, rekomendacijų / evidence-gap skaičiai ir specialistų būsenos; PR skiltyje – visi atviri PR; įrankių skiltyje – pagrindiniai vieši svetainės puslapiai.
 
 ## Atnaujinimas ir ribojimai
 - Puslapis atnaujina duomenis atidarius, paspaudus „Atnaujinti“ arba kas 5 minutes, kol puslapis atidarytas.
