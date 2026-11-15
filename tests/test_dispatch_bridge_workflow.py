@@ -23,6 +23,8 @@ class DispatchBridgeWorkflowTests(unittest.TestCase):
                 self.assertIn(f'"{workflow_id}"', workflow)
         self.assertIn("github.rest.actions.createWorkflowDispatch", workflow)
         self.assertIn('ref: "main"', workflow)
+        control_center = Path(".github/workflows/control-center.yml").read_text(encoding="utf-8")
+        self.assertIn("workflow_dispatch:", control_center)
 
     def test_bridge_has_deduplication_and_no_secrets_or_external_services(self):
         workflow = Path(".github/workflows/dispatch-daily-suite.yml").read_text(encoding="utf-8")
