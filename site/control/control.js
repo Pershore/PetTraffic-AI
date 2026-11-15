@@ -45,12 +45,21 @@ async function getText(url, timeout=10000) {
  finally {clearTimeout(timer);}
 }
 function setState(id,text,cls){const el=$(id);if(el){el.textContent=text;el.className="state "+cls;}}
-function latestFor(file){const d=workflowDefinitions.find(x=>x.file===file);return state.runs.find(r=>(r.path||"").includes(file)||(d?.match&&String(r.name||"").toLowerCase().includes(d.match)))||null;}
-function latestEvent(file,event){const d=workflowDefinitions.find(x=>x.file===file);return state.runs.find(r=>r.event===event&&((r.path||"").includes(file)||(d?.match&&String(r.name||"").toLowerCase().includes(d.match))))||null;}
+function latestMainRuns(){
+ const latest=new Map();
+ for(const run of state.runs){
+  if(run.head_branch!=="main"||run.event==="pull_request")continue;
+  const key=String(run.workflow_id||run.path||run.name||run.id);
+  if(!latest.has(key))latest.set(key,run);
+ }
+ return [...latest.values()];
+}
+function latestFor(file){const d=workflowDefinitions.find(x=>x.file===file);return latestMainRuns().find(r=>(r.path||"").includes(file)||(d?.match&&String(r.name||"").toLowerCase().includes(d.match)))||null;}
+function latestEvent(file,event){const d=workflowDefinitions.find(x=>x.file===file);return state.runs.find(r=>r.head_branch==="main"&&r.event===event&&((r.path||"").includes(file)||(d?.match&&String(r.name||"").toLowerCase().includes(d.match))))||null;}
 function renderStats(){
- const site=state.site;const h=state.health;const latestRuns=state.runs.slice(0,100);const failed=latestRuns.filter(r=>r.status==="completed"&&r.conclusion!=="success").length;const open=state.prs.length;
+ const site=state.site;const h=state.health;const latestRuns=state.runs.slice(0,100);const mainRuns=latestMainRuns();const failed=mainRuns.filter(r=>r.status==="completed"&&["failure","timed_out","action_required"].includes(r.conclusion)).length;const open=state.prs.length;
  $("stat-site").textContent=site?.ok?"HTTP 200":"Neatsako";$("stat-site").className=site?.ok?"good-text":"bad-text";$("stat-site-detail").textContent=site?.url||SITE;
- $("stat-actions").textContent=latestRuns.length?String(latestRuns.length):"—";$("stat-actions-detail").textContent="main "+(state.commit?.sha||"").slice(0,7)+" · "+failed+" nesėkmingų iš "+latestRuns.length+" run";
+ $("stat-actions").textContent=latestRuns.length?String(latestRuns.length):"—";$("stat-actions-detail").textContent="main "+(state.commit?.sha||"").slice(0,7)+" · "+failed+" paskutiniai nesėkmingi main workflow";
  $("stat-worker").textContent=h?.preview_blocked?"Tik produkcijos domene":h?.ok&&h?.database==="connected"?"Prisijungęs":"Nežinoma";$("stat-worker").className=h?.ok?"good-text":"warn-text";$("stat-worker-detail").textContent=h?.preview_blocked?"Preview CORS ribojamas oficialiu domenu":h?.control_core_schema==="connected"?"D1 + Control Core prijungti":"Nepatvirtinta";
  $("stat-prs").textContent=String(open);$("stat-prs-detail").textContent="Atviri PR main šakai";
  const ai=aiCycleStatus();$("stat-ai").textContent=ai.label;$("stat-ai").className=ai.cls==="good"?"good-text":ai.cls==="bad"?"bad-text":"warn-text";$("stat-ai-detail").textContent=ai.detail;
@@ -76,7 +85,7 @@ function renderAttention(){
  const items=[];const daily=latestEvent("daily-suite.yml","schedule");const ai=aiCycleStatus();
  if(!daily||localDateOf(daily.created_at)!==localDate())items.push({title:"Daily-suite schedule įrodymas",detail:daily?"Paskutinis schedule: "+dateLT(daily.created_at):"Naujausio sąrašo schedule paleidimo nerasta",cls:"warn"});
  if(ai.cls!=="good")items.push({title:"Worker agentų ciklas: "+ai.label,detail:ai.detail,cls:ai.cls});
- const bad=state.runs.filter(r=>r.status==="completed"&&r.conclusion!=="success").slice(0,3);
+ const bad=latestMainRuns().filter(r=>r.status==="completed"&&["failure","timed_out","action_required"].includes(r.conclusion)).slice(0,3);
  bad.forEach(r=>items.push({title:r.name+" · "+r.conclusion,detail:"#"+r.run_number+" · "+dateLT(r.created_at),cls:"bad",url:r.html_url}));
  if(state.prs.length)items.push({title:state.prs.length+" atviri PR",detail:state.prs.slice(0,3).map(p=>"#"+p.number+" "+p.title).join(" · "),cls:"warn",url:state.prs[0].html_url});
  if(state.issue?.state==="open")items.push({title:"Pagrindinis alert #145 atviras",detail:state.issue.title||"Reikia Control Center recovery įrodymo",cls:"warn",url:state.issue.html_url});

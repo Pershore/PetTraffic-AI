@@ -52,6 +52,14 @@ class ControlDashboardTests(unittest.TestCase):
         self.assertIn("Object.keys(sources)", script)
         self.assertIn("state[sourceKeys[index]]=result.value", script)
 
+    def test_operational_status_ignores_pull_request_and_superseded_failures(self):
+        script = SCRIPT.read_text(encoding="utf-8")
+        self.assertIn("function latestMainRuns()", script)
+        self.assertIn('if(run.head_branch!=="main"||run.event==="pull_request")continue;', script)
+        self.assertIn("latestMainRuns().find", script)
+        self.assertIn('function latestEvent(file,event){const d=workflowDefinitions.find(x=>x.file===file);return state.runs.find(r=>r.head_branch==="main"&&r.event===event', script)
+        self.assertIn('latestMainRuns().filter(r=>r.status==="completed"&&["failure","timed_out","action_required"].includes(r.conclusion))', script)
+
     def test_dashboard_uses_newest_analytics_and_topic_snapshots(self):
         script = SCRIPT.read_text(encoding="utf-8")
         self.assertIn("function latestSnapshot(archive)", script)
