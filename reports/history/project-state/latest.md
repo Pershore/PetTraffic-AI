@@ -73,3 +73,13 @@
 - Firecrawl nemokamų kreditų perspėjimas: sunaudota 80% iš 1 000; vengti nebūtinų scrape užklausų.
 
 > Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.
+
+
+## 10:24 Termux / Codex prisijungimo bandymas
+
+- Vartotojas išsiuntė vykdymo rezultatą: `cd ~/PetTraffic-AI` grąžino `No such file or directory` ir terminalas liko `~ $`.
+- Tai patvirtina, kad komanda buvo vykdoma pagrindinėje Termux aplinkoje, kurioje saugyklos katalogo nėra. Projekto dokumentuotas bootstrap klonuoja saugyklą į `$HOME/PetTraffic-AI` pasirinktoje Debian/Ubuntu proot aplinkoje; Termux pagrindinis shell ir proot shell yra atskiros failų sistemos / namų aplinkos.
+- Ankstesnė instrukcija praleido proot įėjimo žingsnį. Tai buvo koordinatoriaus klaida; vartotojui nebereikia kartoti tos pačios komandos.
+- GitHub `docs/PROJECT_MEMORY.md` aiškiai patvirtina, kad ChatGPT neturi tiesioginės Android/Termux shell prieigos, negali vykdyti telefono komandų ar patvirtinti vietinio Codex būsenos. GitHub CI „Termux Codex bridge checks“ tikrina diegimo skriptus, o ne vartotojo telefoną.
+- Būsena: GitHub integracija – PATIKRINTA; Termux lokali aplinka – anksčiau PATVIRTINTA pagal vartotojo 2026-11-14 išvestį; šio bandymo metu pateikta komanda – NEVYKDYTA dėl neteisingo shell/katalogo; tiesioginis ChatGPT–Termux ryšys – NEPRIJUNGTAS.
+- Nekeisti telefono ar produkcinės aplinkos; automatinis Codex užduočių paėmimas ir nuotolinis shell valdymas neįjungti. Toliau darbą tęsti per GitHub integraciją ir esamus GitHub Actions; vietinį Codex naudoti tik tada, kai egzistuoja reali nuotolinio vykdymo jungtis.
