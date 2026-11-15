@@ -332,3 +332,5 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 
 
 | 2026-11-15 | Tęstinumo auditas: perdavimo dokumentų, GitHub Actions, daily-suite cron ir Worker/D1 health pakartotinė patikra | 09:52 LT–neatskirta | NEMATUOTA | NEMATUOTA | Laukiama suplanuoto 10:20 ciklo; laukimo trukmė neapskaičiuota | NEAPSKAIČIUOTA | Worker `/health` HTTP 200; D1/schema connected; heartbeat 09:45:47 LT, site 200, DB OK. 2026-11-15 agentų ciklas dar neatėjo; daily-suite `event=schedule` paleidimo iki 09:52 nerasta. Jokių kodo ar production pakeitimų. |
+
+| 2026-11-15 | Termux / Codex ryšio bandymo diagnostika | 10:23–10:24 LT | NEMATUOTA | NEMATUOTA | NEMATUOTA | 1 komanda, neteisingas shell kontekstas | Vartotojo `cd ~/PetTraffic-AI` komanda paleista pagrindiniame Termux shell ir grąžino `No such file or directory`; ankstesnė instrukcija praleido Debian/Ubuntu proot įėjimą. Projekto atmintis patvirtina, kad ChatGPT neturi Android shell prieigos; tiesioginis tiltas ir automatinis Codex užduočių paėmimas neįjungti. Koordinatoriaus klaida užregistruota; vartotojo nekartotinai prašyti komandų. State commit `b2e5f6c` automation-history. |
