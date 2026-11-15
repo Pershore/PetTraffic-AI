@@ -131,3 +131,13 @@
 - PR #212 `docs/nov15-live-schedule-status` pakeičia tik `docs/PROJECT_MEMORY.md` ir `docs/PETTRAFFIC_AI_HANDOVER_2026-11-15.md`.
 - GitHub Actions run `43695723083`: `Validate static website and automation code` – **success**; HTML/SEO/sitemap patikra, Python compile ir testų grupės – success; 103 Python testai `OK`.
 - PR #212 mergeable=true, tačiau paliktas **open** pagal taisyklę nevykdyti automatinio PR sujungimo. Dokumentacijos pakeitimai nėra production deploy įrodymas.
+
+
+## 10:43 svetainės turinio ir techninio SEO peržiūra
+
+- Patikrinti homepage, about, privacy ir 4 pagrindiniai gidai: visi 7 HTML puslapiai turi title, meta description, canonical ir H1.
+- Title ilgiai: 32–71 simboliai; meta description: 99–144 simboliai. Ilgesnių straipsnių title yra 68–71 simbolio, tačiau naujos GSC užklausų / parodymų ataskaitos nėra, todėl nekeisti jų spėliojant.
+- Visi 4 pagrindiniai gidai turi šaltinių skyrius; kiekvienas turi vidinių nuorodų į susijusius puslapius. Veterinariniai skubumo perspėjimai ir informacinio turinio ribojimai matomi straipsniuose.
+- Sitemap yra 7 URL: homepage, about, privacy ir 4 pagrindiniai gidai. robots.txt leidžia crawlinti ir nurodo sitemap.
+- site/_redirects yra tuščias, bet tai sąmoningas PR #60 sprendimas: senų, semantiškai nesusijusių straipsnių URL neturi būti nukreipiami į bendrą puslapį ar nesusijusį gidą; jie turi grąžinti tikrą 404. PR #60 body ir diff tai patvirtina. 404 puslapis egzistuoja ir turi noindex,follow.
+- Kodo pakeitimų nereikia; SEO pakeitimus atidėti iki naujų GSC duomenų. Static validation 43695723083 patvirtino HTML/SEO/sitemap testus.
