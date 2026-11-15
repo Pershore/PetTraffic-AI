@@ -454,7 +454,7 @@ def main() -> int:
                     "|---|---:|---:|---:|---:|",
                 ]
                 for row in pages["rows"]:
-                    page_url = row.get("keys", [""])[0].replace("|", "%7C")
+                    page_url = str(row.get("keys", [""])[0]).split("?", 1)[0].split("#", 1)[0].replace("|", "%7C")
                     lines.append(
                         f"| {page_url} | {fmt(float(row.get('clicks', 0)))} | "
                         f"{fmt(float(row.get('impressions', 0)))} | "
