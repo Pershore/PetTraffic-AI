@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { runAgentOrchestration, isVilniusAgentRunTime, isAgentScheduledEvent, parseResult, extractResponseText, callModel } from "../src/agents.mjs";
+import { runAgentOrchestration, isVilniusAgentRunTime, isAgentScheduledEvent, isAgentCatchUpEvent, shouldRunAgentOrchestration, parseResult, extractResponseText, callModel } from "../src/agents.mjs";
 function mockEnv({ai=true,existingRun=false,reserveErrorAt=0,reserveErrorBeforeCommit=false,reserveReadbackError=false,invalidEventPayload=false,modelResponse=null,modelResponses=null}={}) {
  const state={inserted:false,aiCalls:0,updates:[],reservationErrorThrown:false};
  const env={FETCH:async()=>new Response("<html><body><p>Test content</p></body></html>",{status:200}),DB:{prepare(sql){return {
@@ -189,3 +189,43 @@ test("agent cron ignores heartbeat events and missing scheduled timestamps",()=>
 
 
 test("model prompt constrains JSON size to reduce truncated specialist responses",async()=>{let prompt="";const env={AI:{run:async(model,options)=>{prompt=options.input[0].content;return{response:JSON.stringify({status:"reviewed",findings:[],recommendations:[],evidence_gaps:[]})};}}};await callModel(env,"Base role.","Short input");assert.match(prompt,/vieną JSON objektą be Markdown/);assert.match(prompt,/status \(tiksliai „reviewed“ arba „needs_evidence“\)/);assert.match(prompt,/daugiausia po 1 trumpą įrašą/);assert.match(prompt,/iki 120 simbolių/);});
+
+
+test("heartbeat catch-up opens at 13:20 Vilnius in both winter and summer", () => {
+ const winter = { cron: "*/15 * * * *", scheduledTime: Date.parse("2026-11-14T11:30:00.000Z") };
+ const summer = { cron: "*/15 * * * *", scheduledTime: Date.parse("2026-06-14T10:30:00.000Z") };
+ const before = { cron: "*/15 * * * *", scheduledTime: Date.parse("2026-11-14T11:15:00.000Z") };
+ assert.equal(isAgentCatchUpEvent(winter), true);
+ assert.equal(isAgentCatchUpEvent(summer), true);
+ assert.equal(isAgentCatchUpEvent(before), false);
+ assert.equal(isAgentCatchUpEvent({ cron: "20 10,11 * * *", scheduledTime: winter.scheduledTime }), false);
+});
+
+test("daily orchestration waits for a same-day analytics or topic snapshot", async () => {
+ const controller = { cron: "*/15 * * * *", scheduledTime: Date.parse("2026-11-15T11:30:00.000Z") };
+ const makeEnv = ({existingRun=null,rows=[]}={}) => ({
+  DB: { prepare(sql) {
+   return {
+    bind() { return { first: async () => sql.includes("FROM agent_runs") ? existingRun : null }; },
+    all: async () => ({results: rows}),
+   };
+  } },
+ });
+ const today = makeEnv({rows:[{kind:"analytics_snapshot",created_at:"2026-11-15T13:51:00.000Z"}]});
+ const yesterday = makeEnv({rows:[{kind:"topic_snapshot",created_at:"2026-11-14T13:51:00.000Z"}]});
+ const none = makeEnv();
+ assert.equal(await shouldRunAgentOrchestration(today,controller), true);
+ assert.equal(await shouldRunAgentOrchestration(yesterday,controller), false);
+ assert.equal(await shouldRunAgentOrchestration(none,controller), false);
+});
+
+test("daily orchestration never starts a second time after a run was reserved", async () => {
+ const controller = { cron: "20 10,11 * * *", scheduledTime: Date.parse("2026-11-15T11:20:00.000Z") };
+ const env = {
+  DB: { prepare() { return { bind() { return {
+   first: async () => ({run_date:"2026-11-15"}),
+   all: async () => { throw new Error("snapshot lookup should not run after an existing daily run"); },
+  }; } }; } },
+ };
+ assert.equal(await shouldRunAgentOrchestration(env,controller), false);
+});

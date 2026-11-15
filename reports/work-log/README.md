@@ -487,3 +487,11 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 - Lighthouse push/site-change run #43723293496 – success. Tai patvirtina šio pakeitimų ciklo auditą, bet ne savaitinį event=schedule; kitas suplanuotas weekly paleidimas 2026-11-16 07:27 UTC (09:27 LT).
 - Naujausia automation-history būsena #43723668274: Control Center sėkmingas, D1/Worker connected, vienintelė aktyvi problema – laukiantis po-deploy Worker AI ciklas ir Control Core memory įrodymas. Issue #145 paliekamas atviras iki 2026-11-16 13:20 LT ciklo.
 - Nekeista produkcinė Worker/D1 konfigūracija, DNS, secrets, ARO Vet, viešas turinys, billing ar mokamos paslaugos.
+
+## 2026-11-15 17:25–17:35 LT – Worker AI ciklo vėluojančių duomenų catch-up pataisa
+
+- Prieš keitimą patikrinta: privalomi projekto istorijos failai, main commit 51601a6, open PR, naujausi Actions, Worker cron registracija ir heartbeat. Patvirtinta, kad Daily-suite analytics/topic snapshot buvo perduoti į D1 ir perskaityti; trūkumas buvo Worker grafike – AI vykdomas tik vienu 13:20 įvykiu, o vėlesni heartbeat jo neatkuria.
+- Atskira šaka fix/worker-agent-daily-input-catchup; PR #240 atidarytas. Pakeista: worker/src/agents.mjs, worker/src/index.mjs, Worker agentų testai ir Worker README. Įdėtas tos pačios LT dienos D1 snapshot pasirengimo vartas ir heartbeat catch-up po 13:20, paliekant vieno ciklo per dieną apsaugą.
+- PR testai: Worker Node 63/63 success, Worker Python 6/6 success, Cloudflare access validation success; deploy job skipped. Site-check 9 HTML puslapių validator + compileall + 22 agent testai + 134 bendri testai success. Sync PR testai success. Nuorodos: #43730277368, #43730277297, #43730277289.
+- PR nesujungtas; production Worker neįdiegtas, nes merge automatiškai paleistų Worker production deploy. Reikalingas atskiras vartotojo patvirtinimas. Naujo realaus AI ciklo ir D1 atminties readback dar nėra.
+- Nepakeisti DNS, Cloudflare secrets/permissions, ARO Vet, viešas turinys, billing ir mokamos paslaugos; /v1/tasks* išlieka išjungta. Aktyvus darbo laikas nematuotas.

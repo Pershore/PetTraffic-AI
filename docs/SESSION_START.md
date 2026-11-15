@@ -122,3 +122,14 @@ Tikras bootstrap iš Termux patvirtintas: Linux proot, Git, GitHub CLI, Codex CL
 
 - Aktyvių suplanuotų užduočių limitas yra 3; nauja užduotis nebuvo sukurta. Esamas greičio stebėjimo agentas papildytas Worker AI 13:20 LT ciklo patikra ir perkeltas į 14:00 LT.
 - Pagrindinis koordinatorius lieka 11:45 LT; ARO Vet analitika lieka 18:24 LT. 14:00 agentas tikrina Control Center artefaktą ir nebandys rankiniu būdu paleisti Worker AI.
+
+
+## 2026-11-15 17:35 LT – AI ciklo vėluojančių duomenų atkūrimo pataisa (PR #240)
+
+- **PARUOŠTA / PR patikrinta:** PR #240 https://github.com/Pershore/PetTraffic-AI/pull/240 prideda tos pačios Lietuvos dienos GA4 arba temų snapshot pasirengimo patikrą prieš AI ciklą.
+- Jei 13:20 LT paleidimo metu duomenys dar nepasiekė D1, kiti 15 min. heartbeat po 13:20 pakartoja tik pasirengimo patikrą ir paleidžia ciklą, kai tos pačios dienos duomenys atsiranda. Esamas agent_runs.run_date išsaugo vieno ciklo per dieną ribą.
+- PR Worker patikra #43730277368 – success: 63/63 Node testai, 6/6 Worker Python testai, Cloudflare prieigos validacija success; deploy job **skipped**, nes tai PR.
+- PR site-check #43730277297 – success: 9 HTML puslapių validacija, compileall, 22 agent testai ir 134 bendri testai. Snapshot sync PR patikra #43730277289 – success.
+- PR nesujungtas ir Worker produkcijoje **neįdiegtas**. Tai sąmoninga: sujungimas automatiškai suaktyvintų Worker produkcinį diegimą. Reikia atskiro patvirtinimo šiam diegimui.
+- Nekeisti DNS, secrets, Cloudflare prieigų, ARO Vet, viešo turinio ar mokamų paslaugų. /v1/tasks* lieka išjungta.
+- Kitas veiksmas: gauti atskirą leidimą sujungti PR #240 ir įdiegti Worker; po to patikrinti realų 13:20 / heartbeat catch-up ciklą bei D1 atmintį.

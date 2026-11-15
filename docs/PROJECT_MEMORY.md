@@ -536,3 +536,12 @@ Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama 
 - /health HTTP 200; D1 ir Control Core schema connected; heartbeat site HTTP 200.
 - 2026-11-15 ciklas completed, 5 AI calls, error_code=null, bet Control Core needs_evidence, 8 spragos; analytics error, topics no data, technical-seo monitor, content-review invalid_json.
 - Dėl vieno ciklo per dieną ribos po ankstesnio 10:20 LT ciklo jo nekartojame. Kitas pilnas ciklas numatytas 2026-11-16 13:20 Europe/Vilnius. Nelaikyti jo pilnai patvirtintu, kol nebus naujo realaus ciklo ir atnaujintos atminties.
+
+
+## 2026-11-15 17:35 LT – AI agentų duomenų laukimo ir catch-up pataisa (PR #240)
+
+- Aptikta grandinės spraga: Worker AI orkestravimas buvo kviečiamas tik tiksliu 13:20 LT cron įvykiu. Jei daily-suite arba D1 sinchronizacija vėlavo, vėlesni 15 min. heartbeat tikrino svetainę ir DB, bet AI ciklo nebeatkūrė.
+- PR #240 (https://github.com/Pershore/PetTraffic-AI/pull/240) prideda pasirengimo vartą: prieš dienos rezervaciją turi būti bent vienas tos pačios Europe/Vilnius dienos analytics_snapshot arba topic_snapshot įrašas D1. Jei įrašas vėluoja, heartbeat po 13:20 iš naujo patikrina pasirengimą ir paleidžia dar nepradėtą dienos ciklą.
+- Vieno paleidimo per dieną apsauga išlieka per esamą agent_runs unikalų run_date; /v1/tasks* neišjungiama iš saugaus 503 režimo ir neįjungiamas savavališkas veiksmų vykdymas.
+- **PATIKRINTA PR CI:** Worker Node testai 63/63, Worker Python testai 6/6; Cloudflare prieigos validacija success, deploy job skipped. Site-check: 9 HTML puslapių, compileall, 22 agent testai, 134 bendri testai – success. Sync PR testai – success.
+- **LAUKIA:** PR nesujungtas, Worker produkcijoje neįdiegtas. PR sujungimas paleistų automatinį Worker production deploy. Kitas etapas – atskiras vartotojo leidimas sujungti / diegti, tada tikras runtime bandymas ir D1 atminties readback.
