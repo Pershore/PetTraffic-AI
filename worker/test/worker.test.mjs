@@ -554,7 +554,7 @@ test("AI request errors are converted into an explicit evidence gap", async () =
 const TASK_DISPATCH_WORKFLOW = "Pershore/PetTraffic-AI/.github/workflows/dispatch-daily-suite.yml@refs/heads/main";
 const TASK_RUNNER_WORKFLOW = "Pershore/PetTraffic-AI/.github/workflows/run-readonly-tasks.yml@refs/heads/main";
 const taskDispatcherToken = () => oidcToken({ workflow_ref: TASK_DISPATCH_WORKFLOW, event_name: "issue_comment" });
-const taskRunnerToken = (event_name = "schedule") => oidcToken({ workflow_ref: TASK_RUNNER_WORKFLOW, event_name });
+const taskRunnerToken = (event_name = "workflow_dispatch") => oidcToken({ workflow_ref: TASK_RUNNER_WORKFLOW, event_name });
 
 test("task API stays disabled by default even for a valid dispatcher identity", async () => {
   await withOidcJwks(async () => {
@@ -761,6 +761,58 @@ test("dedicated runner can complete a task owned by technical SEO", async () => 
     }), enabledEnv);
     assert.equal(response.status, 200);
     assert.match(updatedSql, /claimed_by = 'technical-seo'/);
+  });
+});
+
+test("dedicated runner can read its completed task back from D1", async () => {
+  await withOidcJwks(async () => {
+    const task = {
+      id: "11111111-1111-4111-8111-111111111111",
+      status: "completed",
+      attempt_count: 1,
+      result_json: JSON.stringify({ exit_code: 0, summary: "Site check passed." }),
+      created_at: "2026-11-15T17:00:00.000Z",
+      completed_at: "2026-11-15T17:01:00.000Z",
+    };
+    const enabledEnv = {
+      ...env,
+      TASK_API_ENABLED: "true",
+      DB: {
+        prepare(sql) {
+          return {
+            bind() {
+              return { first: async () => sql.includes("SELECT id, status, attempt_count")
+                ? task : null };
+            },
+          };
+        },
+      },
+    };
+    const response = await worker.fetch(new Request(
+      "https://api.example/v1/tasks/11111111-1111-4111-8111-111111111111",
+      { headers: { authorization: "Bearer " + taskRunnerToken() } },
+    ), enabledEnv);
+    assert.equal(response.status, 200);
+    assert.deepEqual((await response.json()).task, {
+      id: task.id,
+      status: "completed",
+      attempt_count: 1,
+      result: { exit_code: 0, summary: "Site check passed." },
+      created_at: task.created_at,
+      completed_at: task.completed_at,
+    });
+  });
+});
+
+test("task dispatcher cannot read task completion records", async () => {
+  await withOidcJwks(async () => {
+    const enabledEnv = { ...env, TASK_API_ENABLED: "true" };
+    const response = await worker.fetch(new Request(
+      "https://api.example/v1/tasks/11111111-1111-4111-8111-111111111111",
+      { headers: { authorization: "Bearer " + taskDispatcherToken() } },
+    ), enabledEnv);
+    assert.equal(response.status, 403);
+    assert.deepEqual(await response.json(), { error: "forbidden_role" });
   });
 });
 
