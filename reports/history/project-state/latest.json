@@ -147,6 +147,76 @@
       "ARO Vet, DNS, Worker production, D1 schema, secrets ir viešas turinys nekeisti",
       "AI agentų rekomendacijos nesuteikia vykdymo teisių"
     ],
-    "checked_time_precision": "NEMATUOTA"
+    "checked_time_precision": "NEMATUOTA",
+    "latest_followup": {
+      "source_commit": "e923a69458cf941fe3aaa3579205b5fb4c242530",
+      "completed": [
+        {
+          "name": "Worker cron diagnostics",
+          "status": "PATIKRINTA",
+          "run_id": 43703245674,
+          "detail": "Cloudflare schedules */15 * * * * and 20 10,11 * * * UTC confirmed; D1 heartbeat advanced 10:15:13.515Z to 10:20:24.067Z; D1, schema, site and DB healthy."
+        },
+        {
+          "name": "Daily-suite catch-up",
+          "status": "PATIKRINTA",
+          "run_id": 43696960921,
+          "event": "workflow_dispatch",
+          "jobs": [
+            "analytics",
+            "topic-radar",
+            "live-check"
+          ],
+          "conclusion": "success"
+        },
+        {
+          "name": "D1 snapshots",
+          "status": "PATIKRINTA",
+          "runs": [
+            43698010982,
+            43698006099
+          ],
+          "detail": "Analytics/topic and Control Center/recommendation snapshot write/readback verified."
+        },
+        {
+          "name": "Post-merge site checks",
+          "status": "PATIKRINTA",
+          "run_id": 43703360121,
+          "conclusion": "success"
+        }
+      ],
+      "pending": [
+        {
+          "name": "GitHub daily-suite schedule",
+          "status": "NEPATVIRTINTA",
+          "workflow_state": "active",
+          "schedule_event_count": 0,
+          "detail": "2026-11-15 schedule event absent; repository Actions permissions endpoint returned 401; root cause not confirmed."
+        },
+        {
+          "name": "GitHub Control Center schedule",
+          "status": "NEPATVIRTINTA",
+          "workflow_state": "active",
+          "last_schedule": "2026-11-14T15:18:42Z",
+          "detail": "2026-11-15 schedule event absent; repository Actions permissions endpoint returned 401; root cause not confirmed."
+        },
+        {
+          "name": "Post-PR #220 AI runtime cycle",
+          "status": "LAUKIA",
+          "due": "2026-11-16T13:20:00+02:00",
+          "detail": "Current live health still reflects the pre-deploy 2026-11-15 08:20 UTC cycle; verify normalized specialist statuses, valid JSON, evidence gaps and D1 memory after the next idempotent daily run."
+        },
+        {
+          "name": "Control Core evidence completeness",
+          "status": "NEPATVIRTINTA",
+          "detail": "Current persisted result needs_evidence, 2 recommendations, 8 gaps; memory present."
+        }
+      ],
+      "guardrails": [
+        "0 €/mėn. additional services",
+        "No ARO Vet, DNS, Worker production config, D1 schema, secrets or public content changes",
+        "No automatic publishing"
+      ]
+    }
   }
 }
