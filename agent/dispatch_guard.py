@@ -14,6 +14,7 @@ COMMAND_ACTIONS = {
     "/pettraffic-run-daily-suite": "daily-suite",
     "/pettraffic-sync-latest": "sync-latest",
     "/pettraffic-run-control-center": "control-center",
+    "/pettraffic-run-lighthouse": "lighthouse",
 }
 
 
