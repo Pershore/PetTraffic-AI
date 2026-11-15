@@ -93,7 +93,7 @@ const GITHUB_OIDC_IDENTITIES = {
   },
   task_runner: {
     workflow_ref: "Pershore/PetTraffic-AI/.github/workflows/run-readonly-tasks.yml@refs/heads/main",
-    events: new Set(["schedule", "workflow_dispatch"]),
+    events: new Set(["workflow_dispatch"]),
   },
 };
 
@@ -360,6 +360,33 @@ async function handle(request, env) {
           priority: task.priority,
           payload: JSON.parse(task.payload_json),
           created_at: task.created_at,
+        },
+      }, 200, origin);
+    }
+
+    const taskReadback = url.pathname.match(/^\/v1\/tasks\/([a-f0-9-]+)$/i);
+    if (taskReadback && request.method === "GET") {
+      if (identity !== "task_runner") return response({ error: "forbidden_role" }, 403, origin);
+      const task = await env.DB.prepare(
+        "SELECT id, status, attempt_count, result_json, created_at, completed_at FROM tasks " +
+        "WHERE id = ? AND task_type = 'check_site' AND assigned_agent = 'technical-seo' " +
+        "AND claimed_by = 'technical-seo' LIMIT 1"
+      ).bind(taskReadback[1]).first();
+      if (!task) return response({ error: "task_not_found" }, 404, origin);
+      let result = null;
+      try {
+        result = task.result_json ? JSON.parse(task.result_json) : null;
+      } catch {
+        return response({ error: "task_result_invalid" }, 500, origin);
+      }
+      return response({
+        task: {
+          id: task.id,
+          status: task.status,
+          attempt_count: Number(task.attempt_count),
+          result,
+          created_at: task.created_at,
+          completed_at: task.completed_at,
         },
       }, 200, origin);
     }
