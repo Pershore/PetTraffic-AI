@@ -138,3 +138,5 @@ Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas
 - Branch preview Worker /health tyčia neapkrauna, nes Worker CORS allowlist leidžia tik oficialų production origin. Production puslapyje Worker šaltinis bus leidžiamas.
 - Puslapis read-only, viešas noindex, ne sitemap, be canonical ir be secrets / lankytojų lygmens duomenų. Noindex nėra autentifikacija.
 - PR #225 nesujungtas; main ir production nekeisti. Kitas žingsnis – vartotojo patvirtinimas merge, po jo production deploy ir /control/ gyvo duomenų srauto patikra.
+
+- Galutinė PR #225 versija: head `56b92ae68b185272226c1dd72cc8adcf9a6849f0`; site-check [#43719429088](https://github.com/Pershore/PetTraffic-AI/actions/runs/43719429088) success; Cloudflare Pages check success. Preview turinys patikrintas, įskaitant agentų/atminties, atvirų PR, puslapių ir įrankių skiltis.
