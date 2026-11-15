@@ -25,19 +25,19 @@ Jeigu privalomų istorijos failų perskaityti nepavyksta, pranešti apie tai ir 
 - Kodo / reikšmingus dokumentacijos pakeitimus daryti atskiroje šakoje per PR; nesujungti, kol privalomos patikros nebaigtos.
 - Po sujungimo patikrinti realų workflow ir gyvą rezultatą, jei taikoma.
 
-## Dabartinė būsena po 2026-11-14 Worker diegimo
+## Dabartinė būsena po 2026-11-15 patikrų (16:17 LT)
 
-1. Cloudflare API tokeno rotacija ir GitHub Actions secret CLOUDFLARE_API_TOKEN pakeitimas: vartotojas patvirtino abu veiksmus; pakartotinė CI patikra sėkminga.
-2. PR #183 sujungtas squash commit 6a285a5505e88853a77fb1e31c08fa4fb1d9ad63. Worker JSON išvesties pataisa įdiegta per Actions run #43592016509; Worker versija a34f8850-e1bf-42c0-a055-3e9c9c8714c0.
-3. Po deploy patvirtinta: D1 connected, control-core schema connected, /health ok=true, neautentifikuotas /v1/events grąžina 401. D1 migracijų taikyti nereikėjo.
-4. AI agentų pataisos veiksmingumas dar NEPATVIRTINTAS: gyvas /health vis dar rodo ankstesnį 2026-11-14 08:20 UTC ciklo gedimą model_content-review_model_output_invalid_json. Kitas numatytas agentų ciklas – 2026-11-15 08:20 UTC (10:20 Europe/Vilnius).
-5. GitHub Actions schedule problema lieka NEPATVIRTINTA / REIKIA DĖMESIO: YAML cron yra, bet ankstesnėje istorijoje suplanuotų paleidimų trūko; tiksli priežastis nežinoma. Nekeisti cron spėliojant.
-6. Android Termux / Codex lokali aplinka PATIKRINTA pagal 2026-11-14 vartotojo bootstrap išvestį: proot, Git, GitHub CLI, Codex CLI, Codex autentifikacija OK; main...origin/main. Tai nėra foninio agento įrodymas.
-7. GA4 30 s timeout pataisa turi vieną sėkmingą realų analytics ciklą; ilgalaikį stabilumą reikia vertinti pagal kitus suplanuotus ciklus.
-8. Worker /v1/tasks* API lieka tyčia išjungta iki atskiros agentų tapatybės ir leidimų politikos.
+1. **Cloudflare saugumas:** Cloudflare API tokeno rotacija ir GitHub Actions secret CLOUDFLARE_API_TOKEN pakeitimas vartotojo patvirtinti. Worker deploy run #43698484769 patvirtino tokeną, D1 migracijas, Worker deploy ir health/auth ribą; visi job success.
+2. **Worker / D1:** /health HTTP 200, D1 ir Control Core schema connected, heartbeat patvirtina svetainės HTTP 200. Worker deploy commit 645849f įdiegtas 2026-11-15 09:16 UTC.
+3. **AI agentai:** paskutinis D1 ciklas pradėtas 2026-11-15 08:20 UTC (10:20 LT), prieš naują deploy ir prieš 13:20 LT tikslinį laiką. 5 kvietimai completed, error_code=null, tačiau Control Core needs_evidence, 8 spragos, memory present. Tai seno prieš-deploy ciklo duomenys, ne naujos versijos gedimo įrodymas. Dėl run_date idempotency šiandien ciklas nekartojamas; kitas pilnas po-deploy ciklas laukiamas 2026-11-16 13:20 LT.
+4. **Daily-suite:** tikras event=schedule run #43721211747 – success, visi 3 job (analytics, topic-radar, live-check) success. Pradžia 13:51:47 UTC (15:51:47 LT), apie 7 val. 42 min. vėliau už 06:10 UTC cron. GA4 2026-11-08–14: 7 aktyvūs naudotojai, 24 sesijos, 88 peržiūros, 0 patvirtintų organinių sesijų. GSC 2026-11-06–12: 0 parodymų ir 0 paspaudimų; sitemap submitted/pending; 5 prioritetiniai URL Google dar nežinomi. Temų radaras: 31 unikali RSS nuoroda iš 7 temų.
+5. **Google API:** connectivity run #43722887365 success; job log patvirtino GA4 API OK ir Search Console API OK.
+6. **Control Center:** atskiro kasdienio cron nebėra. PR #233 pašalino perteklinį grafiką; PR #234 pašalino klaidingą savęs-vykdymo būseną ir atnaujino dashboard. Control Center run #43723293460 push success, D1 sync #43723329232 success. Live /control/ JS patvirtintas su nauju event-driven žymėjimu.
+7. **Automatizacijos:** esami ChatGPT procesai įjungti: pagrindinis koordinatorius 11:45 LT, būklės patikra 12:00 LT, greičio / post-cycle tikrintojas 14:00 LT. Jų instrukcijos atnaujintos, kad nereikalautų neegzistuojančio Control Center schedule. Naujų dublikatų nesukurta.
+8. **Valdymo skydas:** https://pettraffic-ai.pages.dev/control/ – viešas, noindex, su 7 fiksuotomis komandų kortelėmis. Jis kopijuoja komandas; vykdymas vyksta per owner-only GitHub issue #145 bridge. Noindex nėra autentifikacija. Worker /v1/tasks* lieka tyčia išjungta iki atskiros agentų OIDC tapatybės ir privataus autentifikavimo.
+9. **Kiti ribojimai:** nėra tiesioginės Android Termux shell prieigos; viešo turinio publikavimui vis dar būtinas vartotojo patvirtinimas; ARO Vet, DNS, billing ir mokamos paslaugos neliečiamos.
 
-Prieš tęsiant perskaityti docs/PROJECT_MEMORY.md 12 skyrių ir naujausius Actions / Worker įrodymus. Nelaikyti seno agentų gedimo naujos pataisos nesėkme – kol naujas ciklas neįvyko, būsena yra LAUKIA.
-
+Prieš tęsiant perskaityti šį dabartinės būsenos bloką, naujausią automation-history snapshot ir naujausią handover addendum. Senesnės toliau pateiktos datos / grafikai yra istoriniai, jei prieštarauja šiam blokui.
 ## Šakų paskirtys
 
 - `main`: kodas, dokumentacija, `AGENTS.md`, darbo žurnalas.
