@@ -157,3 +157,11 @@
 
 - Po 11:40 LT pakartotinai tikrinti Control Center schedule; issue #145 neuždaryti, kol Control Center nepatvirtina recovery_confirmed=true ir Control Core evidence būsena nėra pakankamai pagrįsta.
 - Daily-suite schedule problemos priežastis nepatvirtinta. Dabartinė GitHub jungtis neturi workflow-dispatch ar Actions nustatymų keitimo veiksmo; nedaryti netikro push/no-op commit.
+
+
+## 10:50 gyvų puslapių patikra
+
+- Vieši URL, patikrinti gyvai: homepage, about, privacy, keturi pagrindiniai gidai, robots.txt, sitemap.xml. Visi 8 endpointai HTTP 200.
+- HTML, robots ir sitemap grąžino tinkamus content-type; sitemap `application/xml`, robots `text/plain`.
+- Tai patvirtina pasiekiamumą, ne Google indeksavimą ar naują GA4/GSC duomenų rinkimą. Jokie svetainės ar produkcijos pakeitimai neatlikti.
+- Firecrawl kredito balansas po patikros: 197/1 000.
