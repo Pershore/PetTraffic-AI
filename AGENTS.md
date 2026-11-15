@@ -5,7 +5,7 @@ Build Pet traffic into a useful, trustworthy Lithuanian pet-care information web
 
 ## Non-negotiable project identity
 - Public brand is exactly **Pet traffic**. Never use "Pet traffic AI" as the public brand.
-- Do not restore the ARO Vet pharmacy section, ARO Vet promotions, affiliate redirects, or other ARO Vet references. ARO Vet was only a visual-style reference; never copy its logo, images, text, or brand assets.
+- ARO Vet Vaistinė is an explicitly approved, preferred product-information source for relevant Pet traffic product cards and direct product links. The user has authorized use of its published product information, descriptions and product images in Pet traffic. Keep Pet traffic an independent brand: do not copy the ARO Vet logo, site design or unrelated brand assets, and never imply the sites are the same. Prefer ARO Vet over competing stores unless the user says otherwise. No affiliate tracking or commission claims unless separately approved. Verify current product relevance, price and availability; do not imply that a product treats or cures a health condition. Never change the ARO Vet website, code, DNS, accounts or infrastructure.
 - Keep the visual identity warm, clean, editorial, friendly, mobile-first, and original.
 - The current content strategy is deliberately focused on four core guides:
   - articles/kada-kreiptis-i-veterinara.html
@@ -35,6 +35,7 @@ Build Pet traffic into a useful, trustworthy Lithuanian pet-care information web
   - site validation: daily 05:37 UTC and on pushes / pull requests;
   - daily automation suite: daily 06:10 UTC, independently scheduled; it runs GA4 / Search Console collection, topic radar, and live-site monitoring as separate jobs;
   - Lighthouse mobile / desktop audits: weekly Monday 07:27 UTC and after relevant site changes;
+  - weekly growth review: Monday 18:30 UTC, using existing privacy-filtered GA4 / Search Console, RSS topic, Lighthouse and control-center history; deterministic Python only, no additional AI/API spend;
   - central control center: event-driven after the daily suite, Lighthouse, Worker deployment, or post-deploy Worker cron diagnostics completes; no independent daily cron. Relevant push/PR changes may also trigger a read-only report.
 - Worker heartbeat: every 15 minutes; the agent cron checks at 10:20 and 11:20 UTC, with a Europe/Vilnius time guard allowing exactly the 13:20 local agent cycle (the other seasonal cron event is skipped).
 - Treat workflow schedules as intended cadence, not proof of execution. Verify actual run history, job completion, artifacts, and deployment results.
@@ -49,7 +50,7 @@ Build Pet traffic into a useful, trustworthy Lithuanian pet-care information web
 - If a task cannot be completed with current access, do not disguise it as completed and do not send the user a long technical procedure. State the single blocker and the smallest user action that would remove it.
 - Routine execution should be quiet. The user does not need to watch tool calls or receive filler progress messages. Give a result when a meaningful milestone is verified, or when user action is truly required.
 - A chat response or tool call is not a persistent worker. Do not imply continuous work after a session ends. Unattended work must be implemented as a real scheduled GitHub Actions workflow or an explicitly active ChatGPT automation, with its schedule, last run, and result verifiable.
-- Keep the primary daily maintenance automation as the single coordinator. Do not create another overlapping daily maintenance automation. Use GitHub Actions for deterministic specialist jobs and the Worker agent for its bounded, scheduled analysis.
+- Keep the primary daily maintenance automation as the single coordinator. Do not create another overlapping daily maintenance automation or a duplicate ChatGPT weekly schedule. The weekly growth review is a GitHub Actions report over existing aggregate history; the daily coordinator may use its latest report when prioritizing work. Use GitHub Actions for deterministic specialist jobs and the Worker agent for its bounded, scheduled analysis.
 - Keep a clear separation between:
   1. user-facing voice interface;
   2. scheduled coordinator / maintenance automation;
