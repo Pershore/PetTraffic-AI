@@ -64,7 +64,9 @@ class ControlDashboardTests(unittest.TestCase):
         script = SCRIPT.read_text(encoding="utf-8")
         self.assertIn("const localDateOf = value =>", script)
         self.assertIn("localDateOf(daily.created_at)!==localDate()", script)
-        self.assertIn("localDateOf(cc.created_at)!==localDate()", script)
+        self.assertNotIn('latestEvent("control-center.yml","schedule")', script)
+        self.assertNotIn("Kasdien 10:40 LT", script)
+        self.assertIn("Po daily-suite / Lighthouse / Worker deploy", script)
         self.assertIn('core.status==="needs_evidence"||gaps>0||degraded', script)
         self.assertIn('["error","no data","invalid_json","invalid json","failed"]', script)
 
