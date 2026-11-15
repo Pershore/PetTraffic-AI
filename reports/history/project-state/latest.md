@@ -1,3 +1,21 @@
+## Naujausia patikra – 2026-11-15 14:42–14:47 LT
+
+> Šis įrašas yra naujausias būsenos papildymas ir turi pirmenybę prieš žemiau esančios 12:45 LT Control Center ataskaitos `stale` žymą AI ciklui. 2026-11-15 taikoma vienkartinė idempotency išimtis.
+
+- Būsena: **REIKIA DĖMESIO** – GitHub daily-suite / Control Center schedule įvykiai šiandien nepatvirtinti; issue #145 lieka open.
+- Saugykla: `main` HEAD `682a2b4de2bc03546d3277b4aa8b2a1058399fe9`; atvirų PR nėra.
+- Naujausias Control Center report [#43715464297](https://github.com/Pershore/PetTraffic-AI/actions/runs/43715464297), sukurtas 2026-11-15 14:45:48 LT po 13:20 grafiko, yra manual `workflow_dispatch`, ne cron. `recovery_confirmed=false`; daily-suite ir Control Center schedule warning lieka.
+- Šiandienos naujausių 100 Actions run sąraše `event=schedule` = 0. Daily-suite 08:10 LT, Control Center 10:40 LT ir site-check 07:37 LT suplanuoti vykdymai nepatvirtinti. Tikroji GitHub scheduler priežastis nenustatyta.
+- Worker /health HTTP 200; D1 ir Control Core schema connected; heartbeat 14:30:13 LT, site 200, DB OK. Agent orchestration: run_date 2026-11-15, completed, 5 AI calls, error_code null, started_at 10:20:13 LT. Control Core `needs_evidence`, memory `present`, 2 recommendations, 8 evidence gaps.
+- **AI ciklo būsena: LAUKIA.** 2026-11-15 10:20 LT ciklas yra prieš 13:20 LT grafiką; pagal vienkartinę 2026-11-15 išimtį nebelaikomas nauja klaida ir nebekartojamas dėl run_date idempotency. Kitas pilnas ciklas: 2026-11-16 13:20 LT. Control Center artefakto `stale` statusas šiandien normalizuojamas į LAUKIA.
+- Specialist statusai sename cikle: analytics=error, topics=no data, technical-seo=monitor, content-review=invalid_json. Po PR #220 deploy naujo ciklo dar nėra, todėl `content-review_model_output_invalid_json` pasikartojimas **NEPATVIRTINTAS**. Dabartinis parseris turi griežtą JSON/schema validavimą, ribotą išvestį, deterministinį fallback ir dalinių rezultatų išsaugojimą; bounded repair retry dar nėra.
+- Greičio įrodymas: Worker cron diagnostikos job sumažėjo nuo 1 027 s failure (#43700250618) iki 256 s success (#43703245674), t. y. 771 s / ~75,1 % trumpiau po perėjimo prie D1 heartbeat stebėjimo. Daily-suite manual #43696960921 – 34 s, trys job lygiagrečiai; Control Center manual #43715464297 – 34 s. Kitų mažų skirtumų nepateikiame kaip patikimo pagerėjimo.
+- Issue #145: tikslus komentaras `/pettraffic-run-control-center` įrašytas; bridge #43715437926 ir Control Center #43715464297 success. Issue neuždaryti, kol daily-suite ir Control Center `event=schedule` veikia ir `recovery_confirmed=true`.
+- Sync-control-api paskutinis sėkmingas run #43703281342 (10 s); po naujo manual Control Center run atskiro sync-control-api run nematyta – **NEPATVIRTINTA**, rankinis sync nedarytas.
+- Kodo / infrastruktūros / production pakeitimų, testų vykdymo ar PR šiame audite nėra. Nekeista Worker/D1, Cloudflare production, DNS, secrets, ARO Vet, viešas turinys ar mokamos paslaugos. Aktyvus darbo laikas NEMATUOTAS.
+
+---
+
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
 - Atnaujinta: 2026-11-15T12:45:48.093025+00:00
