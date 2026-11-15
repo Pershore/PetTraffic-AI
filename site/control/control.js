@@ -194,13 +194,25 @@ async function refresh(){
 function showView(name){
  document.querySelectorAll(".view-panel").forEach(el=>el.classList.toggle("active",el.id==="view-"+name));
  document.querySelectorAll(".nav-item").forEach(el=>el.classList.toggle("active",el.dataset.view===name));
- const titles={overview:"Apžvalga",architecture:"Architektūra",automations:"Automatizacijos",analytics:"Analitika ir SEO",tools:"Įrankiai ir prieigos",history:"Vykdymų istorija"};
+ const titles={overview:"Apžvalga",architecture:"Architektūra",automations:"Automatizacijos",commands:"Komandų valdymas",analytics:"Analitika ir SEO",tools:"Įrankiai ir prieigos",history:"Vykdymų istorija"};
  $("view-title").textContent=titles[name]||"Apžvalga";
  $("page-title").textContent=name==="overview"?"Visas projektas vienoje vietoje":titles[name];
  $("page-subtitle").textContent=name==="overview"?"Tikri GitHub, Worker ir viešos svetainės duomenys. Būsenos atnaujinamos atidarius puslapį ir paspaudus „Atnaujinti“.":"Gyva projekto informacija iš viešų ir autorizuotų agreguotų šaltinių.";
 }
 document.querySelectorAll(".nav-item").forEach(btn=>btn.addEventListener("click",()=>showView(btn.dataset.view)));
 document.querySelectorAll("[data-go]").forEach(btn=>btn.addEventListener("click",()=>showView(btn.dataset.go)));
+document.querySelectorAll("[data-copy-command]").forEach(btn=>btn.addEventListener("click",async()=>{
+ const command=btn.getAttribute("data-copy-command")||"";
+ try{
+  if(!navigator.clipboard?.writeText)throw new Error("clipboard_unavailable");
+  await navigator.clipboard.writeText(command);
+  toast("Komanda nukopijuota: "+command);
+ }catch{
+  const field=document.createElement("textarea");field.value=command;field.setAttribute("readonly","");field.style.position="fixed";field.style.left="-9999px";document.body.appendChild(field);field.select();
+  const copied=document.execCommand("copy");field.remove();
+  toast(copied?"Komanda nukopijuota: "+command:"Kopijavimas nepavyko. Komandą galima pažymėti ir kopijuoti rankiniu būdu.");
+ }
+}));
 $("refresh-button").addEventListener("click",refresh);
 $("run-filter").addEventListener("change",e=>renderRuns(e.target.value));
 refresh();
