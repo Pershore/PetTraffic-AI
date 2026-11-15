@@ -1,9 +1,9 @@
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
-- Atnaujinta: 2026-11-15T09:52+02:00
-- Būsena: **WORKER / D1 PATVIRTINTI; AI AGENTŲ CIKLAS LAUKIA; DAILY-SUITE CRON NEPATVIRTINTAS**
+- Atnaujinta: 2026-11-15T10:29+02:00
+- Būsena: **WORKER / D1 PATVIRTINTI; 10:20 AI AGENTŲ CIKLAS ATSISTATĖ; CONTROL CORE REIKIA ĮRODYMŲ; DAILY-SUITE CRON NEPATVIRTINTAS**
 - Pagrindinė šaka: `main`
-- Paskutinis main commit audito metu: `81ae559c1ac38367e66afa1b5ce87cb773bd3d02`
+- Paskutinis main commit audito metu: `8efa6c885c1043316bd54f83d0f57bcd07d09d9a`
 - PR #210 sujungtas: `0ac4f3e9be21d52df3a4d681e23b21c3a7b744a4`.
 - PR #211 sujungtas: `116070f78bc92e23b16e3a0e3244769190a5080b`; Cloudflare Pages ir `Validate static website and automation code` – success.
 - PR #211 patikroje 103 Python testai baigėsi `OK`; post-merge `Pet traffic site checks` (run 43686934069) – success; automatinis darbo žurnalas (run 43686934075) – success.
@@ -29,9 +29,9 @@
 ## Laukiančios patikros ir problemos
 
 1. **Daily automation suite:** `.github/workflows/daily-suite.yml` faile nustatytas cron `10 6 * * *` UTC (08:10 Lietuvos laiku). 09:52 Lietuvos laiku naujausių 40 Actions vykdymų sąraše vis dar nerasta 2026-11-15 `event=schedule` paleidimo; naujausi matomi vykdymai yra push / pull_request. Atskirame `event=schedule` sąraše naujausias įrašas tebėra 2026-11-14. Konfigūruotas cron nėra vykdymo įrodymas. Repo metaduomenys patvirtina `fork=false`, `archived=false`, `disabled=false`, `default_branch=main`; tai atmeta repo fork / archyvavimo / išjungimo priežastis. Pats workflow aktyvumo (`active` / `disabled`) endpointas per prijungtą GitHub prieigą nepasiekiamas, todėl jo būsena dar nepatvirtinta. Priežastis nenustatyta; rankinis vykdymas nepakeistų cron įrodymo.
-2. **AI agentų ciklas:** gyvas Worker health vis dar rodo paskutinį agentų vykdymą `run_date=2026-11-14`, `status=failed`, `ai_calls=4`, `error_code=model_content-review_model_output_invalid_json`. Tai ankstesnis ciklas prieš naujos Worker pataisos realų suplanuotą patikrinimą; naujas ciklas dar neįvyko.
-3. **Control Core atmintis:** paskutinis įrašas `run_date=2026-11-14`, `status=needs_evidence`, `evidence_gap_count=4`, `memory_status=present`, `recommendation_count=0`. Naujo lapkričio 15 d. įrašo dar nėra.
-4. GitHub issue #145 „PetTraffic: central automation alert“ lieka **open**; automatiškai uždaromas tik patvirtinus atsistatymą.
+2. **AI agentų ciklas:** 10:27 LT gyvas Worker `/health` patvirtino naują `run_date=2026-11-15`, `status=completed`, `ai_calls=5`, `error_code=null`; ankstesnė 2026-11-14 JSON klaida nebesikartojo šiame naujame cikle.
+3. **Control Core atmintis:** naujas įrašas `run_date=2026-11-15`, `status=needs_evidence`, `recommendation_count=2`, `evidence_gap_count=8`, `memory_status=present`; sprendimo JSON validus. Rekomendacijos dar nėra patvirtintos išvados.
+4. GitHub issue #145 „PetTraffic: central automation alert“ lieka **open**; laukiama 10:40 LT Control Center patikros, kuri turi patvirtinti bendrą atsistatymą prieš automatinį uždarymą.
 
 ## 09:52 papildoma patikra
 
@@ -83,3 +83,19 @@
 - GitHub `docs/PROJECT_MEMORY.md` aiškiai patvirtina, kad ChatGPT neturi tiesioginės Android/Termux shell prieigos, negali vykdyti telefono komandų ar patvirtinti vietinio Codex būsenos. GitHub CI „Termux Codex bridge checks“ tikrina diegimo skriptus, o ne vartotojo telefoną.
 - Būsena: GitHub integracija – PATIKRINTA; Termux lokali aplinka – anksčiau PATVIRTINTA pagal vartotojo 2026-11-14 išvestį; šio bandymo metu pateikta komanda – NEVYKDYTA dėl neteisingo shell/katalogo; tiesioginis ChatGPT–Termux ryšys – NEPRIJUNGTAS.
 - Nekeisti telefono ar produkcinės aplinkos; automatinis Codex užduočių paėmimas ir nuotolinis shell valdymas neįjungti. Toliau darbą tęsti per GitHub integraciją ir esamus GitHub Actions; vietinį Codex naudoti tik tada, kai egzistuoja reali nuotolinio vykdymo jungtis.
+
+
+## 10:27 Worker AI ciklo patikra
+
+- Viešas Worker `/health`: HTTP 200; `ok=true`; D1 `connected`; `control_core_schema=connected`.
+- 2026-11-15 agentų ciklas: `completed`; 5 AI kvietimai; pradžia `2026-11-15T08:20:13.574Z`, pabaiga `2026-11-15T08:20:21.831Z`; klaidos nėra.
+- Control Core: `needs_evidence`; sprendimo JSON validus; 2 rekomendacijos; 8 įrodymų spragos; D1 atmintis `present`, atnaujinta `2026-11-15T08:20:21.568Z`.
+- Heartbeat: `2026-11-15T08:15:47.486Z` (10:15:47 LT), svetainė HTTP 200, DB OK.
+- GitHub Actions `event=schedule` sąraše naujausias vykdymas lieka 2026-11-14; 2026-11-15 `daily-suite.yml` 08:10 LT cron vykdymas nepatvirtintas. Patikrintas failas turi cron `10 6 * * *` UTC. Tiksli priežastis ir workflow aktyvumo būsena dar nenustatytos.
+- Issue #145 dar open; Control Center suplanuotas 10:40 LT dar laukiamas.
+- Ši patikra naudojo vieną Firecrawl scrape (1 kreditą); likutis prieš patikrą buvo 197 iš 1 000. Jokie kodo, Worker/D1 konfigūracijos, DNS, secrets, ARO Vet, viešo turinio ar mokamų paslaugų pakeitimai neatlikti.
+
+## Kitas konkretus etapas
+
+- 10:40 Europe/Vilnius: patikrinti Control Center run, D1 / atminties būseną, daily-suite alert ir issue #145; neuždaryti issue be aiškaus `recovery_confirmed=true` įrodymo.
+- Išsiaiškinti, kodėl 2026-11-15 daily-suite schedule neįvyko; workflow būseną tikrinti per prieinamą GitHub valdymo API, nekeisti cron spėliojant.
