@@ -160,7 +160,7 @@ def main() -> int:
         if rel.as_posix() == "control/index.html":
             if parser.canonicals:
                 errors.append(f"{rel}: noindex dashboard must not declare a canonical URL")
-            if not re.search(r"""<meta\\s+name=["']robots["']\\s+content=["'][^"']*noindex""", page_text, flags=re.IGNORECASE):
+            if not re.search(r"""<meta\s+name=["']robots["']\s+content=["'][^"']*noindex""", page_text, flags=re.IGNORECASE):
                 errors.append(f"{rel}: dashboard must explicitly declare robots noindex")
         elif rel.as_posix() != "404.html":
             if len(parser.canonicals) != 1:
