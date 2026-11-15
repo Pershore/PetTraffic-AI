@@ -507,3 +507,24 @@ Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama 
 - 503 task_api_not_enabled yra tyčia išjungtos Worker /v1/tasks* API būsenos žyma; dashboard pats nesiunčia POST / dispatch. ChatGPT automatikų gyvas vykdymo statusas ir Termux shell nėra tiesiogiai skaitomi.
 - Pilnas realaus naudotojo browser E2E refresh dar nepatvirtintas. Nekeisti Worker/D1, DNS, secrets, ARO Vet, Google prieigos ar mokamos paslaugos.
 - Kitas veiksmas: baigti Lighthouse run #43719820834 ir 2026-11-16 13:20 LT patikrinti Worker AI ciklo po PR #220 / Control Core įrodymus.
+
+## 15. Saugus komandų valdymo skydelis (2026-11-15)
+
+### Įdiegta ir patikrinta
+- PR #232 sujungtas commit bdaeba3895ecd1a863fa08e613a2521adae6a28f. Production /control/ turi atskirą komandų skiltį su septyniomis fiksuotomis komandomis: /pettraffic-run-daily-suite, /pettraffic-sync-latest, /pettraffic-run-control-center, /pettraffic-run-lighthouse, /pettraffic-run-site-check, /pettraffic-run-connectivity, /pettraffic-run-worker-diagnostics.
+- Komandų vykdymas vyksta per .github/workflows/dispatch-daily-suite.yml ir agent/dispatch_guard.py. Leidžiama tik tiksli komanda, tik naujas komentaras, tik issue #145, tik GitHub paskyra Pershore, tik fiksuotas workflow allowlist. Naujiems workflow pridėtos cooldown / dedup ribos.
+- Viešas dashboard tik kopijuoja komandą į iškarpinę ir nukreipia į GitHub issue #145; jis tiesiogiai nesiunčia POST ir neturi raktų. Šis sprendimas sąmoningai saugesnis už viešą komandų API.
+- PR #232 CI: agent testai 22/22 ir tests 129/129 – success; agent/validate_site.py, node --check, compileall – success. Cloudflare Pages preview ir post-merge site-check #43722796885 – success. Production /control/ HTTP 200.
+- Owner-only komandos end-to-end testas: issue #145 komentaras /pettraffic-run-connectivity (#6895701368) -> bridge run #43722875783 success -> Google API connectivity run #43722887365 success. Job log: GA4 API OK, Search Console API OK.
+- PR #233 commit 3e81843056d34f427ed8286df5725f443a39d84a pašalino perteklinį Control Center daily cron. Centrinė ataskaita perskaičiuojama pagal reikšmingus workflow įvykius; klaidingas atskiro schedule trūkumo perspėjimas pašalintas.
+
+### Sąmoningai neįjungta
+- Worker /v1/tasks* API lieka 503 task_api_not_enabled. Esamas OIDC identitetas skirtas tik snapshot sync; task claim/complete negalima atidaryti tuo pačiu identitetu ar viešai.
+- Tikram tiesioginiam one-click valdymui būtinas privatus autentifikacijos vartas (pvz., Cloudflare Access) ir atskira agentų OIDC tapatybė su siauru leidžiamų veiksmų sąrašu. Viešas noindex puslapis nėra autentifikacija. Šioje aplinkoje nėra tiesioginio Cloudflare paskyros administravimo įrankio, todėl Access programėlė dar nesukurta.
+- Rankinis agentų ciklo paleidimas neįjungtas: vieno ciklo per dieną idempotency lieka galioti.
+- Produkcijos Worker/D1, DNS, secrets, ARO Vet, turinio publikavimas ir mokamos paslaugos nekeisti.
+
+### Dabartinė Worker būklė
+- /health HTTP 200; D1 ir Control Core schema connected; heartbeat site HTTP 200.
+- 2026-11-15 ciklas completed, 5 AI calls, error_code=null, bet Control Core needs_evidence, 8 spragos; analytics error, topics no data, technical-seo monitor, content-review invalid_json.
+- Dėl vieno ciklo per dieną ribos po ankstesnio 10:20 LT ciklo jo nekartojame. Kitas pilnas ciklas numatytas 2026-11-16 13:20 Europe/Vilnius. Nelaikyti jo pilnai patvirtintu, kol nebus naujo realaus ciklo ir atnaujintos atminties.

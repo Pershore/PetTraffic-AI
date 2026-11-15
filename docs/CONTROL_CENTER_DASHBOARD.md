@@ -32,3 +32,13 @@ Atskiras, read-only projekto stebėjimo puslapis: https://pettraffic-ai.pages.de
 
 ## Valdymo ribos
 Puslapis suteikia vizualinę navigaciją, filtravimą, atnaujinimą ir nuorodas į tikrus GitHub run / workflow / issue įrodymus. Jis pats nekeičia main, nesujungia PR, nepaleidžia workflow, nekeičia Worker/D1, DNS, secrets ar billing.
+
+
+## Owner-only komandų panelė (PR #232, 2026-11-15)
+
+- Nauja „Komandos“ skiltis rodo 7 fiksuotas komandas ir kopijuoja tikslią slash komandą į iškarpinę. Ji nėra tiesioginis API klientas ir nevykdo komandų iš viešo puslapio.
+- Vykdymo kanalas: GitHub issue #145. dispatch-daily-suite.yml priima tik naują komentarą iš Pershore paskyros, tik issue #145, tik tikslią allowlist komandą. Įtraukti cooldown / dedup langai.
+- Komandų sąrašas: daily-suite, sync-latest, control-center, lighthouse, site-check, Google API connectivity, Worker cron diagnostics.
+- Po merge patvirtintas site-check #43722796885 ir production /control/ HTTP 200. Realus /pettraffic-run-connectivity smoke testas patvirtino bridge run #43722875783 ir connectivity run #43722887365; GA4 ir Search Console API atsakė OK.
+- Worker /v1/tasks* lieka 503 iki atskiros agentų tapatybės ir autentifikuoto privataus valdymo pulto. Viešas dashboard yra noindex, bet tai nėra autentifikacija. Tiesioginiam one-click valdymui reikės Cloudflare Access arba lygiaverčio autentifikavimo sprendimo.
+- Produkcijos Worker/D1, DNS, secrets, ARO Vet, viešo turinio publikavimas ir mokamos paslaugos nekeičiami.
