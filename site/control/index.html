@@ -92,6 +92,10 @@
       <div class="panel-heading"><div><p class="eyebrow">PASKUTINIS KONTROLĖS CIKLAS</p><h2>Kas reikalauja dėmesio</h2></div><a class="text-button" href="https://github.com/Pershore/PetTraffic&#45;&#65;&#73;/issues/145" target="_blank" rel="noopener">Issue #145 ↗</a></div>
       <div id="attention-list" class="attention-list"><div class="loading-line"></div></div>
     </section>
+    <section class="panel">
+      <div class="panel-heading"><div><p class="eyebrow">WORKER / D1 / CONTROL CORE</p><h2>Agentų ir atminties būklė</h2></div><a class="text-button" href="https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health" target="_blank" rel="noopener">Žalias /health JSON ↗</a></div>
+      <div id="agent-panel" class="agent-grid"><div class="loading-line"></div></div>
+    </section>
   </section>
 
   <section class="view-panel" id="view-architecture">
@@ -176,11 +180,25 @@
       <article class="tool-card"><span class="tool-symbol">◫</span><div><h3>ChatGPT automatikos</h3><p>Pagrindinis kasdienis koordinatorius ir atskiras greičio tikrintojas.</p><span class="state protected">Platformos automatizacijos; gyva būsena čia neskaitoma</span></div></article>
       <article class="tool-card"><span class="tool-symbol">🔒</span><div><h3>Worker task API</h3><p>Užduočių eilė /v1/tasks.</p><span class="state warn">Tyčia išjungta – 503 task_api_not_enabled</span></div></article>
     </div>
+    <div class="panel"><div class="panel-heading"><h2>Vieši svetainės puslapiai</h2><a class="text-button" href="https://pettraffic-ai.pages.dev/sitemap.xml" target="_blank" rel="noopener">Sitemap ↗</a></div>
+      <div class="site-pages">
+        <a href="https://pettraffic-ai.pages.dev/" target="_blank" rel="noopener"><strong>Pradžia</strong><small>/</small></a>
+        <a href="https://pettraffic-ai.pages.dev/about.html" target="_blank" rel="noopener"><strong>Apie projektą</strong><small>/about.html</small></a>
+        <a href="https://pettraffic-ai.pages.dev/privacy.html" target="_blank" rel="noopener"><strong>Privatumas</strong><small>/privacy.html</small></a>
+        <a href="https://pettraffic-ai.pages.dev/articles/kada-kreiptis-i-veterinara.html" target="_blank" rel="noopener"><strong>Kada kreiptis į veterinarą</strong><small>Skubos požymiai</small></a>
+        <a href="https://pettraffic-ai.pages.dev/articles/kate-negali-pasislapinti-skubi-pagalba.html" target="_blank" rel="noopener"><strong>Katė negali pasišlapinti</strong><small>Skubi pagalba</small></a>
+        <a href="https://pettraffic-ai.pages.dev/articles/kate-viduriuoja-ka-daryti.html" target="_blank" rel="noopener"><strong>Katė viduriuoja</strong><small>Praktinis vadovas</small></a>
+        <a href="https://pettraffic-ai.pages.dev/articles/suo-viduriuoja-ka-daryti.html" target="_blank" rel="noopener"><strong>Šuo viduriuoja</strong><small>Praktinis vadovas</small></a>
+        <a href="https://pettraffic-ai.pages.dev/robots.txt" target="_blank" rel="noopener"><strong>Robots.txt</strong><small>Paieškos robotai</small></a>
+        <a href="https://pettraffic-ai.pages.dev/404.html" target="_blank" rel="noopener"><strong>404 puslapis</strong><small>Klaidos puslapis</small></a>
+      </div>
+    </div>
   </section>
 
   <section class="view-panel" id="view-history">
     <div class="section-row"><div><p class="eyebrow">AUDITUOJAMA ISTORIJA</p><h2>Vykdymų istorija ir įrodymai</h2><p class="muted">Kiekvienas įrašas turi nuorodą į originalų GitHub paleidimą.</p></div></div>
     <div class="panel"><div class="panel-heading"><h2>Naujausi GitHub Actions įvykiai</h2><span class="subtle" id="history-count">—</span></div><div id="history-list" class="history-list"><div class="loading-line"></div></div></div>
+    <div class="panel"><div class="panel-heading"><h2>Atviri pull request</h2><span class="subtle" id="pr-count">—</span></div><div id="prs-list" class="pr-list"><div class="loading-line"></div></div></div>
     <div class="panel"><h2>Istorijos saugojimas</h2><div class="boundary-grid"><div><strong>main šaka</strong><p>Kodas, dokumentacija ir darbo žurnalas. Pakeitimai siūlomi per atskirą šaką ir PR.</p></div><div><strong>automation-history šaka</strong><p>Privatumo požiūriu filtruoti agreguoti GA4/GSC, temų, Control Center ir projekto būsenos snapshot'ai.</p></div></div><a class="text-button" href="https://github.com/Pershore/PetTraffic&#45;&#65;&#73;/tree/automation-history/reports/history" target="_blank" rel="noopener">Atverti archyvą ↗</a></div>
   </section>
 
