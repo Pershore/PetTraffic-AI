@@ -42,3 +42,11 @@ Puslapis suteikia vizualinę navigaciją, filtravimą, atnaujinimą ir nuorodas 
 - Po merge patvirtintas site-check #43722796885 ir production /control/ HTTP 200. Realus /pettraffic-run-connectivity smoke testas patvirtino bridge run #43722875783 ir connectivity run #43722887365; GA4 ir Search Console API atsakė OK.
 - Worker /v1/tasks* lieka 503 iki atskiros agentų tapatybės ir autentifikuoto privataus valdymo pulto. Viešas dashboard yra noindex, bet tai nėra autentifikacija. Tiesioginiam one-click valdymui reikės Cloudflare Access arba lygiaverčio autentifikavimo sprendimo.
 - Produkcijos Worker/D1, DNS, secrets, ARO Vet, viešo turinio publikavimas ir mokamos paslaugos nekeičiami.
+
+
+## Debesijos task runner (2026-11-15)
+
+- Automatizacijų skiltyje rodomas atskiras `run-readonly-tasks.yml` workflow ir jo paskutinis GitHub Actions vykdymas.
+- Saugus dispatch bridge nurodo, kad savininko komanda įdeda tik allowlist užduotį ir iškviečia debesijos runner.
+- Control Center papildomai stebi realius task-runner vykdymus. Įvykių vykdytojas nelaikomas pasenusiu, jei nėra naujos užduoties; tačiau tikras nesėkmingas, atšauktas ar neaiškios būsenos vykdymas sukuria įspėjimą.
+- Po dispatcher ir runner workflow pabaigos Control Center perskaičiuoja būseną. Viešame dashboard rodomi tik GitHub run metaduomenys; jokie task payload, D1 detalūs įrašai, tokenai ar vidiniai rezultatai neatskleidžiami.
