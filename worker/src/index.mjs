@@ -1,4 +1,4 @@
-import { runAgentOrchestration, isAgentScheduledEvent } from "./agents.mjs";
+import { runAgentOrchestration, isAgentScheduledEvent, isAgentCatchUpEvent, shouldRunAgentOrchestration } from "./agents.mjs";
 
 const MAX_BODY_BYTES = 32 * 1024;
 const ALLOWED_AGENTS = new Set(["coordinator", "analytics", "topics", "technical-seo", "content-review"]);
@@ -422,6 +422,24 @@ async function runScheduledHealthCheck(env) {
   }
 }
 
+async function runAgentOrchestrationWhenReady(env, controller) {
+  try {
+    if (!(await shouldRunAgentOrchestration(env, controller))) return;
+    const result = await runAgentOrchestration(env);
+    if (result?.completed) {
+      console.info("PetTraffic daily AI orchestration completed and persisted.", {
+        run_date: result.run_date,
+        ai_calls: result.ai_calls,
+      });
+    } else if (result?.error) {
+      console.error("PetTraffic daily AI orchestration failed:", result.error);
+    }
+  } catch (error) {
+    const message = String(error?.message || "readiness_check_failed").slice(0, 120);
+    console.error("PetTraffic daily AI orchestration readiness check failed:", message);
+  }
+}
+
 export default {
   async fetch(request, env) {
     try {
@@ -432,7 +450,14 @@ export default {
   },
   async scheduled(controller, env, ctx) {
     if (isAgentScheduledEvent(controller)) {
-      ctx.waitUntil(runAgentOrchestration(env));
+      ctx.waitUntil(runAgentOrchestrationWhenReady(env, controller));
+      return;
+    }
+    if (isAgentCatchUpEvent(controller)) {
+      ctx.waitUntil(Promise.all([
+        runScheduledHealthCheck(env),
+        runAgentOrchestrationWhenReady(env, controller),
+      ]));
       return;
     }
     ctx.waitUntil(runScheduledHealthCheck(env));
