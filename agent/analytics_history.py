@@ -11,6 +11,16 @@ import sys
 from urllib.parse import urlsplit
 import unicodedata
 
+SEARCH_THEME_LABELS = {
+    "simptomai_ir_sveikata": "Simptomai ir sveikata",
+    "maitinimas_ir_mityba": "Maitinimas ir mityba",
+    "veterinarine_pagalba": "Veterinarinė pagalba",
+    "prieziura_ir_higiena": "Priežiūra ir higiena",
+    "auginimas_ir_elgsena": "Auginimas ir elgsena",
+    "kita": "Kitos temos",
+}
+SEARCH_THEME_KEYS = {label: key for key, label in SEARCH_THEME_LABELS.items()}
+
 REPORT = Path("reports/analytics-7d.md")
 HISTORY_ROOT = Path("reports/history/analytics")
 
@@ -88,46 +98,41 @@ def classify_search_intent(value: str) -> str:
     return "kita"
 
 
+def search_theme_label(category: str) -> str:
+    return SEARCH_THEME_LABELS.get(category, SEARCH_THEME_LABELS["kita"])
+
+
 def parse_search_intent_themes(report: str) -> dict:
-    """Persist aggregate categories only; never store raw Search Console phrases."""
-    marker = "### Populiariausios Google paieškos užklausos"
+    """Read aggregate topic rows only; raw Search Console phrases never enter history."""
+    marker = "### Apibendrintos Google paieškos temos"
     if marker not in report:
         return {}
     section = report.split(marker, 1)[1].split("### Puslapiai Google paieškoje", 1)[0]
-    groups: dict[str, dict] = {}
+    groups = {}
     for line in section.splitlines():
         stripped = line.strip()
         if not stripped.startswith("|"):
             continue
-        cells = stripped.strip("|").rsplit("|", 4)
-        if len(cells) != 5:
+        cells = [cell.strip() for cell in stripped.strip("|").split("|")]
+        if len(cells) != 6 or cells[0] in {"Tema", "---"}:
             continue
-        phrase, clicks_raw, impressions_raw, ctr_raw, position_raw = [cell.strip() for cell in cells]
-        if phrase in {"Užklausa", "---"} or set(phrase) <= {"-", ":"}:
+        category = SEARCH_THEME_KEYS.get(cells[0], cells[0])
+        if category not in SEARCH_THEME_LABELS:
             continue
-        clicks = number(clicks_raw)
-        impressions = number(impressions_raw)
-        ctr = number(ctr_raw, percent=True)
-        position = number(position_raw)
-        if clicks is None or impressions is None:
+        rows = number(cells[1])
+        clicks = number(cells[2])
+        impressions = number(cells[3])
+        ctr = number(cells[4], percent=True)
+        position = number(cells[5])
+        if rows is None or clicks is None or impressions is None:
             continue
-        category = classify_search_intent(phrase)
-        item = groups.setdefault(category, {
-            "rows": 0, "clicks": 0.0, "impressions": 0.0,
-            "position_impressions": 0.0, "ctr": None,
-        })
-        item["rows"] += 1
-        item["clicks"] += clicks
-        item["impressions"] += impressions
-        if position is not None:
-            item["position_impressions"] += position * impressions
-    for item in groups.values():
-        item["ctr"] = item["clicks"] / item["impressions"] if item["impressions"] else None
-        item["average_position"] = (
-            item["position_impressions"] / item["impressions"]
-            if item["impressions"] else None
-        )
-        item.pop("position_impressions", None)
+        groups[category] = {
+            "rows": int(rows),
+            "clicks": clicks,
+            "impressions": impressions,
+            "ctr": ctr,
+            "average_position": position,
+        }
     return groups
 
 
