@@ -105,7 +105,7 @@ function decodeBase64Url(value) {
 
 async function authorized(request) {
   const authorization = request.headers.get("authorization") || "";
-  const match = authorization.match(/^Bearer\\s+([A-Za-z0-9._~-]+)$/i);
+  const match = authorization.match(/^Bearer\s+([A-Za-z0-9._~-]+)$/i);
   if (!match) return null;
 
   const parts = match[1].split(".");
@@ -364,7 +364,7 @@ async function handle(request, env) {
       }, 200, origin);
     }
 
-    const completion = url.pathname.match(/^\\/v1\\/tasks\\/([a-f0-9-]+)\\/complete$/i);
+    const completion = url.pathname.match(/^\/v1\/tasks\/([a-f0-9-]+)\/complete$/i);
     if (completion && request.method === "POST") {
       if (identity !== "task_runner") return response({ error: "forbidden_role" }, 403, origin);
       const parsed = await readJson(request);
