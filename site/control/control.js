@@ -6,7 +6,7 @@ const WORKER = "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev";
 const SITE = "https://pettraffic-ai.pages.dev";
 const TZ = "Europe/Vilnius";
 const $ = (id) => document.getElementById(id);
-const state = { runs: [], workflows: [], prs: [], commit: null, health: null, site: null, analytics: null, topics: null, loadedAt: null, loading: false };
+const state = { runs: [], prs: [], commit: null, issue: null, health: null, site: null, analytics: null, topics: null, loadedAt: null, loading: false };\nconst archiveCache = { analytics: { checkedAt: 0, value: null }, "topic-radar": { checkedAt: 0, value: null } };
 const workflowDefinitions = [
  {key:"site",title:"Svetainės patikra",file:"site-check.yml",match:"site checks",cadence:"Kasdien 07:37 LT + push / PR",desc:"HTML, vidinės nuorodos, SEO, sitemap, Python testai"},
  {key:"daily",title:"Daily-suite",file:"daily-suite.yml",match:"daily automation suite",cadence:"Kasdien 08:10 LT",desc:"GA4 / GSC, temų radaras ir gyvos svetainės patikra"},
@@ -16,10 +16,10 @@ const workflowDefinitions = [
  {key:"lighthouse",title:"Lighthouse",file:"lighthouse-audit.yml",match:"lighthouse audits",cadence:"Pirmadieniais 09:27 LT + site push",desc:"5 puslapiai × mobile ir desktop"},
  {key:"sync",title:"D1 snapshot sync",file:"sync-control-api.yml",match:"sync pettraffic snapshots",cadence:"Po workflow įvykių / manual",desc:"GitHub OIDC, agreguotų snapshot įrašymas ir readback"},
  {key:"bridge",title:"Saugus dispatch bridge",file:"dispatch-daily-suite.yml",match:"secure workflow dispatch",cadence:"Tik owner komanda issue #145",desc:"Dedup, ribotas workflow_dispatch, nėra savavališkų komandų"},
- {key:"worker",title:"Worker deploy",file:"deploy pettraffic control api",cadence:"Worker failų push / manual",desc:"Worker testai, Cloudflare validacija, deploy ir /health"},
- {key:"monitor",title:"Live-site monitor",file:"live-site monitor",cadence:"Daily-suite dalis / workflow",desc:"Viešos svetainės ir sveikatos signalai"},
- {key:"termux",title:"Termux bridge CI",file:"termux bridge",cadence:"Pagal kodo pakeitimus",desc:"Android / Ubuntu bootstrap scenarijų CI testai"},
- {key:"worklog",title:"Work-log",file:"work-log",match:"work-log",cadence:"Po main pakeitimų",desc:"Automatinis GitHub darbo žurnalo įrašas"},
+ {key:"worker",title:"Worker deploy",file:"deploy-control-api.yml",match:"deploy pettraffic control api",cadence:"Worker failų push / manual",desc:"Worker testai, Cloudflare validacija, deploy ir /health"},
+ {key:"monitor",title:"Live-site monitor",file:"live-site-monitor.yml",match:"live-site monitor",cadence:"Daily-suite dalis / workflow",desc:"Viešos svetainės ir sveikatos signalai"},
+ {key:"termux",title:"Termux bridge CI",file:"termux-bridge-check.yml",match:"termux bridge",cadence:"Pagal kodo pakeitimus",desc:"Android / Ubuntu bootstrap scenarijų CI testai"},
+ {key:"worklog",title:"Work-log",file:"work-log.yml",match:"work-log",cadence:"Po main pakeitimų",desc:"Automatinis GitHub darbo žurnalo įrašas"},
  {key:"workercron",title:"Worker cron diagnostika",file:"worker-cron-diagnostic.yml",match:"worker cron diagnostic",cadence:"Pagal workflow",desc:"Worker heartbeat ir agentų ciklo diagnostika"},
  {key:"indexnow",title:"IndexNow",file:"indexnow.yml",match:"indexnow",cadence:"Pagal svetainės pakeitimus",desc:"Paieškos sistemų URL pranešimas"}
 ];
@@ -48,7 +48,7 @@ function latestEvent(file,event){const d=workflowDefinitions.find(x=>x.file===fi
 function renderStats(){
  const site=state.site;const h=state.health;const latestRuns=state.runs.slice(0,100);const failed=latestRuns.filter(r=>r.status==="completed"&&r.conclusion!=="success").length;const open=state.prs.length;
  $("stat-site").textContent=site?.ok?"HTTP 200":"Neatsako";$("stat-site").className=site?.ok?"good-text":"bad-text";$("stat-site-detail").textContent=site?.url||SITE;
- $("stat-actions").textContent=latestRuns.length?String(latestRuns.length):"—";$("stat-actions-detail").textContent=failed+" nesėkmingų iš paskutinių "+latestRuns.length+" vykdymų";
+ $("stat-actions").textContent=latestRuns.length?String(latestRuns.length):"—";$("stat-actions-detail").textContent="main "+(state.commit?.sha||"").slice(0,7)+" · "+failed+" nesėkmingų iš "+latestRuns.length+" run";
  $("stat-worker").textContent=h?.ok&&h?.database==="connected"?"Prisijungęs":"Nežinoma";$("stat-worker").className=h?.ok?"good-text":"bad-text";$("stat-worker-detail").textContent=h?.control_core_schema==="connected"?"D1 + Control Core prijungti":"Nepatvirtinta";
  $("stat-prs").textContent=String(open);$("stat-prs-detail").textContent="Atviri PR main šakai";
  const ai=aiCycleStatus();$("stat-ai").textContent=ai.label;$("stat-ai").className=ai.cls==="good"?"good-text":ai.cls==="bad"?"bad-text":"warn-text";$("stat-ai-detail").textContent=ai.detail;
@@ -71,7 +71,7 @@ function renderAttention(){
  if(ai.cls!=="good")items.push({title:"Worker agentų ciklas: "+ai.label,detail:ai.detail,cls:ai.cls});
  const bad=state.runs.filter(r=>r.status==="completed"&&r.conclusion!=="success").slice(0,3);
  bad.forEach(r=>items.push({title:r.name+" · "+r.conclusion,detail:"#"+r.run_number+" · "+dateLT(r.created_at),cls:"bad",url:r.html_url}));
- if(state.prs.length)items.push({title:state.prs.length+" atviri PR",detail:state.prs.slice(0,3).map(p=>"#"+p.number+" "+p.title).join(" · "),cls:"warn",url:state.prs[0].html_url});
+ if(state.prs.length)items.push({title:state.prs.length+" atviri PR",detail:state.prs.slice(0,3).map(p=>"#"+p.number+" "+p.title).join(" · "),cls:"warn",url:state.prs[0].html_url});\n if(state.issue?.state==="open")items.push({title:"Pagrindinis alert #145 atviras",detail:state.issue.title||"Reikia Control Center recovery įrodymo",cls:"warn",url:state.issue.html_url});
  if(!items.length)items.push({title:"Kritinių signalų iš gautų šaltinių nėra",detail:"Tai nėra pilnas visų paskyrų ar paslapčių auditas.",cls:"good"});
  $("attention-list").innerHTML=items.slice(0,8).map(x=>'<div class="attention-item '+(x.cls==="good"?"good":"")+'"><span class="signal"></span><div><strong>'+escapeHtml(x.title)+'</strong><small>'+escapeHtml(x.detail)+' '+(x.url?'<a href="'+escapeHtml(x.url)+'" target="_blank" rel="noopener">Atverti ↗</a>':"")+'</small></div></div>').join("");
 }
@@ -143,13 +143,13 @@ async function refresh(){
  loadAnalyticsArchive("topic-radar")
  ]);
  const assign=(i,key,transform=x=>x)=>{const r=results[i];if(r.status==="fulfilled")state[key]=transform(r.value);};
- assign(0,"runs",x=>x.workflow_runs||[]);assign(1,"prs",x=>x||[]);assign(2,"commit");assign(3,"health");assign(4,"site");assign(5,"analytics");assign(6,"topics");
+ assign(0,"runs",x=>x.workflow_runs||[]);assign(1,"prs",x=>x||[]);assign(2,"commit");assign(3,"issue");assign(4,"health");assign(5,"site");assign(6,"analytics");assign(7,"topics");
  state.loadedAt=new Date();renderAll();
  const failed=results.filter(x=>x.status==="rejected").length;
  $("last-updated").textContent="Atnaujinta "+dateLT(state.loadedAt);
- $("connection-state").textContent=failed===0?"Visi šaltiniai atsakė":"Šaltiniai: "+(7-failed)+"/7";
+ $("connection-state").textContent=failed===0?"Visi šaltiniai atsakė":"Šaltiniai: "+(8-failed)+"/8";
  $("global-alert").hidden=failed===0;
- $("global-alert").textContent=failed?("Nepavyko pasiekti "+failed+" iš 7 duomenų šaltinių. Nepasiekiami duomenys žymimi kaip nežinomi, ne kaip nulis."): "";
+ $("global-alert").textContent=failed?("Nepavyko pasiekti "+failed+" iš 8 duomenų šaltinių. Nepasiekiami duomenys žymimi kaip nežinomi, ne kaip nulis."): "";
  $("refresh-button").disabled=false;state.loading=false;
 }
 function showView(name){
