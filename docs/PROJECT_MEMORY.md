@@ -611,3 +611,17 @@ Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama 
 - Viešas `/control/` tebėra read-only; šis etapas dar nesukuria privataus vieno paspaudimo dashboard valdymo. Termux nėra nuolatinis agentas ir šiam debesijos vykdymo keliui nereikalingas.
 - Nekeičiau Worker produkcijos, D1, DNS, Cloudflare Access, Worker kintamųjų/secrets, GitHub repo variables, ARO Vet, viešo turinio, teisių, billing ar mokamų paslaugų.
 - Kitas žingsnis: peržiūrėti ir atskirai patvirtinti PR #249. Tik po patvirtinto merge, Worker deploy ir dviejų atskirų feature flag konfigūracijos galima atlikti ribotą realaus task ciklo smoke testą. Dashboard privataus valdymo kelias lieka atskiras darbas.
+
+
+## 2026-11-15 – autonomijos task vykdytojo architektūros atnaujinimas
+
+Šis įrašas pakeičia ankstesnę PR #249 plano dalį, kurioje buvo numatytas 15 min. polling ir du rankiniu būdu nustatomi feature flag'ai.
+
+- **Architektūra:** owner-only `dispatch-daily-suite.yml` po tikslaus komentaro `/pettraffic-enqueue-site-check` issue #145 naudoja dispatcher OIDC, sukuria vieną allow-listed D1 task ir iškart iškviečia `run-readonly-tasks.yml` per GitHub `workflow_dispatch`. Runner yra trumpalaikis GitHub-hosted vykdymas; telefonas nenaudojamas.
+- **Leidimų ribos:** snapshot-sync, task-dispatcher ir task-runner turi tris atskiras OIDC tapatybes. Worker tikrina parašą, issuer, audience, immutable repository/owner IDs, main ref, workflow_ref ir event_name. Dispatcher gali tik enqueue; runner – tik claim, fiksuotą read-only execution, complete ir savo atlikto task D1 readback.
+- **Pirmas veiksmas:** tik `check_site` / `technical-seo` su tiksliu payload `{ "target": "public_site" }`; vykdomas fiksuotas `agent/check_live_site.py`. Jokio arbitrary shell, turinio publikavimo, svetainės keitimo, DNS, ARO Vet ar mokamų paslaugų.
+- **Runtime aktyvavimas:** `TASK_API_ENABLED=true` įrašytas `worker/wrangler.toml` PR šakoje. Jis įsigalios tik po PR #249 merge ir Worker deployment. Atskiro `PETTRAFFIC_TASKS_ENABLED` GitHub repo kintamojo nebereikia. API routes be teisingo OIDC vaidmens lieka neprieinami.
+- **D1 patvirtinimas:** pridėtas runner-only `GET /v1/tasks/{id}`; runner po completion atskiru trumpalaikiu tokenu perskaito įrašą ir patikrina ID, statusą ir exit code.
+- **CI įrodymai:** naujausio PR head `493f7a6be006bdba8d61fbdce5faf05b3362f77a`: Worker test + Cloudflare validation [#43739848100](https://github.com/Pershore/PetTraffic-AI/actions/runs/43739848100) success, deploy skipped; site/automation checks [#43739848105](https://github.com/Pershore/PetTraffic-AI/actions/runs/43739848105) success; snapshot-sync PR test [#43739848179](https://github.com/Pershore/PetTraffic-AI/actions/runs/43739848179) success, sync skipped.
+- **Dabartinis statusas:** PARUOŠTA / PR CI PATIKRINTA. PR #249 dar atviras; production Worker deploy ir realus task lifecycle dar neatlikti. Issue #248 negalima uždaryti iki realaus enqueue → claim → fixed execution → complete → D1 readback testo.
+- **Atskiras likutis:** viešas `/control/` lieka read-only. Privati autentifikuota dashboard valdymo sąsaja nėra šio PR dalis. Kasdienis Worker AI ciklas / Control Core memory taip pat turi atskirą po-deploy patvirtinimą 2026-11-16 13:20 Europe/Vilnius.
