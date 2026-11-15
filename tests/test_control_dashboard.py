@@ -57,6 +57,7 @@ class ControlDashboardTests(unittest.TestCase):
         self.assertIn("function latestMainRuns()", script)
         self.assertIn('if(run.head_branch!=="main"||run.event==="pull_request")continue;', script)
         self.assertIn("latestMainRuns().find", script)
+        self.assertIn('function latestEvent(file,event){const d=workflowDefinitions.find(x=>x.file===file);return state.runs.find(r=>r.head_branch==="main"&&r.event===event', script)
         self.assertIn('latestMainRuns().filter(r=>r.status==="completed"&&["failure","timed_out","action_required"].includes(r.conclusion))', script)
 
     def test_dashboard_uses_newest_analytics_and_topic_snapshots(self):
