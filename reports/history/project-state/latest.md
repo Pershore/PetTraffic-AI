@@ -3,7 +3,7 @@
 - Atnaujinta: 2026-11-15T10:29+02:00
 - Būsena: **WORKER / D1 PATVIRTINTI; 10:20 AI AGENTŲ CIKLAS ATSISTATĖ; CONTROL CORE REIKIA ĮRODYMŲ; DAILY-SUITE CRON NEPATVIRTINTAS**
 - Pagrindinė šaka: `main`
-- Paskutinis main commit audito metu: `8efa6c885c1043316bd54f83d0f57bcd07d09d9a`
+- Paskutinis main commit audito metu: `c55599e0f4c8d740000ca69b7f04ac8f74838467`
 - PR #210 sujungtas: `0ac4f3e9be21d52df3a4d681e23b21c3a7b744a4`.
 - PR #211 sujungtas: `116070f78bc92e23b16e3a0e3244769190a5080b`; Cloudflare Pages ir `Validate static website and automation code` – success.
 - PR #211 patikroje 103 Python testai baigėsi `OK`; post-merge `Pet traffic site checks` (run 43686934069) – success; automatinis darbo žurnalas (run 43686934075) – success.
@@ -99,3 +99,11 @@
 
 - 10:40 Europe/Vilnius: patikrinti Control Center run, D1 / atminties būseną, daily-suite alert ir issue #145; neuždaryti issue be aiškaus `recovery_confirmed=true` įrodymo.
 - Išsiaiškinti, kodėl 2026-11-15 daily-suite schedule neįvyko; workflow būseną tikrinti per prieinamą GitHub valdymo API, nekeisti cron spėliojant.
+
+
+## 10:30 GitHub patikra po šios sesijos istorijos įrašo
+
+- Naujausias `Pet traffic site checks` vykdymas `43694766334` (push po darbo žurnalo atnaujinimo) – **success**.
+- `Validate static website and automation code` job – success; 103 Python testai baigėsi `OK`, tarp jų daily-suite cron, schedule grace, workflow disabled, Control Center, Worker health ir projekto istorijos testai.
+- Tai patvirtina, kad dokumentacijos / darbo žurnalo atnaujinimas nesugadino patikros; tai nėra įrodymas, kad daily-suite suplanuotas vykdymas jau atsistatė.
+- 10:40 LT Control Center suplanuotas vykdymas dar laukiamas. Issue #145 paliekamas atviras iki `recovery_confirmed=true`.
