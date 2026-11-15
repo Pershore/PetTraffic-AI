@@ -80,8 +80,22 @@ const GITHUB_REPOSITORY_ID = "1452256714";
 const GITHUB_REF = "refs/heads/main";
 // GitHub repositories created after 2026-07-15 use immutable owner/repository IDs in sub.
 const GITHUB_SUBJECT = `repo:Pershore@${GITHUB_REPOSITORY_OWNER_ID}/PetTraffic-AI@${GITHUB_REPOSITORY_ID}:ref:${GITHUB_REF}`;
-const GITHUB_WORKFLOW_REF = "Pershore/PetTraffic-AI/.github/workflows/sync-control-api.yml@refs/heads/main";
-const ALLOWED_GITHUB_EVENTS = new Set(["workflow_run", "workflow_dispatch"]);
+
+// Each workload has an independent identity. Never reuse the snapshot-sync role for task execution.
+const GITHUB_OIDC_IDENTITIES = {
+  snapshot_sync: {
+    workflow_ref: "Pershore/PetTraffic-AI/.github/workflows/sync-control-api.yml@refs/heads/main",
+    events: new Set(["workflow_run", "workflow_dispatch"]),
+  },
+  task_dispatcher: {
+    workflow_ref: "Pershore/PetTraffic-AI/.github/workflows/dispatch-daily-suite.yml@refs/heads/main",
+    events: new Set(["issue_comment"]),
+  },
+  task_runner: {
+    workflow_ref: "Pershore/PetTraffic-AI/.github/workflows/run-readonly-tasks.yml@refs/heads/main",
+    events: new Set(["schedule", "workflow_dispatch"]),
+  },
+};
 
 function decodeBase64Url(value) {
   const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
@@ -91,11 +105,11 @@ function decodeBase64Url(value) {
 
 async function authorized(request) {
   const authorization = request.headers.get("authorization") || "";
-  const match = authorization.match(/^Bearer\s+([A-Za-z0-9._~-]+)$/i);
-  if (!match) return false;
+  const match = authorization.match(/^Bearer\\s+([A-Za-z0-9._~-]+)$/i);
+  if (!match) return null;
 
   const parts = match[1].split(".");
-  if (parts.length !== 3) return false;
+  if (parts.length !== 3) return null;
 
   let header;
   let claims;
@@ -103,10 +117,10 @@ async function authorized(request) {
     header = JSON.parse(new TextDecoder().decode(decodeBase64Url(parts[0])));
     claims = JSON.parse(new TextDecoder().decode(decodeBase64Url(parts[1])));
   } catch {
-    return false;
+    return null;
   }
 
-  if (header.alg !== "RS256" || typeof header.kid !== "string") return false;
+  if (header.alg !== "RS256" || typeof header.kid !== "string") return null;
   const now = Math.floor(Date.now() / 1000);
   const audienceValid = claims.aud === GITHUB_OIDC_AUDIENCE ||
     (Array.isArray(claims.aud) && claims.aud.includes(GITHUB_OIDC_AUDIENCE));
@@ -118,32 +132,36 @@ async function authorized(request) {
     String(claims.repository_owner_id) !== GITHUB_REPOSITORY_OWNER_ID ||
     String(claims.repository_id) !== GITHUB_REPOSITORY_ID ||
     claims.ref !== GITHUB_REF ||
-    claims.workflow_ref !== GITHUB_WORKFLOW_REF ||
-    !ALLOWED_GITHUB_EVENTS.has(claims.event_name) ||
     !Number.isFinite(claims.exp) || claims.exp <= now ||
     (Number.isFinite(claims.nbf) && claims.nbf > now + 30)
-  ) return false;
+  ) return null;
+
+  const identity = Object.entries(GITHUB_OIDC_IDENTITIES).find(([, policy]) =>
+    claims.workflow_ref === policy.workflow_ref && policy.events.has(claims.event_name)
+  );
+  if (!identity) return null;
 
   try {
     const jwksResponse = await fetch(`${GITHUB_OIDC_ISSUER}/.well-known/jwks`, {
       headers: { accept: "application/json" },
       cf: { cacheTtl: 300, cacheEverything: true },
     });
-    if (!jwksResponse.ok) return false;
+    if (!jwksResponse.ok) return null;
     const jwks = await jwksResponse.json();
     const jwk = jwks.keys?.find(key => key.kid === header.kid && key.kty === "RSA" && key.use === "sig");
-    if (!jwk) return false;
+    if (!jwk) return null;
     const publicKey = await crypto.subtle.importKey(
       "jwk", jwk, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["verify"]
     );
-    return await crypto.subtle.verify(
+    const valid = await crypto.subtle.verify(
       "RSASSA-PKCS1-v1_5",
       publicKey,
       decodeBase64Url(parts[2]),
       new TextEncoder().encode(`${parts[0]}.${parts[1]}`)
     );
+    return valid ? identity[0] : null;
   } catch {
-    return false;
+    return null;
   }
 }
 
@@ -267,120 +285,152 @@ async function handle(request, env) {
 
   if (!url.pathname.startsWith("/v1/")) return response({ error: "not_found" }, 404, origin);
   if (!env.DB) return response({ error: "database_not_bound" }, 503, origin);
-  // The current GitHub OIDC identity is intentionally scoped to snapshot events only.
-  // Task execution needs a separate, dedicated agent identity before these routes can be enabled.
-  if (url.pathname.startsWith("/v1/tasks")) return response({ error: "task_api_not_enabled" }, 503, origin);
-  if (!(await authorized(request))) return response({ error: "unauthorized" }, 401, origin);
 
-  if (url.pathname === "/v1/events" && request.method === "GET") {
-    const kind = url.searchParams.get("kind");
-    if (kind && !ALLOWED_EVENT_KINDS.has(kind)) return response({ error: "invalid_event_kind" }, 400, origin);
-    const rows = await env.DB.prepare(
-      "SELECT id, kind, payload_json, created_at FROM events WHERE (? IS NULL OR kind = ?) ORDER BY created_at DESC LIMIT 100"
-    ).bind(kind, kind).all();
-    return response({
-      events: (rows.results || []).map(row => ({
-        id: row.id,
-        kind: row.kind,
-        payload: JSON.parse(row.payload_json),
-        created_at: row.created_at,
-      })),
-    }, 200, origin);
-  }
+  if (url.pathname.startsWith("/v1/tasks")) {
+    // Fail closed until both the dedicated OIDC roles and operator-side runtime flag are configured.
+    if (env.TASK_API_ENABLED !== "true") return response({ error: "task_api_not_enabled" }, 503, origin);
+    const identity = await authorized(request);
+    if (!identity) return response({ error: "unauthorized" }, 401, origin);
 
-  if (url.pathname === "/v1/events" && request.method === "POST") {
-    const parsed = await readJson(request);
-    if (parsed.error) return response({ error: parsed.error }, parsed.error === "request_too_large" ? 413 : 400, origin);
-    const body = parsed.value;
-    if (!body || !ALLOWED_EVENT_KINDS.has(body.kind) || !safeObject(body.payload)) {
-      return response({ error: "invalid_event_payload" }, 400, origin);
-    }
-    const sourceRunId = typeof body.payload.run_id === "string" ? body.payload.run_id.trim() : "";
-    if (sourceRunId) {
-      const existing = await env.DB.prepare(
-        "SELECT id FROM events WHERE kind = ? AND json_extract(payload_json, '$.run_id') = ? ORDER BY created_at ASC LIMIT 1"
-      ).bind(body.kind, sourceRunId).first();
-      if (existing?.id) {
-        return response({ accepted: true, id: existing.id, deduplicated: true }, 202, origin);
+    if (url.pathname === "/v1/tasks" && request.method === "POST") {
+      if (identity !== "task_dispatcher") return response({ error: "forbidden_role" }, 403, origin);
+      const parsed = await readJson(request);
+      if (parsed.error) return response({ error: parsed.error }, parsed.error === "request_too_large" ? 413 : 400, origin);
+      const body = parsed.value;
+      const payload = body?.payload;
+      const payloadIsExact = payload && typeof payload === "object" && !Array.isArray(payload) &&
+        Object.keys(payload).length === 1 && payload.target === "public_site";
+      const priority = Number(body?.priority ?? 3);
+      if (
+        !body ||
+        body.type !== "check_site" ||
+        body.agent !== "technical-seo" ||
+        !payloadIsExact ||
+        !safeObject(payload) ||
+        !Number.isInteger(priority) || priority < 1 || priority > 5
+      ) return response({ error: "invalid_task" }, 400, origin);
+
+      // Avoid duplicate live site-check tasks if the owner repeats the same command.
+      const pending = await env.DB.prepare(
+        "SELECT id, status FROM tasks WHERE task_type = ? AND assigned_agent = ? " +
+        "AND status IN ('queued', 'running') ORDER BY created_at ASC LIMIT 1"
+      ).bind("check_site", "technical-seo").first();
+      if (pending?.id) {
+        return response({
+          accepted: true,
+          task_id: pending.id,
+          status: pending.status,
+          deduplicated: true,
+        }, 202, origin);
       }
+
+      const id = crypto.randomUUID();
+      await env.DB.prepare(
+        "INSERT INTO tasks (id, task_type, assigned_agent, priority, payload_json, status, created_at) " +
+        "VALUES (?, 'check_site', 'technical-seo', ?, ?, 'queued', ?)"
+      ).bind(id, priority, JSON.stringify(payload), new Date().toISOString()).run();
+      return response({ accepted: true, task_id: id, status: "queued", deduplicated: false }, 202, origin);
     }
 
-    const id = crypto.randomUUID();
-    await env.DB.prepare(
-      "INSERT INTO events (id, kind, payload_json, created_at) VALUES (?, ?, ?, ?)"
-    ).bind(id, body.kind, JSON.stringify(body.payload), new Date().toISOString()).run();
-    return response({ accepted: true, id, deduplicated: false }, 202, origin);
+    if (url.pathname === "/v1/tasks/claim" && request.method === "POST") {
+      if (identity !== "task_runner") return response({ error: "forbidden_role" }, 403, origin);
+      const parsed = await readJson(request);
+      if (parsed.error) return response({ error: parsed.error }, parsed.error === "request_too_large" ? 413 : 400, origin);
+      const agent = parsed.value?.agent;
+      if (agent !== "technical-seo") return response({ error: "invalid_agent" }, 400, origin);
+      const now = new Date().toISOString();
+      const expiredBefore = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+      await env.DB.prepare(
+        "UPDATE tasks SET status = 'failed', completed_at = ? " +
+        "WHERE status = 'running' AND claimed_at < ? AND attempt_count >= 3"
+      ).bind(now, expiredBefore).run();
+      const task = await env.DB.prepare(
+        "UPDATE tasks SET status = 'running', claimed_by = ?, claimed_at = ?, attempt_count = attempt_count + 1 " +
+        "WHERE id = (SELECT id FROM tasks WHERE (status = 'queued' OR (status = 'running' AND claimed_at < ?)) " +
+        "AND attempt_count < 3 AND assigned_agent = ? AND task_type = 'check_site' " +
+        "ORDER BY priority DESC, created_at ASC LIMIT 1) " +
+        "RETURNING id, task_type, assigned_agent, priority, payload_json, created_at"
+      ).bind(agent, now, expiredBefore, agent).first();
+      if (!task) return response({ task: null }, 200, origin);
+      return response({
+        task: {
+          id: task.id,
+          type: task.task_type,
+          assigned_agent: task.assigned_agent,
+          priority: task.priority,
+          payload: JSON.parse(task.payload_json),
+          created_at: task.created_at,
+        },
+      }, 200, origin);
+    }
+
+    const completion = url.pathname.match(/^\\/v1\\/tasks\\/([a-f0-9-]+)\\/complete$/i);
+    if (completion && request.method === "POST") {
+      if (identity !== "task_runner") return response({ error: "forbidden_role" }, 403, origin);
+      const parsed = await readJson(request);
+      if (parsed.error) return response({ error: parsed.error }, parsed.error === "request_too_large" ? 413 : 400, origin);
+      const body = parsed.value;
+      if (
+        !body ||
+        body.agent !== "technical-seo" ||
+        !["completed", "failed"].includes(body.status) ||
+        !safeObject(body.result || {})
+      ) return response({ error: "invalid_completion" }, 400, origin);
+      const result = await env.DB.prepare(
+        "UPDATE tasks SET status = ?, result_json = ?, completed_at = ? " +
+        "WHERE id = ? AND status = 'running' AND claimed_by = 'technical-seo' "
+      ).bind(body.status, JSON.stringify(body.result || {}), new Date().toISOString(), completion[1]).run();
+      if (!result.meta?.changes) return response({ error: "task_not_owned_or_not_running" }, 409, origin);
+      return response({ accepted: true, task_id: completion[1], status: body.status }, 200, origin);
+    }
+
+    return response({ error: "not_found" }, 404, origin);
   }
 
-  if (url.pathname === "/v1/tasks" && request.method === "POST") {
-    const parsed = await readJson(request);
-    if (parsed.error) return response({ error: parsed.error }, parsed.error === "request_too_large" ? 413 : 400, origin);
-    const body = parsed.value;
-    const priority = Number(body?.priority ?? 3);
-    if (
-      !body ||
-      !ALLOWED_TASK_TYPES.has(body.type) ||
-      !ALLOWED_AGENTS.has(body.agent) ||
-      !Number.isInteger(priority) ||
-      priority < 1 || priority > 5 ||
-      !safeObject(body.payload || {})
-    ) return response({ error: "invalid_task" }, 400, origin);
+  if (url.pathname.startsWith("/v1/events")) {
+    const identity = await authorized(request);
+    if (!identity) return response({ error: "unauthorized" }, 401, origin);
+    if (identity !== "snapshot_sync") return response({ error: "forbidden_role" }, 403, origin);
 
-    const id = crypto.randomUUID();
-    await env.DB.prepare(
-      "INSERT INTO tasks (id, task_type, assigned_agent, priority, payload_json, status, created_at) VALUES (?, ?, ?, ?, ?, 'queued', ?)"
-    ).bind(id, body.type, body.agent, priority, JSON.stringify(body.payload || {}), new Date().toISOString()).run();
-    return response({ accepted: true, task_id: id, status: "queued" }, 202, origin);
-  }
+    if (url.pathname === "/v1/events" && request.method === "GET") {
+      const kind = url.searchParams.get("kind");
+      if (kind && !ALLOWED_EVENT_KINDS.has(kind)) return response({ error: "invalid_event_kind" }, 400, origin);
+      const rows = await env.DB.prepare(
+        "SELECT id, kind, payload_json, created_at FROM events WHERE (? IS NULL OR kind = ?) ORDER BY created_at DESC LIMIT 100"
+      ).bind(kind, kind).all();
+      return response({
+        events: (rows.results || []).map(row => ({
+          id: row.id,
+          kind: row.kind,
+          payload: JSON.parse(row.payload_json),
+          created_at: row.created_at,
+        })),
+      }, 200, origin);
+    }
 
-  if (url.pathname === "/v1/tasks/claim" && request.method === "POST") {
-    const parsed = await readJson(request);
-    if (parsed.error) return response({ error: parsed.error }, parsed.error === "request_too_large" ? 413 : 400, origin);
-    const agent = parsed.value?.agent;
-    if (!ALLOWED_AGENTS.has(agent)) return response({ error: "invalid_agent" }, 400, origin);
-    const now = new Date().toISOString();
-    const expiredBefore = new Date(Date.now() - 30 * 60 * 1000).toISOString();
-    await env.DB.prepare(
-      "UPDATE tasks SET status = 'failed', completed_at = ? " +
-      "WHERE status = 'running' AND claimed_at < ? AND attempt_count >= 3"
-    ).bind(now, expiredBefore).run();
-    const task = await env.DB.prepare(
-      "UPDATE tasks SET status = 'running', claimed_by = ?, claimed_at = ?, attempt_count = attempt_count + 1 " +
-      "WHERE id = (SELECT id FROM tasks WHERE (status = 'queued' OR (status = 'running' AND claimed_at < ?)) " +
-      "AND attempt_count < 3 AND assigned_agent IN (?, 'coordinator') " +
-      "ORDER BY priority DESC, created_at ASC LIMIT 1) " +
-      "RETURNING id, task_type, assigned_agent, priority, payload_json, created_at"
-    ).bind(agent, now, expiredBefore, agent).first();
-    if (!task) return response({ task: null }, 200, origin);
-    return response({
-      task: {
-        id: task.id,
-        type: task.task_type,
-        assigned_agent: task.assigned_agent,
-        priority: task.priority,
-        payload: JSON.parse(task.payload_json),
-        created_at: task.created_at,
-      },
-    }, 200, origin);
-  }
+    if (url.pathname === "/v1/events" && request.method === "POST") {
+      const parsed = await readJson(request);
+      if (parsed.error) return response({ error: parsed.error }, parsed.error === "request_too_large" ? 413 : 400, origin);
+      const body = parsed.value;
+      if (!body || !ALLOWED_EVENT_KINDS.has(body.kind) || !safeObject(body.payload)) {
+        return response({ error: "invalid_event_payload" }, 400, origin);
+      }
+      const sourceRunId = typeof body.payload.run_id === "string" ? body.payload.run_id.trim() : "";
+      if (sourceRunId) {
+        const existing = await env.DB.prepare(
+          "SELECT id FROM events WHERE kind = ? AND json_extract(payload_json, '$.run_id') = ? ORDER BY created_at ASC LIMIT 1"
+        ).bind(body.kind, sourceRunId).first();
+        if (existing?.id) {
+          return response({ accepted: true, id: existing.id, deduplicated: true }, 202, origin);
+        }
+      }
 
-  const completion = url.pathname.match(/^\/v1\/tasks\/([a-f0-9-]+)\/complete$/i);
-  if (completion && request.method === "POST") {
-    const parsed = await readJson(request);
-    if (parsed.error) return response({ error: parsed.error }, parsed.error === "request_too_large" ? 413 : 400, origin);
-    const body = parsed.value;
-    if (
-      !body ||
-      !ALLOWED_AGENTS.has(body.agent) ||
-      !["completed", "failed"].includes(body.status) ||
-      !safeObject(body.result || {})
-    ) return response({ error: "invalid_completion" }, 400, origin);
-    const result = await env.DB.prepare(
-      "UPDATE tasks SET status = ?, result_json = ?, completed_at = ? " +
-      "WHERE id = ? AND status = 'running' AND claimed_by = ?"
-    ).bind(body.status, JSON.stringify(body.result || {}), new Date().toISOString(), completion[1], body.agent).run();
-    if (!result.meta?.changes) return response({ error: "task_not_owned_or_not_running" }, 409, origin);
-    return response({ accepted: true, task_id: completion[1], status: body.status }, 200, origin);
+      const id = crypto.randomUUID();
+      await env.DB.prepare(
+        "INSERT INTO events (id, kind, payload_json, created_at) VALUES (?, ?, ?, ?)"
+      ).bind(id, body.kind, JSON.stringify(body.payload), new Date().toISOString()).run();
+      return response({ accepted: true, id, deduplicated: false }, 202, origin);
+    }
   }
 
   return response({ error: "not_found" }, 404, origin);
