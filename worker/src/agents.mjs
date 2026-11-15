@@ -7,11 +7,6 @@ export function isVilniusAgentRunTime(date = new Date()) {
 
 const HEARTBEAT_CRON = "*/15 * * * *";
 
-export function isVilniusAgentRunTime(date = new Date()) {
-  const localTime = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Vilnius", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(date);
-  return localTime === "13:20";
-}
-
 export function isAgentScheduledEvent(controller) {
   if (controller?.cron !== AGENT_CRON || !Number.isFinite(controller.scheduledTime)) return false;
   // Cloudflare may deliver a cron event after its nominal minute. Evaluate the
