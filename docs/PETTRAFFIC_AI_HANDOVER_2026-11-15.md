@@ -114,3 +114,10 @@ Iki 11:40 LT patikrinti Control Center schedule įvykį ir jo ataskaitą. Jei jo
 - 10:20 LT Worker AI ciklas buvo completed prieš duomenų sinchronizavimą, todėl šiandienos 8 evidence gaps dar neįvertino naujų snapshot'ų.
 - PR #217 perkelia Worker AI ciklą į 13:20 Europe/Vilnius (UTC cron 10:20/11:20 pagal vasaros/žiemos laiką), po 11:45 LT koordinatoriaus. Šiandienos run_date jau užregistruotas, todėl naujas ciklas šiandien nesikartos; kitas pilnas ciklas laukiamas 2026-11-16 13:20 LT.
 - PR #217 CI ir post-deploy patikra dar laukia.
+
+
+## 2026-11-15 11:18 LT – automatizacijų grafiko užbaigimas
+
+- Pagrindinis catch-up koordinatorius: 11:45 LT. Esamas greičio stebėjimo automation papildytas Worker AI post-cycle patikra ir perkeltas į 14:00 LT. ARO Vet analitikos automation lieka 18:24 LT.
+- Nauja automatizacija nesukurta, nes pasiektas 3 aktyvių užduočių plano limitas; panaudota esama greičio automatizacija, išsaugant jos greičio audito funkciją.
+- 14:00 patikra tikrina 13:20 Worker AI ciklo rezultatą per Control Center ataskaitą; ji nenaudoja išjungto /v1/tasks API ir negali priverstinai vykdyti Worker AI.
