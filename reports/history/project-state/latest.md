@@ -1,7 +1,7 @@
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
-- Atnaujinta: 2026-11-15T10:29+02:00
-- Būsena: **WORKER / D1 PATVIRTINTI; 10:20 AI AGENTŲ CIKLAS ATSISTATĖ; CONTROL CORE REIKIA ĮRODYMŲ; DAILY-SUITE CRON NEPATVIRTINTAS**
+- Atnaujinta: 2026-11-15T10:41+02:00
+- Būsena: **WORKER / D1 PATVIRTINTI; 10:20 AI AGENTŲ CIKLAS ATSISTATĖ; CONTROL CORE REIKIA ĮRODYMŲ; DAILY-SUITE CRON NEĮVYKĘS PO ATSARGOS LAIKO; CONTROL-CENTER DAR LAUKIA ATSARGOS LANGU**
 - Pagrindinė šaka: `main`
 - Paskutinis main commit audito metu: `c55599e0f4c8d740000ca69b7f04ac8f74838467`
 - PR #210 sujungtas: `0ac4f3e9be21d52df3a4d681e23b21c3a7b744a4`.
@@ -107,3 +107,20 @@
 - `Validate static website and automation code` job – success; 103 Python testai baigėsi `OK`, tarp jų daily-suite cron, schedule grace, workflow disabled, Control Center, Worker health ir projekto istorijos testai.
 - Tai patvirtina, kad dokumentacijos / darbo žurnalo atnaujinimas nesugadino patikros; tai nėra įrodymas, kad daily-suite suplanuotas vykdymas jau atsistatė.
 - 10:40 LT Control Center suplanuotas vykdymas dar laukiamas. Issue #145 paliekamas atviras iki `recovery_confirmed=true`.
+
+
+## 10:41 GitHub Actions ir Worker pakartotinė patikra
+
+- `daily-suite.yml` GitHub workflow metadata per viešą Actions API: `state=active`, ID `418322987`, sukurtas `2026-11-14T13:36:29Z`, `updated_at=2026-11-14T13:39:43Z`. Workflow nėra išjungtas.
+- `.github/workflows/daily-suite.yml` faktinis paskutinis failo commit: `7d9b48f2abc41574181cd189e82dae9bedd2e047`, `2026-11-14T14:41:16Z` – prieš 2026-11-15 06:10 UTC cron.
+- Daily-suite 06:10 UTC (08:10 LT) suplanuoto `event=schedule` vykdymo 10:41 LT vis dar nėra; jo 60 min. atsargos langas jau praėjęs. Būsena: **WARNING / NEPATVIRTINTA PRIEŽASTIS**. Workflow aktyvus, todėl išjungimas atmestas; GitHub scheduler / kitos priežasties dar negalima patvirtinti.
+- `control-center.yml` metadata: `state=active`, ID `416336983`; 08:40 UTC (10:40 LT) cron tuo metu tik ką suėjo, jo 60 min. atsargos langas galioja iki 09:40 UTC (11:40 LT). Dar nevertinti kaip praleisto.
+- GitHub Actions paskutinių vykdymų sąraše po 10:40 LT nėra naujo Control Center ar Daily-suite vykdymo; paskutinis schedule event lieka 2026-11-14 15:18 UTC (Control Center), o Daily-suite schedule event istorijoje nerastas.
+- Gyvas Worker `/health` 10:40 LT: HTTP 200; D1 ir Control Core schema connected; heartbeat `2026-11-15T08:30:47.274Z` (10:30:47 LT), site HTTP 200, DB OK. Agentų ciklas `2026-11-15` `completed`, 5 AI kvietimai, `error_code=null`; Control Core `needs_evidence`, 2 rekomendacijos, 8 evidence gaps, validus JSON, memory `present`.
+- Šios sesijos papildomi Firecrawl API patikrinimai sunaudojo 2 kreditus; likutis po ankstesnio audito buvo 197, todėl apytikslis likutis dabar 195 / 1 000. Jokių kodo, production, DNS, Worker/D1 konfigūracijos, ARO Vet ar mokamų paslaugų pakeitimų neatlikta.
+
+## Kitas konkretus etapas
+
+- Iki 11:40 LT stebėti Control Center `event=schedule` paleidimą ir jo ataskaitą; issue #145 neuždaryti, kol `recovery_confirmed=true`.
+- Daily-suite priežastis lieka nepatvirtinta: workflow aktyvus, bet suplanuotas ciklas neįvyko po 60 min. grace. GitHub Actions workflow-dispatch veiksmo šiame vykdymo įrankių rinkinyje nėra; nedaryti dirbtinio push/no-op commit ir nevadinti rankinio/push vykdymo schedule įrodymu.
+- Jei iki 11:40 LT Control Center irgi nepasileis, užregistruoti antrą praleistą aktyvaus workflow schedule; reikės GitHub Actions schedule nustatymų / GitHub platformos pusės diagnostikos, kurios šis ryšys tiesiogiai nepateikia.
