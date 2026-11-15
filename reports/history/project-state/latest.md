@@ -119,3 +119,11 @@ Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas
 - Lighthouse [#43699958471](https://github.com/Pershore/PetTraffic-AI/actions/runs/43699958471) – success, 10 ataskaitų. Desktop Performance 100; mobile homepage 95, emergency cat 98, kiti trys 99; Accessibility / Best Practices / SEO 100. Homepage mobile LCP 1.30 s, TBT 271 ms, CLS 0. Naujo palyginamo baseline šiame audite nėra.
 - Pagrindinė ChatGPT koordinatoriaus automatizacija įjungta, tačiau paskutinis užfiksuotas vykdymas 2026-11-14; 2026-11-15 įrašo nėra, kitas suplanuotas 2026-11-16 11:45 LT. Esamas 14:00 LT greičio verifier šiandien baigė 14:53 LT.
 - Nekeista produkcija, Worker/D1, DNS, secrets, teisės, turinys ar mokamos paslaugos. Kitas žingsnis: patikrinti 2026-11-16 daily-suite / Control Center schedule, pagrindinį koordinatoriaus paleidimą, 13:20 Worker ciklą ir 14:00 post-cycle ataskaitą.
+
+
+### PR #224 patikros – 2026-11-15 15:14 LT
+
+- Dokumentacijos PR [#224](https://github.com/Pershore/PetTraffic-AI/pull/224) paliktas atviras / draft; automatinio merge nėra.
+- GitHub Actions site-check [#43717915888](https://github.com/Pershore/PetTraffic-AI/actions/runs/43717915888) – **success**. `python agent/validate_site.py`, `python -m compileall -q agent`, agent testai ir analytics/history testai – success.
+- Cloudflare Pages PR preview check – **success**, branch preview URL sukurtas; tai nėra production deploy.
+- PR #224 visi privalomi šio PR check'ai dabar sėkmingi; laukiama atskiro peržiūros / sujungimo sprendimo. Production ir main nekeisti.
