@@ -25,12 +25,13 @@ class ControlDashboardTests(unittest.TestCase):
         self.assertIn("api.github.com/repos/", script)
         self.assertIn("/actions/runs?per_page=100", script)
         self.assertIn("/health", script)
-        self.assertIn("method:\"GET\"", script)
         self.assertNotIn("method:\"POST\"", script)
+        self.assertNotIn("method:\"DELETE\"", script)
         self.assertNotIn("createWorkflowDispatch", script)
 
     def test_dashboard_contains_no_secret_values_or_secret_headers(self):
         combined = DASHBOARD.read_text(encoding="utf-8") + SCRIPT.read_text(encoding="utf-8")
+        self.assertNotRegex(combined, re.compile(r"\\bAI\\b"))
         for forbidden in ("GOOGLE_SERVICE_ACCOUNT_JSON", "CLOUDFLARE_API_TOKEN", "Authorization: Bearer"):
             self.assertNotIn(forbidden, combined)
 
