@@ -414,3 +414,12 @@ Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama 
 - PR #216 leidžia workflow_dispatch tik tam pačiam prisegtam sync-control-api.yml workflow_ref main šakoje. Išlieka privalomi immutable repository/owner ID, repo, ref, audience, parašas ir galiojimo laikas. Push, schedule, issue_comment ir kiti event_name lieka atmetami.
 - Pridėti Worker testai: workflow_dispatch leidžiamas tik su prisegtu workflow; push/issue_comment/schedule atmetami. Production deploy dar neatliktas; jis vyks tik po PR CI ir sujungimo per esamą deploy-control-api workflow.
 - PR #213 ir #215 sujungti; PR #214 uždarytas kaip pakartotinis CI bandymas. Daily-suite run 43696960921 success, bet D1 analytics/topic snapshot sync laukia PR #216.
+
+
+## 2026-11-15 – Worker AI ciklo laiko suderinimas
+
+- Daily-suite analytics/topic snapshot D1 write/readback patvirtintas run 43698010982; Control Center/recommendation snapshot write/readback patvirtintas run 43698006099.
+- Worker AI ciklas 10:20 LT completed prieš šiuos D1 įrašus, todėl 2 rekomendacijos ir 8 evidence gaps dar neatspindi naujų dienos duomenų.
+- PR #217 perkelia vienintelį kasdienį AI ciklą į 13:20 Europe/Vilnius: Cloudflare UTC cron 10:20 ir 11:20, IANA timezone vartai leidžia vieną sezoninį įvykį. Tai po 11:45 LT koordinatoriaus, kuris prireikus atlieka daily-suite catch-up ir D1 sync.
+- Dabartinis run_date idempotency neleidžia antrą kartą vykdyti šiandienos ciklo, todėl naujas grafikas šiandienos jau atlikto ciklo nekartos. Po deploy kitas pilnas ciklas numatytas 2026-11-16 13:20 LT.
+- PR #217 CI ir Worker deploy dar laukia; iki post-deploy cron patikros pakeitimas PARUOŠTA.
