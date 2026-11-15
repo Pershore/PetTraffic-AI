@@ -283,8 +283,9 @@ def main() -> int:
             if not source.startswith("/") or not destination.startswith("/"):
                 errors.append(f"_redirects:{line_number}: source and destination must be site paths")
                 continue
-            if status != "301":
-                errors.append(f"_redirects:{line_number}: retired article redirects must use 301")
+            dashboard_proxy = source in {"/dashboard", "/dashboard/"} and destination == "/control/" and status == "200"
+            if status != "301" and not dashboard_proxy:
+                errors.append(f"_redirects:{line_number}: only the dashboard proxy may use HTTP 200; retired article redirects must use 301")
             if source in redirect_map:
                 errors.append(f"_redirects:{line_number}: duplicate redirect source {source}")
             redirect_map[source] = destination
@@ -295,7 +296,7 @@ def main() -> int:
             if not destination_path.exists():
                 errors.append(f"_redirects:{line_number}: destination file does not exist: {destination}")
             destination_url = BASE_URL + ("/" if destination == "/" else destination)
-            if destination_url not in sitemap_urls:
+            if destination_url not in sitemap_urls and not dashboard_proxy:
                 errors.append(f"_redirects:{line_number}: destination is not in sitemap.xml: {destination}")
         for source, destination in redirect_map.items():
             if destination in redirect_map:

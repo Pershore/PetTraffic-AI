@@ -7,6 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DASHBOARD = ROOT / "site" / "control" / "index.html"
 SCRIPT = ROOT / "site" / "control" / "control.js"
 SITEMAP = ROOT / "site" / "sitemap.xml"
+REDIRECTS = ROOT / "site" / "_redirects"
 
 
 class ControlDashboardTests(unittest.TestCase):
@@ -18,15 +19,21 @@ class ControlDashboardTests(unittest.TestCase):
     def test_dashboard_is_not_in_public_sitemap(self):
         root = ET.parse(SITEMAP).getroot()
         urls = [node.text or "" for node in root.iter() if node.tag.endswith("loc")]
-        self.assertFalse(any("/control/" in url for url in urls))
+        self.assertFalse(any("/control/" in url or "/dashboard/" in url for url in urls))
+
+    def test_requested_dashboard_url_rewrites_to_live_control_center(self):
+        rules = REDIRECTS.read_text(encoding="utf-8").splitlines()
+        self.assertIn("/dashboard /control/ 200", rules)
+        self.assertIn("/dashboard/ /control/ 200", rules)
+        self.assertTrue(DASHBOARD.is_file())
 
     def test_dashboard_uses_live_read_only_sources(self):
         script = SCRIPT.read_text(encoding="utf-8")
         self.assertIn("api.github.com/repos/", script)
         self.assertIn("/actions/runs?per_page=100", script)
         self.assertIn("/health", script)
-        self.assertNotIn("method:\"POST\"", script)
-        self.assertNotIn("method:\"DELETE\"", script)
+        self.assertNotIn('method:"POST"', script)
+        self.assertNotIn('method:"DELETE"', script)
         self.assertNotIn("createWorkflowDispatch", script)
 
     def test_dashboard_maps_live_sources_by_name(self):
