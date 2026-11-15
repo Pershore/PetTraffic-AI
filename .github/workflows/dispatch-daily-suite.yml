@@ -32,6 +32,7 @@ jobs:
         env:
           DISPATCH_ACTION: ${{ steps.guard.outputs.action }}
           CONTROL_API_URL: ${{ vars.PETTRAFFIC_CONTROL_API_URL || 'https://pettraffic-control-api.pauliusgrubliauskis.workers.dev' }}
+          TASKS_ENABLED: ${{ vars.PETTRAFFIC_TASKS_ENABLED || 'false' }}
         with:
           script: |
             const { owner, repo } = context.repo;
@@ -204,6 +205,10 @@ jobs:
             }
 
             if (action === "task-check-site") {
+              if (process.env.TASKS_ENABLED !== "true") {
+                core.setFailed("Read-only task queue is disabled. Enable it only after the Worker role and runtime configuration are deployed.");
+                return;
+              }
               const token = await core.getIDToken("pettraffic-control-api");
               const apiUrl = (process.env.CONTROL_API_URL || "").replace(/\/$/, "");
               const response = await fetch(apiUrl + "/v1/tasks", {
