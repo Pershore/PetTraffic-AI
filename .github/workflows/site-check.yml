@@ -28,6 +28,12 @@ jobs:
         uses: actions/setup-python@v7
         with:
           python-version: "3.x"
+      - name: Check dashboard JavaScript syntax
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - name: Validate dashboard JavaScript
+        run: node --check site/control/control.js
       - name: Validate HTML, links, SEO and sitemap
         run: python agent/validate_site.py
       - name: Compile automation scripts

@@ -167,3 +167,24 @@ Iki 11:40 LT patikrinti Control Center schedule įvykį ir jo ataskaitą. Jei jo
 - Ekrano kopijoje **Workflow permissions** skiltis nematoma, todėl numatytųjų `GITHUB_TOKEN` teisių reikšmė nepatvirtinta. Ankstesnis 401 per GitHub integraciją lieka galiojantis apribojimas skaityti repo Actions administravimo nustatymus.
 - `daily-suite.yml`, `control-center.yml` ir `site-check.yml` patikrinti tiesiogiai `main` šakoje: cron įrašai yra, `workflow_dispatch` yra. `control-center.yml` turi aiškias job teises (`contents: write`, `actions: read`, `issues: write`); tai nepakeičia patikros dėl GitHub schedule įvykių.
 - Išvada: Actions policy apribojimas atmestas kaip tikėtina priežastis; suplanuotų paleidimų dingimo priežastis **dar nenustatyta**. Jokių nustatymų ar produkcinių sistemų nekeista.
+
+## 2026-11-15 – gyvo Control Center dashboard kūrimas
+
+- Sukurtas atskiras puslapis `site/control/index.html` su atskiru CSS/JS, architektūros žemėlapiu, GitHub workflow kortelėmis, run istorija, GA4/GSC agregatais, Lighthouse nuorodomis, įrankių ir prieigų inventoriumi.
+- Gyvi šaltiniai: GitHub REST, Worker `/health`, viešos svetainės HEAD, `automation-history` analytics/topic agregatai. Atnaujinimas kas 5 min.; GitHub REST užklausų skaičius sumažintas, istorijos archyvai cache'inami.
+- Viešas dashboard `noindex,nofollow`, neįtraukiamas į sitemap ir neturi canonical. Svarbu: noindex nėra prieigos kontrolė; puslapis viešas, todėl rodomi tik agreguoti / vieši duomenys.
+- Puslapis yra read-only: jokių workflow dispatch, API POST, secrets ar production pakeitimų. Worker `/v1/tasks*` lieka išjungtas. ChatGPT automatikų būsena ir Termux shell nėra tiesiogiai skaitomi.
+- Sukurtas regresijos testas dashboard privatumo / noindex / read-only riboms; site-check papildomas `node --check` JS sintaksei. CI rezultatas dar laukiamas.
+- Šaka `feature/live-control-dashboard`; production nepublikuota iki PR patikrų ir atskiro merge.
+
+
+## 2026-11-15 15:32 LT – Control Center dashboard CI ir preview patvirtinti
+
+- PR #225 atviras / mergeable / nesujungtas; paskutinis branch commit `44245f22335e963c8e6180b6d870c0f0799fec07`.
+- Cloudflare Pages preview check – success; branch preview `https://feature-live-control-dashboa.pettraffic-ai.pages.dev/control/` atveria dashboard. Peržiūros turinyje patvirtintos architektūra, agentų/atminties panelė, atvirų PR sąrašas ir pagrindinių viešų puslapių katalogas.
+- Site-check [#43719429088](https://github.com/Pershore/PetTraffic-AI/actions/runs/43719429088) – success. Node `--check`, `agent/validate_site.py`, `compileall`, agent testų žingsnis ir 124 testai iš `tests/` – success.
+- Dashboard: GitHub run/PR/commit/issue, Worker /health, viešos svetainės HEAD, GA4/GSC agregatai, RSS archyvas, Lighthouse paskutinio sėkmingo run nuoroda; 14 workflow kortelių, įrankių inventorius, 5 specialistų būsenos, D1/Control Core atminties duomenys ir atvirų PR sąrašas.
+- Atnaujinimas kas 5 min.; GitHub API užklausos ribojamos, archyvai cache 30 min. Nepasiekiami duomenys žymimi kaip nežinomi. Dashboard read-only; jokių POST/dispatch, PR merge ar production pakeitimų.
+- Branch preview origin nepatenka į Worker CORS allowlist, todėl preview režime Worker skiltis aiškiai rodo CORS apribojimą. Oficialus production origin yra leidžiamas; Worker konfigūracija nekeista.
+- Puslapis viešas ir tik noindex; tai nėra autentifikacija. Paslapčių ir lankytojų lygmens duomenų nėra; dashboard neįtrauktas į sitemap ir neturi canonical.
+- Kitas žingsnis: vartotojo patvirtinimas PR #225 sujungimui; po merge patikrinti production deploy ir `/control/` gyvus duomenis.

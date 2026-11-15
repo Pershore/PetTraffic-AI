@@ -155,9 +155,14 @@ def main() -> int:
             errors.append(f"{rel}: expected exactly one H1, found {parser.h1_count}")
         if not parser.descriptions or not parser.descriptions[0]:
             errors.append(f"{rel}: missing meta description")
-        # A not-found page is intentionally noindex and should not declare a canonical URL.
-        # Canonicals on 404 responses can create conflicting indexing signals.
-        if rel.as_posix() != "404.html":
+        # The 404 and the operational dashboard are intentionally excluded from indexing.
+        # The dashboard is a public read-only status page, not an organic landing page.
+        if rel.as_posix() == "control/index.html":
+            if parser.canonicals:
+                errors.append(f"{rel}: noindex dashboard must not declare a canonical URL")
+            if not re.search(r"""<meta\s+name=["']robots["']\s+content=["'][^"']*noindex""", page_text, flags=re.IGNORECASE):
+                errors.append(f"{rel}: dashboard must explicitly declare robots noindex")
+        elif rel.as_posix() != "404.html":
             if len(parser.canonicals) != 1:
                 errors.append(f"{rel}: expected exactly one canonical URL")
             elif urlparse(parser.canonicals[0]).scheme != "https" or urlparse(parser.canonicals[0]).netloc != urlparse(BASE_URL).netloc:
