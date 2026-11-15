@@ -1,10 +1,12 @@
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
-- Atnaujinta: 2026-11-15T08:43:00+02:00
+- Atnaujinta: 2026-11-15T08:46:37+02:00
 - Būsena: **WORKER / D1 PATVIRTINTI; AI AGENTŲ CIKLAS LAUKIA; DAILY-SUITE CRON NEPATVIRTINTAS**
 - Pagrindinė šaka: `main`
 - Paskutinis main commit audito metu: `4a53d814fdc08369de382d1a85311d0725b8e2bb`
-- PR #210 sujungtas: `0ac4f3e9be21d52df3a4d681e23b21c3a7b744a4`; dokumentacijos ir shell patikros bei Cloudflare Pages diegimas – success.
+- PR #210 sujungtas: `0ac4f3e9be21d52df3a4d681e23b21c3a7b744a4`.
+- PR #211 sujungtas: `116070f78bc92e23b16e3a0e3244769190a5080b`; Cloudflare Pages ir `Validate static website and automation code` – success.
+- PR #211 patikroje 103 Python testai baigėsi `OK`; post-merge `Pet traffic site checks` (run 43686934069) – success; automatinis darbo žurnalas (run 43686934075) – success.
 - Atvirų PR audito metu nerasta.
 
 ## Paskutinis patikrintas etapas
@@ -15,9 +17,11 @@
 
 - GitHub repo ir `main` prieiga: veikia.
 - PR #210: merged; Cloudflare Pages check, `shell-validation` ir `Validate static website and automation code` – success.
+- PR #211: merged; Cloudflare Pages ir `Validate static website and automation code` – success; 103 Python testai `OK`.
 - Po sujungimo `PetTraffic automatic work log` – success.
 - Po sujungimo `Termux Codex bridge checks` – success.
-- Po sujungimo `Pet traffic site checks` – success; HTML, nuorodų, SEO, sitemap, automation script compile, topic radar parser/error handling ir analytics history/API testai – success.
+- Po PR #210 sujungimo `Pet traffic site checks` – success; HTML, nuorodų, SEO, sitemap, automation script compile, topic radar parser/error handling ir analytics history/API testai – success.
+- Po PR #211 sujungimo `Pet traffic site checks` run 43686934069 – success; `PetTraffic automatic work log` run 43686934075 – success.
 - Worker health: HTTP 200, `ok=true`, `database=connected`, `control_core_schema=connected`.
 - Heartbeat: `2026-11-15T06:30:47.076Z`; `site_ok=true`, `site_status=200`, `database_ok=true`.
 
