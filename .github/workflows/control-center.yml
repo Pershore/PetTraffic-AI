@@ -1,8 +1,6 @@
 name: Pet traffic central control center
 
 on:
-  schedule:
-    - cron: "40 8 * * *"
   # Re-evaluate alerts after monitored jobs finish, not while they are still running.
   workflow_run:
     workflows:
