@@ -40,6 +40,16 @@
 - 11:00 Europe/Vilnius: vienintelis ChatGPT priežiūros koordinatorius turi įvertinti realius automatinių vykdymų rezultatus.
 - Daily-suite cron problemą tirti atskirai; nekeisti grafiko ar workflow be nustatytos priežasties.
 
+## Paskutiniai išsaugoti SEO ir temų duomenys
+
+Šaltinis: `reports/history/analytics/2026-11-14.json`, paskutinis snapshot run `43600881631`, sugeneruotas 2026-11-14 13:40:11 UTC.
+
+- GA4 laikotarpis 2026-11-07–2026-11-13: 7 aktyvūs naudotojai, 7 nauji naudotojai, 24 sesijos, 88 puslapių peržiūros; patvirtintų organinių sesijų – 0.
+- Search Console laikotarpis 2026-11-05–2026-11-11: 0 parodymų, 0 paspaudimų, CTR 0, vidutinė pozicija 0. Duomenys gali vėluoti kelias dienas.
+- Sitemap `https://pettraffic-ai.pages.dev/sitemap.xml` pateiktas 2026-11-10; būsena `submitted`, `is_pending=true`, `last_downloaded` nenurodytas. Penkių prioritetinių URL patikroje visų aprėptis nurodyta „URL nežinomas Google“, paskutinis crawl „Dar netikrinta“. `submitted_urls` ir `indexed_urls` reikšmės nepateiktos – jų nelaikyti nuliu.
+- Naujo 2026-11-15 analytics snapshot nėra, nes daily-suite suplanuotas vykdymas dar nepatvirtintas.
+- Temų radaras (run `43600881695`, 2026-11-14 13:39:56 UTC): 31 unikali viešų Google News RSS straipsnių nuoroda, 7 temos patikrintos. Daugiausia antraščių: kačių priežiūra 8, šunų priežiūra 8, augintinio sveikata / veterinaras 6, mityba 6, šunų dantų priežiūra 5. Tai naujienų antraščių signalas, **ne** Google paieškų apimtis ar SEO paklausos matas.
+
 ## Rekomendacijos
 
 - **[high] Patvirtinti AI agentų atsistatymą** – nevertinti ankstesnio deploy kaip veikimo įrodymo; būtinas naujas suplanuotas vykdymas ir D1 atminties patikra.
