@@ -1,8 +1,24 @@
 import unittest
+import json
 from unittest.mock import Mock, patch
 
 
-from agent.analytics_report import api_post, channel_breakdown_status
+from agent.analytics_report import aggregate_search_intents, api_post, channel_breakdown_status
+
+
+class SearchIntentPrivacyTests(unittest.TestCase):
+    def test_aggregates_themes_without_returning_raw_phrases(self):
+        rows = [
+            {"keys": ["mano kates viduriavimas"], "clicks": 3, "impressions": 120, "position": 8.4},
+            {"keys": ["geriausias maistas sunims"], "clicks": 2, "impressions": 80, "position": 6.0},
+        ]
+        result = aggregate_search_intents(rows)
+        self.assertEqual(result["simptomai_ir_sveikata"]["rows"], 1)
+        self.assertEqual(result["simptomai_ir_sveikata"]["impressions"], 120)
+        self.assertEqual(result["maitinimas_ir_mityba"]["clicks"], 2)
+        serialized = json.dumps(result, ensure_ascii=False).lower()
+        self.assertNotIn("mano kates viduriavimas", serialized)
+        self.assertNotIn("geriausias maistas sunims", serialized)
 
 
 class AnalyticsApiPostTests(unittest.TestCase):
