@@ -32,7 +32,6 @@ jobs:
         env:
           DISPATCH_ACTION: ${{ steps.guard.outputs.action }}
           CONTROL_API_URL: ${{ vars.PETTRAFFIC_CONTROL_API_URL || 'https://pettraffic-control-api.pauliusgrubliauskis.workers.dev' }}
-          TASKS_ENABLED: ${{ vars.PETTRAFFIC_TASKS_ENABLED || 'false' }}
         with:
           script: |
             const { owner, repo } = context.repo;
@@ -205,10 +204,6 @@ jobs:
             }
 
             if (action === "task-check-site") {
-              if (process.env.TASKS_ENABLED !== "true") {
-                core.setFailed("Read-only task queue is disabled. Enable it only after the Worker role and runtime configuration are deployed.");
-                return;
-              }
               const token = await core.getIDToken("pettraffic-control-api");
               const apiUrl = (process.env.CONTROL_API_URL || "").replace(/\/$/, "");
               const response = await fetch(apiUrl + "/v1/tasks", {
@@ -226,11 +221,21 @@ jobs:
               });
               const result = await response.json().catch(() => ({}));
               if (!response.ok || result.accepted !== true) {
-                core.setFailed("Could not enqueue the bounded site-check task (HTTP " + response.status + "). Check the task API flag and OIDC configuration.");
+                core.setFailed("Could not enqueue the bounded site-check task (HTTP " + response.status + "). Check Worker deployment and OIDC authorization.");
                 return;
               }
-              core.notice("Read-only site-check task " + result.task_id + " is " + result.status +
-                (result.deduplicated ? " (existing task reused)." : " and ready for the cloud runner."));
+              if (result.status === "queued") {
+                await github.rest.actions.createWorkflowDispatch({
+                  owner, repo, workflow_id: "run-readonly-tasks.yml", ref: "main"
+                });
+                core.notice("Read-only site-check task " + result.task_id +
+                  " queued; dispatched the dedicated cloud runner.");
+              } else if (result.status === "running") {
+                core.notice("Read-only site-check task " + result.task_id +
+                  " is already running; no duplicate runner dispatched.");
+              } else {
+                core.setFailed("Task API returned an unexpected task state: " + result.status);
+              }
               return;
             }
             core.setFailed("Guard returned an unknown dispatch action.");
