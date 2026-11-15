@@ -66,7 +66,7 @@ export function parseResult(raw) {
  if(typeof value.status!=="string"||!required.slice(1).every(key=>Array.isArray(value[key]))) {
   return invalidResult("invalid_json","Model JSON did not contain the required status, findings, recommendations and evidence_gaps fields.");
  }
- const rawStatus=value.status.trim().toLowerCase().replace(/[\\s-]+/g,"_");
+ const rawStatus=value.status.trim().toLowerCase().replace(/[\s-]+/g,"_");
  const statusAliases={reviewed:"reviewed",ok:"reviewed",complete:"reviewed",completed:"reviewed",needs_evidence:"needs_evidence",no_data:"needs_evidence",error:"needs_evidence",monitor:"needs_evidence"};
  const status=statusAliases[rawStatus]||"needs_evidence";
  const strings=k=>value[k].filter(x=>typeof x==="string").slice(0,1).map(x=>x.slice(0,120));
