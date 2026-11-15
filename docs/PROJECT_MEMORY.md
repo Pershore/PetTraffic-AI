@@ -468,3 +468,12 @@ Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama 
 - Worker /health HTTP 200, D1/schema connected; paskutinis AI ciklas tebėra prieš PR #220 deploy: completed, 5 calls, error=null, bet Control Core `needs_evidence`, 2 rekomendacijos, 8 gaps, memory present; specialist statuses yra seno ciklo duomenys. Kitas realus ciklas po PR #220 deploy laukiamas 2026-11-16 13:20 LT dėl vieno ciklo per dieną idempotency. Iki naujo ciklo PR #220 runtime veiksmingumas nepatvirtintas.
 - Issue #145 paliktas open. Termux/Codex CI parengties patikros nepakeičia tiesioginės ChatGPT Android shell prieigos; ji neprijungta, tačiau debesų automatizacijoms nereikalinga.
 - Saugumo ribos: 0 €/mėn.; jokio ARO Vet, DNS, Worker production config, D1 schemos, secrets ar viešo turinio pakeitimo; jokio automatinio publikavimo.
+
+## 2026-11-15 – atskiras gyvas Control Center dashboard
+
+- Naujas read-only dashboard kuriamas atskirame maršrute `site/control/index.html` (`/control/`), nepriklausomai nuo viešosios Pet traffic pagrindinės navigacijos.
+- Dashboard architektūra ir duomenų šaltiniai aprašyti `docs/CONTROL_CENTER_DASHBOARD.md`.
+- Tiesioginiai šaltiniai: vieši GitHub REST (Actions run, PR, main commit, issue #145), Worker `GET /health`, viešos svetainės HEAD ir `automation-history` agreguoti analytics/topic JSON archyvai. Duomenys atnaujinami kas 5 min., archyvai cache'inami 30 min.
+- Dashboard yra viešas, tik `noindex,nofollow`; tai nėra autentifikacija. Jame rodomi tik vieši / agreguoti duomenys, nėra paslapčių, lankytojų lygmens metrikų ar žalių GSC query. Į sitemap neįtraukiamas, canonical neturi.
+- Dashboard tik stebi ir nukreipia į tikrus įrodymus; jokių POST/dispatch, production, Worker/D1, DNS, secrets ar PR merge veiksmų iš puslapio nevykdo. ChatGPT automatikų būsena ir Termux shell nėra tiesiogiai skaitomi, todėl žymimi kaip ribota / išorinė prieiga, ne kaip live patvirtinti.
+- Darbas vykdomas šakoje `feature/live-control-dashboard`; PR ir CI dar laukiami. Produkcija nekeista.
