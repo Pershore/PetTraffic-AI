@@ -12,8 +12,8 @@ SITEMAP = ROOT / "site" / "sitemap.xml"
 class ControlDashboardTests(unittest.TestCase):
     def test_dashboard_is_explicitly_noindex_and_has_no_canonical(self):
         html = DASHBOARD.read_text(encoding="utf-8")
-        self.assertRegex(html, re.compile(r'<meta\\s+name=["\']robots["\']\\s+content=["\'][^"\']*noindex', re.I))
-        self.assertNotRegex(html, re.compile(r'<link\\s+rel=["\']canonical', re.I))
+        self.assertRegex(html, re.compile(r'<meta\s+name=["\']robots["\']\s+content=["\'][^"\']*noindex', re.I))
+        self.assertNotRegex(html, re.compile(r'<link\s+rel=["\']canonical', re.I))
 
     def test_dashboard_is_not_in_public_sitemap(self):
         root = ET.parse(SITEMAP).getroot()
