@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "project": "PetTraffic AI",
-  "generated_at": "2026-11-15T14:09:28.498381+00:00",
-  "run_id": "43722788308",
-  "source_commit": "3e81843056d34f427ed8286df5725f443a39d84a",
+  "generated_at": "2026-11-15T14:10:00.563849+00:00",
+  "run_id": "43722796893",
+  "source_commit": "bdaeba3895ecd1a863fa08e613a2521adae6a28f",
   "overall_status": "needs_attention",
   "last_verified_stage": "Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataskaitoje.",
   "next_action": "Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (stale). Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-15.",
@@ -14,13 +14,6 @@
       "detail": "Paskutinis paleidimas sėkmingas.",
       "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43721211747",
       "created_at": "2026-11-15T13:51:47Z"
-    },
-    {
-      "name": "Centrinės API sinchronizavimas",
-      "state": "success",
-      "detail": "Paskutinis paleidimas sėkmingas.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43722143658",
-      "created_at": "2026-11-15T14:02:21Z"
     },
     {
       "name": "Cloudflare Worker + D1",
@@ -41,6 +34,13 @@
   ],
   "pending_checks": [
     {
+      "name": "Centrinės API sinchronizavimas",
+      "state": "running",
+      "detail": "Vyksta (in_progress).",
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43722831785",
+      "created_at": "2026-11-15T14:09:50Z"
+    },
+    {
       "name": "Lighthouse auditas",
       "state": "waiting",
       "detail": "Workflow atnaujintas 2026-11-13 12:09 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.",
@@ -51,8 +51,8 @@
       "name": "Centrinis valdymo centras",
       "state": "running",
       "detail": "Vyksta (pending).",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43722796893",
-      "created_at": "2026-11-15T14:09:27Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43722830029",
+      "created_at": "2026-11-15T14:09:49Z"
     }
   ],
   "ai_agent_memory_check": {
