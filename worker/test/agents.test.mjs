@@ -18,10 +18,31 @@ test("orchestrator performs five capped AI calls and stores a read-only report",
 test("orchestrator is idempotent per UTC day",async()=>{const{env,state}=mockEnv({existingRun:true});const result=await runAgentOrchestration(env);assert.equal(result.skipped,true);assert.equal(result.reason,"daily_run_already_started");assert.equal(state.aiCalls,0);});
 test("orchestrator refuses to run without Workers AI binding",async()=>{const{env,state}=mockEnv({ai:false});const result=await runAgentOrchestration(env);assert.equal(result.skipped,true);assert.equal(result.reason,"ai_binding_missing");assert.equal(state.aiCalls,0);});
 
-test("agent schedule stays at 10:20 Europe/Vilnius in winter and summer", () => {
- assert.equal(isVilniusAgentRunTime(new Date("2026-11-13T08:20:00.000Z")), true);
- assert.equal(isVilniusAgentRunTime(new Date("2026-06-13T07:20:00.000Z")), true);
- assert.equal(isVilniusAgentRunTime(new Date("2026-11-13T08:19:00.000Z")), false);
+test("agent schedule stays at 13:20 Europe/Vilnius in winter and summer", () => {
+ assert.equal(isVilniusAgentRunTime(new Date("2026-11-13T11:20:00.000Z")), true);
+ assert.equal(isVilniusAgentRunTime(new Date("2026-06-13T10:20:00.000Z")), true);
+ assert.equal(isVilniusAgentRunTime(new Date("2026-11-13T11:19:00.000Z")), false);
+});
+
+test("agent cron uses the correct winter UTC trigger for 13:20 Vilnius", () => {
+ assert.equal(isAgentScheduledEvent({
+  cron: "20 10,11 * * *",
+  scheduledTime: Date.parse("2026-11-14T11:20:00.000Z"),
+ }), true);
+});
+
+test("agent cron uses the correct summer UTC trigger for 13:20 Vilnius", () => {
+ assert.equal(isAgentScheduledEvent({
+  cron: "20 10,11 * * *",
+  scheduledTime: Date.parse("2026-06-14T10:20:00.000Z"),
+ }), true);
+});
+
+test("agent cron ignores the old 10:20 Vilnius winter trigger", () => {
+ assert.equal(isAgentScheduledEvent({
+  cron: "20 10,11 * * *",
+  scheduledTime: Date.parse("2026-11-14T08:20:00.000Z"),
+ }), false);
 });
 
 
@@ -133,16 +154,16 @@ test("Workers AI receives enough output budget for the complete JSON response",a
 
 
 test("agent cron uses Cloudflare scheduledTime even when invocation is delayed",()=>{
- const controller={cron:"20 7,8 * * *",scheduledTime:Date.parse("2026-11-14T08:20:00.000Z")};
+ const controller={cron:"20 10,11 * * *",scheduledTime:Date.parse("2026-11-14T11:20:00.000Z")};
  assert.equal(isAgentScheduledEvent(controller),true);
 });
-test("agent cron ignores the 09:20 Vilnius winter trigger",()=>{
- const controller={cron:"20 7,8 * * *",scheduledTime:Date.parse("2026-11-14T07:20:00.000Z")};
+test("agent cron ignores the old 10:20 Vilnius winter trigger",()=>{
+ const controller={cron:"20 10,11 * * *",scheduledTime:Date.parse("2026-11-14T08:20:00.000Z")};
  assert.equal(isAgentScheduledEvent(controller),false);
 });
 test("agent cron ignores heartbeat events and missing scheduled timestamps",()=>{
- assert.equal(isAgentScheduledEvent({cron:"*/15 * * * *",scheduledTime:Date.parse("2026-11-14T08:20:00.000Z")}),false);
- assert.equal(isAgentScheduledEvent({cron:"20 7,8 * * *"}),false);
+ assert.equal(isAgentScheduledEvent({cron:"*/15 * * * *",scheduledTime:Date.parse("2026-11-14T11:20:00.000Z")}),false);
+ assert.equal(isAgentScheduledEvent({cron:"20 10,11 * * *"}),false);
 });
 
 

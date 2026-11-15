@@ -11,13 +11,13 @@
 
 ## 2026-11-15 dabartinis grafikas ir patikros būsena
 
-- Dienos seka: svetainės patikra 05:37 UTC; nepriklausomas kasdienis automatizacijų rinkinys 06:10 UTC (GA4 / GSC, temų radaras ir gyvos svetainės patikra); Lighthouse pirmadieniais 07:27 UTC; centrinis valdymo centras 08:40 UTC; Worker AI agentų ciklas 10:20 Lietuvos laiku; vienintelis ChatGPT koordinatorius 11:45 Lietuvos laiku.
+- Dienos seka: svetainės patikra 05:37 UTC; nepriklausomas kasdienis automatizacijų rinkinys 06:10 UTC (GA4 / GSC, temų radaras ir gyvos svetainės patikra); Lighthouse pirmadieniais 07:27 UTC; centrinis valdymo centras 08:40 UTC; vienintelis ChatGPT koordinatorius 11:45 Lietuvos laiku; Worker AI agentų ciklas 13:20 Lietuvos laiku.
 - **Daily-suite workflow aktyvus**, GitHub Actions metadata state=active, workflow ID 418322987. YAML cron yra 10 6 * * * UTC, o paskutinis failo pakeitimas 2026-11-14 14:41:16 UTC – prieš šiandienos suplanuotą paleidimą. 2026-11-15 10:41 LT vis dar nėra šios dienos event=schedule vykdymo; 60 min. atsargos langas jau praėjęs. Išjungimas atmestas, bet tikroji priežastis dar **NEPATVIRTINTA**; galimas GitHub scheduler / workflow event pristatymo sutrikimas, tačiau tai tik hipotezė.
-- **Worker AI ciklas PATIKRINTAS:** 2026-11-15 10:20 LT ciklas completed, 5 AI kvietimai, error_code=null. Gyvas /health 10:40 LT grąžino HTTP 200, D1 ir Control Core schema connected; heartbeat 10:30:47 LT, svetainė HTTP 200, DB OK.
+- **Worker AI ciklas PATIKRINTAS:** 2026-11-15 10:20 LT ciklas completed, 5 AI kvietimai, error_code=null, tačiau jis įvyko prieš 11:11 LT daily-suite D1 sync. Naujasis 13:20 LT grafikas įsigalios po PR #217 deploy; šiandienos run_date jau panaudotas, todėl kitas pilnas AI ciklas numatytas 2026-11-16 13:20 LT.
 - **Control Core atmintis PATIKRINTA:** 2026-11-15 įrašas status=needs_evidence, validus decision JSON, 2 rekomendacijos, 8 evidence gaps, memory_status=present. Rekomendacijos nėra patvirtintos išvados; reikia papildomų duomenų.
-- **Control Center workflow aktyvus**, ID 416336983, cron 08:40 UTC (10:40 LT). 10:41 LT suplanuotas vykdymas dar nebuvo matomas; jo 60 min. atsargos langas baigiasi 11:40 LT. Iki tol būsena LAUKIA, ne galutinis gedimas.
+- **Control Center workflow aktyvus**, ID 416336983, cron 08:40 UTC (10:40 LT). Šios dienos event=schedule vykdymo nėra; tačiau po main push įvyko Control Center run 43697968331 (workflow_run), success, ataskaita išsaugota. D1 Control Center/recommendation snapshot write/readback patvirtintas run 43698006099. Tai nėra cron įrodymas.
 - GitHub issue #145 PetTraffic: central automation alert lieka atviras; jo neuždaryti, kol Control Center negrąžins recovery_confirmed=true.
-- GA4 / GSC naujausios dienos ataskaitos nėra, nes daily-suite ciklas nepaleistas. Paskutiniai patikimi skaičiai lieka istoriniai 2026-11-14 snapshot duomenys; naujų skaičių neišgalvoti.
+- Daily-suite 08:10 LT event=schedule nėra, bet savininko patvirtintas catch-up run 43696960921 (workflow_dispatch) surinko ir archyvavo GA4/GSC bei topic radar duomenis. GA4 2026-11-08–14: 7 aktyvūs naudotojai, 19 sesijų, 73 peržiūros, 0 patvirtintų organinių sesijų. GSC 2026-11-06–12: 0 parodymų, 0 paspaudimų; sitemap pending, 5 prioritetiniai URL nežinomi Google. D1 analytics/topic write/readback patvirtintas run 43698010982. Manual run nėra schedule įrodymas.
 - Termux / Codex CI testai nepatvirtina tiesioginės Android shell prieigos. ChatGPT tiesioginio Termux ryšio nėra; /v1/tasks* lieka išjungta.
 - 0 €/mėn. biudžetas išlaikytas. ARO Vet, viešas turinys, DNS, secrets ir production konfigūracija šios patikros metu nekeisti.
 
@@ -95,7 +95,7 @@ Niekada nepaversti `LAUKIA`, `PARUOŠTA` ar `NEPATVIRTINTA` į `PATIKRINTA` be n
 - Daily automation suite: 06:10 UTC kasdien; vienas nepriklausomas suplanuotas paleidimas vykdo atskirus GA4 / GSC, temų radaro ir gyvos svetainės darbus.
 - Lighthouse: pirmadieniais 07:27 UTC ir po reikšmingų svetainės pakeitimų.
 - Central control center: 08:40 UTC kasdien ir po daily-suite, Lighthouse ar Worker diegimo užbaigimo.
-- Worker heartbeat: kas 15 min.; agentų cron tikrina 07:20 ir 08:20 UTC, o Europe/Vilnius laiko vartai leidžia tik 10:20 vietos laiko agentų ciklą.
+- Worker heartbeat: kas 15 min.; agentų cron tikrina 10:20 ir 11:20 UTC, o Europe/Vilnius laiko vartai leidžia tik 13:20 vietos laiko agentų ciklą.
 - Vienintelis ChatGPT priežiūros koordinatorius: 11:45 Europe/Vilnius, po Control Center 60 min. grace lango.
 
 **Konfigūruotas cron nėra vykdymo įrodymas.** Tikrinti tikrus `event=schedule` run, jų jobs, artifacts ir rezultatus. Push, PR, workflow_run ar rankinis vykdymas nėra suplanuoto ciklo pakaitalas.
@@ -414,3 +414,12 @@ Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama 
 - PR #216 leidžia workflow_dispatch tik tam pačiam prisegtam sync-control-api.yml workflow_ref main šakoje. Išlieka privalomi immutable repository/owner ID, repo, ref, audience, parašas ir galiojimo laikas. Push, schedule, issue_comment ir kiti event_name lieka atmetami.
 - Pridėti Worker testai: workflow_dispatch leidžiamas tik su prisegtu workflow; push/issue_comment/schedule atmetami. Production deploy dar neatliktas; jis vyks tik po PR CI ir sujungimo per esamą deploy-control-api workflow.
 - PR #213 ir #215 sujungti; PR #214 uždarytas kaip pakartotinis CI bandymas. Daily-suite run 43696960921 success, bet D1 analytics/topic snapshot sync laukia PR #216.
+
+
+## 2026-11-15 – Worker AI ciklo laiko suderinimas
+
+- Daily-suite analytics/topic snapshot D1 write/readback patvirtintas run 43698010982; Control Center/recommendation snapshot write/readback patvirtintas run 43698006099.
+- Worker AI ciklas 10:20 LT completed prieš šiuos D1 įrašus, todėl 2 rekomendacijos ir 8 evidence gaps dar neatspindi naujų dienos duomenų.
+- PR #217 perkelia vienintelį kasdienį AI ciklą į 13:20 Europe/Vilnius: Cloudflare UTC cron 10:20 ir 11:20, IANA timezone vartai leidžia vieną sezoninį įvykį. Tai po 11:45 LT koordinatoriaus, kuris prireikus atlieka daily-suite catch-up ir D1 sync.
+- Dabartinis run_date idempotency neleidžia antrą kartą vykdyti šiandienos ciklo, todėl naujas grafikas šiandienos jau atlikto ciklo nekartos. Po deploy kitas pilnas ciklas numatytas 2026-11-16 13:20 LT.
+- PR #217 CI ir Worker deploy dar laukia; iki post-deploy cron patikros pakeitimas PARUOŠTA.

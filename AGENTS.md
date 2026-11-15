@@ -36,7 +36,7 @@ Build Pet traffic into a useful, trustworthy Lithuanian pet-care information web
   - daily automation suite: daily 06:10 UTC, independently scheduled; it runs GA4 / Search Console collection, topic radar, and live-site monitoring as separate jobs;
   - Lighthouse mobile / desktop audits: weekly Monday 07:27 UTC and after relevant site changes;
   - central control center: daily 08:40 UTC and after the daily suite, Lighthouse, or Worker deployment completes.
-- Worker heartbeat: every 15 minutes; the agent cron checks at 07:20 and 08:20 UTC, with a Europe/Vilnius time guard allowing exactly the 10:20 local agent cycle (the other seasonal cron event is skipped).
+- Worker heartbeat: every 15 minutes; the agent cron checks at 10:20 and 11:20 UTC, with a Europe/Vilnius time guard allowing exactly the 13:20 local agent cycle (the other seasonal cron event is skipped).
 - Treat workflow schedules as intended cadence, not proof of execution. Verify actual run history, job completion, artifacts, and deployment results.
 - Do not start overlapping duplicate checks when a workflow is already queued or running. Recheck it later and consume its artifact or job summary.
 - Keep routine agent work silent for the user. Surface only critical failures, security risks, or actions requiring user approval.

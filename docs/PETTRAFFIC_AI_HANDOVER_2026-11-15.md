@@ -106,3 +106,11 @@ Iki 11:40 LT patikrinti Control Center schedule įvykį ir jo ataskaitą. Jei jo
 - Įprastas workflow_run sync iš Control Center run 43697658367 sėkmingai įrašė 2 įvykius ir patvirtino D1 readback; tai nėra daily-suite sync įrodymas.
 - PR #216 leidžia papildomą event_name=workflow_dispatch tik jei workflow_ref lieka tiksliai sync-control-api.yml@refs/heads/main ir visi immutable repo ID, ref, audience, parašas bei exp patikrinimai praeina. Push, schedule, issue_comment ir kiti eventai lieka atmetami.
 - Worker testai papildyti priėmimo ir atmetimo atvejais. PR CI ir realus deploy / D1 retry dar laukia. Jokių naujų secrets ar platesnių Worker API teisių nėra.
+
+
+## 2026-11-15 – Worker AI ciklo grafiko korekcija
+
+- D1 analytics/topic snapshots write/readback patvirtinti run 43698010982; Control Center/recommendation snapshots write/readback patvirtinti run 43698006099.
+- 10:20 LT Worker AI ciklas buvo completed prieš duomenų sinchronizavimą, todėl šiandienos 8 evidence gaps dar neįvertino naujų snapshot'ų.
+- PR #217 perkelia Worker AI ciklą į 13:20 Europe/Vilnius (UTC cron 10:20/11:20 pagal vasaros/žiemos laiką), po 11:45 LT koordinatoriaus. Šiandienos run_date jau užregistruotas, todėl naujas ciklas šiandien nesikartos; kitas pilnas ciklas laukiamas 2026-11-16 13:20 LT.
+- PR #217 CI ir post-deploy patikra dar laukia.

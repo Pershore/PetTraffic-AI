@@ -110,3 +110,9 @@ Tikras bootstrap iš Termux patvirtintas: Linux proot, Git, GitHub CLI, Codex CL
 - Vienintelė kasdienė priežiūros automatizacija perkelta iš 11:00 į 11:45 Europe/Vilnius. Priežastis: Control Center 08:40 UTC cron turi 60 min. grace iki 11:40 LT; ankstesnis 11:00 koordinatorius galėjo patikrinti būseną per anksti.
 - Naujų kasdienių automatizacijų nesukurta; pagrindinė automatizacija lieka enabled.
 - Saugus issue #145 komentarų tiltas leidžia tik savininkui Pershore paleisti tris fiksuotus workflow veiksmus: daily-suite, D1 snapshot sync ir Control Center. Rankiniai workflow_dispatch vykdymai nėra schedule įrodymas.
+
+
+## 2026-11-15 – Worker AI ciklas po dienos duomenų sinchronizavimo
+
+- Kasdienis koordinatorius lieka 11:45 LT; Worker AI ciklas perkeliamas į 13:20 LT, kad būtų po daily-suite catch-up, D1 sync ir Control Center grace.
+- PR #217 keičia Cloudflare cron į 10:20 ir 11:20 UTC su Europe/Vilnius vartais 13:20 LT. Dabartinis run_date idempotency reiškia, kad šiandien jau atliktas 10:20 ciklas nebus pakartotas; pirmas pilnas naujo grafiko ciklas laukiamas 2026-11-16 13:20 LT.
