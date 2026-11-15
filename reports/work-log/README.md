@@ -396,3 +396,10 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 - Issue #145 patikrintas ir paliktas open. Įrašytas tikslus komentaras `/pettraffic-run-control-center`; bridge [#43715437926](https://github.com/Pershore/PetTraffic-AI/actions/runs/43715437926) success, sukūrė Control Center manual run #43715464297. Issue neuždaryti, kol abu cron `event=schedule` veikia ir Control Center grąžina `recovery_confirmed=true`.
 - Pakeitimai / testai / PR: šiame audite kodo ir infrastruktūros pakeitimų nėra, testai papildomai nevykdyti, PR nesukurtas. Jokių Worker/D1, Cloudflare production, DNS, secrets, ARO Vet, viešo turinio ar mokamų paslaugų pakeitimų.
 - Laikai: įrankių laiko žymos naudotos; aktyvus darbo laikas **NEMATUOTA**. Kitas žingsnis: išspręsti dingusius GitHub schedule įvykius, patikrinti sync-control-api workflow_run reakciją, o 2026-11-16 13:20 LT patvirtinti naujo Worker ciklo JSON išvestį ir memory būseną.
+
+
+## 2026-11-15 14:51 LT – audito įrašo post-commit patikra
+
+- Darbo žurnalo pakeitimas main commit `a8bc4d98851e29544300334d8fefae0bc124ef04`; automatiškai suveikęs site-check [#43715908799](https://github.com/Pershore/PetTraffic-AI/actions/runs/43715908799) – **success**, 20 s. HTML/nuorodų/SEO, agentų kompiliavimo ir testų job baigtas sėkmingai.
+- `automation-history` būsenos įrašas commit `86a2f6e5300d95e6f476fd110425fd612ff7a3dd`; teisingas kelias ir šaka patikrinti. `reports/work-log/README.md` lieka tik `main` šakoje.
+- Iki 14:51 LT naujo `event=schedule` vykdymo ir naujo sync-control-api po Control Center manual run nepastebėta; issue #145 tebėra open. Naujų kodo / production pakeitimų nėra.
