@@ -127,3 +127,14 @@ Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas
 - GitHub Actions site-check [#43717915888](https://github.com/Pershore/PetTraffic-AI/actions/runs/43717915888) – **success**. `python agent/validate_site.py`, `python -m compileall -q agent`, agent testai ir analytics/history testai – success.
 - Cloudflare Pages PR preview check – **success**, branch preview URL sukurtas; tai nėra production deploy.
 - PR #224 visi privalomi šio PR check'ai dabar sėkmingi; laukiama atskiro peržiūros / sujungimo sprendimo. Production ir main nekeisti.
+
+
+## Rankinis Control Center dashboard įgyvendinimo įrašas – 2026-11-15 15:32 LT
+
+- PR [#225](https://github.com/Pershore/PetTraffic-AI/pull/225) atviras / nesujungtas; branch `feature/live-control-dashboard`, head `44245f22335e963c8e6180b6d870c0f0799fec07`.
+- Site-check [#43719352800](https://github.com/Pershore/PetTraffic-AI/actions/runs/43719352800) – success: Node `--check`, HTML/SEO/sitemap validator, compileall, agent testų žingsnis ir 124 testai – success.
+- Cloudflare Pages PR preview – success; branch preview `https://feature-live-control-dashboa.pettraffic-ai.pages.dev/control/` atveria dashboard. Tai nėra production deploy.
+- Dashboard apima architektūrą, 14 workflow kortelių, paskutinius 100 Actions run, PR/issue/commit, Worker/D1/Control Core, specialistų būsenas, GA4/GSC agregatus, RSS temų istoriją, Lighthouse nuorodą, įrankių inventorių ir viešų puslapių sąrašą. Atnaujinimas kas 5 min., archyvų cache 30 min.
+- Branch preview Worker /health tyčia neapkrauna, nes Worker CORS allowlist leidžia tik oficialų production origin. Production puslapyje Worker šaltinis bus leidžiamas.
+- Puslapis read-only, viešas noindex, ne sitemap, be canonical ir be secrets / lankytojų lygmens duomenų. Noindex nėra autentifikacija.
+- PR #225 nesujungtas; main ir production nekeisti. Kitas žingsnis – vartotojo patvirtinimas merge, po jo production deploy ir /control/ gyvo duomenų srauto patikra.
