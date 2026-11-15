@@ -107,7 +107,12 @@
       "site_check_schedule": "success",
       "worker_ai_cycle": "stale",
       "issue_145": "open",
-      "changes_made": false
+      "changes_made": false,
+      "docs_pr_number": 224,
+      "docs_pr_ci_run_id": "43717915888",
+      "docs_pr_ci_conclusion": "success",
+      "cloudflare_preview_conclusion": "success",
+      "production_deploy_changed": false
     }
   ]
 }
