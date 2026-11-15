@@ -55,7 +55,7 @@ function latestMainRuns(){
  return [...latest.values()];
 }
 function latestFor(file){const d=workflowDefinitions.find(x=>x.file===file);return latestMainRuns().find(r=>(r.path||"").includes(file)||(d?.match&&String(r.name||"").toLowerCase().includes(d.match)))||null;}
-function latestEvent(file,event){const d=workflowDefinitions.find(x=>x.file===file);return latestMainRuns().find(r=>r.event===event&&((r.path||"").includes(file)||(d?.match&&String(r.name||"").toLowerCase().includes(d.match))))||null;}
+function latestEvent(file,event){const d=workflowDefinitions.find(x=>x.file===file);return state.runs.find(r=>r.head_branch==="main"&&r.event===event&&((r.path||"").includes(file)||(d?.match&&String(r.name||"").toLowerCase().includes(d.match))))||null;}
 function renderStats(){
  const site=state.site;const h=state.health;const latestRuns=state.runs.slice(0,100);const mainRuns=latestMainRuns();const failed=mainRuns.filter(r=>r.status==="completed"&&["failure","timed_out","action_required"].includes(r.conclusion)).length;const open=state.prs.length;
  $("stat-site").textContent=site?.ok?"HTTP 200":"Neatsako";$("stat-site").className=site?.ok?"good-text":"bad-text";$("stat-site-detail").textContent=site?.url||SITE;
