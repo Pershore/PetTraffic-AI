@@ -417,3 +417,9 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 - Greičio įrodymai iš ankstesnio audito lieka: Worker cron diagnostika 1 027 s failure → 256 s success (~75,1 % trumpiau); šiame cikle naujo palyginamo optimizavimo matavimo nėra. Daily-suite paskutinis patvirtintas manual run #43696960921 (34 s; analytics 30 s, topic-radar 13 s, live-check 19 s, lygiagrečiai).
 - Atvirų PR nėra. Šiame cikle kodo pakeitimų, testų PR ar production pakeitimų nedaryta. Nekeista Worker/D1, Cloudflare production, DNS, secrets, ARO Vet, viešas turinys ar mokamos paslaugos. Aktyvus darbo laikas **NEMATUOTAS**.
 - Kitas konkretus žingsnis: patikrinti, ar daily-suite ir Control Center schedule įvykiai atsiranda; patikrinti sync-control-api reakciją į Control Center; 2026-11-16 13:20 LT patvirtinti post-PR #220 AI ciklą ir content-review JSON rezultatą. Issue #145 neuždaryti, kol daily-suite ir Control Center schedule veikia ir report pateikia `recovery_confirmed=true`.
+
+
+## 2026-11-15 15:02 LT – darbo žurnalo įrašo post-commit patikra
+
+- Main darbo žurnalo atnaujinimas commit `fd9db38c8f6df32ded9e6758b4864647a8035f19` paleido site-check [#43716600080](https://github.com/Pershore/PetTraffic-AI/actions/runs/43716600080): **success**, 18 s. HTML/nuorodų/SEO validacija, agentų kompiliacija ir testų žingsniai visi success.
+- Kasdienė 14:00 LT greičio / patikimumo automatizacija jau yra įjungta (`Kasdien stebėti ir optimizuoti PetTraffic greitį`); naujos dubliuojančios automatikos kurti nepavyko dėl 3/3 aktyvių užduočių limito, bet jos kurti nereikia.
