@@ -12,10 +12,14 @@
 ## 2026-11-15 dabartinis grafikas ir patikros būsena
 
 - Dienos seka: svetainės patikra 05:37 UTC; nepriklausomas kasdienis automatizacijų rinkinys 06:10 UTC (GA4 / GSC, temų radaras ir gyvos svetainės patikra); Lighthouse pirmadieniais 07:27 UTC; centrinis valdymo centras 08:40 UTC; Worker AI agentų ciklas 10:20 Lietuvos laiku; vienintelis ChatGPT koordinatorius 11:00 Lietuvos laiku.
-- Daily-suite faile sukonfigūruotas cron `10 6 * * *`. 2026-11-15 08:26 Lietuvos laiku (06:26 UTC) naujausių 100 GitHub Actions vykdymų sąraše nebuvo naujo vykdymo po paskutinio 2026-11-14 23:08 UTC vykdymo. Todėl šios dienos pirmasis tiesioginis `event=schedule` paleidimas **NEPATVIRTINTAS / LAUKIA**. Rankinis paleidimas negali būti laikomas suplanuoto vykdymo įrodymu.
-- 2026-11-15 Worker AI ciklas 10:20 Lietuvos laiku audito metu dar nebuvo įvykęs. Ankstesnis agentų gedimas lieka istoriniu; šiandienos ciklą reikia patikrinti po numatyto laiko, kartu patikrinant Control Center ir D1 atminties įrašą.
-- GitHub issue #145 (centrinis automatizacijų perspėjimas) lieka atviras dėl ankstesnio agentų ciklo gedimo. Jo neuždaryti, kol naujas vykdymas nepatvirtins atsistatymo.
-- Šio audito metu nekeisti production, Worker/D1, DNS, secrets, ARO Vet, viešo turinio ar mokamų paslaugų. Išlaikyti 0 €/mėn. biudžetą.
+- **Daily-suite workflow aktyvus**, GitHub Actions metadata state=active, workflow ID 418322987. YAML cron yra 10 6 * * * UTC, o paskutinis failo pakeitimas 2026-11-14 14:41:16 UTC – prieš šiandienos suplanuotą paleidimą. 2026-11-15 10:41 LT vis dar nėra šios dienos event=schedule vykdymo; 60 min. atsargos langas jau praėjęs. Išjungimas atmestas, bet tikroji priežastis dar **NEPATVIRTINTA**; galimas GitHub scheduler / workflow event pristatymo sutrikimas, tačiau tai tik hipotezė.
+- **Worker AI ciklas PATIKRINTAS:** 2026-11-15 10:20 LT ciklas completed, 5 AI kvietimai, error_code=null. Gyvas /health 10:40 LT grąžino HTTP 200, D1 ir Control Core schema connected; heartbeat 10:30:47 LT, svetainė HTTP 200, DB OK.
+- **Control Core atmintis PATIKRINTA:** 2026-11-15 įrašas status=needs_evidence, validus decision JSON, 2 rekomendacijos, 8 evidence gaps, memory_status=present. Rekomendacijos nėra patvirtintos išvados; reikia papildomų duomenų.
+- **Control Center workflow aktyvus**, ID 416336983, cron 08:40 UTC (10:40 LT). 10:41 LT suplanuotas vykdymas dar nebuvo matomas; jo 60 min. atsargos langas baigiasi 11:40 LT. Iki tol būsena LAUKIA, ne galutinis gedimas.
+- GitHub issue #145 PetTraffic: central automation alert lieka atviras; jo neuždaryti, kol Control Center negrąžins recovery_confirmed=true.
+- GA4 / GSC naujausios dienos ataskaitos nėra, nes daily-suite ciklas nepaleistas. Paskutiniai patikimi skaičiai lieka istoriniai 2026-11-14 snapshot duomenys; naujų skaičių neišgalvoti.
+- Termux / Codex CI testai nepatvirtina tiesioginės Android shell prieigos. ChatGPT tiesioginio Termux ryšio nėra; /v1/tasks* lieka išjungta.
+- 0 €/mėn. biudžetas išlaikytas. ARO Vet, viešas turinys, DNS, secrets ir production konfigūracija šios patikros metu nekeisti.
 
 ## 1. Šaltinių hierarchija ir atminties taisyklės
 
@@ -375,3 +379,10 @@ Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama 
 - Daily-suite cron `10 6 * * *` UTC / 08:10 LT: 08:43 LT naujausių 100 Actions vykdymų sąraše nėra šios dienos `event=schedule` vykdymo. Priežastis nenustatyta; nelaikyti rankinio paleidimo grafiko įrodymu.
 - Issue #145 lieka open. Kitas būtinas etapas: 10:20 Worker AI ciklas, 10:40 Control Center / D1 patikra, 11:00 vienintelis ChatGPT koordinatorius.
 - Jokie production, Worker/D1, DNS, secrets, ARO Vet ar viešo turinio pakeitimai neatlikti; papildomas biudžetas 0 €/mėn.
+
+
+## 2026-11-15 10:41 – schedule ir Worker atnaujinimas
+
+- GitHub API patvirtino daily-suite workflow state=active (ID 418322987) ir Control Center workflow state=active (ID 416336983). Daily-suite 06:10 UTC event=schedule nėra, nors 60 min. grace praėjo; Control Center 08:40 UTC ciklas dar laukia savo grace iki 09:40 UTC.
+- Worker /health: HTTP 200; D1/schema connected; 10:20 agentų ciklas completed, 5 AI calls, klaidos nėra; Control Core memory present, 2 rekomendacijos, 8 evidence gaps.
+- Daily-suite priežastis dar nežinoma. Workflow-dispatch veiksmas per dabartinę GitHub integraciją nepasiekiamas; nekurti dirbtinių push įvykių kaip schedule pakaitalo.

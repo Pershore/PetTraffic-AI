@@ -44,3 +44,37 @@ Sulaukti suplanuotų vykdymų: daily-suite 08:10 LT, Worker AI 10:20 LT, Control
 - Daily-suite 08:10 LT cron vykdymo 08:43 LT dar nėra naujausių 100 Actions sąraše; priežastis nenustatyta. Grafiko nekeisti be priežasties; rankinis paleidimas nėra schedule įrodymas.
 - Issue #145 lieka open iki naujo sėkmingo agentų ciklo ir D1 atminties įrašo patvirtinimo.
 - Projekto būsenos snapshot atnaujintas `automation-history` šakoje, commit `aea2e6d85ca159d44a78f6f418397ac748aa4d92`.
+
+
+## 2026-11-15 10:41 LT – naujausia patikra
+
+- Daily-suite workflow metadata: active (ID 418322987), tačiau 06:10 UTC suplanuoto event=schedule vykdymo nėra; 60 min. grace jau praėjęs. Paskutinis failo pakeitimas buvo prieš numatytą ciklą. Priežastis nepatvirtinta.
+- Control Center workflow metadata: active (ID 416336983). 08:40 UTC ciklas 10:41 LT dar nematomas; grace galioja iki 11:40 LT.
+- Worker /health HTTP 200, D1 ir Control Core schema connected. 10:20 LT AI agentų ciklas completed, 5 kvietimai, klaidos nėra. Atmintis present, 2 rekomendacijos, 8 evidence gaps; statusas needs_evidence.
+- Issue #145 paliekamas atviras iki Control Center recovery_confirmed=true. GA4/GSC naujos ataskaitos nėra, kol daily-suite nepasileido.
+- Jokių produkcinių, DNS, secrets, ARO Vet ar viešo turinio pakeitimų. Papildomų paslaugų / išlaidų nėra.
+
+## Kitas veiksmas
+
+Iki 11:40 LT patikrinti Control Center schedule įvykį ir jo ataskaitą. Jei jo nėra, atskirai užregistruoti praleistą aktyvaus workflow schedule ir perduoti kaip GitHub Actions scheduler / administravimo prieigos blokatorių. Daily-suite priežastį tirti tik gavus papildomą GitHub workflow vykdymo / scheduler įrodymą.
+
+
+## 2026-11-15 10:47 LT – gyvos būklės ir schedule pakartotinė patikra
+
+- Vieša pradžia `https://pettraffic-ai.pages.dev/` grąžina HTTP 200; pagrindinis turinys yra lietuviškas „Pet traffic“, matomi keturi pagrindiniai gidai.
+- Gyvas Worker `/health` grąžina HTTP 200; D1 ir Control Core schema connected. Heartbeat `2026-11-15T08:45:46.913Z` (10:45:46 LT), site HTTP 200, DB OK.
+- 2026-11-15 AI agentų ciklas `completed`, 5 AI calls, `error_code=null`. Control Core vis dar `needs_evidence`: 2 rekomendacijos, 8 evidence gaps, memory present; tai nėra pilnas įrodymų patvirtinimas.
+- GitHub Actions paskutinių 100 vykdymų `event=schedule` sąraše yra 4 įrašai, naujausias Control Center 2026-11-14 15:18:42 UTC. 2026-11-15 `daily-suite` 08:10 LT schedule vykdymo nėra; 60 min. grace praėjęs. `control-center` 10:40 LT schedule vykdymo 10:47 LT dar nėra; jo grace galioja iki 11:40 LT. Abu workflow metaduomenys 10:41 LT buvo `active`; tiksli scheduler priežastis nepatvirtinta.
+- Naujausias `Pet traffic site checks` run `43695815389` (push) – success. PR #212 patikra `43695723083` – success, 103 Python testai `OK`. PR #212 paliktas open, automatinis merge neatliktas.
+- Issue #145 atnaujintas komentaru `6891910501`; paliktas open, nes schedule ir Control Core evidence problemos neišspręstos.
+- ChatGPT pagrindinė priežiūros automatizacija enabled, kitas paleidimas 11:00 LT. Greičio priežiūros automatizacija enabled, pirmas paleidimas laukiamas 2026-11-16 09:00 LT. ARO Vet analitikos automatizacija enabled, kitas paleidimas 2026-11-15 18:24 LT. Penkios senesnės automatikos paused; dublikatų neįjungti.
+- Firecrawl kredito likutis prieš dvi gyvas patikras: 197/1 000; šios patikros panaudojo 2 kreditus. Jokie kodo, Worker/D1, DNS, secrets, ARO Vet, viešo turinio ar mokami pakeitimai neatlikti.
+
+**Kitas veiksmas:** po 11:40 LT patikrinti Control Center tikrą schedule įvykį; jei jo nėra, užregistruoti antrą praleistą aktyvaus workflow schedule. Daily-suite priežastis perduota kaip GitHub Actions scheduler / nustatymų prieigos blokatorius.
+
+## 2026-11-15 10:50 LT – visų viešų puslapių gyvas HTTP testas
+
+- Patikrinta 8 viešų URL: `about.html`, `privacy.html`, keturi pagrindiniai straipsniai, `robots.txt`, `sitemap.xml`. Visi atsakė HTTP 200.
+- HTML puslapių content-type `text/html; charset=utf-8`; robots `text/plain; charset=utf-8`; sitemap `application/xml`.
+- Kartu su 10:47 LT patikrinta pradžia ir Worker `/health`, viešos svetainės pasiekiamumas patvirtintas. Tai nepatvirtina Google indeksavimo ar naujų GA4/GSC duomenų.
+- Firecrawl kredito balansas po patikros: 197/1 000. Jokie svetainės ar produkcijos pakeitimai neatlikti.
