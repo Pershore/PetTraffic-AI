@@ -1,8 +1,8 @@
-const AGENT_CRON = "20 7,8 * * *";
+const AGENT_CRON = "20 10,11 * * *";
 
 export function isVilniusAgentRunTime(date = new Date()) {
   const localTime = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Vilnius", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(date);
-  return localTime === "10:20";
+  return localTime === "13:20";
 }
 
 export function isAgentScheduledEvent(controller) {
