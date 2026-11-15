@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "project": "PetTraffic AI",
-  "generated_at": "2026-11-15T15:53:58.951368+00:00",
-  "run_id": "43732414652",
-  "source_commit": "7f825508b26dfcb242fc4b86a9b1a5c95ce16690",
+  "generated_at": "2026-11-15T16:38:46.442434+00:00",
+  "run_id": "43736623026",
+  "source_commit": "704d983a1487896a4c9fe000253090aeb0a3da98",
   "overall_status": "needs_attention",
   "last_verified_stage": "Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataskaitoje.",
   "next_action": "Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (stale). Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-15.",
@@ -19,15 +19,15 @@
       "name": "Centrinės API sinchronizavimas",
       "state": "success",
       "detail": "Paskutinis paleidimas sėkmingas.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43731016875",
-      "created_at": "2026-11-15T15:38:35Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43732452704",
+      "created_at": "2026-11-15T15:54:19Z"
     },
     {
       "name": "Centrinis valdymo centras",
       "state": "success",
       "detail": "Paskutinis paleidimas sėkmingas.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43730968824",
-      "created_at": "2026-11-15T15:38:03Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43732414652",
+      "created_at": "2026-11-15T15:53:53Z"
     },
     {
       "name": "Cloudflare Worker + D1",
@@ -51,8 +51,8 @@
       "name": "Lighthouse auditas",
       "state": "waiting",
       "detail": "Workflow atnaujintas 2026-11-13 12:09 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43724108373",
-      "created_at": "2026-11-15T14:23:35Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43736623057",
+      "created_at": "2026-11-15T16:38:37Z"
     }
   ],
   "ai_agent_memory_check": {
