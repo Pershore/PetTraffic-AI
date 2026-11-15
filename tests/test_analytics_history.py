@@ -38,12 +38,12 @@ Laikotarpis: 2026-11-03 – 2026-11-09
 - URL pateikta / indeksuota: 7 / 4
 - Laukia apdorojimo: ne
 
-### Populiariausios Google paieškos užklausos
+### Apibendrintos Google paieškos temos
 
-| Užklausa | Paspaudimai | Parodymai | CTR | Pozicija |
-|---|---:|---:|---:|---:|
-| mano kates viduriavimas | 3 | 120 | 2.5% | 8.4 |
-| geriausias maistas sunims | 2 | 80 | 2.5% | 6.0 |
+| Tema | Frazų eilučių | Paspaudimai | Parodymai | CTR | Vidutinė pozicija |
+|---|---:|---:|---:|---:|---:|
+| Simptomai ir sveikata | 1 | 3 | 120 | 2.5% | 8.4 |
+| Maitinimas ir mityba | 1 | 2 | 80 | 2.5% | 6.0 |
 
 ### Puslapiai Google paieškoje
 
@@ -88,9 +88,10 @@ class AnalyticsHistoryTests(unittest.TestCase):
         )
         self.assertIn("simptomai_ir_sveikata", item["search_intent_themes"])
         self.assertIn("maitinimas_ir_mityba", item["search_intent_themes"])
+        self.assertEqual(item["search_intent_themes"]["simptomai_ir_sveikata"]["rows"], 1)
+        self.assertEqual(item["search_intent_themes"]["maitinimas_ir_mityba"]["impressions"], 80)
         serialized = json.dumps(item, ensure_ascii=False).lower()
-        self.assertNotIn("mano kates viduriavimas", serialized)
-        self.assertNotIn("geriausias maistas sunims", serialized)
+        self.assertNotIn("užklausa", serialized)
         self.assertNotIn("query", serialized)
 
 
