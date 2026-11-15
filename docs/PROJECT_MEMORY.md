@@ -498,3 +498,12 @@ Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama 
 - Worker CORS leidžia tik oficialų production origin; branch preview Worker būseną žymi kaip CORS apribotą. Production dashboard leidžiamas origin. Worker konfigūracija nekeista.
 - GitHub Actions ir statinio HTML / JS testai patvirtinti. Pilnas realaus naudotojo naršyklės E2E fetch/refresh patikrinimas dar nepatvirtintas; Firecrawl browser bandymas baigėsi timeout, todėl runtime veikimo pilno E2E teiginio nedarome.
 - Produkcija, DNS, Worker/D1, secrets, prieigos ir mokamos paslaugos nekeistos; dashboard veikia read-only.
+
+## 2026-11-15 – Control Center dashboard gyvų šaltinių pataisa
+
+- PR #225 sujungtas: /control/ dashboard publikuotas https://pettraffic-ai.pages.dev/control/; puslapis viešas, noindex,nofollow, read-only, neįtrauktas į sitemap. Noindex nėra prieigos kontrolė.
+- Po publikavimo aptikta refresh() indeksų / state laukų neatitiktis. PR #226 sujungtas commit 11438c15db521b2dd8bf02c3eb5450063dc91644; perkelta į vardinį 8 šaltinių map'ą (runs, prs, commit, health, site, analytics, topics, issue), pridėtas issue #145 GET ir regresijos testas.
+- Po merge site-check #43719820860, Control Center #43719820823 ir IndexNow #43719820885 success. Vieši production /control/ ir control.js atsako HTTP 200; live JS source atitinka main pataisą. Worker /health HTTP 200, D1 / Control Core schema connected; analytics ir topic archyvai prieinami.
+- 503 task_api_not_enabled yra tyčia išjungtos Worker /v1/tasks* API būsenos žyma; dashboard pats nesiunčia POST / dispatch. ChatGPT automatikų gyvas vykdymo statusas ir Termux shell nėra tiesiogiai skaitomi.
+- Pilnas realaus naudotojo browser E2E refresh dar nepatvirtintas. Nekeisti Worker/D1, DNS, secrets, ARO Vet, Google prieigos ar mokamos paslaugos.
+- Kitas veiksmas: baigti Lighthouse run #43719820834 ir 2026-11-16 13:20 LT patikrinti Worker AI ciklo po PR #220 / Control Core įrodymus.
