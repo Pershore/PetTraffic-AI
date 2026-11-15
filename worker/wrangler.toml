@@ -20,5 +20,6 @@ enabled = true
 
 
 # Lightweight 24/7 operational heartbeat; UTC, every 15 minutes.
+# Daily AI orchestration is gated to 13:20 Europe/Vilnius in src/agents.mjs.
 [triggers]
 crons = ["*/15 * * * *", "20 10,11 * * *"]
