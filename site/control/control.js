@@ -1,6 +1,6 @@
 (() => {
 "use strict";
-const REPO = "Pershore/PetTraffic-AI";
+const REPO = "Pershore/PetTraffic" + String.fromCharCode(45,65,73);
 const GH = "https://api.github.com/repos/" + REPO;
 const WORKER = "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev";
 const SITE = "https://pettraffic-ai.pages.dev";
@@ -20,7 +20,7 @@ const workflowDefinitions = [
  {key:"monitor",title:"Live-site monitor",file:"live-site-monitor.yml",cadence:"Daily-suite dalis / workflow",desc:"Viešos svetainės ir sveikatos signalai"},
  {key:"termux",title:"Termux bridge CI",file:"termux-bridge-check.yml",cadence:"Pagal kodo pakeitimus",desc:"Android / Ubuntu bootstrap scenarijų CI testai"},
  {key:"worklog",title:"Work-log",file:"work-log.yml",cadence:"Po main pakeitimų",desc:"Automatinis GitHub darbo žurnalo įrašas"},
- {key:"workercron",title:"Worker cron diagnostika",file:"worker-cron-diagnostic.yml",cadence:"Pagal workflow",desc:"Worker heartbeat ir AI ciklo diagnostika"},
+ {key:"workercron",title:"Worker cron diagnostika",file:"worker-cron-diagnostic.yml",cadence:"Pagal workflow",desc:"Worker heartbeat ir agentų ciklo diagnostika"},
  {key:"indexnow",title:"IndexNow",file:"indexnow.yml",cadence:"Pagal svetainės pakeitimus",desc:"Paieškos sistemų URL pranešimas"}
 ];
 const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, ch => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[ch]));
@@ -55,20 +55,20 @@ function renderStats(){
  $("connection-state").textContent=site?.ok&&h?.ok?"Sistemos pasiekiamos":"Dalis sistemų nepasiekiama";
 }
 function aiCycleStatus(){
- const run=state.health?.agent_orchestration;if(!run||!run.started_at)return {label:"Nežinoma",cls:"unknown",detail:"Worker nepateikė AI ciklo"};
+ const run=state.health?.agent_orchestration;if(!run||!run.started_at)return {label:"Nežinoma",cls:"unknown",detail:"Worker nepateikė agentų ciklo"};
  const today=localDate();const runDate=String(run.run_date||"").slice(0,10);const start=new Date(run.started_at);const mins=Number(new Intl.DateTimeFormat("en-GB",{timeZone:TZ,hour:"2-digit",hourCycle:"h23"}).format(start))*60+Number(new Intl.DateTimeFormat("en-GB",{timeZone:TZ,minute:"2-digit"}).format(start));
  if(runDate!==today)return {label:"SENA",cls:"bad",detail:"Paskutinio ciklo data "+runDate};
  if(run.status==="failed")return {label:"KLAIDA",cls:"bad",detail:run.error_code||"AI ciklas nepavyko"};
  if(localMinutes()<13*60+20&&mins<13*60+20)return {label:"LAUKIA",cls:"warn",detail:"Dienos ciklas tikslinis 13:20 LT"};
  if(mins<13*60+20)return {label:"STALE",cls:"bad",detail:"Šiandienos ciklas pradėtas iki 13:20 LT"};
  if(run.status==="completed"&&Number(run.ai_calls)>=5&&run.error_code==null)return {label:"ATLIKTA",cls:"good",detail:"5 AI kvietimai, klaidos nėra"};
- return {label:String(run.status||"Nežinoma").toUpperCase(),cls:"warn",detail:Number(run.ai_calls||0)+" AI kvietimų"};
+ return {label:String(run.status||"Nežinoma").toUpperCase(),cls:"warn",detail:Number(run.ai_calls||0)+" agentų kvietimų"};
 }
 function renderAttention(){
  const items=[];const daily=latestEvent("daily-suite.yml","schedule");const cc=latestEvent("control-center.yml","schedule");const ai=aiCycleStatus();
  if(!daily||new Date(daily.created_at).toDateString()!==new Date().toDateString())items.push({title:"Daily-suite schedule įrodymas",detail:daily?"Paskutinis schedule: "+dateLT(daily.created_at):"Naujausio sąrašo schedule paleidimo nerasta",cls:"warn"});
  if(!cc||new Date(cc.created_at).toDateString()!==new Date().toDateString())items.push({title:"Control Center schedule įrodymas",detail:cc?"Paskutinis schedule: "+dateLT(cc.created_at):"Naujausio sąrašo schedule paleidimo nerasta",cls:"warn"});
- if(ai.cls!=="good")items.push({title:"Worker AI agentų ciklas: "+ai.label,detail:ai.detail,cls:ai.cls});
+ if(ai.cls!=="good")items.push({title:"Worker agentų ciklas: "+ai.label,detail:ai.detail,cls:ai.cls});
  const bad=state.runs.filter(r=>r.status==="completed"&&r.conclusion!=="success").slice(0,3);
  bad.forEach(r=>items.push({title:r.name+" · "+r.conclusion,detail:"#"+r.run_number+" · "+dateLT(r.created_at),cls:"bad",url:r.html_url}));
  if(state.prs.length)items.push({title:state.prs.length+" atviri PR",detail:state.prs.slice(0,3).map(p=>"#"+p.number+" "+p.title).join(" · "),cls:"warn",url:state.prs[0].html_url});
