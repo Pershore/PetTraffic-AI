@@ -178,6 +178,54 @@ class ControlCenterTests(unittest.TestCase):
         self.assertEqual(result["state"], "stale")
         self.assertTrue(needs_attention([result]))
 
+    def test_same_day_pre_1320_agent_run_waits_for_new_window(self):
+        now = datetime(2026, 11, 15, 8, 40, tzinfo=timezone.utc)  # 10:40 Vilnius
+        result = evaluate_agent_orchestration({
+            "agent_orchestration": {
+                "run_date": "2026-11-15",
+                "status": "completed",
+                "started_at": "2026-11-15T08:20:13Z",
+            },
+            "control_core": {
+                "status": "needs_evidence",
+                "memory_status": "present",
+                "recommendation_count": 2,
+                "evidence_gap_count": 8,
+            },
+        }, now=now)
+        self.assertEqual(result["state"], "waiting")
+        self.assertFalse(needs_attention([result]))
+
+    def test_same_day_pre_1320_agent_run_is_stale_after_window(self):
+        now = datetime(2026, 11, 15, 11, 21, tzinfo=timezone.utc)  # 13:21 Vilnius
+        result = evaluate_agent_orchestration({
+            "agent_orchestration": {
+                "run_date": "2026-11-15",
+                "status": "completed",
+                "started_at": "2026-11-15T08:20:13Z",
+            }
+        }, now=now)
+        self.assertEqual(result["state"], "stale")
+        self.assertTrue(needs_attention([result]))
+
+    def test_same_day_1320_agent_run_is_evaluated(self):
+        now = datetime(2026, 11, 15, 12, 0, tzinfo=timezone.utc)  # 14:00 Vilnius
+        result = evaluate_agent_orchestration({
+            "agent_orchestration": {
+                "run_date": "2026-11-15",
+                "status": "completed",
+                "started_at": "2026-11-15T11:20:13Z",
+            },
+            "control_core": {
+                "status": "needs_evidence",
+                "memory_status": "present",
+                "recommendation_count": 2,
+                "evidence_gap_count": 8,
+            },
+        }, now=now)
+        self.assertEqual(result["state"], "warning")
+        self.assertIn("trūksta įrodymų: 8", result["detail"])
+
     def test_alert_recovery_requires_every_check_to_be_success(self):
         self.assertTrue(recovery_confirmed([{"state": "success"}, {"state": "success"}]))
         self.assertFalse(recovery_confirmed([{"state": "success"}, {"state": "waiting"}]))
