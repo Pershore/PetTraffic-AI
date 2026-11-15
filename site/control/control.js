@@ -73,9 +73,8 @@ function aiCycleStatus(){
  return {label:String(run.status||"Nežinoma").toUpperCase(),cls:"warn",detail:Number(run.ai_calls||0)+" agentų kvietimų"};
 }
 function renderAttention(){
- const items=[];const daily=latestEvent("daily-suite.yml","schedule");const cc=latestEvent("control-center.yml","schedule");const ai=aiCycleStatus();
+ const items=[];const daily=latestEvent("daily-suite.yml","schedule");const ai=aiCycleStatus();
  if(!daily||localDateOf(daily.created_at)!==localDate())items.push({title:"Daily-suite schedule įrodymas",detail:daily?"Paskutinis schedule: "+dateLT(daily.created_at):"Naujausio sąrašo schedule paleidimo nerasta",cls:"warn"});
- if(!cc||localDateOf(cc.created_at)!==localDate())items.push({title:"Control Center schedule įrodymas",detail:cc?"Paskutinis schedule: "+dateLT(cc.created_at):"Naujausio sąrašo schedule paleidimo nerasta",cls:"warn"});
  if(ai.cls!=="good")items.push({title:"Worker agentų ciklas: "+ai.label,detail:ai.detail,cls:ai.cls});
  const bad=state.runs.filter(r=>r.status==="completed"&&r.conclusion!=="success").slice(0,3);
  bad.forEach(r=>items.push({title:r.name+" · "+r.conclusion,detail:"#"+r.run_number+" · "+dateLT(r.created_at),cls:"bad",url:r.html_url}));
