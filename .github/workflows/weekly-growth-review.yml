@@ -36,7 +36,7 @@ jobs:
           git archive origin/automation-history reports/history | tar -x -C .
       - name: Generate weekly growth review
         env:
-          GITHUB_RUN_ID: \${{ github.run_id }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
         run: python agent/weekly_growth_review.py
       - name: Add report to GitHub Actions summary
         run: cat reports/weekly-growth-review.md >> "$GITHUB_STEP_SUMMARY"
