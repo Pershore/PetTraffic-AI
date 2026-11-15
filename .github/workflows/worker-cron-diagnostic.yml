@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   verify-and-observe:
-    name: Verify configured crons and observe live invocations
+    name: Verify configured crons and persisted heartbeat
     runs-on: ubuntu-latest
     timeout-minutes: 22
     steps:
@@ -56,7 +56,7 @@ jobs:
               raise SystemExit("Expected schedules missing: " + ", ".join(missing))
 
           # The public Worker /health endpoint is verified independently by the browser.
-          # This credentialed runner only calls Cloudflare's API and Wrangler.
+          # This credentialed step only calls Cloudflare's schedules API.
           PY
 
       - name: Observe scheduled heartbeat for one cron interval
