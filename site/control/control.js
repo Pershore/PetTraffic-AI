@@ -16,7 +16,8 @@ const workflowDefinitions = [
  {key:"topics",title:"Topic radar",file:"daily-topic-radar.yml",match:"daily topic radar",cadence:"Daily-suite dalis / push / manual",desc:"Viešos Google News RSS antraštės"},
  {key:"lighthouse",title:"Lighthouse",file:"lighthouse-audit.yml",match:"lighthouse audits",cadence:"Pirmadieniais 09:27 LT + site push",desc:"5 puslapiai × mobile ir desktop"},
  {key:"sync",title:"D1 snapshot sync",file:"sync-control-api.yml",match:"sync pettraffic snapshots",cadence:"Po workflow įvykių / manual",desc:"GitHub OIDC, agreguotų snapshot įrašymas ir readback"},
- {key:"bridge",title:"Saugus dispatch bridge",file:"dispatch-daily-suite.yml",match:"secure workflow dispatch",cadence:"Tik owner komanda issue #145",desc:"Dedup, ribotas workflow_dispatch, nėra savavališkų komandų"},
+ {key:"bridge",title:"Saugus dispatch bridge",file:"dispatch-daily-suite.yml",match:"secure workflow dispatch",cadence:"Tik owner komanda issue #145",desc:"Savininko komanda įdeda fiksuotą užduotį ir iškviečia debesijos vykdytoją"},
+ {key:"taskrunner",title:"Debesijos task runner",file:"run-readonly-tasks.yml",match:"read-only task runner",cadence:"Tik po allowlist užduoties iš D1 eilės",desc:"Atskiras OIDC vykdytojas: fiksuota read-only patikra ir D1 readback"},
  {key:"worker",title:"Worker deploy",file:"deploy-control-api.yml",match:"deploy pettraffic control api",cadence:"Worker failų push / manual",desc:"Worker testai, Cloudflare validacija, deploy ir /health"},
  {key:"monitor",title:"Live-site monitor",file:"live-site-monitor.yml",match:"live-site monitor",cadence:"Daily-suite dalis / workflow",desc:"Viešos svetainės ir sveikatos signalai"},
  {key:"termux",title:"Termux bridge CI",file:"termux-bridge-check.yml",match:"termux bridge",cadence:"Pagal kodo pakeitimus",desc:"Android / Ubuntu bootstrap scenarijų CI testai"},
@@ -93,7 +94,7 @@ function renderAttention(){
  $("attention-list").innerHTML=items.slice(0,8).map(x=>'<div class="attention-item '+(x.cls==="good"?"good":"")+'"><span class="signal"></span><div><strong>'+escapeHtml(x.title)+'</strong><small>'+escapeHtml(x.detail)+' '+(x.url?'<a href="'+escapeHtml(x.url)+'" target="_blank" rel="noopener">Atverti ↗</a>':"")+'</small></div></div>').join("");
 }
 function renderWorkflowSummary(){
- const selected=["site-check.yml","daily-suite.yml","control-center.yml","analytics-snapshot.yml","daily-topic-radar.yml","lighthouse-audit.yml"];
+ const selected=["site-check.yml","daily-suite.yml","control-center.yml","analytics-snapshot.yml","daily-topic-radar.yml","lighthouse-audit.yml","run-readonly-tasks.yml"];
  $("workflow-summary").innerHTML=selected.map(file=>{const d=workflowDefinitions.find(x=>x.file===file);const r=latestFor(file);return '<div class="workflow-row"><div><strong>'+escapeHtml(d?.title||file)+'</strong><small>'+(r?escapeHtml(r.event)+" · "+escapeHtml(dateLT(r.created_at)):"Vykdymo nėra")+'</small></div>'+badge(statusText(r),statusClass(r))+'</div>';}).join("");
  $("workflow-grid").innerHTML=workflowDefinitions.map(d=>{
  const r=latestFor(d.file);const schedule=latestEvent(d.file,"schedule");
