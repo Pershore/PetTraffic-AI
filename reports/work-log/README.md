@@ -457,3 +457,12 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 - Worker /health: HTTP 200, D1 ir Control Core schema connected, heartbeat site HTTP 200. Šios dienos agentų ciklas completed su 5 kvietimais, bet Control Core needs_evidence (8 spragos; analytics error, topics no data, content-review invalid_json). Dėl vieno ciklo per dieną idempotency rankiniu būdu nekartotas; kitas pilnas ciklas laukiamas 2026-11-16 13:20 LT.
 - Ribos: Worker /v1/tasks* lieka 503 iki atskiros agentų tapatybės ir privataus autentifikuoto dashboard. Ši panelė nėra pilnas tiesioginis one-click API valdymas: komanda kopijuojama ir įklijuojama į GitHub issue #145. Viešas puslapis neturi autentifikacijos; noindex nėra apsauga. Produkcijos Worker/D1, DNS, secrets, ARO Vet, turinys ir mokamos paslaugos nekeisti.
 - Kitas būtinas etapas tikram tiesioginiam grafiniam valdymui: Cloudflare Access / kitas autentifikacijos vartas ir atskira agentų OIDC tapatybė. Dabartinėje aplinkoje nėra tiesioginio Cloudflare administravimo įrankio; šios dalies aktyvavimas dar NEATLIKTA.
+
+## 2026-11-15 16:17 LT – Control Center pataisos ir automatizacijų instrukcijų suderinimas
+
+- PR #233 sujungtas: atskiras Control Center cron pašalintas, nes jis jau paleidžiamas po Daily-suite, Lighthouse ir Worker deploy įvykių. PR #234 sujungtas: dashboard cadence atnaujintas, pašalintas klaidingas 10:40 LT schedule perspėjimas, fetch_runs() nebeįtraukia šiuo metu vykdomo Control Center run į savo paties ataskaitą.
+- PR #234 visi trys privalomi check'ai – Cloudflare Pages, site-check, read-only Control Center – success. Po merge site-check #43723293494, Control Center #43723293460 ir D1 sync #43723329232 – success. Production JS patvirtintas gyvai.
+- Daily-suite schedule #43721211747 – 3/3 jobs success, bet 7 val. 42 min. vėlavimas. GA4 7 active users, 24 sessions, 88 pageviews; GSC 0 impressions/clicks, sitemap pending; topic radar 31 unikali nuoroda. Google API connectivity #43722887365 – success.
+- Esamų trijų ChatGPT automatikų prompt'ai suderinti su event-driven Control Center. Tvarkaraščiai nekeisti; naujų automatikų nesukurta.
+- Worker deploy #43698484769 – test, token validation, D1 migrations ir deploy success. Agentų post-deploy ciklas dar LAUKIA 2026-11-16 13:20 LT; šiandienos 10:20 LT įrašas yra prieš deploy, todėl neįrodo naujo kodo veiksmingumo.
+- Jokių ARO Vet, viešo turinio, DNS, Worker/D1 konfigūracijos, secrets, billing ar mokamų paslaugų pakeitimų šiame darbe nedaryta. Aktyvaus darbo laikas NEMATUOTAS.
