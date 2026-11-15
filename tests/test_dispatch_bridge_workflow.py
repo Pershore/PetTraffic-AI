@@ -13,18 +13,20 @@ class DispatchBridgeWorkflowTests(unittest.TestCase):
         self.assertIn("steps.guard.outputs.authorized == 'true'", workflow)
         self.assertIn("DISPATCH_ACTION", workflow)
 
-    def test_bridge_routes_only_three_fixed_workflows(self):
+    def test_bridge_routes_only_four_fixed_workflows(self):
         workflow = Path(".github/workflows/dispatch-daily-suite.yml").read_text(encoding="utf-8")
-        for action in ("daily-suite", "sync-latest", "control-center"):
+        for action in ("daily-suite", "sync-latest", "control-center", "lighthouse"):
             with self.subTest(action=action):
                 self.assertIn(f'action === "{action}"', workflow)
-        for workflow_id in ("daily-suite.yml", "sync-control-api.yml", "control-center.yml"):
+        for workflow_id in ("daily-suite.yml", "sync-control-api.yml", "control-center.yml", "lighthouse-audit.yml"):
             with self.subTest(workflow_id=workflow_id):
                 self.assertIn(f'"{workflow_id}"', workflow)
         self.assertIn("github.rest.actions.createWorkflowDispatch", workflow)
         self.assertIn('ref: "main"', workflow)
         control_center = Path(".github/workflows/control-center.yml").read_text(encoding="utf-8")
         self.assertIn("workflow_dispatch:", control_center)
+        lighthouse = Path(".github/workflows/lighthouse-audit.yml").read_text(encoding="utf-8")
+        self.assertIn("workflow_dispatch:", lighthouse)
 
     def test_bridge_has_deduplication_and_no_secrets_or_external_services(self):
         workflow = Path(".github/workflows/dispatch-daily-suite.yml").read_text(encoding="utf-8")
