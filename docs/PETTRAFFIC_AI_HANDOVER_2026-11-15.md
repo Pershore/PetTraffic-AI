@@ -89,3 +89,11 @@ Iki 11:40 LT patikrinti Control Center schedule įvykį ir jo ataskaitą. Jei jo
 - PR #214 sync workflow priima source_run_id tik patikrinęs workflow ID 418322987, main branch, source event, completed status ir bent vieną sėkmingą analytics/topic-radar job; D1 įrašymas vyksta per GitHub OIDC su readback.
 - Pagrindinis kasdienis koordinatorius perplanuotas į 11:45 Europe/Vilnius, po Control Center 60 min. grace (11:40 LT). Naujos automatizacijos nesukurtos.
 - PR #214 CI ir realus D1 sync / Control Center fallback dar laukia. Tikras event=schedule trūkumas lieka atskiras blokatorius; workflow_dispatch nėra cron įrodymas.
+
+
+## 2026-11-15 – PR #214 D1 ir Control Center fallback
+
+- PR #214 išplečia saugų issue #145 tiltą trimis fiksuotomis komandomis: /pettraffic-run-daily-suite, /pettraffic-sync-latest, /pettraffic-run-control-center. Guard leidžia tik Pershore paskyros naują komentarą, tik issue #145; PR komentarai ir kiti veiksmai atmetami.
+- sync-control-api.yml gauna workflow_dispatch source_run_id. Prieš atsisiųsdamas artefaktus patikrina daily-suite workflow ID 418322987, main šaką, event schedule/workflow_dispatch, completed status ir bent vieną sėkmingą analytics/topic-radar job. D1 įrašai lieka agreguoti, autentifikacija per trumpalaikį OIDC, po įrašymo daromas readback.
+- Control Center workflow jau turėjo workflow_dispatch, todėl bridge gali jį paleisti po 11:40 LT grace, tačiau tai bus manual run, ne schedule įrodymas.
+- Po PR #214 merge: paleisti sync-latest ir patikrinti D1 write/readback; paleisti Control Center ir patikrinti ataskaitą/issue #145. PR CI ir realus D1 sync dar laukia.
