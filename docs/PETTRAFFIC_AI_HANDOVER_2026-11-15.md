@@ -199,3 +199,13 @@ Iki 11:40 LT patikrinti Control Center schedule įvykį ir jo ataskaitą. Jei jo
 - Worker CORS leidžia tik oficialų production origin; branch preview Worker būseną žymi kaip CORS apribotą. Production dashboard leidžiamas origin. Worker konfigūracija nekeista.
 - GitHub Actions ir statinio HTML / JS testai patvirtinti. Pilnas realaus naudotojo naršyklės E2E fetch/refresh patikrinimas dar nepatvirtintas; Firecrawl browser bandymas baigėsi timeout, todėl runtime veikimo pilno E2E teiginio nedarome.
 - Produkcija, DNS, Worker/D1, secrets, prieigos ir mokamos paslaugos nekeistos; dashboard veikia read-only.
+
+## 2026-11-15 15:36 LT – dashboard gyvų šaltinių susiejimo pataisa
+
+- Po PR #225 publikavimo tiesioginė kodo peržiūra aptiko refresh() rezultatų indeksų klaidą: Worker /health, svetainės HEAD ir analitikos archyvai buvo priskiriami neteisingiems būsenos laukams; issue #145 GET užklausa nebuvo įtraukta.
+- Pataisa atlikta PR [#226](https://github.com/Pershore/PetTraffic-AI/pull/226), sujungta 2026-11-15 13:35 UTC, commit 11438c15db521b2dd8bf02c3eb5450063dc91644. Naudojamas vardinis sources objektas: runs, prs, commit, health, site, analytics, topics ir issue; pridėtas issue #145 tik skaitymo GET.
+- Pridėtas regresijos testas visų 8 šaltinių susiejimui. PR #226 site-check ir Cloudflare Pages preview patikros – success. Po merge site-check [#43719820860](https://github.com/Pershore/PetTraffic-AI/actions/runs/43719820860) – success; Control Center [#43719820823](https://github.com/Pershore/PetTraffic-AI/actions/runs/43719820823) – success; IndexNow [#43719820885](https://github.com/Pershore/PetTraffic-AI/actions/runs/43719820885) – success.
+- Production /control/ ir control.js HTTP 200. Gyvas Pages JavaScript turinys palygintas su main: vardinis sources susiejimas yra, senas assign(3,"issue") nebėra. GA4 archyvas ir topic-radar archyvas iš automation-history prieinami; Worker /health HTTP 200, D1 ir Control Core schema connected.
+- Dashboard lieka read-only. Worker /v1/tasks* atsakymas 503 task_api_not_enabled yra sąmoningai išjungta užduočių API, ne dashboard duomenų šaltinio klaida. Viešas noindex,nofollow nėra autentifikacija.
+- Pilnas realaus naudotojo naršyklės E2E fetch/refresh bandymas vis dar NEPATVIRTINTAS: Firecrawl browser sąveika baigėsi timeout; vien HTML / JS failų gavimas nėra E2E įrodymas. Lighthouse run [#43719820834](https://github.com/Pershore/PetTraffic-AI/actions/runs/43719820834) dar vykdomas paskutinės patikros metu.
+- Nekeista Worker/D1, DNS, secrets, ARO Vet, Google prieigos ar mokamos paslaugos. Kitas žingsnis: Lighthouse vykdymo galutinis rezultatas ir 2026-11-16 13:20 LT naujo AI ciklo / Control Core įrodymų patikra.
