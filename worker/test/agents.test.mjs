@@ -154,16 +154,16 @@ test("Workers AI receives enough output budget for the complete JSON response",a
 
 
 test("agent cron uses Cloudflare scheduledTime even when invocation is delayed",()=>{
- const controller={cron:"20 7,8 * * *",scheduledTime:Date.parse("2026-11-14T08:20:00.000Z")};
+ const controller={cron:"20 10,11 * * *",scheduledTime:Date.parse("2026-11-14T11:20:00.000Z")};
  assert.equal(isAgentScheduledEvent(controller),true);
 });
-test("agent cron ignores the 09:20 Vilnius winter trigger",()=>{
- const controller={cron:"20 7,8 * * *",scheduledTime:Date.parse("2026-11-14T07:20:00.000Z")};
+test("agent cron ignores the old 10:20 Vilnius winter trigger",()=>{
+ const controller={cron:"20 10,11 * * *",scheduledTime:Date.parse("2026-11-14T08:20:00.000Z")};
  assert.equal(isAgentScheduledEvent(controller),false);
 });
 test("agent cron ignores heartbeat events and missing scheduled timestamps",()=>{
- assert.equal(isAgentScheduledEvent({cron:"*/15 * * * *",scheduledTime:Date.parse("2026-11-14T08:20:00.000Z")}),false);
- assert.equal(isAgentScheduledEvent({cron:"20 7,8 * * *"}),false);
+ assert.equal(isAgentScheduledEvent({cron:"*/15 * * * *",scheduledTime:Date.parse("2026-11-14T11:20:00.000Z")}),false);
+ assert.equal(isAgentScheduledEvent({cron:"20 10,11 * * *"}),false);
 });
 
 
