@@ -29,6 +29,22 @@ class ControlDashboardTests(unittest.TestCase):
         self.assertNotIn("method:\"DELETE\"", script)
         self.assertNotIn("createWorkflowDispatch", script)
 
+    def test_dashboard_maps_live_sources_by_name(self):
+        script = SCRIPT.read_text(encoding="utf-8")
+        for source in (
+            'runs: getJson(GH+"/actions/runs?per_page=100").then(x=>x.workflow_runs||[])',
+            'prs: getJson(GH+"/pulls?state=open&per_page=50")',
+            'commit: getJson(GH+"/commits/main")',
+            'health: getJson(WORKER+"/health")',
+            'site: fetch(SITE,{method:"HEAD",cache:"no-store"})',
+            'analytics: loadAnalyticsArchive("analytics")',
+            'topics: loadAnalyticsArchive("topic-radar")',
+            'issue: getJson(GH+"/issues/145")',
+        ):
+            self.assertIn(source, script)
+        self.assertIn("Object.keys(sources)", script)
+        self.assertIn("state[sourceKeys[index]]=result.value", script)
+
     def test_dashboard_contains_no_secret_values_or_secret_headers(self):
         combined = DASHBOARD.read_text(encoding="utf-8") + SCRIPT.read_text(encoding="utf-8")
         self.assertNotRegex(combined, re.compile(r"\bAI\b"))
