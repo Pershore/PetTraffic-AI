@@ -22,6 +22,7 @@
 - Po sujungimo `Termux Codex bridge checks` – success.
 - Po PR #210 sujungimo `Pet traffic site checks` – success; HTML, nuorodų, SEO, sitemap, automation script compile, topic radar parser/error handling ir analytics history/API testai – success.
 - Po PR #211 sujungimo `Pet traffic site checks` run 43686934069 – success; `PetTraffic automatic work log` run 43686934075 – success.
+- Worker deploy #96 (run 43651631954): `npm test` – 53/53 passed; Worker Python tests – 6/6 passed; deployment, post-deploy health and unauthorized API 401 checks – success.
 - Worker health: HTTP 200, `ok=true`, `database=connected`, `control_core_schema=connected`.
 - Heartbeat: `2026-11-15T06:30:47.076Z`; `site_ok=true`, `site_status=200`, `database_ok=true`.
 
