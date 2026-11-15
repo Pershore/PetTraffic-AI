@@ -61,7 +61,7 @@ test("health endpoint confirms database connectivity without exposing secrets", 
     service: "pettraffic-control-api",
     database: "connected",
     control_core_schema: "connected",
-    control_core: { status: "not_started", decision_json_status: "not_available", memory_status: "missing", memory_updated_at: null },
+    control_core: { status: "not_started", decision_json_status: "not_available", specialist_statuses: {}, evidence_gap_categories: {}, memory_status: "missing", memory_updated_at: null },
     heartbeat: null,
     agent_orchestration: { status: "not_started" },
   });
@@ -129,7 +129,8 @@ test("health endpoint reports control-core persistence without exposing decision
     created_at: "2026-11-13T08:21:00.000Z",
     decision_json: JSON.stringify({
       recommendations: ["Review sitemap."],
-      evidence_gaps: ["GA4 unavailable"],
+      evidence_gaps: ["GA4 unavailable", "Topic snapshot missing", "Model response was incomplete JSON"],
+      specialist_statuses: { analytics: "reviewed", topics: "reviewed", "technical-seo": "reviewed", "content-review": "invalid_json", attacker: "hidden" },
     }),
   };
   const coreMemory = { updated_at: "2026-11-13T08:21:00.000Z" };
@@ -157,11 +158,13 @@ test("health endpoint reports control-core persistence without exposing decision
     created_at: coreRun.created_at,
     decision_json_status: "valid",
     recommendation_count: 1,
-    evidence_gap_count: 1,
+    evidence_gap_count: 3,
+    specialist_statuses: { analytics: "reviewed", topics: "reviewed", "technical-seo": "reviewed", "content-review": "invalid_json" },
+    evidence_gap_categories: { model_output: 1, source_data: 1, source_unavailable: 1 },
     memory_status: "present",
     memory_updated_at: coreMemory.updated_at,
   });
-  assert.doesNotMatch(JSON.stringify(body), /Review sitemap|GA4 unavailable/);
+  assert.doesNotMatch(JSON.stringify(body), /Review sitemap|GA4 unavailable|Topic snapshot missing|incomplete JSON|attacker/);
 });
 
 test("health endpoint reports malformed persisted decision JSON without failing the whole health response", async () => {
@@ -191,6 +194,8 @@ test("health endpoint reports malformed persisted decision JSON without failing 
   const body = await response.json();
   assert.equal(body.control_core.decision_json_status, "invalid_json");
   assert.equal(body.control_core.recommendation_count, 0);
+  assert.deepEqual(body.control_core.evidence_gap_categories, {});
+  assert.deepEqual(body.control_core.specialist_statuses, {});
   assert.equal(body.control_core.memory_status, "present");
 });
 
