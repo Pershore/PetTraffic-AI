@@ -58,10 +58,10 @@ function aiCycleStatus(){
  const run=state.health?.agent_orchestration;if(!run||!run.started_at)return {label:"Nežinoma",cls:"unknown",detail:"Worker nepateikė agentų ciklo"};
  const today=localDate();const runDate=String(run.run_date||"").slice(0,10);const start=new Date(run.started_at);const mins=Number(new Intl.DateTimeFormat("en-GB",{timeZone:TZ,hour:"2-digit",hourCycle:"h23"}).format(start))*60+Number(new Intl.DateTimeFormat("en-GB",{timeZone:TZ,minute:"2-digit"}).format(start));
  if(runDate!==today)return {label:"SENA",cls:"bad",detail:"Paskutinio ciklo data "+runDate};
- if(run.status==="failed")return {label:"KLAIDA",cls:"bad",detail:run.error_code||"AI ciklas nepavyko"};
+ if(run.status==="failed")return {label:"KLAIDA",cls:"bad",detail:run.error_code||"agentų ciklas nepavyko"};
  if(localMinutes()<13*60+20&&mins<13*60+20)return {label:"LAUKIA",cls:"warn",detail:"Dienos ciklas tikslinis 13:20 LT"};
  if(mins<13*60+20)return {label:"STALE",cls:"bad",detail:"Šiandienos ciklas pradėtas iki 13:20 LT"};
- if(run.status==="completed"&&Number(run.ai_calls)>=5&&run.error_code==null)return {label:"ATLIKTA",cls:"good",detail:"5 AI kvietimai, klaidos nėra"};
+ if(run.status==="completed"&&Number(run.ai_calls)>=5&&run.error_code==null)return {label:"ATLIKTA",cls:"good",detail:"5 agentų kvietimai, klaidos nėra"};
  return {label:String(run.status||"Nežinoma").toUpperCase(),cls:"warn",detail:Number(run.ai_calls||0)+" agentų kvietimų"};
 }
 function renderAttention(){
