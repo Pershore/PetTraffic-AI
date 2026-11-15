@@ -54,7 +54,7 @@ jobs:
           if not schedules.get("success"):
               raise SystemExit("Cloudflare did not confirm Worker schedules.")
           actual = sorted({item.get("cron") for item in schedules.get("result", {}).get("schedules", []) if item.get("cron")})
-          expected = {"*/15 * * * *", "20 7,8 * * *"}
+          expected = {"*/15 * * * *", "20 10,11 * * *"}
           missing = sorted(expected - set(actual))
           print("Registered Worker schedules: " + ", ".join(actual))
           if missing:
