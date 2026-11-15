@@ -316,3 +316,15 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 - Worker AI agentų ciklas numatytas 10:20 Europe/Vilnius; audito metu dar neįvykęs. Issue #145 lieka atviras dėl ankstesnio ciklo gedimo.
 - Aptiktas pasenęs tvarkaraštis `AGENTS.md` ir ankstesniuose kanoninės atminties įrašuose; ši dokumentacijos pataisa sulygina instrukcijas su daily-suite 08:10 LT, Worker AI 10:20 LT, Control Center 10:40 LT ir vieninteliu ChatGPT koordinatoriumi 11:00 LT.
 - Aktyvaus darbo, įrankių vykdymo ir laukimo trukmės atskirai nematuotos. Jokie production, Worker/D1, DNS, secrets, ARO Vet, public content ar paid-service pakeitimai neatlikti.
+
+
+## 2026-11-15 – gyvo Worker ir suplanuotų vykdymų pakartotinė patikra (08:43 LT)
+
+- Po PR #210 sujungimo pakartotinai patikrinta `main`, naujausi GitHub Actions vykdymai, issue #145 ir gyvas Worker `/health` endpoint.
+- PR #210 merge commit `0ac4f3e9be21d52df3a4d681e23b21c3a7b744a4`; Cloudflare Pages, `shell-validation` ir svetainės/automatizacijų testai – success. Po merge `Pet traffic site checks`, `Termux Codex bridge checks` ir `PetTraffic automatic work log` taip pat – success.
+- Worker `/health`: HTTP 200, `ok=true`, D1 `connected`, control-core schema `connected`; heartbeat `2026-11-15T06:30:47.076Z`, svetainės HTTP 200.
+- Tas pats health atsakymas rodo, kad paskutinis AI agentų ciklas vis dar 2026-11-14 `failed`, 4 AI kvietimai, `model_content-review_model_output_invalid_json`; Control Core būsena `needs_evidence`, 4 evidence gaps, atmintis `present`, rekomendacijų 0. Naujas 2026-11-15 ciklas dar neįvyko; kitas suplanuotas 10:20 LT.
+- Daily-suite cron `10 6 * * *` UTC (08:10 LT): 08:43 LT naujausių 100 Actions vykdymų sąraše nėra šios dienos `event=schedule` vykdymo. Po 06:10 UTC matyti tik push / pull_request įvykiai. Priežastis nepatvirtinta; workflow grafiko nekeisti ir rankinio paleidimo nelaikyti cron įrodymu.
+- Issue #145 tebėra open; neuždaryti, kol nepatvirtintas naujas AI ciklas ir D1 atminties atnaujinimas.
+- Atnaujintas `automation-history/reports/history/project-state/latest.md` commit `aea2e6d85ca159d44a78f6f418397ac748aa4d92` su tiksliomis patikrintomis būsenomis ir laukiančiais veiksmais.
+- Jokie production, Worker/D1, DNS, secrets, ARO Vet, viešo turinio ar mokamų paslaugų pakeitimai neatlikti. Papildomos Firecrawl užklausos naudotos tik sveikatos ir workflow patikrai; išlaikomas 0 €/mėn. biudžetas.

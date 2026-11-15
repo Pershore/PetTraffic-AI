@@ -34,3 +34,13 @@
 ## Kitas konkretus etapas
 
 Sulaukti suplanuotų vykdymų: daily-suite 08:10 LT, Worker AI 10:20 LT, Control Center 10:40 LT, ChatGPT koordinatorius 11:00 LT. Vertinti tik realius `event=schedule` vykdymus, jobs, artefaktus ir D1 įrodymus. Jokio rankinio paleidimo, kuris užmaskuotų cron būseną.
+
+
+## 2026-11-15 08:43 LT – tęstinė patikra
+
+- PR #210 jau sujungtas į `main` (`0ac4f3e9be21d52df3a4d681e23b21c3a7b744a4`); Cloudflare Pages, shell-validation ir static website / automation testai sėkmingi. Po merge site-check, Termux bridge ir work-log workflow sėkmingi.
+- Worker `/health` grąžina HTTP 200, D1 ir control-core schema connected, heartbeat `2026-11-15T06:30:47.076Z`, svetainės HTTP 200.
+- AI agentų ciklas dar neatsistatęs: paskutinis įrašas 2026-11-14 `failed`, 4 AI calls, klaida `model_content-review_model_output_invalid_json`. Control Core: `needs_evidence`, 4 evidence gaps, memory present, 0 recommendations. Naujas ciklas laukiamas 10:20 LT.
+- Daily-suite 08:10 LT cron vykdymo 08:43 LT dar nėra naujausių 100 Actions sąraše; priežastis nenustatyta. Grafiko nekeisti be priežasties; rankinis paleidimas nėra schedule įrodymas.
+- Issue #145 lieka open iki naujo sėkmingo agentų ciklo ir D1 atminties įrašo patvirtinimo.
+- Projekto būsenos snapshot atnaujintas `automation-history` šakoje, commit `aea2e6d85ca159d44a78f6f418397ac748aa4d92`.
