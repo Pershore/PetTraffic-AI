@@ -1,9 +1,9 @@
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
-- Atnaujinta: 2026-11-15T13:38:30+00:00
+- Atnaujinta: 2026-11-15T13:39:15+00:00
 - Būsena: **REIKIA DĖMESIO**
-- GitHub run: 43719820823
-- Šaltinio commit: 11438c15db521b2dd8bf02c3eb5450063dc91644
+- GitHub run: 43719848502
+- Šaltinio commit: e1c947a43da6380a87a547c1af349092ab538fe8
 
 ## Paskutinis patikrintas etapas
 
@@ -61,3 +61,11 @@ Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas
 - Pilnas realaus naudotojo naršyklės E2E fetch/refresh dar NEPATVIRTINTAS; Firecrawl browser bandymas timeout. Viešų failų HTTP 200, CI ir duomenų šaltinių tiesioginis pasiekiamumas patvirtinti, bet to nepateikiame kaip browser E2E.
 - Atviras docs PR #227 atnaujintas pagal PR #226; laukia Cloudflare Pages preview check. PR #224 lieka draft. Jokių Worker/D1, DNS, secrets, ARO Vet, viešo turinio ar mokamų paslaugų pakeitimų.
 - Kitas veiksmas: sulaukti Lighthouse #43719820834 pabaigos, PR #227 privalomų check'ų; 2026-11-16 13:20 LT patikrinti naują Worker AI ciklą ir Control Core evidence.
+## Post-PR #227 patikra – 2026-11-15 15:39 LT
+
+- PR #227 dokumentacijos atnaujinimas sujungtas commit `839131b0d875034d41d8eef1d53439e8bf2abf40`; naujausias main HEAD po automatinio darbo žurnalo įrašo: `5f9513f7a60fd4308c9a446ab0ad794a5f5b5b85`.
+- Post-merge site-check [#43720083684](https://github.com/Pershore/PetTraffic-AI/actions/runs/43720083684) – success; automatic work-log [#43720083646](https://github.com/Pershore/PetTraffic-AI/actions/runs/43720083646) – success.
+- Control Center report [#43719848502](https://github.com/Pershore/PetTraffic-AI/actions/runs/43719848502) – success; D1 snapshot sync #43719889222 ir #43719855717 – success.
+- PR #225, #226, #227 – merged. PR #224 lieka draft / open, nes tai ankstesnis atskiras reliability auditas.
+- Lighthouse [#43719820834](https://github.com/Pershore/PetTraffic-AI/actions/runs/43719820834) paskutinės patikros metu dar in_progress; naujo galutinio balo neteikiame.
+- Kitas konkretus etapas: baigti Lighthouse rezultatą; 2026-11-16 13:20 LT patikrinti Worker AI ciklo JSON išvestį, Control Core `reviewed` / `needs_evidence` ir atnaujintą atmintį; atskirai stebėti daily-suite ir Control Center `event=schedule`.
