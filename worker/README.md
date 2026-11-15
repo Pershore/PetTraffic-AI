@@ -55,7 +55,19 @@ As of 2026-11-12, the live integration has been verified end-to-end:
 - The sync workflow reads each newly written event back from D1 and fails if the event ID is not present.
 - GitHub history remains the durable source of truth; no workflow has switched history storage to D1.
 
-## Secure read-only task runner (prepared; disabled by default)\n\n- Three exact workflow identities are separated: `sync-control-api.yml` may use `/v1/events`; the owner-only `dispatch-daily-suite.yml` path may enqueue one fixed task; `run-readonly-tasks.yml` may claim and complete that task. All identities still require a valid short-lived GitHub OIDC signature, immutable repository/owner IDs, the main ref, the exact workflow path and the expected event type.\n- The only first-phase task is `check_site` for `technical-seo`, with the exact payload `{ target: public_site }`. The cloud runner maps it to the fixed `agent/check_live_site.py` script. Task data is never interpreted as a shell command.\n- The owner command is `/pettraffic-enqueue-site-check` on issue #145. The runner polls every 15 minutes, claims at most one task per run, and requests a fresh OIDC token for task completion. A pending/running site-check is deduplicated.\n- **Two independent off-switches remain off until deployment and explicit activation:** Cloudflare Worker runtime variable `TASK_API_ENABLED` must equal `true`, and GitHub repository variable `PETTRAFFIC_TASKS_ENABLED` must equal `true`. With either absent/false, the API returns 503 or the runner job is skipped. This PR/branch does not set either value or deploy the Worker.\n- This creates a safe cloud-side task path; it does not turn the public `/control/` dashboard into an authenticated one-click UI. `/control/` stays read-only until a separate private UI/authentication project is completed.\n\nThe task queue is not considered active or verified until both switches are deliberately enabled and a real enqueue → claim → fixed execution → completion → D1 readback test succeeds.
+## Secure read-only task runner
+
+The first task runner is deliberately narrow and event-driven:
+
+- Three exact OIDC identities are separated: `sync-control-api.yml` writes aggregate events; the owner-only `dispatch-daily-suite.yml` workflow enqueues one fixed task; `run-readonly-tasks.yml` claims, executes and completes that task.
+- All identities require a short-lived GitHub OIDC JWT with the exact issuer, audience, immutable repository/owner IDs, main ref, workflow path, event type and valid signature.
+- The only enabled task type is `check_site` for `technical-seo`, with the exact payload `{ "target": "public_site" }`. The runner maps it to the fixed `agent/check_live_site.py` script; task data is never interpreted as a shell command.
+- The only enqueue command is `/pettraffic-enqueue-site-check` on issue #145. The bridge accepts it only as an exact comment from repository owner `Pershore`; the bridge then dispatches one GitHub-hosted runner workflow.
+- The runner executes one task per run, with a 600-second script timeout, a 30-minute claim lease and at most three attempts. It requests a fresh OIDC token to complete the task, then reads the stored result back from D1 and verifies the status and exit code.
+- Worker task routes are enabled in `wrangler.toml`, but every route still fails closed without the matching OIDC role. The public `/control/` dashboard remains read-only; no browser bearer token or public write route is added.
+- The worker role does not permit content publishing, live-site editing, DNS changes, Cloudflare settings, spending, arbitrary commands or ARO Vet changes.
+
+This proves a bounded cloud task lifecycle only after the post-merge Worker deployment and a real owner-command test complete enqueue → claim → fixed execution → complete → D1 readback. It does not make the public dashboard an authenticated one-click interface; private dashboard access remains a separate project.
 
 ## Local tests
 
