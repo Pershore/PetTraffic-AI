@@ -11,17 +11,23 @@ class DispatchBridgeWorkflowTests(unittest.TestCase):
         self.assertIn("actions: write", workflow)
         self.assertIn("python agent/dispatch_guard.py", workflow)
         self.assertIn("steps.guard.outputs.authorized == 'true'", workflow)
+        self.assertIn("DISPATCH_ACTION", workflow)
 
-    def test_bridge_dispatches_only_the_existing_main_daily_suite(self):
+    def test_bridge_routes_only_three_fixed_workflows(self):
         workflow = Path(".github/workflows/dispatch-daily-suite.yml").read_text(encoding="utf-8")
-        self.assertIn('const workflow_id = "daily-suite.yml"', workflow)
-        self.assertIn('ref: "main"', workflow)
+        for action in ("daily-suite", "sync-latest", "control-center"):
+            with self.subTest(action=action):
+                self.assertIn(f'action === "{action}"', workflow)
+        for workflow_id in ("daily-suite.yml", "sync-control-api.yml", "control-center.yml"):
+            with self.subTest(workflow_id=workflow_id):
+                self.assertIn(f'"{workflow_id}"', workflow)
         self.assertIn("github.rest.actions.createWorkflowDispatch", workflow)
-        self.assertIn('["schedule", "workflow_dispatch"]', workflow)
-        self.assertIn("20 * 60 * 60 * 1000", workflow)
+        self.assertIn('ref: "main"', workflow)
 
-    def test_bridge_does_not_reference_secrets_or_external_services(self):
+    def test_bridge_has_deduplication_and_no_secrets_or_external_services(self):
         workflow = Path(".github/workflows/dispatch-daily-suite.yml").read_text(encoding="utf-8")
+        self.assertIn("20 * 60 * 60 * 1000", workflow)
+        self.assertIn("60 * 60 * 1000", workflow)
         self.assertNotIn("secrets.", workflow)
         self.assertNotIn("curl ", workflow)
 
