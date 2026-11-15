@@ -52,6 +52,22 @@ class ControlDashboardTests(unittest.TestCase):
         self.assertIn("Object.keys(sources)", script)
         self.assertIn("state[sourceKeys[index]]=result.value", script)
 
+    def test_dashboard_uses_newest_analytics_and_topic_snapshots(self):
+        script = SCRIPT.read_text(encoding="utf-8")
+        self.assertIn("function latestSnapshot(archive)", script)
+        self.assertIn('const s=latestSnapshot(state.analytics)', script)
+        self.assertIn("const gsc=s?.search_console_details", script)
+        self.assertIn("const t=latestSnapshot(state.topics)", script)
+        self.assertIn('Date.parse(snapshot.generated_at||"")', script)
+
+    def test_dashboard_uses_lithuanian_day_boundaries_and_flags_incomplete_agent_results(self):
+        script = SCRIPT.read_text(encoding="utf-8")
+        self.assertIn("const localDateOf = value =>", script)
+        self.assertIn("localDateOf(daily.created_at)!==localDate()", script)
+        self.assertIn("localDateOf(cc.created_at)!==localDate()", script)
+        self.assertIn('core.status==="needs_evidence"||gaps>0||degraded', script)
+        self.assertIn('["error","no data","invalid_json","invalid json","failed"]', script)
+
     def test_dashboard_contains_no_secret_values_or_secret_headers(self):
         combined = DASHBOARD.read_text(encoding="utf-8") + SCRIPT.read_text(encoding="utf-8")
         self.assertNotRegex(combined, re.compile(r"\bAI\b"))

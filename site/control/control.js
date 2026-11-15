@@ -28,6 +28,7 @@ const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, ch => ({ "
 const dateLT = value => value ? new Intl.DateTimeFormat("lt-LT",{dateStyle:"medium",timeStyle:"short",timeZone:TZ}).format(new Date(value)) : "—";
 const fmt = value => new Intl.NumberFormat("lt-LT",{maximumFractionDigits:0}).format(Number(value)||0);
 const localDate = () => new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
+const localDateOf = value => new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date(value));
 const localMinutes = () => { const p=new Intl.DateTimeFormat("en-GB",{timeZone:TZ,hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(new Date()); return Number(p.find(x=>x.type==="hour").value)*60+Number(p.find(x=>x.type==="minute").value); };
 const statusClass = run => run?.status === "in_progress" || run?.status === "queued" ? "warn" : run?.conclusion === "success" ? "good" : run?.conclusion === "failure" || run?.conclusion === "cancelled" || run?.conclusion === "timed_out" ? "bad" : "unknown";
 const statusText = run => !run ? "Nėra duomenų" : run.status !== "completed" ? (run.status === "in_progress" ? "Vyksta" : "Eilėje") : run.conclusion === "success" ? "Sėkmingas" : run.conclusion === "failure" ? "Nesėkmingas" : run.conclusion || "Baigtas";
@@ -62,13 +63,19 @@ function aiCycleStatus(){
  if(run.status==="failed")return {label:"KLAIDA",cls:"bad",detail:run.error_code||"agentų ciklas nepavyko"};
  if(localMinutes()<13*60+20&&mins<13*60+20)return {label:"LAUKIA",cls:"warn",detail:"Dienos ciklas tikslinis 13:20 LT"};
  if(mins<13*60+20)return {label:"STALE",cls:"bad",detail:"Šiandienos ciklas pradėtas iki 13:20 LT"};
- if(run.status==="completed"&&Number(run.ai_calls)>=5&&run.error_code==null)return {label:"ATLIKTA",cls:"good",detail:"5 agentų kvietimai, klaidos nėra"};
+ if(run.status==="completed"&&Number(run.ai_calls)>=5&&run.error_code==null){
+  const core=state.health?.control_core||{};const gaps=Number(core.evidence_gap_count||0);
+  const specialistStatuses=Object.values(core.specialist_statuses||{}).map(value=>String(value).toLowerCase());
+  const degraded=specialistStatuses.some(value=>["error","no data","invalid_json","invalid json","failed"].includes(value));
+  if(core.status==="needs_evidence"||gaps>0||degraded)return {label:"REIKIA PERŽIŪROS",cls:"warn",detail:"Ciklas baigtas, bet yra "+gaps+" įrodymų spragų arba nepatvirtintų specialistų rezultatų"};
+  return {label:"ATLIKTA",cls:"good",detail:"5 agentų kvietimai, klaidos nėra"};
+ }
  return {label:String(run.status||"Nežinoma").toUpperCase(),cls:"warn",detail:Number(run.ai_calls||0)+" agentų kvietimų"};
 }
 function renderAttention(){
  const items=[];const daily=latestEvent("daily-suite.yml","schedule");const cc=latestEvent("control-center.yml","schedule");const ai=aiCycleStatus();
- if(!daily||new Date(daily.created_at).toDateString()!==new Date().toDateString())items.push({title:"Daily-suite schedule įrodymas",detail:daily?"Paskutinis schedule: "+dateLT(daily.created_at):"Naujausio sąrašo schedule paleidimo nerasta",cls:"warn"});
- if(!cc||new Date(cc.created_at).toDateString()!==new Date().toDateString())items.push({title:"Control Center schedule įrodymas",detail:cc?"Paskutinis schedule: "+dateLT(cc.created_at):"Naujausio sąrašo schedule paleidimo nerasta",cls:"warn"});
+ if(!daily||localDateOf(daily.created_at)!==localDate())items.push({title:"Daily-suite schedule įrodymas",detail:daily?"Paskutinis schedule: "+dateLT(daily.created_at):"Naujausio sąrašo schedule paleidimo nerasta",cls:"warn"});
+ if(!cc||localDateOf(cc.created_at)!==localDate())items.push({title:"Control Center schedule įrodymas",detail:cc?"Paskutinis schedule: "+dateLT(cc.created_at):"Naujausio sąrašo schedule paleidimo nerasta",cls:"warn"});
  if(ai.cls!=="good")items.push({title:"Worker agentų ciklas: "+ai.label,detail:ai.detail,cls:ai.cls});
  const bad=state.runs.filter(r=>r.status==="completed"&&r.conclusion!=="success").slice(0,3);
  bad.forEach(r=>items.push({title:r.name+" · "+r.conclusion,detail:"#"+r.run_number+" · "+dateLT(r.created_at),cls:"bad",url:r.html_url}));
@@ -97,8 +104,18 @@ function renderHistory(){
  $("history-count").textContent=state.runs.length+" įrašų gauta";
  $("history-list").innerHTML=state.runs.slice(0,25).map(r=>'<div class="history-item"><time>'+escapeHtml(dateLT(r.created_at))+'</time><div><strong>'+escapeHtml(r.name)+'</strong><small>'+escapeHtml(r.event)+' · '+escapeHtml(r.head_branch||"—")+' · '+escapeHtml(r.head_sha?.slice(0,7)||"")+'</small></div><div>'+badge(statusText(r),statusClass(r))+' <a href="'+escapeHtml(r.html_url)+'" target="_blank" rel="noopener">↗</a></div></div>').join("");
 }
+function latestSnapshot(archive){
+ const snapshots=Array.isArray(archive?.snapshots)?archive.snapshots:[];
+ let latest=null;let latestTime=-Infinity;
+ for(const snapshot of snapshots){
+  if(!snapshot||typeof snapshot!=="object")continue;
+  const timestamp=Date.parse(snapshot.generated_at||"");
+  if(Number.isFinite(timestamp)&&timestamp>=latestTime){latest=snapshot;latestTime=timestamp;}
+ }
+ return latest||(snapshots.length?snapshots[snapshots.length-1]:null);
+}
 function renderAnalytics(){
- const s=state.analytics?.snapshots?.[0];const m=s?.metrics;const gsc=state.analytics?.snapshots?.[0]?.search_console_details;
+ const s=latestSnapshot(state.analytics);const m=s?.metrics;const gsc=s?.search_console_details;
  if(m){
  $("metric-stack").innerHTML=[["Aktyvūs naudotojai",fmt(m.active_users)],["Sesijos",fmt(m.sessions)],["Puslapių peržiūros",fmt(m.page_views)]].map(x=>'<div class="metric-line"><span>'+x[0]+'</span><strong>'+x[1]+'</strong></div>').join("");
  $("analytics-panel").innerHTML='<article class="analytics-card"><h3>Google Analytics 4</h3><p>Laikotarpis: '+escapeHtml(s.ga4_period||"nenurodytas")+' · surinkta '+escapeHtml(dateLT(s.generated_at))+'</p><div class="analytics-numbers">'+[['Aktyvūs naudotojai',m.active_users],['Nauji naudotojai',m.new_users],['Sesijos',m.sessions],['Puslapių peržiūros',m.page_views]].map(x=>'<div class="analytics-number"><span>'+x[0]+'</span><strong>'+fmt(x[1])+'</strong></div>').join("")+'</div><div class="analytics-note">Patvirtintos organinės sesijos: '+fmt(m.organic_sessions_verified)+' · GA4 statusas: '+escapeHtml(s.ga4_status)+'</div></article><article class="analytics-card"><h3>Google Search Console</h3><p>Laikotarpis: '+escapeHtml(s.search_console_period||"nenurodytas")+'</p><div class="analytics-numbers">'+[['Parodymai',m.search_impressions],['Paspaudimai',m.search_clicks],['CTR',Number(m.search_ctr||0).toFixed(2)+"%"],['Vid. pozicija',Number(m.average_position||0).toFixed(1)]].map(x=>'<div class="analytics-number"><span>'+x[0]+'</span><strong>'+((typeof x[1]==="string")?escapeHtml(x[1]):fmt(x[1]))+'</strong></div>').join("")+'</div><div class="analytics-note">Sitemap: '+escapeHtml(gsc?.sitemap?.status||"nežinoma")+' · pending: '+(gsc?.sitemap?.is_pending?"taip":"nežinoma")+'. 0 parodymų nėra indeksavimo diagnozė.</div></article>';
@@ -106,7 +123,7 @@ function renderAnalytics(){
  $("metric-stack").innerHTML='<p class="muted">Naujausias GA4/GSC agreguotas archyvas šiuo metu nepasiekiamas. Nulis nelaikomas duomenimis.</p>';
  $("analytics-panel").innerHTML='<article class="analytics-card"><h3>GA4 + Search Console</h3><p>Duomenų būsena</p><span class="state warn">Archyvas nerastas / neprieinamas</span><div class="analytics-note">Patikrink analytics workflow ir jo artefaktą. Paslaptys šiame dashboard nerodomos.</div></article>';
  }
- const t=state.topics?.snapshots?.[0];
+ const t=latestSnapshot(state.topics);
  $("topics-panel").innerHTML=t?'<p class="muted">Google News RSS · '+escapeHtml(dateLT(t.generated_at))+' · '+fmt(t.unique_article_links)+' unikalių antraščių nuorodų · '+fmt(t.total_topic_checks)+' temų patikrų</p>'+Object.entries(t.topic_counts||{}).sort((a,b)=>b[1]-a[1]).map(([name,count])=>'<div class="bar-row"><span>'+escapeHtml(name)+'</span><div class="bar-track"><div class="bar-fill" style="width:'+Math.min(100,(count/Math.max(1,...Object.values(t.topic_counts)))*100)+'%"></div></div><b>'+fmt(count)+'</b></div>').join(""):'<p class="muted">Temų archyvas šiuo metu nepasiekiamas.</p>';
  const lh=state.runs.find(r=>r.name.toLowerCase().includes("lighthouse")&&r.conclusion==="success");
  $("lighthouse-panel").innerHTML=lh?'<div class="metric-line"><span>Paskutinis sėkmingas auditas</span><strong>'+escapeHtml(dateLT(lh.updated_at||lh.created_at))+'</strong></div><div class="metric-line"><span>Vykdymas</span><a href="'+escapeHtml(lh.html_url)+'" target="_blank" rel="noopener">#'+escapeHtml(lh.run_number)+' ↗</a></div><div class="analytics-note">Pilni HTML/JSON rezultatai laikomi GitHub Actions artefakte. Dashboard nekuria išvestinių Lighthouse balų.</div>':'<p class="muted">Nerasta sėkmingo Lighthouse vykdymo paskutinių 100 run sąraše.</p>';
