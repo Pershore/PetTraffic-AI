@@ -92,3 +92,12 @@ Iki 11:40 LT patikrinti Control Center schedule įvykį ir jo ataskaitą. Jei jo
 - Naujų secrets, Cloudflare pakeitimų, išorinių paslaugų ar papildomų išlaidų nėra.
 
 **Svarbi riba:** fallback paleidimas bus event=workflow_dispatch, o ne event=schedule. Jis atkuria dienos darbus, bet nepaslepia GitHub cron gedimo. PR dar tikrintinas; tiltas laikomas PARUOŠTA, kol CI ir tikras dispatch bandymas nepraeina.
+
+
+## 2026-11-15 – atsarginio vykdymo ir koordinatoriaus grafiko tęsinys
+
+- PR #213 sujungtas: secure owner-only dispatch bridge. Tikslus komentaras /pettraffic-run-daily-suite iš savininko Pershore paleido helper run 43696946923 (success) ir daily-suite run 43696960921 (workflow_dispatch, success). Visi trys daily-suite darbai (analytics, topic-radar, live-check) baigėsi success.
+- GA4/GSC ataskaita ir temų radaro artefaktai archyvuoti automation-history šakoje: analytics/2026-11-15.json ir topic-radar/2026-11-15.json. GA4: 7 aktyvūs naudotojai, 19 sesijų, 73 puslapių peržiūros, 0 patvirtintų organinių sesijų. GSC: 0 parodymų, 0 paspaudimų; sitemap pending, 5 prioritetiniai URL nežinomi Google. Topic radar: 28 unikalios viešų antraščių nuorodos, 7 temos; tai nėra paieškos apimtys.
+- Pastebėta, kad GITHUB_TOKEN workflow_dispatch run nesukūrė naujo workflow_run sync / Control Center vykdymo šiame bandyme. Dėl to D1 sinchronizacija iš šio rankinio daily-suite dar nepatvirtinta. PR fix/secure-automation-command-bridge prideda owner-only komandas D1 sync ir Control Center, o sync workflow gauna validuotą source_run_id ir tikrina daily-suite workflow ID, main branch, event tipą bei sėkmingą analytics/topic job prieš OIDC write/readback.
+- Esama ChatGPT priežiūros automatizacija perkelta į 11:45 Europe/Vilnius, kad tikrintų Control Center po 11:40 LT 60 min. grace. Ji lieka vienintelė daily coordinator.
+- PR #214 patikros dar laukia; kol jos nepraeina ir D1 readback nepatvirtintas, sync tiltas laikomas PARUOŠTA / NEPATVIRTINTA. Jokie Worker/D1 production config, DNS, secrets, ARO Vet ar mokami pakeitimai neatlikti.
