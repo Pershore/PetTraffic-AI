@@ -125,6 +125,26 @@ def gsc_query(session, url: str, start: date, end: date,
     return api_post(session, url, body)
 
 
+def aggregate_search_intents(rows: list[dict]) -> dict[str, dict]:
+    """Classify phrases in memory and return aggregates with no raw phrase text."""
+    themes: dict[str, dict] = {}
+    for row in rows:
+        phrase = str(row.get("keys", [""])[0])
+        category = classify_search_intent(phrase)
+        item = themes.setdefault(category, {
+            "rows": 0, "clicks": 0.0, "impressions": 0.0,
+            "position_weighted": 0.0,
+        })
+        clicks = float(row.get("clicks", 0))
+        impressions = float(row.get("impressions", 0))
+        position = float(row.get("position", 0))
+        item["rows"] += 1
+        item["clicks"] += clicks
+        item["impressions"] += impressions
+        item["position_weighted"] += position * impressions
+    return themes
+
+
 
 def gsc_inspect(session, url: str, site_url: str) -> dict:
     endpoint = "https://searchconsole.googleapis.com/v1/urlInspection/index:inspect"
@@ -406,23 +426,9 @@ def main() -> int:
                 "",
             ]
 
-            # Classify the raw phrases in memory only. Never emit or archive the text itself.
+            # Classify phrases in memory only; only aggregate categories enter the report.
             search_rows = gsc_query(session, gsc_url, gsc_start, gsc_end, ["query"], 100)
-            themes = {}
-            for row in search_rows.get("rows", []):
-                phrase = str(row.get("keys", [""])[0])
-                category = classify_search_intent(phrase)
-                item = themes.setdefault(category, {
-                    "rows": 0, "clicks": 0.0, "impressions": 0.0,
-                    "position_weighted": 0.0,
-                })
-                clicks = float(row.get("clicks", 0))
-                impressions = float(row.get("impressions", 0))
-                position = float(row.get("position", 0))
-                item["rows"] += 1
-                item["clicks"] += clicks
-                item["impressions"] += impressions
-                item["position_weighted"] += position * impressions
+            themes = aggregate_search_intents(search_rows.get("rows", []))
             if themes:
                 lines += [
                     "| Tema | Frazų eilučių | Paspaudimai | Parodymai | CTR | Vidutinė pozicija |",
