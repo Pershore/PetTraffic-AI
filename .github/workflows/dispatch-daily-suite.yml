@@ -122,4 +122,26 @@ jobs:
               return;
             }
 
+            if (action === "lighthouse") {
+              const workflow_id = "lighthouse-audit.yml";
+              const { data } = await github.rest.actions.listWorkflowRuns({
+                owner, repo, workflow_id, branch: "main", per_page: 100
+              });
+              const cutoff = now - 24 * 60 * 60 * 1000;
+              const recent = data.workflow_runs.find(run =>
+                Date.parse(run.created_at) >= cutoff &&
+                (run.status !== "completed" || run.conclusion === "success")
+              );
+              if (recent) {
+                core.notice("Lighthouse audit already started within 24 hours: #" +
+                  recent.run_number + " " + recent.html_url);
+                return;
+              }
+              await github.rest.actions.createWorkflowDispatch({
+                owner, repo, workflow_id, ref: "main"
+              });
+              core.notice("Authorized Lighthouse audit workflow_dispatch sent to main.");
+              return;
+            }
+
             core.setFailed("Guard returned an unknown dispatch action.");

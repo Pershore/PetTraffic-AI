@@ -24,11 +24,12 @@ class DispatchGuardTests(unittest.TestCase):
         allowed, _ = authorize_issue_comment(event())
         self.assertTrue(allowed)
 
-    def test_maps_only_the_three_bounded_commands(self):
+    def test_maps_only_the_four_bounded_commands(self):
         expected = {
             "/pettraffic-run-daily-suite": "daily-suite",
             "/pettraffic-sync-latest": "sync-latest",
             "/pettraffic-run-control-center": "control-center",
+            "/pettraffic-run-lighthouse": "lighthouse",
         }
         self.assertEqual(COMMAND_ACTIONS, expected)
         for command, action in expected.items():
