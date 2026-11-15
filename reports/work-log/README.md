@@ -565,3 +565,29 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 - **Nepakeista:** ARO Vet, viešas turinys, Worker/D1 production, DNS, secrets, paskyrų teisės, billing ar mokamos paslaugos.
 - **Likusi kritinė grandinės užduotis:** AI agentų / Control Core atminties post-deploy ciklas dar nepatvirtintas; issue #145 lieka atviras. Šios dienos vienkartinis ciklas jau užregistruotas iki 13:20 LT, todėl jo nekartoti. Kitas patikrinimas – 2026-11-16 13:20 Europe/Vilnius: run turi būti po 13:20, completed, 5 AI calls, error_code=null, reviewed specialist output, memory present ir D1 readback. Cron vėlavimų priežastis taip pat lieka nepatvirtinta.
 - **Kiti ribojimai:** /v1/tasks* tyčia lieka 503 iki agentų OIDC / privataus auth; dashboard yra read-only komandų skydas; Termux CI nėra nuolatinė Android shell jungtis. Tiesioginė šiame vykdymo konteineryje atlikta DNS/HTTP patikra nepavyko dėl DNS resolve, bet GitHub live monitor po diegimo patvirtino tikrą produkcijos HTTP rezultatą.
+
+
+
+## 2026-11-15 19:05 LT – saugaus debesijos užduočių vykdymo pirmasis etapas (PARUOŠTA, PR #249)
+
+- Sukurtas pagrindinis autonomijos užduoties įrašas [#248](https://github.com/Pershore/PetTraffic-AI/issues/248) ir įgyvendinimo PR [#249](https://github.com/Pershore/PetTraffic-AI/pull/249).
+- PR atskiria tris GitHub OIDC tapatybes: snapshot-sync gali naudoti tik `/v1/events`; owner-only `dispatch-daily-suite.yml` gali pateikti ribotą užduotį; `run-readonly-tasks.yml` gali tik paimti ir užbaigti jam priskirtą užduotį.
+- Pirmoji leidžiama užduotis yra tik `check_site` agentui `technical-seo`, su tiksliu payload `{ "target": "public_site" }`. Debesijos vykdytojas paleidžia tik fiksuotą `agent/check_live_site.py`; task payload nenaudojamas kaip shell komanda. Pridėtas 15 min. GitHub-hosted vykdytojo workflow, kurio job praleidžiamas, kol GitHub repo kintamasis `PETTRAFFIC_TASKS_ENABLED` nėra lygus `true`.
+- Owner-only issue #145 komandų sąraše pridėtas `/pettraffic-enqueue-site-check`. Komanda gali tik įdėti užduotį į eilę, negali jos paimti ar užbaigti. Pasikartojanti užduotis deduplikuojama, jei jau yra queued/running.
+- Worker API turi antrą nepriklausomą jungiklį: `TASK_API_ENABLED` turi būti nustatytas į `true` Worker aplinkoje. PR šio kintamojo nesukuria ir nekeičia; kol jis nenustatytas, `/v1/tasks*` lieka HTTP 503. GitHub repo kintamasis taip pat dar nesukurtas / neįjungtas.
+- PR #249 CI: Worker Node testai **73/73 OK**; Worker Python testai **6/6 OK**; svetainės/automatizacijų patikra **139/139 OK**; agentų vienetiniai testai **26/26 OK**; Cloudflare resursų validacija success; PR Worker deploy job **skipped**. Snapshot sync test job success, sync job skipped.
+- **Svarbus statusas:** PR #249 yra atviras ir dar nesujungtas. Kodas yra **PARUOŠTA**, CI dalys **PATIKRINTA CI aplinkoje**, bet nėra realaus produkcinio enqueue → claim → execution → completion → D1 readback įrodymo. Nevadinti task API aktyvia ar veikiančia sistema.
+- Viešas `/control/` tebėra read-only; šis etapas dar nesukuria privataus vieno paspaudimo dashboard valdymo. Termux nėra nuolatinis agentas ir šiam debesijos vykdymo keliui nereikalingas.
+- Nekeičiau Worker produkcijos, D1, DNS, Cloudflare Access, Worker kintamųjų/secrets, GitHub repo variables, ARO Vet, viešo turinio, teisių, billing ar mokamų paslaugų.
+- Kitas žingsnis: peržiūrėti ir atskirai patvirtinti PR #249. Tik po patvirtinto merge, Worker deploy ir dviejų atskirų feature flag konfigūracijos galima atlikti ribotą realaus task ciklo smoke testą. Dashboard privataus valdymo kelias lieka atskiras darbas.
+
+
+## 2026-11-15 – autonomijos vykdytojo event-driven patikslinimas (PR #249)
+
+- Prieš pakeitimą perskaityti `AGENTS.md`, `docs/SESSION_START.md`, `docs/PROJECT_MEMORY.md`, `reports/history/project-state/latest.md` (automation-history) ir šį darbo žurnalą (main). Patikrintas atviras PR #249, jo esamas Worker OIDC kodas ir CI būsenos.
+- PR šakoje `feature/secure-task-control-plane` panaikintas 15 min. runner polling ir antro GitHub repo flag'o reikalavimas. Savininko tiksli komanda dabar sukuria užduotį ir iškart iškviečia debesijos runner workflow.
+- Worker pridėtas runner-only D1 readback endpointas `GET /v1/tasks/{id}`; `agent/run_task_worker.py` po completion perskaito įrašą atgal ir sutikrina task ID, statusą bei exit code.
+- `worker/wrangler.toml` pridėtas `TASK_API_ENABLED=true`; šis runtime nustatymas įsigalios tik po PR merge ir Worker deployment. OIDC role separation lieka privaloma. Viešas dashboard, svetainės turinys, DNS, ARO Vet ir billing nekeičiami.
+- Patikrų rezultatai naujausiam PR head `493f7a6be006bdba8d61fbdce5faf05b3362f77a`: Worker test + Cloudflare validation [#43739848100](https://github.com/Pershore/PetTraffic-AI/actions/runs/43739848100) – success; site/automation check [#43739848105](https://github.com/Pershore/PetTraffic-AI/actions/runs/43739848105) – success; snapshot-sync PR test [#43739848179](https://github.com/Pershore/PetTraffic-AI/actions/runs/43739848179) – success. Worker deploy ir D1 sync PR event metu teisingai skipped.
+- Aktyvus darbo laikas, bendras įrankių vykdymo laikas ir vartotojo laikas **NEMATUOTA**.
+- Statusas: PR pakeitimai **PARUOŠTA**, CI **PATIKRINTA**, produkcinis Worker deploy ir realus task lifecycle **LAUKIA**. Issue #248 lieka atviras iki enqueue → claim → execution → completion → D1 readback įrodymo.

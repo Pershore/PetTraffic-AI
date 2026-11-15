@@ -596,3 +596,32 @@ Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama 
 - **Valdymo skydas / Termux:** `/control/` lieka viešas noindex komandų skydas su 7 fiksuotomis komandomis, kurios kopijuojamos į owner-only issue #145; tai nėra tiesioginis vieno paspaudimo valdymo API. `/v1/tasks*` sąmoningai lieka 503 iki atskiros agentų tapatybės ir privataus autentifikavimo. Termux bridge CI success patvirtina tik shell scenarijų validaciją, ne nuolatinę Android shell jungtį.
 - **Likutinė išvada:** pagrindinis tinklalapis, GA4/GSC ryšys, D1 snapshot kelias, Worker/heartbeat ir Control Center veikia. Visa autonominė grandinė **dar ne iki galo PATIKRINTA** dėl vėluojančių cron, 2 trūkstamų ChatGPT automatikų vykdymų ir laukiančio realaus po-deploy AI ciklo. Issue #145 lieka atviras.
 - Automation-history `latest.md` rankiniu būdu nekeistas, nes jis yra Control Center sugeneruotas snapshot ir paskutinis jo vykdymas vis dar pažymi `stale`; nauja būsena turi būti užrašyta tik po tikro naujo Control Center run. Jokio ARO Vet, DNS, Worker/D1 konfigūracijos, secrets, viešo turinio, billing ar mokamų paslaugų pakeitimo neatlikta.
+
+
+
+## 2026-11-15 19:05 LT – saugaus debesijos užduočių vykdymo pirmasis etapas (PARUOŠTA, PR #249)
+
+- Sukurtas pagrindinis autonomijos užduoties įrašas [#248](https://github.com/Pershore/PetTraffic-AI/issues/248) ir įgyvendinimo PR [#249](https://github.com/Pershore/PetTraffic-AI/pull/249).
+- PR atskiria tris GitHub OIDC tapatybes: snapshot-sync gali naudoti tik `/v1/events`; owner-only `dispatch-daily-suite.yml` gali pateikti ribotą užduotį; `run-readonly-tasks.yml` gali tik paimti ir užbaigti jam priskirtą užduotį.
+- Pirmoji leidžiama užduotis yra tik `check_site` agentui `technical-seo`, su tiksliu payload `{ "target": "public_site" }`. Debesijos vykdytojas paleidžia tik fiksuotą `agent/check_live_site.py`; task payload nenaudojamas kaip shell komanda. Pridėtas 15 min. GitHub-hosted vykdytojo workflow, kurio job praleidžiamas, kol GitHub repo kintamasis `PETTRAFFIC_TASKS_ENABLED` nėra lygus `true`.
+- Owner-only issue #145 komandų sąraše pridėtas `/pettraffic-enqueue-site-check`. Komanda gali tik įdėti užduotį į eilę, negali jos paimti ar užbaigti. Pasikartojanti užduotis deduplikuojama, jei jau yra queued/running.
+- Worker API turi antrą nepriklausomą jungiklį: `TASK_API_ENABLED` turi būti nustatytas į `true` Worker aplinkoje. PR šio kintamojo nesukuria ir nekeičia; kol jis nenustatytas, `/v1/tasks*` lieka HTTP 503. GitHub repo kintamasis taip pat dar nesukurtas / neįjungtas.
+- PR #249 CI: Worker Node testai **73/73 OK**; Worker Python testai **6/6 OK**; svetainės/automatizacijų patikra **139/139 OK**; agentų vienetiniai testai **26/26 OK**; Cloudflare resursų validacija success; PR Worker deploy job **skipped**. Snapshot sync test job success, sync job skipped.
+- **Svarbus statusas:** PR #249 yra atviras ir dar nesujungtas. Kodas yra **PARUOŠTA**, CI dalys **PATIKRINTA CI aplinkoje**, bet nėra realaus produkcinio enqueue → claim → execution → completion → D1 readback įrodymo. Nevadinti task API aktyvia ar veikiančia sistema.
+- Viešas `/control/` tebėra read-only; šis etapas dar nesukuria privataus vieno paspaudimo dashboard valdymo. Termux nėra nuolatinis agentas ir šiam debesijos vykdymo keliui nereikalingas.
+- Nekeičiau Worker produkcijos, D1, DNS, Cloudflare Access, Worker kintamųjų/secrets, GitHub repo variables, ARO Vet, viešo turinio, teisių, billing ar mokamų paslaugų.
+- Kitas žingsnis: peržiūrėti ir atskirai patvirtinti PR #249. Tik po patvirtinto merge, Worker deploy ir dviejų atskirų feature flag konfigūracijos galima atlikti ribotą realaus task ciklo smoke testą. Dashboard privataus valdymo kelias lieka atskiras darbas.
+
+
+## 2026-11-15 – autonomijos task vykdytojo architektūros atnaujinimas
+
+Šis įrašas pakeičia ankstesnę PR #249 plano dalį, kurioje buvo numatytas 15 min. polling ir du rankiniu būdu nustatomi feature flag'ai.
+
+- **Architektūra:** owner-only `dispatch-daily-suite.yml` po tikslaus komentaro `/pettraffic-enqueue-site-check` issue #145 naudoja dispatcher OIDC, sukuria vieną allow-listed D1 task ir iškart iškviečia `run-readonly-tasks.yml` per GitHub `workflow_dispatch`. Runner yra trumpalaikis GitHub-hosted vykdymas; telefonas nenaudojamas.
+- **Leidimų ribos:** snapshot-sync, task-dispatcher ir task-runner turi tris atskiras OIDC tapatybes. Worker tikrina parašą, issuer, audience, immutable repository/owner IDs, main ref, workflow_ref ir event_name. Dispatcher gali tik enqueue; runner – tik claim, fiksuotą read-only execution, complete ir savo atlikto task D1 readback.
+- **Pirmas veiksmas:** tik `check_site` / `technical-seo` su tiksliu payload `{ "target": "public_site" }`; vykdomas fiksuotas `agent/check_live_site.py`. Jokio arbitrary shell, turinio publikavimo, svetainės keitimo, DNS, ARO Vet ar mokamų paslaugų.
+- **Runtime aktyvavimas:** `TASK_API_ENABLED=true` įrašytas `worker/wrangler.toml` PR šakoje. Jis įsigalios tik po PR #249 merge ir Worker deployment. Atskiro `PETTRAFFIC_TASKS_ENABLED` GitHub repo kintamojo nebereikia. API routes be teisingo OIDC vaidmens lieka neprieinami.
+- **D1 patvirtinimas:** pridėtas runner-only `GET /v1/tasks/{id}`; runner po completion atskiru trumpalaikiu tokenu perskaito įrašą ir patikrina ID, statusą ir exit code.
+- **CI įrodymai:** naujausio PR head `493f7a6be006bdba8d61fbdce5faf05b3362f77a`: Worker test + Cloudflare validation [#43739848100](https://github.com/Pershore/PetTraffic-AI/actions/runs/43739848100) success, deploy skipped; site/automation checks [#43739848105](https://github.com/Pershore/PetTraffic-AI/actions/runs/43739848105) success; snapshot-sync PR test [#43739848179](https://github.com/Pershore/PetTraffic-AI/actions/runs/43739848179) success, sync skipped.
+- **Dabartinis statusas:** PARUOŠTA / PR CI PATIKRINTA. PR #249 dar atviras; production Worker deploy ir realus task lifecycle dar neatlikti. Issue #248 negalima uždaryti iki realaus enqueue → claim → fixed execution → complete → D1 readback testo.
+- **Atskiras likutis:** viešas `/control/` lieka read-only. Privati autentifikuota dashboard valdymo sąsaja nėra šio PR dalis. Kasdienis Worker AI ciklas / Control Core memory taip pat turi atskirą po-deploy patvirtinimą 2026-11-16 13:20 Europe/Vilnius.

@@ -24,7 +24,7 @@ class DispatchGuardTests(unittest.TestCase):
         allowed, _ = authorize_issue_comment(event())
         self.assertTrue(allowed)
 
-    def test_maps_only_the_four_bounded_commands(self):
+    def test_maps_only_the_allowlisted_bounded_commands(self):
         expected = {
             "/pettraffic-run-daily-suite": "daily-suite",
             "/pettraffic-sync-latest": "sync-latest",
@@ -33,6 +33,7 @@ class DispatchGuardTests(unittest.TestCase):
             "/pettraffic-run-site-check": "site-check",
             "/pettraffic-run-connectivity": "connectivity",
             "/pettraffic-run-worker-diagnostics": "worker-diagnostics",
+            "/pettraffic-enqueue-site-check": "task-check-site",
         }
         self.assertEqual(COMMAND_ACTIONS, expected)
         for command, action in expected.items():

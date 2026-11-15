@@ -18,6 +18,7 @@ COMMAND_ACTIONS = {
     "/pettraffic-run-site-check": "site-check",
     "/pettraffic-run-connectivity": "connectivity",
     "/pettraffic-run-worker-diagnostics": "worker-diagnostics",
+    "/pettraffic-enqueue-site-check": "task-check-site",
 }
 
 

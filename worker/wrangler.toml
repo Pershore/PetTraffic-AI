@@ -14,6 +14,7 @@ binding = "AI"
 
 [vars]
 ALLOWED_ORIGIN = "https://pettraffic-ai.pages.dev"
+TASK_API_ENABLED = "true"
 
 [observability]
 enabled = true

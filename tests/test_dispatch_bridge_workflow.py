@@ -9,9 +9,13 @@ class DispatchBridgeWorkflowTests(unittest.TestCase):
         self.assertIn("types: [created]", workflow)
         self.assertIn("github.event.issue.number == 145", workflow)
         self.assertIn("actions: write", workflow)
+        self.assertIn("id-token: write", workflow)
         self.assertIn("python agent/dispatch_guard.py", workflow)
         self.assertIn("steps.guard.outputs.authorized == 'true'", workflow)
         self.assertIn("DISPATCH_ACTION", workflow)
+        self.assertIn('action === "task-check-site"', workflow)
+        self.assertIn('"run-readonly-tasks.yml"', workflow)
+        self.assertNotIn("PETTRAFFIC_TASKS_ENABLED", workflow)
 
     def test_bridge_routes_only_four_fixed_workflows(self):
         workflow = Path(".github/workflows/dispatch-daily-suite.yml").read_text(encoding="utf-8")
