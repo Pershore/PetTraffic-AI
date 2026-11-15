@@ -5,11 +5,80 @@ export function isVilniusAgentRunTime(date = new Date()) {
   return localTime === "13:20";
 }
 
+const HEARTBEAT_CRON = "*/15 * * * *";
+
+export function isVilniusAgentRunTime(date = new Date()) {
+  const localTime = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Vilnius", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(date);
+  return localTime === "13:20";
+}
+
 export function isAgentScheduledEvent(controller) {
   if (controller?.cron !== AGENT_CRON || !Number.isFinite(controller.scheduledTime)) return false;
   // Cloudflare may deliver a cron event after its nominal minute. Evaluate the
   // event's scheduled timestamp, not the wall-clock time when this handler runs.
   return isVilniusAgentRunTime(new Date(controller.scheduledTime));
+}
+
+function vilniusDateKey(date) {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Vilnius",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+  const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+  return values.year + "-" + values.month + "-" + values.day;
+}
+
+function vilniusMinutes(date) {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Vilnius",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(date);
+  const values = Object.fromEntries(parts.map(part => [part.type, Number(part.value)]));
+  return values.hour * 60 + values.minute;
+}
+
+// A delayed daily-suite sync must not strand the AI cycle until the next day.
+// Heartbeats after 13:20 Vilnius time may recover the run once today's data lands.
+export function isAgentCatchUpEvent(controller) {
+  if (controller?.cron !== HEARTBEAT_CRON || !Number.isFinite(controller.scheduledTime)) return false;
+  return vilniusMinutes(new Date(controller.scheduledTime)) >= 13 * 60 + 20;
+}
+
+export async function shouldRunAgentOrchestration(env, controller) {
+  if (!env?.DB || !(isAgentScheduledEvent(controller) || isAgentCatchUpEvent(controller))) return false;
+
+  const scheduledAt = new Date(controller.scheduledTime);
+  if (!Number.isFinite(scheduledAt.getTime())) return false;
+
+  // The orchestrator's run_date is UTC. The 13:20 Vilnius window is on the
+  // same UTC calendar date in both Lithuanian summer and winter time.
+  const runDate = scheduledAt.toISOString().slice(0, 10);
+  const existingRun = await env.DB.prepare(
+    "SELECT run_date FROM agent_runs WHERE run_date = ? LIMIT 1"
+  ).bind(runDate).first();
+  if (existingRun) return false;
+
+  const localDay = vilniusDateKey(scheduledAt);
+  const snapshots = await env.DB.prepare(
+    "SELECT kind, created_at FROM events " +
+    "WHERE kind IN ('analytics_snapshot', 'topic_snapshot') " +
+    "ORDER BY created_at DESC LIMIT 30"
+  ).all();
+
+  // Require at least one valid daily-suite input written on the current
+  // Vilnius day. Partial suites are allowed; the missing specialist will
+  // report an evidence gap instead of analysing yesterday's snapshot.
+  return (snapshots.results || []).some(row => {
+    if (!["analytics_snapshot", "topic_snapshot"].includes(row.kind) || typeof row.created_at !== "string") {
+      return false;
+    }
+    const createdAt = new Date(row.created_at);
+    return Number.isFinite(createdAt.getTime()) && vilniusDateKey(createdAt) === localDay;
+  });
 }
 
 import { buildControlDecision, persistControlDecision } from "./control-core.mjs";
