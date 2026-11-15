@@ -50,7 +50,7 @@ function renderStats(){
  const site=state.site;const h=state.health;const latestRuns=state.runs.slice(0,100);const failed=latestRuns.filter(r=>r.status==="completed"&&r.conclusion!=="success").length;const open=state.prs.length;
  $("stat-site").textContent=site?.ok?"HTTP 200":"Neatsako";$("stat-site").className=site?.ok?"good-text":"bad-text";$("stat-site-detail").textContent=site?.url||SITE;
  $("stat-actions").textContent=latestRuns.length?String(latestRuns.length):"—";$("stat-actions-detail").textContent="main "+(state.commit?.sha||"").slice(0,7)+" · "+failed+" nesėkmingų iš "+latestRuns.length+" run";
- $("stat-worker").textContent=h?.ok&&h?.database==="connected"?"Prisijungęs":"Nežinoma";$("stat-worker").className=h?.ok?"good-text":"bad-text";$("stat-worker-detail").textContent=h?.control_core_schema==="connected"?"D1 + Control Core prijungti":"Nepatvirtinta";
+ $("stat-worker").textContent=h?.preview_blocked?"Tik produkcijos domene":h?.ok&&h?.database==="connected"?"Prisijungęs":"Nežinoma";$("stat-worker").className=h?.ok?"good-text":"warn-text";$("stat-worker-detail").textContent=h?.preview_blocked?"Preview CORS ribojamas oficialiu domenu":h?.control_core_schema==="connected"?"D1 + Control Core prijungti":"Nepatvirtinta";
  $("stat-prs").textContent=String(open);$("stat-prs-detail").textContent="Atviri PR main šakai";
  const ai=aiCycleStatus();$("stat-ai").textContent=ai.label;$("stat-ai").className=ai.cls==="good"?"good-text":ai.cls==="bad"?"bad-text":"warn-text";$("stat-ai-detail").textContent=ai.detail;
  $("connection-state").textContent=site?.ok&&h?.ok?"Sistemos pasiekiamos":"Dalis sistemų nepasiekiama";
@@ -132,14 +132,14 @@ function renderPrs(){
 function renderTools(){
  const h=state.health;
  setState("tool-pages",state.site?.ok?"Vieša svetainė HTTP 200":"Vieša svetainė nepatvirtinta",state.site?.ok?"good":"bad");
- setState("tool-worker",h?.ok?"Worker /health HTTP 200":"Worker neprieinamas",h?.ok?"good":"bad");
+ setState("tool-worker",h?.preview_blocked?"CORS: tik oficialus domenas":h?.ok?"Worker /health HTTP 200":"Worker neprieinamas",h?.ok?"good":h?.preview_blocked?"warn":"bad");
  setState("tool-d1",h?.database==="connected"?"D1 prijungta":"D1 nepatvirtinta",h?.database==="connected"?"good":"bad");
  const ai=aiCycleStatus();setState("tool-ai",ai.label+" · "+ai.detail,ai.cls);
 }
 function renderAll(){
  renderStats();renderAttention();renderWorkflowSummary();renderRuns($("run-filter")?.value||"all");renderHistory();renderAnalytics();renderTools();renderAgents();renderPrs();
  setState("pages-status",state.site?.ok?"HTTP 200 · gyva":"Nepasiekiama",state.site?.ok?"good":"bad");
- setState("worker-arch-status",state.health?.ok?"HTTP 200":"Neatsako",state.health?.ok?"good":"bad");
+ setState("worker-arch-status",state.health?.preview_blocked?"Preview CORS ribojimas":state.health?.ok?"HTTP 200":"Neatsako",state.health?.ok?"good":state.health?.preview_blocked?"warn":"bad");
  setState("d1-status",state.health?.database==="connected"?"Connected":"Nežinoma",state.health?.database==="connected"?"good":"warn");
  setState("ai-arch-status",aiCycleStatus().label,aiCycleStatus().cls);
  setState("actions-status",state.runs.length?"Run istorija gauta":"Neprieinama",state.runs.length?"good":"warn");
