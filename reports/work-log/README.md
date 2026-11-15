@@ -611,3 +611,13 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 - Patikrų rezultatai naujausiam PR head `493f7a6be006bdba8d61fbdce5faf05b3362f77a`: Worker test + Cloudflare validation [#43739848100](https://github.com/Pershore/PetTraffic-AI/actions/runs/43739848100) – success; site/automation check [#43739848105](https://github.com/Pershore/PetTraffic-AI/actions/runs/43739848105) – success; snapshot-sync PR test [#43739848179](https://github.com/Pershore/PetTraffic-AI/actions/runs/43739848179) – success. Worker deploy ir D1 sync PR event metu teisingai skipped.
 - Aktyvus darbo laikas, bendras įrankių vykdymo laikas ir vartotojo laikas **NEMATUOTA**.
 - Statusas: PR pakeitimai **PARUOŠTA**, CI **PATIKRINTA**, produkcinis Worker deploy ir realus task lifecycle **LAUKIA**. Issue #248 lieka atviras iki enqueue → claim → execution → completion → D1 readback įrodymo.
+
+
+## 2026-11-15 – pirmas realus debesijos task ciklas
+
+- PR #249 sujungtas į `main` (`69ecef8f54043ce349505053816513bee65a16b3`); production Worker deploy [#43740185093](https://github.com/Pershore/PetTraffic-AI/actions/runs/43740185093) – success. Worker test, Cloudflare validation, deploy, D1/Control Core schema, health/auth ribos ir cron grafikai – success.
+- Savininko tiksli komanda `/pettraffic-enqueue-site-check` issue #145. Bridge run [#43740423454](https://github.com/Pershore/PetTraffic-AI/actions/runs/43740423454) – success; užduotis `92819161-69e2-4c90-a11d-cb8b1a62099a` įrašyta į D1 ir runner workflow iškviestas.
+- GitHub-hosted runner [#43740434516](https://github.com/Pershore/PetTraffic-AI/actions/runs/43740434516) – success. Fixed live-site script exit code 0; log patvirtina `D1 readback verified`; 12 vidinių URL, sitemap, robots.txt, 404 ir 20 senų 301 peradresavimų – PASS.
+- Realus priėmimo testas enqueue → claim → execution → complete → D1 readback **PATIKRINTAS**. Termux nenaudotas. Viešas `/control/` lieka read-only; privatus dashboard ir task statuso rodymas dar laukia.
+- Šios sesijos aktyvus darbo laikas ir bendras įrankių vykdymimo laikas – NEMATUOTA.
+- Likęs kritinis atskiras etapas: po-deploy Worker AI / Control Core kasdienio ciklo patikra 2026-11-16 13:20 Europe/Vilnius; šiuo metu issue #145 rodo stale AI agentų atminties ciklą.
