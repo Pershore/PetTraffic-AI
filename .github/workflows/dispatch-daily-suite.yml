@@ -1,0 +1,60 @@
+name: Pet traffic secure daily-suite dispatch
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+
+jobs:
+  dispatch:
+    if: github.event.issue.number == 145 && github.event.issue.pull_request == null
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+      - name: Validate owner-only dispatch command
+        id: guard
+        run: python agent/dispatch_guard.py
+      - name: Dispatch the existing daily automation suite
+        if: steps.guard.outputs.authorized == 'true'
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const workflow_id = "daily-suite.yml";
+            const { data } = await github.rest.actions.listWorkflowRuns({
+              owner,
+              repo,
+              workflow_id,
+              branch: "main",
+              per_page: 100
+            });
+            const cutoff = Date.now() - 20 * 60 * 60 * 1000;
+            const recent = data.workflow_runs.find(run =>
+              ["schedule", "workflow_dispatch"].includes(run.event) &&
+              Date.parse(run.created_at) >= cutoff
+            );
+            if (recent) {
+              core.notice(
+                "Daily suite already started within the 20-hour safety window: " +
+                "#" + recent.run_number + " (" + recent.event + ") " + recent.html_url
+              );
+              return;
+            }
+            await github.rest.actions.createWorkflowDispatch({
+              owner,
+              repo,
+              workflow_id,
+              ref: "main"
+            });
+            core.notice("Authorized daily-suite workflow_dispatch sent to main.");
