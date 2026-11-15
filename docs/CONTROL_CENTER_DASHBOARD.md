@@ -16,6 +16,7 @@ Atskiras, read-only projekto stebėjimo puslapis: https://pettraffic-ai.pages.de
 - GitHub API viešų užklausų kiekis sąmoningai ribotas; agregatų archyvai lokaliai puslapio sesijoje pakartotinai neapkraunami dažniau nei kas 30 minučių.
 - Nepasiekiami duomenys rodomi kaip nežinomi / nepasiekiami, o ne kaip nulis.
 - Suplanuotas paleidimas patvirtinamas tik pagal tikrą event=schedule; rankinis workflow_dispatch rodomas atskirai.
+- Control Center neturi atskiro kasdienio cron: jis automatiškai perskaičiuoja būseną po Daily-suite, Lighthouse ir Worker diegimo įvykių. Taip išvengiama dubliuojamo grafiko ir klaidingo „praleisto Control Center schedule“ perspėjimo.
 - Worker agentų ciklas vertinamas pagal run_date, started_at, status, ai_calls ir error_code; 13:20 LT tikslas atskiriamas nuo ankstesnio tos pačios dienos ciklo.
 - Cloudflare Pages deploy ID / Cloudflare paskyros nustatymai tiesiogiai nepasiekiami, todėl dashboard rodo tik viešos svetainės HTTP ir GitHub workflow įrodymus.
 - ChatGPT automatikų vykdymo būsena šiame dashboard nėra tiesiogiai skaitoma; rodomas architektūrinis komponentas, ne išgalvotas live statusas.
