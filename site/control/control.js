@@ -97,8 +97,18 @@ function renderHistory(){
  $("history-count").textContent=state.runs.length+" įrašų gauta";
  $("history-list").innerHTML=state.runs.slice(0,25).map(r=>'<div class="history-item"><time>'+escapeHtml(dateLT(r.created_at))+'</time><div><strong>'+escapeHtml(r.name)+'</strong><small>'+escapeHtml(r.event)+' · '+escapeHtml(r.head_branch||"—")+' · '+escapeHtml(r.head_sha?.slice(0,7)||"")+'</small></div><div>'+badge(statusText(r),statusClass(r))+' <a href="'+escapeHtml(r.html_url)+'" target="_blank" rel="noopener">↗</a></div></div>').join("");
 }
+function latestSnapshot(archive){
+ const snapshots=Array.isArray(archive?.snapshots)?archive.snapshots:[];
+ let latest=null;let latestTime=-Infinity;
+ for(const snapshot of snapshots){
+  if(!snapshot||typeof snapshot!=="object")continue;
+  const timestamp=Date.parse(snapshot.generated_at||"");
+  if(Number.isFinite(timestamp)&&timestamp>=latestTime){latest=snapshot;latestTime=timestamp;}
+ }
+ return latest||(snapshots.length?snapshots[snapshots.length-1]:null);
+}
 function renderAnalytics(){
- const s=state.analytics?.snapshots?.[0];const m=s?.metrics;const gsc=state.analytics?.snapshots?.[0]?.search_console_details;
+ const s=latestSnapshot(state.analytics);const m=s?.metrics;const gsc=s?.search_console_details;
  if(m){
  $("metric-stack").innerHTML=[["Aktyvūs naudotojai",fmt(m.active_users)],["Sesijos",fmt(m.sessions)],["Puslapių peržiūros",fmt(m.page_views)]].map(x=>'<div class="metric-line"><span>'+x[0]+'</span><strong>'+x[1]+'</strong></div>').join("");
  $("analytics-panel").innerHTML='<article class="analytics-card"><h3>Google Analytics 4</h3><p>Laikotarpis: '+escapeHtml(s.ga4_period||"nenurodytas")+' · surinkta '+escapeHtml(dateLT(s.generated_at))+'</p><div class="analytics-numbers">'+[['Aktyvūs naudotojai',m.active_users],['Nauji naudotojai',m.new_users],['Sesijos',m.sessions],['Puslapių peržiūros',m.page_views]].map(x=>'<div class="analytics-number"><span>'+x[0]+'</span><strong>'+fmt(x[1])+'</strong></div>').join("")+'</div><div class="analytics-note">Patvirtintos organinės sesijos: '+fmt(m.organic_sessions_verified)+' · GA4 statusas: '+escapeHtml(s.ga4_status)+'</div></article><article class="analytics-card"><h3>Google Search Console</h3><p>Laikotarpis: '+escapeHtml(s.search_console_period||"nenurodytas")+'</p><div class="analytics-numbers">'+[['Parodymai',m.search_impressions],['Paspaudimai',m.search_clicks],['CTR',Number(m.search_ctr||0).toFixed(2)+"%"],['Vid. pozicija',Number(m.average_position||0).toFixed(1)]].map(x=>'<div class="analytics-number"><span>'+x[0]+'</span><strong>'+((typeof x[1]==="string")?escapeHtml(x[1]):fmt(x[1]))+'</strong></div>').join("")+'</div><div class="analytics-note">Sitemap: '+escapeHtml(gsc?.sitemap?.status||"nežinoma")+' · pending: '+(gsc?.sitemap?.is_pending?"taip":"nežinoma")+'. 0 parodymų nėra indeksavimo diagnozė.</div></article>';
@@ -106,7 +116,7 @@ function renderAnalytics(){
  $("metric-stack").innerHTML='<p class="muted">Naujausias GA4/GSC agreguotas archyvas šiuo metu nepasiekiamas. Nulis nelaikomas duomenimis.</p>';
  $("analytics-panel").innerHTML='<article class="analytics-card"><h3>GA4 + Search Console</h3><p>Duomenų būsena</p><span class="state warn">Archyvas nerastas / neprieinamas</span><div class="analytics-note">Patikrink analytics workflow ir jo artefaktą. Paslaptys šiame dashboard nerodomos.</div></article>';
  }
- const t=state.topics?.snapshots?.[0];
+ const t=latestSnapshot(state.topics);
  $("topics-panel").innerHTML=t?'<p class="muted">Google News RSS · '+escapeHtml(dateLT(t.generated_at))+' · '+fmt(t.unique_article_links)+' unikalių antraščių nuorodų · '+fmt(t.total_topic_checks)+' temų patikrų</p>'+Object.entries(t.topic_counts||{}).sort((a,b)=>b[1]-a[1]).map(([name,count])=>'<div class="bar-row"><span>'+escapeHtml(name)+'</span><div class="bar-track"><div class="bar-fill" style="width:'+Math.min(100,(count/Math.max(1,...Object.values(t.topic_counts)))*100)+'%"></div></div><b>'+fmt(count)+'</b></div>').join(""):'<p class="muted">Temų archyvas šiuo metu nepasiekiamas.</p>';
  const lh=state.runs.find(r=>r.name.toLowerCase().includes("lighthouse")&&r.conclusion==="success");
  $("lighthouse-panel").innerHTML=lh?'<div class="metric-line"><span>Paskutinis sėkmingas auditas</span><strong>'+escapeHtml(dateLT(lh.updated_at||lh.created_at))+'</strong></div><div class="metric-line"><span>Vykdymas</span><a href="'+escapeHtml(lh.html_url)+'" target="_blank" rel="noopener">#'+escapeHtml(lh.run_number)+' ↗</a></div><div class="analytics-note">Pilni HTML/JSON rezultatai laikomi GitHub Actions artefakte. Dashboard nekuria išvestinių Lighthouse balų.</div>':'<p class="muted">Nerasta sėkmingo Lighthouse vykdymo paskutinių 100 run sąraše.</p>';
