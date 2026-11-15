@@ -266,7 +266,13 @@ def fetch_runs(workflow_file: str) -> list[dict]:
         "User-Agent": "PetTraffic-ControlCenter/1.0",
     })
     with urlopen(request, timeout=20) as response:
-        return json.loads(response.read().decode("utf-8")).get("workflow_runs", [])
+        runs = json.loads(response.read().decode("utf-8")).get("workflow_runs", [])
+    # GitHub includes the currently executing control-center run in its own
+    # Actions list. Exclude it so a report never records itself as "in progress".
+    current_run_id = os.environ.get("GITHUB_RUN_ID", "").strip()
+    if current_run_id:
+        runs = [run for run in runs if str(run.get("id", "")) != current_run_id]
+    return runs
 
 def fetch_workflow_metadata(workflow_file: str) -> dict:
     """Read activation state and the actual last commit touching the workflow file."""

@@ -11,7 +11,7 @@ const archiveCache = { analytics: { checkedAt: 0, value: null }, "topic-radar": 
 const workflowDefinitions = [
  {key:"site",title:"Svetainės patikra",file:"site-check.yml",match:"site checks",cadence:"Kasdien 07:37 LT + push / PR",desc:"HTML, vidinės nuorodos, SEO, sitemap, Python testai"},
  {key:"daily",title:"Daily-suite",file:"daily-suite.yml",match:"daily automation suite",cadence:"Kasdien 08:10 LT",desc:"GA4 / GSC, temų radaras ir gyvos svetainės patikra"},
- {key:"control",title:"Control Center",file:"control-center.yml",match:"central control center",cadence:"Kasdien 10:40 LT",desc:"Sujungia workflow įrodymus, rizikas ir rekomendacijas"},
+ {key:"control",title:"Control Center",file:"control-center.yml",match:"central control center",cadence:"Po daily-suite / Lighthouse / Worker deploy",desc:"Sujungia workflow įrodymus, rizikas ir rekomendacijas"},
  {key:"analytics",title:"Analytics snapshot",file:"analytics-snapshot.yml",match:"analytics snapshot",cadence:"Daily-suite dalis / push / manual",desc:"GA4 ir Search Console agreguoti duomenys"},
  {key:"topics",title:"Topic radar",file:"daily-topic-radar.yml",match:"daily topic radar",cadence:"Daily-suite dalis / push / manual",desc:"Viešos Google News RSS antraštės"},
  {key:"lighthouse",title:"Lighthouse",file:"lighthouse-audit.yml",match:"lighthouse audits",cadence:"Pirmadieniais 09:27 LT + site push",desc:"5 puslapiai × mobile ir desktop"},
@@ -73,9 +73,8 @@ function aiCycleStatus(){
  return {label:String(run.status||"Nežinoma").toUpperCase(),cls:"warn",detail:Number(run.ai_calls||0)+" agentų kvietimų"};
 }
 function renderAttention(){
- const items=[];const daily=latestEvent("daily-suite.yml","schedule");const cc=latestEvent("control-center.yml","schedule");const ai=aiCycleStatus();
+ const items=[];const daily=latestEvent("daily-suite.yml","schedule");const ai=aiCycleStatus();
  if(!daily||localDateOf(daily.created_at)!==localDate())items.push({title:"Daily-suite schedule įrodymas",detail:daily?"Paskutinis schedule: "+dateLT(daily.created_at):"Naujausio sąrašo schedule paleidimo nerasta",cls:"warn"});
- if(!cc||localDateOf(cc.created_at)!==localDate())items.push({title:"Control Center schedule įrodymas",detail:cc?"Paskutinis schedule: "+dateLT(cc.created_at):"Naujausio sąrašo schedule paleidimo nerasta",cls:"warn"});
  if(ai.cls!=="good")items.push({title:"Worker agentų ciklas: "+ai.label,detail:ai.detail,cls:ai.cls});
  const bad=state.runs.filter(r=>r.status==="completed"&&r.conclusion!=="success").slice(0,3);
  bad.forEach(r=>items.push({title:r.name+" · "+r.conclusion,detail:"#"+r.run_number+" · "+dateLT(r.created_at),cls:"bad",url:r.html_url}));
