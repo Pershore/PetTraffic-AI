@@ -549,3 +549,227 @@ test("AI request errors are converted into an explicit evidence gap", async () =
   assert.match(result.evidence_gaps[0], /Workers AI request failed/);
   assert.doesNotMatch(JSON.stringify(result), /internal model detail/);
 });
+
+
+const TASK_DISPATCH_WORKFLOW = "Pershore/PetTraffic-AI/.github/workflows/dispatch-daily-suite.yml@refs/heads/main";
+const TASK_RUNNER_WORKFLOW = "Pershore/PetTraffic-AI/.github/workflows/run-readonly-tasks.yml@refs/heads/main";
+const taskDispatcherToken = () => oidcToken({ workflow_ref: TASK_DISPATCH_WORKFLOW, event_name: "issue_comment" });
+const taskRunnerToken = (event_name = "schedule") => oidcToken({ workflow_ref: TASK_RUNNER_WORKFLOW, event_name });
+
+test("task API stays disabled by default even for a valid dispatcher identity", async () => {
+  await withOidcJwks(async () => {
+    const response = await worker.fetch(new Request("https://api.example/v1/tasks", {
+      method: "POST",
+      headers: { authorization: "Bearer " + taskDispatcherToken(), "content-type": "application/json" },
+      body: JSON.stringify({ type: "check_site", agent: "technical-seo", payload: { target: "public_site" } }),
+    }), env);
+    assert.equal(response.status, 503);
+    assert.deepEqual(await response.json(), { error: "task_api_not_enabled" });
+  });
+});
+
+test("snapshot-sync OIDC identity cannot enqueue tasks after the feature flag is enabled", async () => {
+  await withOidcJwks(async () => {
+    const enabledEnv = { ...env, TASK_API_ENABLED: "true" };
+    const response = await worker.fetch(new Request("https://api.example/v1/tasks", {
+      method: "POST",
+      headers: { authorization: "Bearer " + oidcToken(), "content-type": "application/json" },
+      body: JSON.stringify({ type: "check_site", agent: "technical-seo", payload: { target: "public_site" } }),
+    }), enabledEnv);
+    assert.equal(response.status, 403);
+    assert.deepEqual(await response.json(), { error: "forbidden_role" });
+  });
+});
+
+test("dedicated dispatcher can enqueue only the fixed public-site check task", async () => {
+  await withOidcJwks(async () => {
+    let inserted = 0;
+    const enabledEnv = {
+      ...env,
+      TASK_API_ENABLED: "true",
+      DB: {
+        prepare(sql) {
+          return {
+            bind(...values) {
+              return {
+                first: async () => sql.includes("SELECT id, status FROM tasks") ? null : null,
+                run: async () => {
+                  if (sql.includes("INSERT INTO tasks")) inserted += 1;
+                  return { meta: { changes: 1 }, values };
+                },
+              };
+            },
+          };
+        },
+      },
+    };
+    const response = await worker.fetch(new Request("https://api.example/v1/tasks", {
+      method: "POST",
+      headers: { authorization: "Bearer " + taskDispatcherToken(), "content-type": "application/json" },
+      body: JSON.stringify({
+        type: "check_site",
+        agent: "technical-seo",
+        priority: 3,
+        payload: { target: "public_site" },
+      }),
+    }), enabledEnv);
+    assert.equal(response.status, 202);
+    assert.equal((await response.json()).status, "queued");
+    assert.equal(inserted, 1);
+  });
+});
+
+test("dispatcher rejects unsupported task types and arbitrary task payload fields", async () => {
+  await withOidcJwks(async () => {
+    const enabledEnv = { ...env, TASK_API_ENABLED: "true" };
+    for (const body of [
+      { type: "review_content_facts", agent: "content-review", payload: { target: "public_site" } },
+      { type: "check_site", agent: "technical-seo", payload: { target: "public_site", command: "arbitrary" } },
+    ]) {
+      const response = await worker.fetch(new Request("https://api.example/v1/tasks", {
+        method: "POST",
+        headers: { authorization: "Bearer " + taskDispatcherToken(), "content-type": "application/json" },
+        body: JSON.stringify(body),
+      }), enabledEnv);
+      assert.equal(response.status, 400);
+    }
+  });
+});
+
+test("dispatcher deduplicates an existing queued or running site check", async () => {
+  await withOidcJwks(async () => {
+    const enabledEnv = {
+      ...env,
+      TASK_API_ENABLED: "true",
+      DB: {
+        prepare(sql) {
+          return {
+            bind() {
+              return { first: async () => sql.includes("SELECT id, status FROM tasks")
+                ? { id: "existing-task", status: "running" } : null };
+            },
+          };
+        },
+      },
+    };
+    const response = await worker.fetch(new Request("https://api.example/v1/tasks", {
+      method: "POST",
+      headers: { authorization: "Bearer " + taskDispatcherToken(), "content-type": "application/json" },
+      body: JSON.stringify({ type: "check_site", agent: "technical-seo", payload: { target: "public_site" } }),
+    }), enabledEnv);
+    assert.equal(response.status, 202);
+    assert.deepEqual(await response.json(), {
+      accepted: true, task_id: "existing-task", status: "running", deduplicated: true,
+    });
+  });
+});
+
+test("dispatcher cannot claim tasks", async () => {
+  await withOidcJwks(async () => {
+    const enabledEnv = { ...env, TASK_API_ENABLED: "true" };
+    const response = await worker.fetch(new Request("https://api.example/v1/tasks/claim", {
+      method: "POST",
+      headers: { authorization: "Bearer " + taskDispatcherToken(), "content-type": "application/json" },
+      body: JSON.stringify({ agent: "technical-seo" }),
+    }), enabledEnv);
+    assert.equal(response.status, 403);
+    assert.deepEqual(await response.json(), { error: "forbidden_role" });
+  });
+});
+
+test("runner cannot enqueue tasks", async () => {
+  await withOidcJwks(async () => {
+    const enabledEnv = { ...env, TASK_API_ENABLED: "true" };
+    const response = await worker.fetch(new Request("https://api.example/v1/tasks", {
+      method: "POST",
+      headers: { authorization: "Bearer " + taskRunnerToken("workflow_dispatch"), "content-type": "application/json" },
+      body: JSON.stringify({ type: "check_site", agent: "technical-seo", payload: { target: "public_site" } }),
+    }), enabledEnv);
+    assert.equal(response.status, 403);
+    assert.deepEqual(await response.json(), { error: "forbidden_role" });
+  });
+});
+
+test("dedicated runner can claim only its read-only technical SEO task", async () => {
+  await withOidcJwks(async () => {
+    const task = {
+      id: "11111111-1111-4111-8111-111111111111",
+      task_type: "check_site",
+      assigned_agent: "technical-seo",
+      priority: 3,
+      payload_json: JSON.stringify({ target: "public_site" }),
+      created_at: "2026-11-15T17:00:00.000Z",
+    };
+    const enabledEnv = {
+      ...env,
+      TASK_API_ENABLED: "true",
+      DB: {
+        prepare(sql) {
+          return {
+            bind() {
+              return {
+                run: async () => ({ meta: { changes: 1 } }),
+                first: async () => sql.includes("UPDATE tasks SET status = 'running'") ? task : null,
+              };
+            },
+          };
+        },
+      },
+    };
+    const response = await worker.fetch(new Request("https://api.example/v1/tasks/claim", {
+      method: "POST",
+      headers: { authorization: "Bearer " + taskRunnerToken(), "content-type": "application/json" },
+      body: JSON.stringify({ agent: "technical-seo" }),
+    }), enabledEnv);
+    assert.equal(response.status, 200);
+    assert.deepEqual((await response.json()).task, {
+      id: task.id,
+      type: "check_site",
+      assigned_agent: "technical-seo",
+      priority: 3,
+      payload: { target: "public_site" },
+      created_at: task.created_at,
+    });
+  });
+});
+
+test("dedicated runner can complete a task owned by technical SEO", async () => {
+  await withOidcJwks(async () => {
+    let updatedSql = "";
+    const enabledEnv = {
+      ...env,
+      TASK_API_ENABLED: "true",
+      DB: {
+        prepare(sql) {
+          return {
+            bind(...values) {
+              return {
+                run: async () => {
+                  updatedSql = sql;
+                  return { meta: { changes: 1 }, values };
+                },
+              };
+            },
+          };
+        },
+      },
+    };
+    const response = await worker.fetch(new Request("https://api.example/v1/tasks/11111111-1111-4111-8111-111111111111/complete", {
+      method: "POST",
+      headers: { authorization: "Bearer " + taskRunnerToken(), "content-type": "application/json" },
+      body: JSON.stringify({ agent: "technical-seo", status: "completed", result: { exit_code: 0, summary: "Site check passed." } }),
+    }), enabledEnv);
+    assert.equal(response.status, 200);
+    assert.match(updatedSql, /claimed_by = 'technical-seo'/);
+  });
+});
+
+test("task runner identity cannot read snapshot events", async () => {
+  await withOidcJwks(async () => {
+    const response = await worker.fetch(new Request("https://api.example/v1/events", {
+      headers: { authorization: "Bearer " + taskRunnerToken() },
+    }), env);
+    assert.equal(response.status, 403);
+    assert.deepEqual(await response.json(), { error: "forbidden_role" });
+  });
+});
