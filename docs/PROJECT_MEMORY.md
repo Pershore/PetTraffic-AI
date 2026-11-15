@@ -1,11 +1,21 @@
 # Pet traffic – vienintelė kanoninė projekto atmintis
 
-**Atnaujinta:** 2026-11-14  
+**Atnaujinta:** 2026-11-15  
 **Saugykla:** https://github.com/Pershore/PetTraffic-AI  
 **Pagrindinė šaka:** `main`  
 **Tikslas:** vienas patikimas tęstinumo šaltinis ChatGPT, Codex ir būsimiems projekto agentams.
 
 Šis dokumentas sujungia ilgalaikius sprendimus, patvirtintą architektūrą, dabartines integracijų būsenas, neišspręstus blokatorius ir kitus veiksmus. Jis nepakeičia GitHub testų ar realių vykdymų įrodymų. Kiekvieną būseną reikia tikrinti pagal naujausią commit, workflow run ir gyvą sistemos atsakymą.
+
+
+
+## 2026-11-15 current schedule and verification note
+
+- Current daily sequence: site checks 05:37 UTC; independent daily automation suite 06:10 UTC (GA4/GSC, topic radar, live-site jobs); Lighthouse Monday 07:27 UTC; central control center 08:40 UTC; Worker AI agent cycle 10:20 Europe/Vilnius; the single ChatGPT coordinator 11:00 Europe/Vilnius.
+- The daily-suite workflow is configured with `10 6 * * *`. At 2026-11-15 08:26 Europe/Vilnius (06:26 UTC), no newer GitHub Actions run was present in the latest 100 runs after the previous 2026-11-14 23:08 UTC run. Therefore today's first direct `event=schedule` execution is **NOT CONFIRMED / WAITING**; a manual run must not be substituted as schedule evidence.
+- The 2026-11-15 Worker AI cycle at 10:20 Europe/Vilnius had not yet occurred at audit time. The previous agent failure remains historical; today's cycle must be checked after its scheduled time, then control-center and D1 memory evidence reviewed.
+- GitHub issue #145 (central automation alert) remains open from the previous agent-cycle failure. Do not close it until a later run confirms recovery.
+- No production, Worker/D1, DNS, secrets, ARO Vet, public-content, or paid-service changes were made during this audit. Preserve the 0 €/month budget.
 
 ## 1. Šaltinių hierarchija ir atminties taisyklės
 
@@ -138,8 +148,8 @@ Jokia jungtis nelaikoma prijungta vien dėl to, kad ji buvo paminėta, pasiūlyt
 - Issue #145 „PetTraffic: central automation alert“ lieka **OPEN** ir papildytas komentaru #6876095236.
 
 ### Kasdienis ChatGPT koordinatorius
-- Esama automatizacija „Pet traffic – kasdienė savarankiška priežiūra“ yra **enabled**.
-- 2026-11-14 10:55 UTC atnaujintas jos prompt: kiekvienos sesijos pradžioje privalomai skaitomas `docs/PROJECT_MEMORY.md`, pašalinti pasenę hard-coded Lighthouse skaičiai, rankinis auditas atskiriamas nuo automatinio snapshot. Tvarkaraštis nepakeistas; kitas vykdymas 2026-11-15 09:45 Europe/Vilnius.
+- Esama automatizacija „Pet traffic – kasdienė savarankiška priežiūra“ yra **enabled**; jos dabartinis grafikas – 11:00 Europe/Vilnius, po daily-suite, Worker AI ciklo ir Control Center.
+- 2026-11-14 10:55 UTC atnaujintas jos prompt: kiekvienos sesijos pradžioje privalomai skaitomas `docs/PROJECT_MEMORY.md`, pašalinti pasenę hard-coded Lighthouse skaičiai, rankinis auditas atskiriamas nuo automatinio snapshot. Tvarkaraštis nepakeistas; kitas vykdymas 2026-11-15 11:00 Europe/Vilnius.
 - Paskutinis įrašytas vykdymas: suplanuota 2026-11-14 07:45 UTC, pradėta 07:52:07 UTC, baigta 08:13:35 UTC, status `completed`.
 - Kitas numatytas vykdymas: 2026-11-15 09:45 Europe/Vilnius.
 - Vienas koordinatorius; nedaryti dublikatų. Pokalbio asistentas neveikia tarp sesijų, tik realiai aktyvūs suplanuoti procesai gali dirbti fone.
