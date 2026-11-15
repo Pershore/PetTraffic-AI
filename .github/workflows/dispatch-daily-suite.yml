@@ -144,4 +144,61 @@ jobs:
               return;
             }
 
+            if (action === "site-check") {
+              const workflow_id = "site-check.yml";
+              const { data } = await github.rest.actions.listWorkflowRuns({
+                owner, repo, workflow_id, branch: "main", per_page: 100
+              });
+              const cutoff = now - 10 * 60 * 1000;
+              const recent = data.workflow_runs.find(run =>
+                Date.parse(run.created_at) >= cutoff &&
+                (run.status !== "completed" || run.conclusion === "success")
+              );
+              if (recent) {
+                core.notice("Site check already started within 10 minutes: " + recent.html_url);
+                return;
+              }
+              await github.rest.actions.createWorkflowDispatch({ owner, repo, workflow_id, ref: "main" });
+              core.notice("Authorized site-check workflow_dispatch sent to main.");
+              return;
+            }
+
+            if (action === "connectivity") {
+              const workflow_id = "analytics-connectivity.yml";
+              const { data } = await github.rest.actions.listWorkflowRuns({
+                owner, repo, workflow_id, branch: "main", per_page: 100
+              });
+              const cutoff = now - 6 * 60 * 60 * 1000;
+              const recent = data.workflow_runs.find(run =>
+                Date.parse(run.created_at) >= cutoff &&
+                (run.status !== "completed" || run.conclusion === "success")
+              );
+              if (recent) {
+                core.notice("Google API connectivity check already started within 6 hours: " + recent.html_url);
+                return;
+              }
+              await github.rest.actions.createWorkflowDispatch({ owner, repo, workflow_id, ref: "main" });
+              core.notice("Authorized Google API connectivity workflow_dispatch sent to main.");
+              return;
+            }
+
+            if (action === "worker-diagnostics") {
+              const workflow_id = "worker-cron-diagnostic.yml";
+              const { data } = await github.rest.actions.listWorkflowRuns({
+                owner, repo, workflow_id, branch: "main", per_page: 100
+              });
+              const cutoff = now - 12 * 60 * 60 * 1000;
+              const recent = data.workflow_runs.find(run =>
+                Date.parse(run.created_at) >= cutoff &&
+                (run.status !== "completed" || run.conclusion === "success")
+              );
+              if (recent) {
+                core.notice("Worker cron diagnostics already started within 12 hours: " + recent.html_url);
+                return;
+              }
+              await github.rest.actions.createWorkflowDispatch({ owner, repo, workflow_id, ref: "main" });
+              core.notice("Authorized Worker cron diagnostics workflow_dispatch sent to main.");
+              return;
+            }
+
             core.setFailed("Guard returned an unknown dispatch action.");
