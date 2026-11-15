@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "project": "PetTraffic AI",
-  "generated_at": "2026-11-15T16:42:42.009344+00:00",
-  "run_id": "43736992198",
-  "source_commit": "82b96d9ed95deaf954eba6688cf1d3ae1414fd2e",
+  "generated_at": "2026-11-15T17:16:46.117507+00:00",
+  "run_id": "43740185092",
+  "source_commit": "69ecef8f54043ce349505053816513bee65a16b3",
   "overall_status": "needs_attention",
   "last_verified_stage": "Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataskaitoje.",
   "next_action": "Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (stale). Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-15.",
@@ -19,20 +19,20 @@
       "name": "Centrinės API sinchronizavimas",
       "state": "success",
       "detail": "Paskutinis paleidimas sėkmingas.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43736663653",
-      "created_at": "2026-11-15T16:39:06Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43737028847",
+      "created_at": "2026-11-15T16:43:00Z"
     },
     {
       "name": "Centrinis valdymo centras",
       "state": "success",
       "detail": "Paskutinis paleidimas sėkmingas.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43736623026",
-      "created_at": "2026-11-15T16:38:37Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43736992198",
+      "created_at": "2026-11-15T16:42:36Z"
     },
     {
       "name": "Cloudflare Worker + D1",
       "state": "success",
-      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 12 min.",
+      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 1 min.",
       "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
       "created_at": null
     }
