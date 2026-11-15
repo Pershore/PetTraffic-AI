@@ -159,3 +159,11 @@ Iki 11:40 LT patikrinti Control Center schedule įvykį ir jo ataskaitą. Jei jo
 - Gyvas Worker /health HTTP 200, D1 ir Control Core schema connected, heartbeat site 200. Paskutinis AI ciklas vis dar 2026-11-15T08:20:13Z, completed, 5 kvietimai, error_code=null. Tačiau šis ciklas įvyko iki PR #220 Worker deploy; specialistų būsenos atspindi seną ciklą (analytics error, topics no data, technical-seo monitor, content-review invalid_json), Control Core needs_evidence, 2 rekomendacijos, 8 spragos, memory present. PR #220 deploy patvirtintas, bet naujos normalizavimo pataisos realus ciklo veikimas ir D1 atminties atnaujinimas dar **LAUKIA**; dėl vieno ciklo per dieną idempotency kitas pilnas ciklas numatytas 2026-11-16 13:20 LT.
 - Issue #145 paliktas open: cron schedule trūkumas ir naujo post-fix AI ciklo įrodymų nebuvimas neleidžia patvirtinti visiško atsistatymo.
 - Saugumo ribos išlaikytos: jokio ARO Vet, DNS, Worker production konfigūracijos, D1 schemos, secrets, viešo turinio publikavimo ar mokamų paslaugų pakeitimo. Termux/Codex CI tiltas patikrintas, bet tiesioginės ChatGPT Android shell prieigos nėra; tai nėra debesų automatizacijų veikimo sąlyga.
+
+
+## 2026-11-15 – GitHub Actions policy patikra pagal vartotojo ekrano kopiją
+
+- Vartotojo pateiktoje `Settings → Actions → General` ekrano kopijoje pasirinkta **Allow all actions and reusable workflows**. Tai patvirtina, kad Actions leidimų politika neuždraudžia workflow veiksmų; šio nustatymo keisti nereikia.
+- Ekrano kopijoje **Workflow permissions** skiltis nematoma, todėl numatytųjų `GITHUB_TOKEN` teisių reikšmė nepatvirtinta. Ankstesnis 401 per GitHub integraciją lieka galiojantis apribojimas skaityti repo Actions administravimo nustatymus.
+- `daily-suite.yml`, `control-center.yml` ir `site-check.yml` patikrinti tiesiogiai `main` šakoje: cron įrašai yra, `workflow_dispatch` yra. `control-center.yml` turi aiškias job teises (`contents: write`, `actions: read`, `issues: write`); tai nepakeičia patikros dėl GitHub schedule įvykių.
+- Išvada: Actions policy apribojimas atmestas kaip tikėtina priežastis; suplanuotų paleidimų dingimo priežastis **dar nenustatyta**. Jokių nustatymų ar produkcinių sistemų nekeista.
