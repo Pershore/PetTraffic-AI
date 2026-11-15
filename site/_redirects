@@ -1,0 +1,3 @@
+# Keep /dashboard/ as the stable public URL while serving the existing live Control Center.
+/dashboard /control/ 200
+/dashboard/ /control/ 200
