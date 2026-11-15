@@ -11,9 +11,9 @@
 
 ## 2026-11-15 dabartinis grafikas ir patikros būsena
 
-- Dienos seka: svetainės patikra 05:37 UTC; nepriklausomas kasdienis automatizacijų rinkinys 06:10 UTC (GA4 / GSC, temų radaras ir gyvos svetainės patikra); Lighthouse pirmadieniais 07:27 UTC; centrinis valdymo centras 08:40 UTC; Worker AI agentų ciklas 10:20 Lietuvos laiku; vienintelis ChatGPT koordinatorius 11:45 Lietuvos laiku.
+- Dienos seka: svetainės patikra 05:37 UTC; nepriklausomas kasdienis automatizacijų rinkinys 06:10 UTC (GA4 / GSC, temų radaras ir gyvos svetainės patikra); Lighthouse pirmadieniais 07:27 UTC; centrinis valdymo centras 08:40 UTC; vienintelis ChatGPT koordinatorius 11:45 Lietuvos laiku; Worker AI agentų ciklas 13:20 Lietuvos laiku.
 - **Daily-suite workflow aktyvus**, GitHub Actions metadata state=active, workflow ID 418322987. YAML cron yra 10 6 * * * UTC, o paskutinis failo pakeitimas 2026-11-14 14:41:16 UTC – prieš šiandienos suplanuotą paleidimą. 2026-11-15 10:41 LT vis dar nėra šios dienos event=schedule vykdymo; 60 min. atsargos langas jau praėjęs. Išjungimas atmestas, bet tikroji priežastis dar **NEPATVIRTINTA**; galimas GitHub scheduler / workflow event pristatymo sutrikimas, tačiau tai tik hipotezė.
-- **Worker AI ciklas PATIKRINTAS:** 2026-11-15 10:20 LT ciklas completed, 5 AI kvietimai, error_code=null. Gyvas /health 10:40 LT grąžino HTTP 200, D1 ir Control Core schema connected; heartbeat 10:30:47 LT, svetainė HTTP 200, DB OK.
+- **Worker AI ciklas PATIKRINTAS:** 2026-11-15 10:20 LT ciklas completed, 5 AI kvietimai, error_code=null, tačiau jis įvyko prieš 11:11 LT daily-suite D1 sync. Naujasis 13:20 LT grafikas įsigalios po PR #217 deploy; šiandienos run_date jau panaudotas, todėl kitas pilnas AI ciklas numatytas 2026-11-16 13:20 LT.
 - **Control Core atmintis PATIKRINTA:** 2026-11-15 įrašas status=needs_evidence, validus decision JSON, 2 rekomendacijos, 8 evidence gaps, memory_status=present. Rekomendacijos nėra patvirtintos išvados; reikia papildomų duomenų.
 - **Control Center workflow aktyvus**, ID 416336983, cron 08:40 UTC (10:40 LT). 10:41 LT suplanuotas vykdymas dar nebuvo matomas; jo 60 min. atsargos langas baigiasi 11:40 LT. Iki tol būsena LAUKIA, ne galutinis gedimas.
 - GitHub issue #145 PetTraffic: central automation alert lieka atviras; jo neuždaryti, kol Control Center negrąžins recovery_confirmed=true.
@@ -95,7 +95,7 @@ Niekada nepaversti `LAUKIA`, `PARUOŠTA` ar `NEPATVIRTINTA` į `PATIKRINTA` be n
 - Daily automation suite: 06:10 UTC kasdien; vienas nepriklausomas suplanuotas paleidimas vykdo atskirus GA4 / GSC, temų radaro ir gyvos svetainės darbus.
 - Lighthouse: pirmadieniais 07:27 UTC ir po reikšmingų svetainės pakeitimų.
 - Central control center: 08:40 UTC kasdien ir po daily-suite, Lighthouse ar Worker diegimo užbaigimo.
-- Worker heartbeat: kas 15 min.; agentų cron tikrina 07:20 ir 08:20 UTC, o Europe/Vilnius laiko vartai leidžia tik 10:20 vietos laiko agentų ciklą.
+- Worker heartbeat: kas 15 min.; agentų cron tikrina 10:20 ir 11:20 UTC, o Europe/Vilnius laiko vartai leidžia tik 13:20 vietos laiko agentų ciklą.
 - Vienintelis ChatGPT priežiūros koordinatorius: 11:45 Europe/Vilnius, po Control Center 60 min. grace lango.
 
 **Konfigūruotas cron nėra vykdymo įrodymas.** Tikrinti tikrus `event=schedule` run, jų jobs, artifacts ir rezultatus. Push, PR, workflow_run ar rankinis vykdymas nėra suplanuoto ciklo pakaitalas.
