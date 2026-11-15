@@ -423,3 +423,6 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 
 - Main darbo žurnalo atnaujinimas commit `fd9db38c8f6df32ded9e6758b4864647a8035f19` paleido site-check [#43716600080](https://github.com/Pershore/PetTraffic-AI/actions/runs/43716600080): **success**, 18 s. HTML/nuorodų/SEO validacija, agentų kompiliacija ir testų žingsniai visi success.
 - Kasdienė 14:00 LT greičio / patikimumo automatizacija jau yra įjungta (`Kasdien stebėti ir optimizuoti PetTraffic greitį`); naujos dubliuojančios automatikos kurti nepavyko dėl 3/3 aktyvių užduočių limito, bet jos kurti nereikia.
+
+| 2026-11-15 | Atskiras gyvas Pet traffic Control Center dashboard | aktyvaus darbo laikas NEMATUOTAS | NEMATUOTA | CI dar laukiamas | NEMATUOTA | NEAPSKAIČIUOTA | Sukurtas `/control/` architektūros / būsenų / įrankių dashboard su GitHub REST, Worker `/health`, agreguota GA4/GSC ir temų istorija. Read-only, noindex, ne sitemap; viešas puslapis, be paslapčių. Šaka `feature/live-control-dashboard`; PR / CI laukiami. |
+
