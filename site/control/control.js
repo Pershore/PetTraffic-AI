@@ -153,17 +153,19 @@ async function loadAnalyticsArchive(kind){
 }
 async function refresh(){
  if(state.loading)return;state.loading=true;$("refresh-button").disabled=true;$("connection-state").textContent="Atnaujinama…";
- const results=await Promise.allSettled([
- getJson(GH+"/actions/runs?per_page=100"),
- getJson(GH+"/pulls?state=open&per_page=50"),
- getJson(GH+"/commits/main"),
- getJson(WORKER+"/health"),
- fetch(SITE,{method:"HEAD",cache:"no-store"}).then(r=>({ok:r.ok,status:r.status,url:SITE})),
- loadAnalyticsArchive("analytics"),
- loadAnalyticsArchive("topic-radar")
- ]);
- const assign=(i,key,transform=x=>x)=>{const r=results[i];if(r.status==="fulfilled")state[key]=transform(r.value);};
- assign(0,"runs",x=>x.workflow_runs||[]);assign(1,"prs",x=>x||[]);assign(2,"commit");assign(3,"issue");assign(4,"health");assign(5,"site");assign(6,"analytics");assign(7,"topics");
+ const sources = {
+ runs: getJson(GH+"/actions/runs?per_page=100").then(x=>x.workflow_runs||[]),
+ prs: getJson(GH+"/pulls?state=open&per_page=50"),
+ commit: getJson(GH+"/commits/main"),
+ health: getJson(WORKER+"/health"),
+ site: fetch(SITE,{method:"HEAD",cache:"no-store"}).then(r=>({ok:r.ok,status:r.status,url:SITE})),
+ analytics: loadAnalyticsArchive("analytics"),
+ topics: loadAnalyticsArchive("topic-radar"),
+ issue: getJson(GH+"/issues/145")
+ };
+ const sourceKeys=Object.keys(sources);
+ const results=await Promise.allSettled(Object.values(sources));
+ results.forEach((result,index)=>{if(result.status==="fulfilled")state[sourceKeys[index]]=result.value;});
  state.loadedAt=new Date();renderAll();
  const failed=results.filter(x=>x.status==="rejected").length;
  $("last-updated").textContent="Atnaujinta "+dateLT(state.loadedAt);
