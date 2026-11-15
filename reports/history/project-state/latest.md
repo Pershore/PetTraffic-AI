@@ -1,13 +1,13 @@
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
-- Atnaujinta: 2026-11-15T10:41+02:00
+- Atnaujinta: 2026-11-15T10:47+02:00
 - Būsena: **WORKER / D1 PATVIRTINTI; 10:20 AI AGENTŲ CIKLAS ATSISTATĖ; CONTROL CORE REIKIA ĮRODYMŲ; DAILY-SUITE CRON NEĮVYKĘS PO ATSARGOS LAIKO; CONTROL-CENTER DAR LAUKIA ATSARGOS LANGU**
 - Pagrindinė šaka: `main`
 - Paskutinis main commit audito metu: `c55599e0f4c8d740000ca69b7f04ac8f74838467`
 - PR #210 sujungtas: `0ac4f3e9be21d52df3a4d681e23b21c3a7b744a4`.
 - PR #211 sujungtas: `116070f78bc92e23b16e3a0e3244769190a5080b`; Cloudflare Pages ir `Validate static website and automation code` – success.
 - PR #211 patikroje 103 Python testai baigėsi `OK`; post-merge `Pet traffic site checks` (run 43686934069) – success; automatinis darbo žurnalas (run 43686934075) – success.
-- Atvirų PR nėra; vienintelis atviras issue – #145 „PetTraffic: central automation alert“.
+- Atviras PR #212 `docs: refresh November 15 automation status` (CI success, 103 testai OK); atviras issue #145 „PetTraffic: central automation alert“.
 
 ## Paskutinis patikrintas etapas
 
@@ -141,3 +141,19 @@
 - Sitemap yra 7 URL: homepage, about, privacy ir 4 pagrindiniai gidai. robots.txt leidžia crawlinti ir nurodo sitemap.
 - site/_redirects yra tuščias, bet tai sąmoningas PR #60 sprendimas: senų, semantiškai nesusijusių straipsnių URL neturi būti nukreipiami į bendrą puslapį ar nesusijusį gidą; jie turi grąžinti tikrą 404. PR #60 body ir diff tai patvirtina. 404 puslapis egzistuoja ir turi noindex,follow.
 - Kodo pakeitimų nereikia; SEO pakeitimus atidėti iki naujų GSC duomenų. Static validation 43695723083 patvirtino HTML/SEO/sitemap testus.
+
+
+## 10:47 gyvos būklės ir schedule pakartotinė patikra
+
+- Vieša pradžia https://pettraffic-ai.pages.dev/ HTTP 200; „Pet traffic“ turinys ir keturi pagrindiniai gidai matomi.
+- Worker /health HTTP 200; database=connected, control_core_schema=connected; heartbeat 2026-11-15T08:45:46.913Z (10:45:46 LT), site_ok=true, site_status=200, database_ok=true.
+- AI orchestration 2026-11-15 completed, 5 AI calls, error_code=null. Control Core needs_evidence, validus sprendimo JSON, 2 rekomendacijos, 8 evidence gaps, memory present.
+- GitHub Actions event=schedule vykdymų sąrašas (100 naujausių) grąžino 4 įrašus; naujausias – Control Center run 43609485305, 2026-11-14 15:18:42 UTC, success. 2026-11-15 daily-suite 08:10 LT schedule nėra, 60 min. grace praėjęs. 10:40 LT Control Center schedule 10:47 LT dar nėra, grace iki 11:40 LT. 10:41 LT workflow metaduomenys rodė abu workflow active; priežastis nepatvirtinta.
+- Naujausias site-check run 43695815389 buvo push, success; jis nėra schedule įrodymas. PR #212 CI run 43695723083 success, 103 testai OK; PR lieka open. Issue #145 atnaujintas komentaru 6891910501, paliktas open.
+- ChatGPT pagrindinė priežiūra enabled, kitas paleidimas 11:00 LT; greičio automatizacija enabled, pirmas paleidimas laukiamas 2026-11-16 09:00 LT; ARO Vet analitikos automatizacija enabled, kitas paleidimas 2026-11-15 18:24 LT. Penkios senesnės automatikos paused.
+- Firecrawl likutis prieš patikras 197/1 000; panaudoti 2 kreditai. Jokie produkciniai, Worker/D1, DNS, secrets, ARO Vet, viešo turinio ar mokamų paslaugų pakeitimai neatlikti.
+
+## Kitas veiksmas
+
+- Po 11:40 LT pakartotinai tikrinti Control Center schedule; issue #145 neuždaryti, kol Control Center nepatvirtina recovery_confirmed=true ir Control Core evidence būsena nėra pakankamai pagrįsta.
+- Daily-suite schedule problemos priežastis nepatvirtinta. Dabartinė GitHub jungtis neturi workflow-dispatch ar Actions nustatymų keitimo veiksmo; nedaryti netikro push/no-op commit.
