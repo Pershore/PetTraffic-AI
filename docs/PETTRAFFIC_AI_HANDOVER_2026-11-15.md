@@ -80,15 +80,20 @@ Iki 11:40 LT patikrinti Control Center schedule įvykį ir jo ataskaitą. Jei jo
 - Firecrawl kredito balansas po patikros: 197/1 000. Jokie svetainės ar produkcijos pakeitimai neatlikti.
 
 
-## 2026-11-15 – saugus kasdienio rinkinio atsarginis paleidimas (PR rengiamas)
+## 2026-11-15 – workflow dispatch tiltas, daily-suite atkūrimas ir D1 sinchronizavimas
 
-**Problema:** GitHub jungtis gali skaityti Actions, bet neturi workflow-dispatch API. 2026-11-15 daily-suite 08:10 LT cron įvykio nėra; priežastis nepatvirtinta, todėl cron laikas nekeičiamas.
+- PR #213 sujungtas. Komentaras /pettraffic-run-daily-suite iš savininko Pershore sukėlė helper run 43696946923 (success), kuris paleido daily-suite run 43696960921 (event=workflow_dispatch, success). Visi trys darbai – analytics, topic-radar, live-check – success.
+- Analytics ir topic-radar artefaktai išsaugoti automation-history šakoje. GA4 2026-11-08–14: 7 aktyvūs naudotojai, 19 sesijų, 73 peržiūros, 0 patvirtintų organinių sesijų. GSC 2026-11-06–12: 0 parodymų, 0 paspaudimų; sitemap pending; 5 svarbūs URL nežinomi Google. Topic radar: 28 unikalios antraščių nuorodos iš 7 temų.
+- Daily-suite run neįjungė naujo workflow_run sync / Control Center paleidimo; D1 snapshot write/readback iš šio rankinio run dar nepatvirtintas.
+- PR #214 praplečia owner-only tiltą: /pettraffic-run-daily-suite, /pettraffic-sync-latest, /pettraffic-run-control-center. Komandos tik iš Pershore, tik nauji komentarai issue #145, tik fiksuoti workflow veiksmai.
+- PR #214 sync workflow priima source_run_id tik patikrinęs workflow ID 418322987, main branch, source event, completed status ir bent vieną sėkmingą analytics/topic-radar job; D1 įrašymas vyksta per GitHub OIDC su readback.
+- Pagrindinis kasdienis koordinatorius perplanuotas į 11:45 Europe/Vilnius, po Control Center 60 min. grace (11:40 LT). Naujos automatizacijos nesukurtos.
+- PR #214 CI ir realus D1 sync / Control Center fallback dar laukia. Tikras event=schedule trūkumas lieka atskiras blokatorius; workflow_dispatch nėra cron įrodymas.
 
-**Paruoštas sprendimas:** PR šaka fix/secure-daily-suite-dispatch sukuria ribotą issue-comment tiltelį:
-- Trigeris tik naujas komentaras issue #145; pull request komentarai atmetami.
-- Python guard priima tik tikslų /pettraffic-run-daily-suite tekstą iš GitHub vartotojo Pershore.
-- GitHub Actions naudoja trumpalaikį GITHUB_TOKEN su actions: write ir iškviečia tik esamą daily-suite.yml main šakoje.
-- 20 val. dublikatų apsauga: jei daily-suite jau paleistas per paskutines 20 val. per schedule arba workflow_dispatch, antras paleidimas nevykdomas.
-- Naujų secrets, Cloudflare pakeitimų, išorinių paslaugų ar papildomų išlaidų nėra.
 
-**Svarbi riba:** fallback paleidimas bus event=workflow_dispatch, o ne event=schedule. Jis atkuria dienos darbus, bet nepaslepia GitHub cron gedimo. PR dar tikrintinas; tiltas laikomas PARUOŠTA, kol CI ir tikras dispatch bandymas nepraeina.
+## 2026-11-15 – PR #214 D1 ir Control Center fallback
+
+- PR #214 išplečia saugų issue #145 tiltą trimis fiksuotomis komandomis: /pettraffic-run-daily-suite, /pettraffic-sync-latest, /pettraffic-run-control-center. Guard leidžia tik Pershore paskyros naują komentarą, tik issue #145; PR komentarai ir kiti veiksmai atmetami.
+- sync-control-api.yml gauna workflow_dispatch source_run_id. Prieš atsisiųsdamas artefaktus patikrina daily-suite workflow ID 418322987, main šaką, event schedule/workflow_dispatch, completed status ir bent vieną sėkmingą analytics/topic-radar job. D1 įrašai lieka agreguoti, autentifikacija per trumpalaikį OIDC, po įrašymo daromas readback.
+- Control Center workflow jau turėjo workflow_dispatch, todėl bridge gali jį paleisti po 11:40 LT grace, tačiau tai bus manual run, ne schedule įrodymas.
+- Po PR #214 merge: paleisti sync-latest ir patikrinti D1 write/readback; paleisti Control Center ir patikrinti ataskaitą/issue #145. PR CI ir realus D1 sync dar laukia.

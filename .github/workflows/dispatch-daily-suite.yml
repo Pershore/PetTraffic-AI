@@ -1,4 +1,4 @@
-name: Pet traffic secure daily-suite dispatch
+name: Pet traffic secure workflow dispatch
 
 on:
   issue_comment:
@@ -22,39 +22,104 @@ jobs:
         uses: actions/setup-python@v7
         with:
           python-version: "3.x"
-      - name: Validate owner-only dispatch command
+      - name: Validate owner-only workflow command
         id: guard
         run: python agent/dispatch_guard.py
-      - name: Dispatch the existing daily automation suite
+      - name: Dispatch one bounded Pet traffic workflow
         if: steps.guard.outputs.authorized == 'true'
         uses: actions/github-script@v9
+        env:
+          DISPATCH_ACTION: ${{ steps.guard.outputs.action }}
         with:
           script: |
             const { owner, repo } = context.repo;
-            const workflow_id = "daily-suite.yml";
-            const { data } = await github.rest.actions.listWorkflowRuns({
-              owner,
-              repo,
-              workflow_id,
-              branch: "main",
-              per_page: 100
-            });
-            const cutoff = Date.now() - 20 * 60 * 60 * 1000;
-            const recent = data.workflow_runs.find(run =>
-              ["schedule", "workflow_dispatch"].includes(run.event) &&
-              Date.parse(run.created_at) >= cutoff
-            );
-            if (recent) {
-              core.notice(
-                "Daily suite already started within the 20-hour safety window: " +
-                "#" + recent.run_number + " (" + recent.event + ") " + recent.html_url
+            const action = process.env.DISPATCH_ACTION;
+            const now = Date.now();
+
+            if (action === "daily-suite") {
+              const workflow_id = "daily-suite.yml";
+              const { data } = await github.rest.actions.listWorkflowRuns({
+                owner, repo, workflow_id, branch: "main", per_page: 100
+              });
+              const cutoff = now - 20 * 60 * 60 * 1000;
+              const recent = data.workflow_runs.find(run =>
+                Date.parse(run.created_at) >= cutoff &&
+                ((run.event === "workflow_dispatch" &&
+                    (run.status !== "completed" || run.conclusion === "success")) ||
+                  (run.event === "schedule" &&
+                    (run.status !== "completed" || run.conclusion === "success")))
               );
+              if (recent) {
+                core.notice("Daily suite already started within 20 hours: #" + recent.run_number +
+                  " (" + recent.event + ") " + recent.html_url);
+                return;
+              }
+              await github.rest.actions.createWorkflowDispatch({
+                owner, repo, workflow_id, ref: "main"
+              });
+              core.notice("Authorized daily-suite workflow_dispatch sent to main.");
               return;
             }
-            await github.rest.actions.createWorkflowDispatch({
-              owner,
-              repo,
-              workflow_id,
-              ref: "main"
-            });
-            core.notice("Authorized daily-suite workflow_dispatch sent to main.");
+
+            if (action === "sync-latest") {
+              const daily = await github.rest.actions.listWorkflowRuns({
+                owner, repo, workflow_id: "daily-suite.yml", branch: "main", per_page: 100
+              });
+              const cutoff = now - 20 * 60 * 60 * 1000;
+              const source = daily.data.workflow_runs.find(run =>
+                run.event === "workflow_dispatch" &&
+                run.conclusion === "success" &&
+                Date.parse(run.created_at) >= cutoff
+              );
+              if (!source) {
+                core.setFailed("No successful daily-suite run found within the 20-hour safety window.");
+                return;
+              }
+              const syncRuns = await github.rest.actions.listWorkflowRuns({
+                owner, repo, workflow_id: "sync-control-api.yml", branch: "main", per_page: 100
+              });
+              const displayTitle = "Sync daily-suite snapshot #" + source.id;
+              const already = syncRuns.data.workflow_runs.find(run =>
+                run.event === "workflow_dispatch" && run.display_title === displayTitle &&
+                (run.status !== "completed" || run.conclusion === "success")
+              );
+              if (already) {
+                core.notice("This daily-suite snapshot already has a sync run: " + already.html_url);
+                return;
+              }
+              await github.rest.actions.createWorkflowDispatch({
+                owner,
+                repo,
+                workflow_id: "sync-control-api.yml",
+                ref: "main",
+                inputs: { source_run_id: String(source.id) }
+              });
+              core.notice("Dispatched D1 snapshot sync for daily-suite run #" + source.id + ".");
+              return;
+            }
+
+            if (action === "control-center") {
+              const workflow_id = "control-center.yml";
+              const { data } = await github.rest.actions.listWorkflowRuns({
+                owner, repo, workflow_id, branch: "main", per_page: 100
+              });
+              const cutoff = now - 60 * 60 * 1000;
+              const recent = data.workflow_runs.find(run =>
+                Date.parse(run.created_at) >= cutoff &&
+                (run.event === "workflow_dispatch" ||
+                  (run.event === "schedule" &&
+                    (run.status !== "completed" || run.conclusion === "success")))
+              );
+              if (recent) {
+                core.notice("Control Center already started within 60 minutes: #" +
+                  recent.run_number + " (" + recent.event + ") " + recent.html_url);
+                return;
+              }
+              await github.rest.actions.createWorkflowDispatch({
+                owner, repo, workflow_id, ref: "main"
+              });
+              core.notice("Authorized Control Center workflow_dispatch sent to main.");
+              return;
+            }
+
+            core.setFailed("Guard returned an unknown dispatch action.");

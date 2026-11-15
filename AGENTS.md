@@ -30,7 +30,7 @@ Build Pet traffic into a useful, trustworthy Lithuanian pet-care information web
 
 ## Agent orchestration and automation
 - Use one primary daily maintenance agent to coordinate the project; do not create duplicate ChatGPT maintenance automations.
-- The primary agent runs daily at 11:00 Europe/Vilnius, after the scheduled GitHub Actions suite, Worker AI cycle, and central control-center check; it must inspect their completed results before deciding on new work.
+- The primary agent runs daily at 11:45 Europe/Vilnius, after the scheduled GitHub Actions suite, Worker AI cycle, and central control-center check; it must inspect their completed results before deciding on new work.
 - GitHub Actions are the specialist workers:
   - site validation: daily 05:37 UTC and on pushes / pull requests;
   - daily automation suite: daily 06:10 UTC, independently scheduled; it runs GA4 / Search Console collection, topic radar, and live-site monitoring as separate jobs;

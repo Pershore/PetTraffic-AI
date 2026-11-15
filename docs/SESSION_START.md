@@ -103,3 +103,10 @@ Tikras bootstrap iš Termux patvirtintas: Linux proot, Git, GitHub CLI, Codex CL
 - Worker AI ciklas 10:20 LT dar laukia. Po jo patikrinti tikrą agentų rezultatą, D1 atminties įrašą ir Control Center; issue #145 palikti atvirą iki patvirtinto atsistatymo.
 - Vienintelis ChatGPT koordinatorius suplanuotas 11:00 LT. Nedaryti dublikatų.
 - Šio audito metu jokie kodo, Worker/D1, DNS, secrets, ARO Vet, viešo turinio ar mokamų paslaugų pakeitimai neatlikti.
+
+
+## 2026-11-15 – pagrindinio koordinatoriaus laiko korekcija
+
+- Vienintelė kasdienė priežiūros automatizacija perkelta iš 11:00 į 11:45 Europe/Vilnius. Priežastis: Control Center 08:40 UTC cron turi 60 min. grace iki 11:40 LT; ankstesnis 11:00 koordinatorius galėjo patikrinti būseną per anksti.
+- Naujų kasdienių automatizacijų nesukurta; pagrindinė automatizacija lieka enabled.
+- Saugus issue #145 komentarų tiltas leidžia tik savininkui Pershore paleisti tris fiksuotus workflow veiksmus: daily-suite, D1 snapshot sync ir Control Center. Rankiniai workflow_dispatch vykdymai nėra schedule įrodymas.

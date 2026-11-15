@@ -440,11 +440,14 @@ class ControlCenterTests(unittest.TestCase):
         self.assertNotIn("workflow_run:", workflow)
         self.assertIn("github.event_name == 'schedule'", workflow)
 
-    def test_snapshot_sync_uses_direct_schedule_event_for_daily_suite(self):
+    def test_snapshot_sync_accepts_valid_schedule_and_manual_daily_suite_runs(self):
         with open(".github/workflows/sync-control-api.yml", encoding="utf-8") as stream:
             workflow = stream.read()
-        self.assertIn('get("event", "")', workflow)
-        self.assertIn('[[ "$event_name" == "schedule" ]]', workflow)
+        self.assertIn("workflow_dispatch:", workflow)
+        self.assertIn("source_run_id:", workflow)
+        self.assertIn('["schedule", "workflow_dispatch"].includes(run.event)', workflow)
+        self.assertIn("run.workflow_id !== 418322987", workflow)
+        self.assertIn("steps.suite-source.outputs.source_run_id", workflow)
         self.assertNotIn("Scheduled daily suite from site-check #", workflow)
 
     def test_daily_suite_direct_schedule_counts_as_scheduled_run(self):

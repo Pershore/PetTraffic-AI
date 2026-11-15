@@ -1,6 +1,11 @@
 import unittest
 
-from agent.dispatch_guard import EXPECTED_COMMAND, authorize_issue_comment
+from agent.dispatch_guard import (
+    COMMAND_ACTIONS,
+    EXPECTED_COMMAND,
+    authorize_issue_comment,
+    validate_issue_comment,
+)
 
 
 def event(*, user="Pershore", issue=145, action="created", body=EXPECTED_COMMAND, pull_request=False):
@@ -19,6 +24,19 @@ class DispatchGuardTests(unittest.TestCase):
         allowed, _ = authorize_issue_comment(event())
         self.assertTrue(allowed)
 
+    def test_maps_only_the_three_bounded_commands(self):
+        expected = {
+            "/pettraffic-run-daily-suite": "daily-suite",
+            "/pettraffic-sync-latest": "sync-latest",
+            "/pettraffic-run-control-center": "control-center",
+        }
+        self.assertEqual(COMMAND_ACTIONS, expected)
+        for command, action in expected.items():
+            with self.subTest(command=command):
+                allowed, _, selected = validate_issue_comment(event(body=command))
+                self.assertTrue(allowed)
+                self.assertEqual(selected, action)
+
     def test_rejects_non_owner(self):
         allowed, _ = authorize_issue_comment(event(user="someone-else"))
         self.assertFalse(allowed)
@@ -36,7 +54,7 @@ class DispatchGuardTests(unittest.TestCase):
         self.assertFalse(allowed)
 
     def test_rejects_extra_text_and_near_matches(self):
-        for body in (EXPECTED_COMMAND + " please", EXPECTED_COMMAND.upper(), "/run-daily-suite", ""):
+        for body in (EXPECTED_COMMAND + " please", EXPECTED_COMMAND.upper(), "/run-daily-suite", "", "/pettraffic-run-worker"):
             with self.subTest(body=body):
                 allowed, _ = authorize_issue_comment(event(body=body))
                 self.assertFalse(allowed)
