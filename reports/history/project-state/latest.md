@@ -48,3 +48,14 @@ Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas
 - AI rekomendacijos yra patariamosios; modelio išvestys nesuteikia vykdymo teisių.
 
 > Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.
+
+
+## Produkcinio Control Center dashboard patikra – 2026-11-15 15:34 LT
+
+- PR [#225](https://github.com/Pershore/PetTraffic-AI/pull/225) GitHub'e pažymėtas kaip **merged** 2026-11-15 13:33:09 UTC; merge commit `e8efb79cc800814f4862d36a2c198cd83c139cb5`.
+- Naujausias main commit po automatinio darbo žurnalo įrašo: `fa526242a005b60a99e1b9f103245bf00b71ca1b`.
+- Po merge site-check [#43719590484](https://github.com/Pershore/PetTraffic-AI/actions/runs/43719590484) – success: Node JS sintaksė, HTML/SEO/sitemap, compileall ir testų žingsniai success.
+- Po merge Control Center [#43719590317](https://github.com/Pershore/PetTraffic-AI/actions/runs/43719590317) – success; ataskaita sugeneruota ir archyvuota.
+- Produkcinis URL `https://pettraffic-ai.pages.dev/control/` gyvai atidarytas; puslapyje yra architektūros, agentų/atminties, atvirų PR, svetainės puslapių ir įrankių skyriai. Tai patvirtina, kad dashboard HTML publikuotas produkcijoje.
+- Dashboard JavaScript sintaksė patikrinta CI, tačiau šio audito metu realaus naudotojo naršyklės vykdomo JS fetch/refresh sesijos pilnas E2E patikrinimas dar neatliktas. Worker CORS leidžia tik oficialų production origin; branch preview Worker fetch sąmoningai praleidžiamas.
+- Dashboard read-only; DNS, Worker/D1, secrets, production konfigūracija ir mokami planai nekeisti.
