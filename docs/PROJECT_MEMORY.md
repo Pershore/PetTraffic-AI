@@ -388,11 +388,12 @@ Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama 
 - Daily-suite priežastis dar nežinoma. Workflow-dispatch veiksmas per dabartinę GitHub integraciją nepasiekiamas; nekurti dirbtinių push įvykių kaip schedule pakaitalo.
 
 
-## 2026-11-15 – saugus daily-suite paleidimo atsarginis tiltas (PR rengiamas)
+## 2026-11-15 – saugus workflow dispatch tiltas ir dienos duomenų atkūrimas
 
-- GitHub integracija leidžia skaityti Actions ir kurti issue komentarus, bet neturi tiesioginio workflow-dispatch veiksmo. 2026-11-15 daily-suite 08:10 LT suplanuotas įvykis neįvyko; priežastis nepatvirtinta, todėl cron nekeičiamas spėliojant.
-- Parengtas PR šakoje fix/secure-daily-suite-dispatch: .github/workflows/dispatch-daily-suite.yml reaguoja tik į naują komentarą centriniame issue #145; agent/dispatch_guard.py priima tik tikslų /pettraffic-run-daily-suite tekstą iš saugyklos savininko Pershore, ne iš PR komentarų ar kitų issue.
-- Tiltas naudoja tik workflow GITHUB_TOKEN su actions: write; jokių naujų paslapčių, tokenų, mokamų paslaugų ar Cloudflare teisių nereikia. Prieš dispatch tikrinama, ar daily-suite jau nepaleistas per paskutines 20 valandų (schedule arba workflow_dispatch), kad išvengtų dublikatų.
-- Rankinis fallback sukuria event=workflow_dispatch, todėl jis NEBUS laikomas event=schedule įrodymu. Jis tik atkuria dienos GA4/GSC, temų radaro ir gyvos svetainės darbus, jei cron nepasileido. Control Center vis tiek turi atskirai rodyti, kad cron trūksta.
-- Būsena iki PR patikrų: PARUOŠTA / NEPATVIRTINTA. Aktyvavimas tik po sėkmingo PR CI ir sujungimo; pirmas tikras bandymas turi patvirtinti helper workflow, daily-suite run, tris job'us, artefaktus ir istorijos įrašymą.
-- Po patvirtinto tilto vienintelis 11:00 LT ChatGPT koordinatorius gali naudoti šį fallback tik jei nėra šios dienos schedule įvykio ir nėra neseno daily-suite paleidimo. Naujos kasdienės automatizacijos nekuriamos.
+- PR #213 sujungtas; owner-only issue-comment bridge patikrintas realiu veiksmu: helper run 43696946923 success, daily-suite run 43696960921 workflow_dispatch success. Visi trys daily-suite darbai (analytics, topic-radar, live-check) baigėsi success.
+- GA4/GSC ir topic radar artefaktai archyvuoti automation-history šakoje: analytics/2026-11-15.json ir topic-radar/2026-11-15.json. GA4 2026-11-08–14: 7 aktyvūs naudotojai, 19 sesijų, 73 peržiūros, 0 patvirtintų organinių sesijų. GSC 2026-11-06–12: 0 parodymų, 0 paspaudimų; sitemap pending, 5 prioritetiniai URL nežinomi Google. Topic radar: 28 unikalios viešų antraščių nuorodos, 7 temos; tai nėra paieškos apimtys.
+- Pastebėta, kad GITHUB_TOKEN sukeltas workflow_dispatch daily-suite run šiame bandyme nesukėlė priklausomo workflow_run sync / Control Center paleidimo. Todėl D1 write/readback iš šio run dar nepatvirtintas.
+- PR #214 šakoje fix/secure-automation-command-bridge išplečia savininko Pershore komandų tiltą trimis fiksuotais veiksmais: /pettraffic-run-daily-suite, /pettraffic-sync-latest, /pettraffic-run-control-center. Jokio laisvo teksto komandų vykdymo nėra.
+- PR #214 taip pat prideda sync-control-api workflow_dispatch su source_run_id validacija: tik workflow ID 418322987, main šaka, schedule/workflow_dispatch šaltinis, baigtas run ir bent vienas sėkmingas analytics/topic-radar job. Snapshot'ai siunčiami per trumpalaikį GitHub OIDC ir tikrinami readback iš D1.
+- Vienintelė ChatGPT priežiūros automatizacija perkelta į 11:45 Europe/Vilnius, po Control Center 60 min. grace iki 11:40 LT. Ji lieka enabled; dublikatų nesukurta.
+- Būsena: PR #213 **PATIKRINTA**; daily-suite catch-up **PATIKRINTA**; D1 sync ir Control Center manual fallback **PARUOŠTA / LAUKIA PR #214 CI ir realaus bandymo**. Tikras GitHub cron event=schedule vis dar nepatvirtintas.
