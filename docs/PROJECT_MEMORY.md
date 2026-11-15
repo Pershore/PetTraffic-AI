@@ -386,3 +386,13 @@ Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama 
 - GitHub API patvirtino daily-suite workflow state=active (ID 418322987) ir Control Center workflow state=active (ID 416336983). Daily-suite 06:10 UTC event=schedule nėra, nors 60 min. grace praėjo; Control Center 08:40 UTC ciklas dar laukia savo grace iki 09:40 UTC.
 - Worker /health: HTTP 200; D1/schema connected; 10:20 agentų ciklas completed, 5 AI calls, klaidos nėra; Control Core memory present, 2 rekomendacijos, 8 evidence gaps.
 - Daily-suite priežastis dar nežinoma. Workflow-dispatch veiksmas per dabartinę GitHub integraciją nepasiekiamas; nekurti dirbtinių push įvykių kaip schedule pakaitalo.
+
+
+## 2026-11-15 – saugus daily-suite paleidimo atsarginis tiltas (PR rengiamas)
+
+- GitHub integracija leidžia skaityti Actions ir kurti issue komentarus, bet neturi tiesioginio workflow-dispatch veiksmo. 2026-11-15 daily-suite 08:10 LT suplanuotas įvykis neįvyko; priežastis nepatvirtinta, todėl cron nekeičiamas spėliojant.
+- Parengtas PR šakoje fix/secure-daily-suite-dispatch: .github/workflows/dispatch-daily-suite.yml reaguoja tik į naują komentarą centriniame issue #145; agent/dispatch_guard.py priima tik tikslų /pettraffic-run-daily-suite tekstą iš saugyklos savininko Pershore, ne iš PR komentarų ar kitų issue.
+- Tiltas naudoja tik workflow GITHUB_TOKEN su actions: write; jokių naujų paslapčių, tokenų, mokamų paslaugų ar Cloudflare teisių nereikia. Prieš dispatch tikrinama, ar daily-suite jau nepaleistas per paskutines 20 valandų (schedule arba workflow_dispatch), kad išvengtų dublikatų.
+- Rankinis fallback sukuria event=workflow_dispatch, todėl jis NEBUS laikomas event=schedule įrodymu. Jis tik atkuria dienos GA4/GSC, temų radaro ir gyvos svetainės darbus, jei cron nepasileido. Control Center vis tiek turi atskirai rodyti, kad cron trūksta.
+- Būsena iki PR patikrų: PARUOŠTA / NEPATVIRTINTA. Aktyvavimas tik po sėkmingo PR CI ir sujungimo; pirmas tikras bandymas turi patvirtinti helper workflow, daily-suite run, tris job'us, artefaktus ir istorijos įrašymą.
+- Po patvirtinto tilto vienintelis 11:00 LT ChatGPT koordinatorius gali naudoti šį fallback tik jei nėra šios dienos schedule įvykio ir nėra neseno daily-suite paleidimo. Naujos kasdienės automatizacijos nekuriamos.
