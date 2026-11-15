@@ -123,7 +123,7 @@ class ControlCenterTests(unittest.TestCase):
         self.assertIn("503", result["detail"])
 
     def test_agent_failure_is_reported_after_daily_cycle(self):
-        now = datetime(2026, 11, 13, 9, 0, tzinfo=timezone.utc)  # 11:00 Vilnius
+        now = datetime(2026, 11, 13, 11, 30, tzinfo=timezone.utc)  # 13:30 Vilnius
         result = evaluate_agent_orchestration({
             "agent_orchestration": {
                 "run_date": "2026-11-13",
@@ -149,6 +149,35 @@ class ControlCenterTests(unittest.TestCase):
         self.assertFalse(needs_attention([result]))
         self.assertFalse(recovery_confirmed([result]))
 
+    def test_previous_failed_agent_run_is_failure_after_1320_window(self):
+        now = datetime(2026, 11, 14, 11, 21, tzinfo=timezone.utc)  # 13:21 Vilnius
+        result = evaluate_agent_orchestration({
+            "agent_orchestration": {
+                "run_date": "2026-11-13",
+                "status": "failed",
+                "ai_calls": 1,
+                "error_code": "old_failure",
+            }
+        }, now=now)
+        self.assertEqual(result["state"], "failure")
+        self.assertTrue(needs_attention([result]))
+
+    def test_previous_completed_agent_run_waits_until_1320(self):
+        now = datetime(2026, 11, 14, 11, 19, tzinfo=timezone.utc)  # 13:19 Vilnius
+        result = evaluate_agent_orchestration({
+            "agent_orchestration": {"run_date": "2026-11-13", "status": "completed"}
+        }, now=now)
+        self.assertEqual(result["state"], "waiting")
+        self.assertFalse(needs_attention([result]))
+
+    def test_previous_completed_agent_run_is_stale_after_1320(self):
+        now = datetime(2026, 11, 14, 11, 21, tzinfo=timezone.utc)  # 13:21 Vilnius
+        result = evaluate_agent_orchestration({
+            "agent_orchestration": {"run_date": "2026-11-13", "status": "completed"}
+        }, now=now)
+        self.assertEqual(result["state"], "stale")
+        self.assertTrue(needs_attention([result]))
+
     def test_alert_recovery_requires_every_check_to_be_success(self):
         self.assertTrue(recovery_confirmed([{"state": "success"}, {"state": "success"}]))
         self.assertFalse(recovery_confirmed([{"state": "success"}, {"state": "waiting"}]))
@@ -163,7 +192,7 @@ class ControlCenterTests(unittest.TestCase):
         self.assertIn("No confirmed recovery", workflow)
 
     def test_missing_agent_run_warns_after_daily_window(self):
-        now = datetime(2026, 11, 13, 9, 0, tzinfo=timezone.utc)
+        now = datetime(2026, 11, 13, 11, 30, tzinfo=timezone.utc)  # 13:30 Vilnius
         result = evaluate_agent_orchestration({
             "agent_orchestration": {"status": "not_started"}
         }, now=now)
@@ -171,7 +200,7 @@ class ControlCenterTests(unittest.TestCase):
         self.assertTrue(needs_attention([result]))
 
     def test_missing_agent_run_waits_before_daily_window(self):
-        now = datetime(2026, 11, 13, 7, 0, tzinfo=timezone.utc)
+        now = datetime(2026, 11, 13, 11, 19, tzinfo=timezone.utc)  # 13:19 Vilnius
         result = evaluate_agent_orchestration({
             "agent_orchestration": {"status": "not_started"}
         }, now=now)
@@ -179,7 +208,7 @@ class ControlCenterTests(unittest.TestCase):
         self.assertFalse(needs_attention([result]))
 
     def test_completed_agent_with_reviewed_memory_is_success(self):
-        now = datetime(2026, 11, 13, 9, 0, tzinfo=timezone.utc)
+        now = datetime(2026, 11, 13, 12, 0, tzinfo=timezone.utc)  # 14:00 Vilnius
         result = evaluate_agent_orchestration({
             "agent_orchestration": {"run_date": "2026-11-13", "status": "completed"},
             "control_core": {
@@ -216,7 +245,7 @@ class ControlCenterTests(unittest.TestCase):
         self.assertIn("atmintis neišsaugota", result["detail"])
 
     def test_recently_running_agent_is_reported_as_running(self):
-        now = datetime(2026, 11, 13, 9, 0, tzinfo=timezone.utc)
+        now = datetime(2026, 11, 13, 12, 0, tzinfo=timezone.utc)  # 14:00 Vilnius
         started = (now - timedelta(minutes=5)).isoformat()
         result = evaluate_agent_orchestration({
             "agent_orchestration": {
