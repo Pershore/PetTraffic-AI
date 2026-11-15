@@ -496,3 +496,14 @@ Svarbu: `automation-history` sąmoningai apribota tik `reports/history/**` agreg
 - PR testai: Worker Node 63/63 success, Worker Python 6/6 success, Cloudflare access validation success; deploy job skipped. Site-check 9 HTML puslapių validator + compileall + 22 agent testai + 134 bendri testai success. Sync PR testai success. Nuorodos: #43730277368, #43730277297, #43730277289.
 - PR nesujungtas; production Worker neįdiegtas, nes merge automatiškai paleistų Worker production deploy. Reikalingas atskiras vartotojo patvirtinimas. Naujo realaus AI ciklo ir D1 atminties readback dar nėra.
 - Nepakeisti DNS, Cloudflare secrets/permissions, ARO Vet, viešas turinys, billing ir mokamos paslaugos; /v1/tasks* išlieka išjungta. Aktyvus darbo laikas nematuotas.
+
+
+## 2026-11-15 17:38 LT – PR #240 sujungimas ir Worker diegimo patikra
+
+- Vartotojas aiškiai patvirtino PR #240 sujungimą ir Worker produkcinį diegimą. PR #240 sujungtas į `main`, merge commit `3302c63d404efc917d8170ab00aa44a813735403`.
+- Worker deploy [#43730905048](https://github.com/Pershore/PetTraffic-AI/actions/runs/43730905048) – **PATIKRINTA / success**. Cloudflare token/resource validation, Worker testai ir deploy job success; D1 migracijų nereikėjo (`No migrations to apply`). Worker versija `da56384c-a69f-4067-94e2-a32d529119df`.
+- Deploy job realiai patikrino /health: `ok=true`, D1 connected, Control Core schema connected; neautentifikuotas `/v1/events` grąžino HTTP 401; Cloudflare patvirtino grafikus `*/15 * * * *` ir `20 10,11 * * *`.
+- Po merge site-check [#43730905036](https://github.com/Pershore/PetTraffic-AI/actions/runs/43730905036) ir Control Center [#43730905065](https://github.com/Pershore/PetTraffic-AI/actions/runs/43730905065) – success.
+- Catch-up kodas dabar **įdiegtas produkcijoje**, bet jo realus pirmasis AI ciklas ir Control Core/D1 memory readback dar **LAUKIA** vėlesnio heartbeat vykdymo. Naujausia automation-history būsena #43730968824 fiksavo stale būseną prieš šio naujo ciklo patvirtinimą; jos nelaikyti klaidinga ar sėkmingu agentų ciklu.
+- Saugumo ribos išlaikytos: `/v1/tasks*` lieka 503, nėra savavališko užduočių vykdymo; nekeisti DNS, Worker secrets/permissions, ARO Vet, viešo turinio, billing ar mokamų paslaugų.
+- **Kitas konkretus veiksmas:** po artimiausio 15 min. heartbeat patikrinti /health `agent_orchestration`, specialistų būsenas, Control Core spragų skaičių ir `memory_updated_at`; jei ciklas dar nepasileido, nustatyti, ar tos pačios LT dienos snapshot įrašai yra D1.
