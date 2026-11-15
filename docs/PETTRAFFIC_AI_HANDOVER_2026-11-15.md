@@ -78,3 +78,17 @@ Iki 11:40 LT patikrinti Control Center schedule įvykį ir jo ataskaitą. Jei jo
 - HTML puslapių content-type `text/html; charset=utf-8`; robots `text/plain; charset=utf-8`; sitemap `application/xml`.
 - Kartu su 10:47 LT patikrinta pradžia ir Worker `/health`, viešos svetainės pasiekiamumas patvirtintas. Tai nepatvirtina Google indeksavimo ar naujų GA4/GSC duomenų.
 - Firecrawl kredito balansas po patikros: 197/1 000. Jokie svetainės ar produkcijos pakeitimai neatlikti.
+
+
+## 2026-11-15 – saugus kasdienio rinkinio atsarginis paleidimas (PR rengiamas)
+
+**Problema:** GitHub jungtis gali skaityti Actions, bet neturi workflow-dispatch API. 2026-11-15 daily-suite 08:10 LT cron įvykio nėra; priežastis nepatvirtinta, todėl cron laikas nekeičiamas.
+
+**Paruoštas sprendimas:** PR šaka fix/secure-daily-suite-dispatch sukuria ribotą issue-comment tiltelį:
+- Trigeris tik naujas komentaras issue #145; pull request komentarai atmetami.
+- Python guard priima tik tikslų /pettraffic-run-daily-suite tekstą iš GitHub vartotojo Pershore.
+- GitHub Actions naudoja trumpalaikį GITHUB_TOKEN su actions: write ir iškviečia tik esamą daily-suite.yml main šakoje.
+- 20 val. dublikatų apsauga: jei daily-suite jau paleistas per paskutines 20 val. per schedule arba workflow_dispatch, antras paleidimas nevykdomas.
+- Naujų secrets, Cloudflare pakeitimų, išorinių paslaugų ar papildomų išlaidų nėra.
+
+**Svarbi riba:** fallback paleidimas bus event=workflow_dispatch, o ne event=schedule. Jis atkuria dienos darbus, bet nepaslepia GitHub cron gedimo. PR dar tikrintinas; tiltas laikomas PARUOŠTA, kol CI ir tikras dispatch bandymas nepraeina.
