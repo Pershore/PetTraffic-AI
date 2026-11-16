@@ -1,8 +1,8 @@
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
-- Atnaujinta: 2026-11-16T10:50:08.369319+00:00
+- Atnaujinta: 2026-11-16T10:55:21.453371+00:00
 - Būsena: **REIKIA DĖMESIO**
-- GitHub run: 43852345499
+- GitHub run: 43853094816
 - Šaltinio commit: b9e0bae5c71766efdf58e758ba181c044ffb78df
 
 ## Paskutinis patikrintas etapas
@@ -15,18 +15,18 @@ Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas
 
 ## Patvirtinti procesai
 
+- Centrinės API sinchronizavimas: Paskutinis paleidimas sėkmingas.
+- Centrinis valdymo centras: Paskutinis paleidimas sėkmingas.
 - Debesijos read-only užduočių vykdytojas: Paskutinis debesijos užduoties vykdymas sėkmingas.
-- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 5 min.
+- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 10 min.
 
 ## Problemos
 
 - **GA4, temų radaras ir svetainės stebėjimas** (warning): Suplanuotas ciklas nuo 2026-11-16 06:10 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-15T13:51:47Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia. – https://github.com/Pershore/PetTraffic-AI/actions/runs/43849430626
 - **Lighthouse auditas** (warning): Suplanuotas ciklas nuo 2026-11-16 07:27 UTC dar neįvykdytas; suplanuotų paleidimų istorijoje nėra. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia. – https://github.com/Pershore/PetTraffic-AI/actions/runs/43745229308
-- **Centrinis valdymo centras** (failure): Paskutinis paleidimas nepavyko. – https://github.com/Pershore/PetTraffic-AI/actions/runs/43849443863
 
 ## Laukiančios patikros
 
-- Centrinės API sinchronizavimas: Vyksta (in_progress).
 - AI agentai + control-core atmintis: Paskutinis AI agentų ciklas dar neįvyko 13:20 Lietuvos laiku lange; laukiama šiandienos suplanuoto ciklo.
 
 ## AI agentų ir atminties patikra
