@@ -205,6 +205,24 @@ async function getEvents(env) {
  }
  return {events,invalidPayloadCount};
 }
+export function selectLatestEventsByKind(events, kinds) {
+ const counts=Object.fromEntries(kinds.map(kind=>[kind,0]));
+ for(const event of events||[]) {
+  if(event&&kinds.includes(event.kind)) counts[event.kind]++;
+ }
+ const ordered=[...(events||[])].filter(event=>event&&kinds.includes(event.kind))
+  .sort((left,right)=>String(right.created_at||"").localeCompare(String(left.created_at||"")));
+ const latest=new Map();
+ for(const event of ordered) {
+  if(!latest.has(event.kind)) latest.set(event.kind,event);
+ }
+ return {
+  selection:"latest_per_kind",
+  available_snapshot_counts:counts,
+  verified_snapshots:kinds.flatMap(kind=>latest.has(kind)?[latest.get(kind)]:[]),
+ };
+}
+
 async function getPublicContent(env) {
  const pages=[]; const fetcher=env.FETCH||fetch;
  for(const path of CONTENT_PATHS) {
@@ -267,7 +285,7 @@ export async function runAgentOrchestration(env) {
   stage="fetch_public_content";
   const pages=await getPublicContent(env);
   for(const agent of AGENTS) {
-   const source=agent.id==="content-review"?{public_pages:pages}:{verified_snapshots:eventData.events.filter(e=>agent.kinds.includes(e.kind))};
+   const source=agent.id==="content-review"?{public_pages:pages}:selectLatestEventsByKind(eventData.events,agent.kinds);
    stage="reserve_"+agent.id;
    if(!(await reserveNextCall()))throw new Error("daily_ai_call_cap_reached");
    stage="model_"+agent.id;
