@@ -18,7 +18,7 @@ class CurrentProjectPolicyTests(unittest.TestCase):
                 self.assertIn(POLICY, (ROOT / relative).read_text(encoding="utf-8"))
 
     def test_public_site_contains_no_aro_vet_or_affiliate_elements(self):
-        forbidden = re.compile(r"aro\\s*vet|arovetvaistine|affiliate", re.IGNORECASE)
+        forbidden = re.compile(r"aro\s*vet|arovetvaistine|affiliate", re.IGNORECASE)
         for path in (ROOT / "site").rglob("*"):
             if not path.is_file() or path.suffix.lower() not in {".html", ".js", ".css", ".xml", ".txt", ".svg"}:
                 continue
