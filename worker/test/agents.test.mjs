@@ -254,6 +254,8 @@ test("daily orchestration requires same-day Daily-suite schedule provenance", as
  const stale = {kind:"topic_snapshot",payload_json:JSON.stringify({run_id:"old-1",provenance:{source_event:"schedule",source_workflow_id:"418322987",source_run_id:"old-1",source_run_created_at:"2026-11-15T15:34:13Z"}}),created_at:"2026-11-15T15:40:00Z"};
  const mismatched = {kind:"topic_snapshot",payload_json:JSON.stringify({run_id:"payload-id",provenance:{source_event:"schedule",source_workflow_id:"418322987",source_run_id:"other-id",source_run_created_at:"2026-11-16T15:34:13Z"}}),created_at:"2026-11-16T15:40:00Z"};
  assert.equal(await shouldRunAgentOrchestration(makeEnv({rows:[scheduled]}),controller), true);
+ const beforeDataAvailable={cron:"*/15 * * * *",scheduledTime:Date.parse("2026-11-16T11:30:00.000Z")};
+ assert.equal(await shouldRunAgentOrchestration(makeEnv({rows:[scheduled]}),beforeDataAvailable),false);
  for (const row of [push,manual,wrongWorkflow,stale,mismatched,{kind:"analytics_snapshot",payload_json:"{bad"}]) {
   assert.equal(await shouldRunAgentOrchestration(makeEnv({rows:[row]}),controller),false);
  }
