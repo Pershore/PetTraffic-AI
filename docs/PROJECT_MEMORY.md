@@ -7,9 +7,26 @@
 
 Šis dokumentas sujungia ilgalaikius sprendimus, patvirtintą architektūrą, dabartines integracijų būsenas, neišspręstus blokatorius ir kitus veiksmus. Jis nepakeičia GitHub testų ar realių vykdymų įrodymų. Kiekvieną būseną reikia tikrinti pagal naujausią commit, workflow run ir gyvą sistemos atsakymą.
 
-## 2026-11-15 – vartotojo sprendimas: ARO Vet Vaistinė vėl leidžiama
+## 2026-11-16 – galiojanti vartotojo politika ir naujausia patikrinta būsena
 
-Ankstesnis draudimas naudoti ARO Vet vaistinės turinį buvo vartotojo klaida ir šiuo įrašu panaikinamas. Nuo dabar Pet traffic gali naudoti ARO Vet Vaistinės viešą produktų informaciją, aprašymus ir produktų nuotraukas, kai tai tiesiogiai naudinga skaitytojui. ARO Vet Vaistinė yra pageidaujamas produktų šaltinis; nekuriami konkuruojančių parduotuvių pasiūlymai, nebent vartotojas nurodys kitaip. Produktų kortelės turi būti saikingos, su tiesiogine nuoroda į atitinkamą produktą, patikrinta kaina / prieinamumu ir be nepagrįstų gydomojo poveikio pažadų. Jokių komisinių ar affiliate sekimo be atskiro leidimo. Pet traffic lieka nepriklausomas prekės ženklas: nekopijuoti ARO Vet logotipo, viso dizaino ar neklaidinti dėl bendros nuosavybės. Šis leidimas nesuteikia teisės keisti ARO Vet svetainę, kodą, DNS, paskyras ar infrastruktūrą. Viešas Pet traffic turinio publikavimas vis tiek reikalauja vartotojo patvirtinimo.
+**Galiojanti politika:** ARO Vet, pharmacy sections, product cards, affiliate links, advertising blocks, and ARO Vet-specific tracking must never appear in Pet traffic. ARO Vet svetainės, kodo, DNS, paskyrų ir infrastruktūros nekeisti. Šis sprendimas panaikina 2026-11-15 istorinį leidimą; visi žemiau esantys ARO Vet leidimo įrašai laikomi pasenusiais ir negali būti naudojami kaip dabartinės instrukcijos.
+
+**Worker AI ciklas (2026-11-16):** /health patvirtino agent_orchestration.run_date=2026-11-16, started_at=2026-11-16T11:20:24.330Z, status=completed, ai_calls=5, error_code=null. Control Core įrašas validus, bet būsena needs_evidence, 1 rekomendacija, 5 evidence gaps; specialistų būsenos: analytics=needs_evidence, topics=reviewed, technical-seo=needs_evidence, content-review=invalid_json. D1 memory yra; memory_updated_at=2026-11-16T11:20:31.068Z, sutampa su Control Core created_at. /health šią reikšmę skaito tiesiogiai iš control_core_memory; pilni modelio tekstai viešame health atsakyme nerodomi. Ciklo nekartoti dėl vieno paleidimo per dieną ribos. Kitas patikrinimas – esamas 14:00 LT post-cycle verifier. Issue #145 neuždaryti, kol nėra visų specialistų validžių išvesčių ir įrodymų.
+
+**Daily-suite ir D1:** 2026-11-16 event=schedule Daily-suite paleidimo nėra. Saugus owner bridge catch-up #43849430626 buvo workflow_dispatch, success, visi 3 job success; GA4/GSC ir topic artefaktai sukurti. D1 sync #43852322396 success, du privatumo filtruoti snapshot įrašai įrašyti ir perskaityti atgal. Per 20 valandų jau yra sėkmingas workflow_dispatch, todėl antras catch-up nekartotas.
+
+**Control Center ir schedule:** Control Center #43852345499 ir #43855770613 – success; jis event-driven, atskiro daily cron nėra. Naujausias #43855770613 snapshot sugeneruotas 11:13 UTC, prieš 13:20 LT AI ciklą. Site-check ir Daily-suite 2026-11-16 event=schedule nerasta; workflow failai atnaujinti 11:08 UTC, po numatytų šiandienos cron laikų. Kitas realus schedule paleidimas laukiamas kitą dieną. Lighthouse savaitinis event=schedule šiandien nerastas, bet sėkmingas push auditas #43853564075 turi 10 HTML/JSON ataskaitų, todėl papildomas rankinis Lighthouse paleidimas nereikalingas.
+
+**Naujausi patikimi rodikliai:** GA4 2026-11-09–15: 7 aktyvūs naudotojai, 19 sesijų, 82 puslapių peržiūros, 0 patvirtintų organinių sesijų. Search Console 2026-11-07–13: 0 parodymų, 0 paspaudimų, sitemap pateiktas ir laukia apdorojimo, 5 prioritetiniai URL dar nežinomi Google. Google News RSS temų radaras: 31 unikali antraštės nuoroda iš 7 temų; tai nėra paieškų apimtys. Lighthouse mobile: homepage 98 (LCP 1.83 s, TBT 148 ms, CLS 0), skubi katės pagalba 98, kiti 3 puslapiai 99; desktop visi 100, accessibility / best-practices / SEO visi 100.
+
+**Svetainė ir PR:** 2026-11-16 gyvi homepage, keturi gidai, about ir privacy atsakė HTTP 200; favicon yra /favicon.svg; robots.txt ir sitemap.xml HTTP 200; neegzistuojantis maršrutas grąžino 404. Live-check patvirtino 12 vidinių URL ir 20 senų 301 peradresavimų. PR #253 keičia canonical, OG, sitemap ir navigacijos URL; paliktas atviras, nes viešiems URL / metadata pakeitimams reikia atskiro vartotojo patvirtinimo.
+
+**History:** automation-history latest.md / latest.json yra automatiniai Control Center snapshot'ai; jų šiame audite rankiniu būdu nekeisti. Naujausias snapshot yra prieš AI ciklą; laukti 14:00 verifier arba kito event-driven Control Center run.
+
+
+## 2026-11-15 – istorinis vartotojo sprendimas: ARO Vet Vaistinė laikinai leista (PANAUKINTA 2026-11-16)
+
+Tai buvo 2026-11-15 galiojęs istorinis leidimas, kurį vartotojas panaikino 2026-11-16. Jokios jo produktų, kortelių, nuorodų ar reklamos nuostatos nebegalioja. Šis skyrius paliktas tik sprendimų istorijai; dabartinė vykdytina politika pateikta dokumento pradžioje.
 
 ## 2026-11-15 – savaitinė augimo ataskaita
 
@@ -53,7 +70,7 @@ Jei dokumentai nesutampa, vadovautis šia tvarka:
 5. Naujausias `docs/PETTRAFFIC_AI_HANDOVER_*.md` – konkrečios sesijos perdavimas ir jos įrodymai.
 6. `docs/SESSION_START.md` – trumpas privalomas naujos sesijos veiksmų sąrašas.
 
-**Svarbu dėl senesnių failų:** `docs/PETTRAFFIC_AI_HANDOVER_2026-11-12.md` yra istorinis dokumentas. Jo pradinė kryptis apie ARO Vet vaistinę ir nuorodas iš dalies sutampa su dabar vėl patvirtinta kryptimi; ankstesnis draudimas naudoti ARO Vet produktų informaciją buvo panaikintas 2026-11-15 vartotojo sprendimu. Vadovautis aukščiau esančiu naujausiu ARO Vet leidimo bloku ir dabartiniu `AGENTS.md`. ARO Vet svetainės ir infrastruktūros nekeisti.
+**Svarbu dėl senesnių failų:** visi 2026-11-15 ARO Vet leidimai ir jų pagrindu parengtos produktų / nuorodų rekomendacijos yra pasenusios. Vadovautis tik 2026-11-16 galiojančiu draudimu šio dokumento pradžioje ir AGENTS.md. Istoriniai įrašai palikti audito pėdsakui, ne kaip vykdytinos instrukcijos.
 
 Šakų paskirtys:
 - `main`: kodas, instrukcijos, dokumentacija, darbo žurnalas.
@@ -84,7 +101,7 @@ Niekada nepaversti `LAUKIA`, `PARUOŠTA` ar `NEPATVIRTINTA` į `PATIKRINTA` be n
   - `articles/suo-viduriuoja-ka-daryti.html`
 - Išlaikyti pagrindinį puslapį, apie puslapį, privatumo puslapį, sitemap, robots ir tik pagrįstus peradresavimus. Negrąžinti plono / užpildomojo turinio.
 - Tikslinė auditorija: Lietuvos gyvūnų šeimininkai; vietinis SEO gali orientuotis į Gargždus ir Klaipėdos rajoną, kai tai prasminga.
-- ARO Vet Vaistinė yra vartotojo patvirtintas prioritetinis produktų informacijos, produktų aprašymų, nuotraukų ir tiesioginių prekių nuorodų šaltinis, kai konkreti prekė naudinga skaitytojui. Pet traffic išlieka savarankiškas prekės ženklas; ARO Vet logotipas ir visas vizualinis identitetas nekopijuojamas.
+- Pet traffic nenaudojami ARO Vet produktai, produktų kortelės, nuotraukos, tiesioginės nuorodos, vaistinės skiltis, reklama, affiliate ar ARO Vet specifinis sekimas. Tai pakeitė 2026-11-15 istorinį leidimą.
 
 ## 3. Nekintamos saugumo ir biudžeto ribos
 
@@ -92,7 +109,7 @@ Niekada nepaversti `LAUKIA`, `PARUOŠTA` ar `NEPATVIRTINTA` į `PATIKRINTA` be n
 - Jokių mokamų API, prenumeratų, papildomų paslaugų ar mokamų priklausomybių be aiškaus biudžeto patvirtinimo.
 - Turinį galima rengti ir tikrinti automatiškai; viešai publikuoti tik po vartotojo patvirtinimo.
 - Nekeisti DNS, domeno, Cloudflare teisių, production secrets, Worker/D1 schemos ar produkcinės konfigūracijos be atskiro aiškaus leidimo ir rizikos patikros.
-- ARO Vet svetainės, kodo, DNS, paskyros ir infrastruktūros nekeisti. Leidimas naudoti viešą produktų turinį / produktų nuotraukas Pet traffic viduje nėra leidimas administruoti ar redaguoti ARO Vet.
+- ARO Vet svetainės, kodo, DNS, paskyros ir infrastruktūros nekeisti. 2026-11-16 vartotojo sprendimu ARO Vet turinio naudojimas Pet traffic taip pat draudžiamas.
 - Niekada neprašyti slaptažodžių, MFA / device-code prisijungimo kodų, GitHub tokenų, Cloudflare API raktų, Global API Key ar service-account JSON pokalbyje.
 - Jokių savavališkų shell komandų, neapribotų užduočių eilių, automatinio PR sujungimo ar modelio išvesties suteiktų vykdymo teisių.
 - Nesiųsti laiškų, nepirkti, neskelbti socialinių įrašų ir nekontaktuoti trečiųjų šalių.
