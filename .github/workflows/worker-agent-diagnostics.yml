@@ -1,0 +1,63 @@
+name: Pet traffic read-only Worker agent diagnostics
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_date:
+        description: "Optional run_date to inspect (YYYY-MM-DD); defaults to today's Vilnius date."
+        required: false
+        type: string
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/worker-agent-diagnostics.yml"
+      - "worker/scripts/agent_diagnostics.py"
+      - "worker/test/agent_diagnostics_test.py"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pettraffic-worker-agent-diagnostics
+  cancel-in-progress: false
+
+jobs:
+  diagnose:
+    if: github.ref == 'refs/heads/main'
+    name: Read-only D1 agent evidence inspection
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - name: Test the privacy-filtered diagnostic builder
+        run: PYTHONPATH=worker/scripts python -m unittest discover -s worker/test -p 'agent_diagnostics_test.py' -v
+      - name: Read the selected run from D1 using SELECT-only requests
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          PETTRAFFIC_D1_DATABASE_ID: ${{ vars.PETTRAFFIC_D1_DATABASE_ID }}
+          PETTRAFFIC_RUN_DATE: ${{ inputs.run_date }}
+        run: python worker/scripts/agent_diagnostics.py
+      - name: Add privacy-filtered result to the workflow summary
+        if: always()
+        run: |
+          if [ -f reports/worker-agent-diagnostics.md ]; then
+            cat reports/worker-agent-diagnostics.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Worker AI diagnostics were not generated; inspect the preceding safe error message." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Upload the privacy-filtered result
+        if: success()
+        uses: actions/upload-artifact@v7
+        with:
+          name: pettraffic-worker-agent-diagnostics
+          path: reports/worker-agent-diagnostics.*
+          if-no-files-found: error
+          retention-days: 30
