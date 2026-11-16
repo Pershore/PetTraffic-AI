@@ -56,9 +56,11 @@ export function isEligibleScheduledDailySuiteSnapshot(event, localDay, evidenceC
  if(!sourceRunId || String(payload.run_id||"")!==sourceRunId) return false;
  if(typeof provenance.source_run_created_at!=="string") return false;
  const sourceCreatedAt=new Date(provenance.source_run_created_at);
+ const persistedAt=new Date(event.created_at);
  const cutoff=new Date(evidenceCutoff);
- return Number.isFinite(sourceCreatedAt.getTime()) && Number.isFinite(cutoff.getTime()) &&
-  sourceCreatedAt.getTime()<=cutoff.getTime() && vilniusDateKey(sourceCreatedAt)===localDay;
+ return Number.isFinite(sourceCreatedAt.getTime()) && Number.isFinite(persistedAt.getTime()) &&
+  Number.isFinite(cutoff.getTime()) && sourceCreatedAt.getTime()<=cutoff.getTime() &&
+  persistedAt.getTime()<=cutoff.getTime() && vilniusDateKey(sourceCreatedAt)===localDay;
 }
 
 export async function shouldRunAgentOrchestration(env, controller) {
@@ -77,7 +79,7 @@ export async function shouldRunAgentOrchestration(env, controller) {
 
   const localDay = vilniusDateKey(scheduledAt);
   const snapshots = await env.DB.prepare(
-    "SELECT kind, payload_json FROM events " +
+    "SELECT kind, payload_json, created_at FROM events " +
     "WHERE kind IN ('analytics_snapshot', 'topic_snapshot') " +
     "ORDER BY created_at DESC LIMIT 30"
   ).all();
