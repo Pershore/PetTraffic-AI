@@ -25,7 +25,7 @@ def classify_gap(value: object) -> str:
         ("model_output_incomplete_json", ("incomplete json", "unexpected end of json")),
         ("model_output_malformed_json", ("not valid json", "invalid json")),
         ("model_output_invalid_shape", ("expected json object", "did not match expected json object")),
-        ("model_output_missing_fields", ("required fields", "did not contain required")),
+        ("model_output_missing_fields", ("required fields", "did not contain required", "did not contain the required")),
         ("model_output_empty", ("no text output", "empty model response")),
         ("workers_ai_unavailable", ("workers ai", "model unavailable", "inference failed")),
         ("analytics_snapshot_missing", ("analytics_snapshot", "ga4 snapshot")),

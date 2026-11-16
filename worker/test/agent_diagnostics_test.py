@@ -30,6 +30,7 @@ class WorkerAgentDiagnosticsTests(unittest.TestCase):
         self.assertEqual(classify_gap("Model response was incomplete JSON; this specialist result was not used."), "model_output_incomplete_json")
         self.assertEqual(classify_gap("Model response was not valid JSON; this specialist result was not used."), "model_output_malformed_json")
         self.assertEqual(classify_gap("Model response did not contain required fields."), "model_output_missing_fields")
+        self.assertEqual(classify_gap("Model JSON did not contain the required status, findings, recommendations and evidence_gaps fields."), "model_output_missing_fields")
 
     def test_evidence_gaps_become_codes_and_free_text_is_never_returned(self):
         report = {
