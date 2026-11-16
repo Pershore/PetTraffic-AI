@@ -200,6 +200,106 @@
         "AI rekomendacijos yra patariamosios; modelio išvestys nesuteikia vykdymo teisių."
       ],
       "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių."
+    },
+    {
+      "schema_version": 1,
+      "project": "PetTraffic AI",
+      "generated_at": "2026-11-16T11:01:51.704782+00:00",
+      "run_id": "43854069567",
+      "source_commit": "3942b0cc1352c4b8b827ee09601fd9e1b48cf9e1",
+      "overall_status": "needs_attention",
+      "last_verified_stage": "Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataskaitoje.",
+      "next_action": "Spręsti pirmą aptiktą problemą: Centrinis valdymo centras (failure). Paskutinis paleidimas nepavyko.",
+      "verified_processes": [
+        {
+          "name": "Centrinės API sinchronizavimas",
+          "state": "success",
+          "detail": "Paskutinis paleidimas sėkmingas.",
+          "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43853685064",
+          "created_at": "2026-11-16T10:59:14Z"
+        },
+        {
+          "name": "Debesijos read-only užduočių vykdytojas",
+          "state": "success",
+          "detail": "Paskutinis debesijos užduoties vykdymas sėkmingas.",
+          "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43740434516",
+          "created_at": "2026-11-15T17:19:17Z"
+        },
+        {
+          "name": "Cloudflare Worker + D1",
+          "state": "success",
+          "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 1 min.",
+          "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
+          "created_at": null
+        }
+      ],
+      "problems": [
+        {
+          "name": "Centrinis valdymo centras",
+          "state": "failure",
+          "detail": "Paskutinis paleidimas nepavyko.",
+          "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43853564062",
+          "created_at": "2026-11-16T10:58:25Z"
+        }
+      ],
+      "pending_checks": [
+        {
+          "name": "GA4, temų radaras ir svetainės stebėjimas",
+          "state": "waiting",
+          "detail": "Workflow atnaujintas 2026-11-16 10:58 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.",
+          "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43849430626",
+          "created_at": "2026-11-16T10:30:15Z"
+        },
+        {
+          "name": "Lighthouse auditas",
+          "state": "waiting",
+          "detail": "Workflow atnaujintas 2026-11-16 10:58 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.",
+          "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43853564075",
+          "created_at": "2026-11-16T10:58:25Z"
+        },
+        {
+          "name": "AI agentai + control-core atmintis",
+          "state": "waiting",
+          "detail": "Paskutinis AI agentų ciklas dar neįvyko 13:20 Lietuvos laiku lange; laukiama šiandienos suplanuoto ciklo.",
+          "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
+          "created_at": null
+        }
+      ],
+      "ai_agent_memory_check": {
+        "name": "AI agentai + control-core atmintis",
+        "state": "waiting",
+        "detail": "Paskutinis AI agentų ciklas dar neįvyko 13:20 Lietuvos laiku lange; laukiama šiandienos suplanuoto ciklo.",
+        "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
+        "created_at": null
+      },
+      "recommendations": [
+        {
+          "id": "search-visibility",
+          "priority": "medium",
+          "title": "Patikrinti Google paieškos matomumą",
+          "next_action": "Patikrinti URL indeksavimo būseną, sitemap apdorojimą ir ar svarbiausi puslapiai prieinami Googlebot."
+        },
+        {
+          "id": "sitemap-processing",
+          "priority": "info",
+          "title": "Stebėti Google sitemap apdorojimą",
+          "next_action": "Pakartotinai patikrinti kitame cikle; sitemap pakartotinai neteikti, jei jis jau pateiktas."
+        },
+        {
+          "id": "automation-health",
+          "priority": "high",
+          "title": "Pašalinti automatizacijų būklės problemas",
+          "next_action": "Atidaryti centrinio valdymo GitHub įspėjimą ir taisyti konkretaus proceso klaidą."
+        }
+      ],
+      "safety_boundaries": [
+        "ARO Vet svetainės, kodo ir infrastruktūros nekeisti be atskiro leidimo.",
+        "Svetainės turinio automatiškai nepublikuoti; būtinas vartotojo patvirtinimas.",
+        "Jokių mokamų API ar paslaugų be atskiro biudžeto patvirtinimo.",
+        "Nekeisti DNS, Cloudflare teisių ar produkcinės infrastruktūros be atskiro patvirtinimo.",
+        "AI rekomendacijos yra patariamosios; modelio išvestys nesuteikia vykdymo teisių."
+      ],
+      "privacy": "Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių."
     }
   ]
 }
