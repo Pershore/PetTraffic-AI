@@ -120,9 +120,9 @@ class BuildEventTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "analytics-7d.md").write_text(
-                "# Analytics\\nGA4 laikotarpis: 2026-11-09 – 2026-11-15\\n"
-                "## Pagrindiniai rodikliai (GA4)\\n"
-                "| Aktyvūs naudotojai | 7 |\\n",
+                "# Analytics\nGA4 laikotarpis: 2026-11-09 – 2026-11-15\n"
+                "## Pagrindiniai rodikliai (GA4)\n"
+                "| Aktyvūs naudotojai | 7 |\n",
                 encoding="utf-8",
             )
             events = build_events(
@@ -145,7 +145,7 @@ class BuildEventTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "topic-radar.md").write_text(
-                "# Temų radaras\\n- **Katės mityba** – 5 antraščių\\n",
+                "# Temų radaras\n- **Katės mityba** – 5 antraščių\n",
                 encoding="utf-8",
             )
             for source_event in ("push", "workflow_dispatch"):
