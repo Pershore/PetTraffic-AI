@@ -7,7 +7,17 @@
 
 Šis dokumentas sujungia ilgalaikius sprendimus, patvirtintą architektūrą, dabartines integracijų būsenas, neišspręstus blokatorius ir kitus veiksmus. Jis nepakeičia GitHub testų ar realių vykdymų įrodymų. Kiekvieną būseną reikia tikrinti pagal naujausią commit, workflow run ir gyvą sistemos atsakymą.
 
-## 2026-11-16 – galiojanti vartotojo politika ir naujausia patikrinta būsena (15:06 LT)
+## Naujausia patikrinta būsena (2026-11-16, 18:42 LT)
+
+- **Worker / D1 PATIKRINTA:** gyvas `/health` HTTP 200; database ir Control Core schema connected; heartbeat 2026-11-16 16:30:13 UTC patvirtino svetainę HTTP 200 ir D1. AI ciklas šiandien jau atliktas: run_date=2026-11-16, completed, 5 AI calls, error_code=null; D1 memory present. Control Core vis dar `needs_evidence`, 5 spragos; specialistai: analytics=needs_evidence, topics=reviewed, technical-seo=needs_evidence, content-review=invalid_json. Antro ciklo šiandien nedaryti; issue #145 palikti atvirą.
+- **AI pataisa PARUOŠTA:** PR #261 atnaujintas – dabar neteisingi / ne tekstiniai masyvų elementai taip pat verčia atsakymą į `needs_evidence`, o ne klaidingą `reviewed`. CI: 77 Node, 12 Python ir 149 site/static testai success; Cloudflare validation ir Pages preview success; Worker deploy skipped. PR lieka draft: https://github.com/Pershore/PetTraffic-AI/pull/261
+- **Daily-suite sinchronizavimo pataisa PARUOŠTA:** PR #263 identifikuoja daily-suite pagal stabilų workflow ID 418322987, o ne kintantį `run-name`; pridėti trys regresijos testai. CI: 15 worker/test Python, 149 site/static Python, 77 Node ir 12 Python Worker testų success; Cloudflare validation ir Pages preview success. PR lieka draft: https://github.com/Pershore/PetTraffic-AI/pull/263
+- **Schedule PATIKRINTA, vėlavimo priežastis NEPATVIRTINTA:** 2026-11-16 site-check #43880800208 ir daily-suite #43897746978 buvo tikri `event=schedule`, abu success; paleidimai prasidėjo atitinkamai 13:57:24 UTC ir 15:34:13 UTC, nors cron buvo 05:37 ir 06:10 UTC. Runneriai startavo iškart po run sukūrimo, todėl vėlavimas buvo iki runnerio. Konkreti GitHub priežastis neįrodyta; cron nekeisti remiantis spėjimu.
+- **D1 sync klaida PATIKRINTA:** daily-suite #43897746978 turėjo dinaminį pavadinimą „Scheduled daily automation suite“. Sync #43897867898 lygino statinį pavadinimą ir bandė parsisiųsti neegzistuojantį `pettraffic-control-center` artefaktą – `Artifact not found`. Vėlesnis sync #43909081615 sėkmingai įrašė ir perskaitė du Control Center įvykius; tai neįrodo, kad trūkstami daily-suite analytics/topic artefaktai buvo sinchronizuoti. PR #263 dar nesujungtas, todėl ši pataisa produkcijoje neveikia.
+- **SEO / publikavimas:** PR #258 vis dar atviras; clean canonical / navigacijos / sitemap pakeitimai produkcijoje nepaskelbti. Privatus valdymo pultas vis dar neįdiegtas; /control/ viešas READ-ONLY, issue #248 atviras.
+- **Istorija / po-commit patikra PATIKRINTA:** darbo žurnalas papildytas commit `5c252b0`; po jo site-check push run #43910506515 success, 31 agento ir 149 Python testai OK. RSS „kačių priežiūra“ šaltinis pateikė timeout įspėjimą, bet testai praėjo. automation-history `latest.md/latest.json` sugeneruotas paskutinį kartą 16:34:38 UTC; jų rankiniu būdu nekeisti.
+
+## 2026-11-16 – galiojanti vartotojo politika ir istorinė patikrinta būsena (15:06 LT)
 
 **Galiojanti politika:** ARO Vet, pharmacy sections, product cards, affiliate links, advertising blocks, and ARO Vet-specific tracking must never appear in Pet traffic. ARO Vet svetainės, kodo, DNS, paskyrų ir infrastruktūros nekeisti. 2026-11-15 leidimas panaikintas; istoriniai leidimo įrašai nėra vykdytinos instrukcijos.
 

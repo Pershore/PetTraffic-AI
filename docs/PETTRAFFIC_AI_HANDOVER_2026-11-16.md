@@ -1,6 +1,6 @@
 # Pet traffic – perdavimas 2026-11-16
 
-Atnaujinta: 2026-11-16 15:06 Europe/Vilnius
+Atnaujinta: 2026-11-16 18:42 Europe/Vilnius
 
 ## Galiojanti vartotojo politika
 
@@ -48,13 +48,14 @@ ARO Vet svetainės, kodo, DNS, paskyrų ir infrastruktūros nekeisti. 2026-11-15
 - Cloudflare Zero Trust Free planas skelbia $0 iki 50 naudotojų. Jokių Access/DNS/billing nustatymų šioje sesijoje nekeista; atskira schema aprašyta docs/PRIVATE_CONTROL_CENTER_ARCHITECTURE.md.
 - Vėlesnės valdymo komandos tik fixed allowlist task schemas + OIDC least privilege + tests + D1 readback. Jokio arbitrary shell ar model-generated code.
 
-## Kitas pirmas neužbaigtas veiksmas
+## Kitas pirmas neužbaigtas veiksmas (atnaujinta 18:42 LT)
 
-1. Sulaukti atskiro patvirtinimo dėl PR #258 produkcijos canonical/SEO/navigation publikavimo.
-2. Sulaukti atskiro Worker production deployment leidimo PR #261 prieš merge.
-3. Išsiaiškinti ChatGPT koordinatoriaus bendrą scheduled-task klaidą – platforma nepateikia traceback.
-4. Stebėti kitą tikrą Daily-suite/site-check event=schedule; nemaišyti su push ar manual.
-5. Tęsti privataus valdymo pulto dokumentavimą, bet nieko neįjungti Cloudflare paskyroje.
+1. **AI agentai:** PR #261 palikti draft; atskirai gauti leidimą Worker production deploy prieš merge. Po diegimo patikrinti kitą dienos ciklą (ne kartoti 2026-11-16 ciklo), specialistų evidence ir D1 memory readback.
+2. **Daily-suite → D1:** PR #263 palikti draft; atskirai gauti leidimą sujungti, nes po merge esamas OIDC workflow pradės siųsti privatumo filtruotus snapshot į produkcinį D1. Dabartinio 2026-11-16 daily-suite run #43897746978 trūkstamų analytics/topic įvykių readback dar nepatvirtintas; vienkartiniam seno run sinchronizavimui taip pat būtinas aiškus leidimas.
+3. **Grafikai:** tęsti tikrų schedule event timestamp stebėjimą; 2026-11-16 vėlavimai patvirtinti, tiksli priežastis nepatvirtinta. Nekeičiant cron, kol nėra daugiau įrodymų.
+4. **SEO:** PR #258 viešų canonical / sitemap / navigacijos pakeitimų nesujungti ir nepublikuoti be atskiro leidimo.
+5. **Privatus valdymas:** issue #248; tik parengti architektūrą ir read-only planą, nekeisti Cloudflare Access / DNS / paskyros nustatymų be leidimo.
+6. **Autonomijos alert:** issue #145 neuždaryti, kol nėra reviewed specialistų rezultatų, pilno evidence ir patvirtinto atsistatymo.
 
 ## Ribos
 
