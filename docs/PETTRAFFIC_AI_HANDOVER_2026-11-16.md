@@ -1,6 +1,6 @@
 # Pet traffic – perdavimas 2026-11-16
 
-Atnaujinta: 2026-11-16 18:55 Europe/Vilnius
+Atnaujinta: 2026-11-16 19:52 Europe/Vilnius
 
 ## Galiojanti vartotojo politika
 
@@ -82,3 +82,22 @@ ARO Vet svetainės, kodo, DNS, paskyrų ir infrastruktūros nekeisti. 2026-11-15
 5. **Savaitinė ataskaita:** laukti pirmadienio 18:30 UTC (20:30 LT) workflow ir iki 60 min. grace; rankinio paleidimo nedaryti iki lango pabaigos.
 6. **Autonomijos alert:** issue #145 neuždaryti, kol nėra validžių specialistų, pilno evidence ir recovery_confirmed=true.
 
+
+
+## Papildomi patvirtinimai 2026-11-16 19:52 LT
+
+- Read-only Worker diagnostikos artefaktas #14228495547 (workflow #43870801165, event=push; keturios D1 SELECT užklausos, rows_written=0) patvirtina: AI ciklas 13:20:24–13:20:31 LT, 5 kvietimai, error_code=null, tačiau specialistai: analytics=needs_evidence / search_console_data_missing; topics=reviewed; technical-seo=needs_evidence / insufficient_evidence; content-review=invalid_json / model_output_missing_fields. Control Core ir ilgalaikė memory įrašyti, perskaityti, bet statusas needs_evidence ir 5 spragos.
+- Analitikos artefaktas #14220471570: GA4 2026-11-09–15 – 7 active/new users, 19 sessions, 82 views. GSC 2026-11-07–13 – 0 impressions, 0 clicks, CTR 0, position 0; Search Console query ir page rows nepateiktos. Sitemap submitted / pending; 5 prioritetinių URL Google inspection nurodė URL nežinomas / statusas dar nepatvirtintas. Google API connectivity #43911185204 yra event=schedule, success, bet tik ryšio testas, ne metrikų snapshot ir ne įrodymas, kad yra paieškos eilučių.
+- Svarbus trigger kilmės skirtumas: analytics run #43855151475 ir topic run #43855151518 buvo event=push; AI ciklas juos galėjo naudoti. Daily-suite tikras event=schedule run #43897746978 sukurtas 15:34:13 UTC, gerokai po 13:20 AI ciklo. Todėl 2026-11-16 pilna suplanuota duomenų → AI grandinė NEPATVIRTINTA. Site-check schedule vėlavo apie 8h20, Lighthouse schedule apie 9h43; runneriai startavo greitai po run sukūrimo, bet tiksli scheduler eilės priežastis nepatvirtinta.
+- PR #261 atnaujintas draft, head 9c1577f401466dc6a088f959982794695d0b5411. JSON parser išsaugo tik tipuotus laukus, jei modelis pateikia parseable partial object, bet statusas vis tiek needs_evidence; techninio SEO specialistui perduodama tik naujausia suvestinė pagal kiekvieną reikalingą tipą, kartu nurodant ankstesnių įrašų skaičių. Tai sumažina istorinių snapshot sukeltą 6 000 simbolių įvesties nukirpimo riziką. CI: 79 Node + 12 Worker Python tests success; site checks success; Cloudflare read-only validation success; Worker deploy skipped. Faktinė 6 000 simbolių nukirpimo priežastis dar nėra pamatuota iš žalio D1 payload, todėl laikoma tikėtina, ne galutinai patvirtinta.
+- Gyvas Worker /health scrape: HTTP 200; database=connected, control_core_schema=connected; heartbeat 2026-11-16T17:45:13.763Z, site_status=200. Vis dėlto paskutinis Control Center #43916302486 buvo su timeout ir vėlesnio recovery report nėra; Issue #145 paliktas open.
+- PR #263 dėl daily-suite workflow_id sync ir PR #264 dėl canonical URL lieka draft / nesujungti. Jokių production deploy, D1 writes, schedule pakeitimų, DNS/Cloudflare/Access pakeitimų, viešo turinio ar mokamų paslaugų.
+
+## Kitas pirmas neužbaigtas veiksmas (atnaujinta 19:52 LT)
+
+1. **AI agentai:** PR #261 draft; jo CI patikrintas, bet production Worker deploy / merge tik po atskiro konkretaus leidimo. Nekartoti 2026-11-16 ciklo; kitą dieną patikrinti naują ciklą, agentų evidence, Control Core ir D1 memory readback.
+2. **Schedule provenance:** nustatyti aiškų source event / source run date snapshot įrašuose, kad AI ciklas negalėtų push ar rankinio paleidimo palaikyti suplanuota analitikos grandine. Dabartiniai 16 d. inputai buvo push; pilna schedule grandinė NEPATVIRTINTA.
+3. **Daily-suite → D1:** PR #263 draft. Po-merge rašymas į production D1 reikalauja atskiro leidimo; prieš tai patikrinti PR #263 ir source routing / event provenance suderinamumą.
+4. **Grafikai:** tikrinti kitus tikrus schedule run ir jų created_at / run_started_at; nekeisti cron be daugiau įrodymų.
+5. **SEO / canonical:** PR #264 draft; public metadata / sitemap / navigation pakeitimai nesujungiami / nepublikuojami be atskiro leidimo.
+6. **Autonomijos alert:** Issue #145 neuždaryti, kol naujas Control Center ciklas nepatvirtina Worker recovery ir specialistų evidence grandinė nėra atkurta.
