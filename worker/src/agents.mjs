@@ -43,6 +43,22 @@ export function isAgentCatchUpEvent(controller) {
   return vilniusMinutes(new Date(controller.scheduledTime)) >= 13 * 60 + 20;
 }
 
+export function isEligibleScheduledDailySuiteSnapshot(event, localDay) {
+ const payload=event?.payload&&typeof event.payload==="object" ? event.payload : (()=>{
+  if(typeof event?.payload_json!=="string") return null;
+  try { const parsed=JSON.parse(event.payload_json); return parsed&&typeof parsed==="object"&&!Array.isArray(parsed)?parsed:null; }
+  catch { return null; }
+ })();
+ if(!payload || !["analytics_snapshot","topic_snapshot"].includes(event?.kind)) return false;
+ const provenance=payload.provenance;
+ if(!provenance || provenance.source_event!=="schedule" || String(provenance.source_workflow_id)!=="418322987") return false;
+ const sourceRunId=String(provenance.source_run_id||"");
+ if(!sourceRunId || String(payload.run_id||"")!==sourceRunId) return false;
+ if(typeof provenance.source_run_created_at!=="string") return false;
+ const sourceCreatedAt=new Date(provenance.source_run_created_at);
+ return Number.isFinite(sourceCreatedAt.getTime()) && vilniusDateKey(sourceCreatedAt)===localDay;
+}
+
 export async function shouldRunAgentOrchestration(env, controller) {
   if (!env?.DB || !(isAgentScheduledEvent(controller) || isAgentCatchUpEvent(controller))) return false;
 
@@ -59,21 +75,14 @@ export async function shouldRunAgentOrchestration(env, controller) {
 
   const localDay = vilniusDateKey(scheduledAt);
   const snapshots = await env.DB.prepare(
-    "SELECT kind, created_at FROM events " +
+    "SELECT kind, payload_json FROM events " +
     "WHERE kind IN ('analytics_snapshot', 'topic_snapshot') " +
     "ORDER BY created_at DESC LIMIT 30"
   ).all();
 
-  // Require at least one valid daily-suite input written on the current
-  // Vilnius day. Partial suites are allowed; the missing specialist will
-  // report an evidence gap instead of analysing yesterday's snapshot.
-  return (snapshots.results || []).some(row => {
-    if (!["analytics_snapshot", "topic_snapshot"].includes(row.kind) || typeof row.created_at !== "string") {
-      return false;
-    }
-    const createdAt = new Date(row.created_at);
-    return Number.isFinite(createdAt.getTime()) && vilniusDateKey(createdAt) === localDay;
-  });
+  // Only a same-day, main-branch Daily-suite schedule snapshot is eligible.
+  // Push/manual snapshots are retained for history but cannot unlock the AI cycle.
+  return (snapshots.results || []).some(row => isEligibleScheduledDailySuiteSnapshot(row, localDay));
 }
 
 import { buildControlDecision, persistControlDecision } from "./control-core.mjs";
@@ -285,7 +294,19 @@ export async function runAgentOrchestration(env) {
   stage="fetch_public_content";
   const pages=await getPublicContent(env);
   for(const agent of AGENTS) {
-   const source=agent.id==="content-review"?{public_pages:pages}:selectLatestEventsByKind(eventData.events,agent.kinds);
+   let source;
+   if(agent.id==="content-review") {
+    source={public_pages:pages};
+   } else if(["analytics","topics"].includes(agent.id)) {
+    const localDay=vilniusDateKey(new Date(date+"T12:00:00Z"));
+    const eligibleSourceEvents=eventData.events.filter(event=>
+     agent.kinds.includes(event.kind)&&isEligibleScheduledDailySuiteSnapshot(event,localDay)
+    );
+    source=selectLatestEventsByKind(eligibleSourceEvents,agent.kinds);
+    source.ignored_unverified_snapshot_count=eventData.events.filter(event=>agent.kinds.includes(event.kind)).length-eligibleSourceEvents.length;
+   } else {
+    source=selectLatestEventsByKind(eventData.events,agent.kinds);
+   }
    stage="reserve_"+agent.id;
    if(!(await reserveNextCall()))throw new Error("daily_ai_call_cap_reached");
    stage="model_"+agent.id;
