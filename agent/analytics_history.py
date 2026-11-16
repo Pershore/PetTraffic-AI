@@ -175,6 +175,8 @@ def parse_report(report: str, run_id: str, generated_at: str | None = None) -> d
         ga_status = "error"
     elif "GA4 duomenų gauti nepavyko" in report:
         ga_status = "unavailable"
+    elif "GA4 pagrindinių rodiklių eilutės: **Duomenų nėra**" in report:
+        ga_status = "no_data"
     else:
         ga_status = "available" if ga_present else "unknown"
 
