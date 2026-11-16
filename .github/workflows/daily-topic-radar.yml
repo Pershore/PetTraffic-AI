@@ -68,7 +68,7 @@ jobs:
           git add reports/history/topic-radar
           if ! git diff --cached --quiet; then
             git commit -m "chore: archive topic-radar history"
-for attempt in 1 2 3 4 5; do
+            for attempt in 1 2 3 4 5; do
               if git push origin automation-history; then
                 echo "Automation history archived successfully (attempt $attempt/5)."
                 break
