@@ -121,7 +121,7 @@ test("model output is bounded to one short item per array",()=>{
 test("partial JSON schema is preserved as needs_evidence and counted as degraded",async()=>{
  const valid=JSON.stringify({status:"reviewed",findings:[],recommendations:[],evidence_gaps:[]});
  const partial='{"status":"reviewed","findings":["Bounded finding"],"recommendations":[]}';
- const{env,state}=mockEnv({modelResponder:options=>options.input?.some(item=>typeof item.content==="string"&&item.content.includes("Turinio peržiūros agentas"))?partial:valid});
+ const{env,state}=mockEnv({modelResponder:options=>options.input?.some(item=>typeof item.content==="string"&&item.content.includes("Peržiūrėk viešų puslapių tekstą ir struktūrą."))?partial:valid});
  const result=await runAgentOrchestration(env);
  assert.equal(result.completed,true);
  assert.equal(result.ai_calls,5);
