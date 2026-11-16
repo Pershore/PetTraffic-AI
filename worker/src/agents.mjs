@@ -259,7 +259,7 @@ export async function runAgentOrchestration(env) {
    // prevent the coordinator from persisting a bounded, evidence-aware result.
   }
   const degradedSpecialistIds=Object.entries(specialists)
-   .filter(([,result])=>!isUsableModelResult(result))
+   .filter(([,result])=>!isUsableModelResult(result)||result.partial_schema===true)
    .map(([id])=>id);
   const degradedSpecialists=degradedSpecialistIds.flatMap(id=>(specialists[id].evidence_gaps||[]).map(gap=>`${id}: ${gap}`));
   let coordinator;
@@ -280,7 +280,7 @@ export async function runAgentOrchestration(env) {
   if(eventData.invalidPayloadCount>0) {
    coordinator.evidence_gaps=[...(coordinator.evidence_gaps||[]),`Skipped ${eventData.invalidPayloadCount} invalid stored event payload(s); source data requires review.`].slice(0,5);
   }
-  const report={date_utc:date,generated_at:new Date().toISOString(),model:MODEL,ai_calls:reservedCalls,specialists,coordinator,data_quality:{invalid_event_payload_count:eventData.invalidPayloadCount,degraded_specialist_count:degradedSpecialistIds.length},read_only:true,publication_enabled:false};
+  const report={date_utc:date,generated_at:new Date().toISOString(),model:MODEL,ai_calls:reservedCalls,specialists,coordinator,data_quality:{invalid_event_payload_count:eventData.invalidPayloadCount,degraded_specialist_count:degradedSpecialistIds.length,partial_schema_specialist_count:Object.values(specialists).filter(result=>result.partial_schema===true).length},read_only:true,publication_enabled:false};
   stage="build_control_decision";
   const decision=buildControlDecision(report);
   stage="persist_control_decision";

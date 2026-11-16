@@ -118,6 +118,24 @@ test("model output is bounded to one short item per array",()=>{
  assert.deepEqual(result.evidence_gaps,["first"]);
 });
 
+test("partial JSON schema is preserved as needs_evidence and counted as degraded",async()=>{
+ const valid=JSON.stringify({status:"reviewed",findings:[],recommendations:[],evidence_gaps:[]});
+ const partial='{"status":"reviewed","findings":["Bounded finding"],"recommendations":[]}';
+ const{env,state}=mockEnv({modelResponses:[valid,valid,valid,partial,valid]});
+ const result=await runAgentOrchestration(env);
+ assert.equal(result.completed,true);
+ assert.equal(result.ai_calls,5);
+ const completed=state.updates.find(x=>x.sql.includes("status='completed'"));
+ const report=JSON.parse(completed.values[0]);
+ const specialist=report.specialists["content-review"];
+ assert.equal(specialist.status,"needs_evidence");
+ assert.equal(specialist.partial_schema,true);
+ assert.match(specialist.evidence_gaps[0],/evidence_gaps/);
+ assert.equal(report.data_quality.partial_schema_specialist_count,1);
+ assert.equal(report.data_quality.degraded_specialist_count,1);
+ assert.ok(report.coordinator.evidence_gaps.some(x=>x.includes("content-review")));
+});
+
 test("invalid specialist output is retained as an evidence gap and does not stop the daily cycle",async()=>{
  const valid=JSON.stringify({status:"reviewed",findings:[],recommendations:[],evidence_gaps:[]});
  const{env,state}=mockEnv({modelResponses:[valid,valid,valid,'{"status":"reviewed"',valid]});
