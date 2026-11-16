@@ -265,3 +265,29 @@ test("daily orchestration never starts a second time after a run was reserved", 
  };
  assert.equal(await shouldRunAgentOrchestration(env,controller), false);
 });
+
+
+test("specialists receive only the latest bounded snapshot of each required kind",async()=>{
+ const {selectLatestEventsByKind}=await import("../src/agents.mjs");
+ const events=[];
+ for(let index=0;index<14;index++) {
+  const created_at=new Date(Date.UTC(2026,10,16,12,index,0)).toISOString();
+  events.push({kind:"control_center_snapshot",created_at,payload:{run_id:String(index),detail:"c".repeat(1800)}});
+  events.push({kind:"recommendation_snapshot",created_at,payload:{run_id:String(index),detail:"r".repeat(900)}});
+ }
+ const source=selectLatestEventsByKind(events,["control_center_snapshot","recommendation_snapshot"]);
+ assert.equal(source.selection,"latest_per_kind");
+ assert.deepEqual(source.available_snapshot_counts,{control_center_snapshot:14,recommendation_snapshot:14});
+ assert.equal(source.verified_snapshots.length,2);
+ assert.deepEqual(source.verified_snapshots.map(item=>item.payload.run_id),["13","13"]);
+ assert.ok(JSON.stringify(source).length<6000,"selected evidence should fit the bounded model input");
+});
+
+test("specialist source selection reports missing evidence kinds explicitly",async()=>{
+ const {selectLatestEventsByKind}=await import("../src/agents.mjs");
+ const source=selectLatestEventsByKind([
+  {kind:"control_center_snapshot",created_at:"2026-11-16T12:00:00.000Z",payload:{run_id:"control-1"}},
+ ],["control_center_snapshot","recommendation_snapshot"]);
+ assert.deepEqual(source.available_snapshot_counts,{control_center_snapshot:1,recommendation_snapshot:0});
+ assert.deepEqual(source.verified_snapshots.map(item=>item.kind),["control_center_snapshot"]);
+});
