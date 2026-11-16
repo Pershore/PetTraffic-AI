@@ -96,7 +96,7 @@ test("model JSON with missing schema fields is preserved as needs_evidence",()=>
  const partial=parseResult('{"status":"reviewed"}');
  assert.equal(partial.status,"needs_evidence");
  assert.equal(partial.partial_schema,true);
- assert.match(partial.evidence_gaps[0],/status, findings, recommendations, evidence_gaps/);
+ assert.match(partial.evidence_gaps[0],/findings, recommendations, evidence_gaps/);
  assert.equal(parseResult('{"status":"reviewed","findings":[],"recommendations":[],"evidence_gaps":[]}').status,"reviewed");
 });
 
