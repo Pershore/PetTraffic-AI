@@ -130,12 +130,15 @@ export function parseResult(raw) {
  const missingFields=required.filter(key=>key==="status"
   ? typeof value[key]!=="string"
   : !Array.isArray(value[key]));
- if(missingFields.length) {
+ const invalidArrayItems=["findings","recommendations","evidence_gaps"].filter(key=>
+  Array.isArray(value[key])&&value[key].some(item=>typeof item!=="string"));
+ const schemaIssues=[...new Set([...missingFields,...invalidArrayItems])];
+ if(schemaIssues.length) {
   // Preserve typed fields from a parseable object, but never mark it reviewed.
   const safeStrings=key=>Array.isArray(value[key])
    ? value[key].filter(item=>typeof item==="string").slice(0,1).map(item=>item.slice(0,120))
    : [];
-  const gap="Model JSON schema incomplete; missing or invalid required fields: "+missingFields.join(", ")+". Result marked needs_evidence.";
+  const gap="Model JSON schema incomplete; missing or invalid required fields: "+schemaIssues.join(", ")+". Result marked needs_evidence.";
   return {
    status:"needs_evidence",
    findings:safeStrings("findings"),
