@@ -5,7 +5,7 @@ Build Pet traffic into a useful, trustworthy Lithuanian pet-care information web
 
 ## Non-negotiable project identity
 - Public brand is exactly **Pet traffic**. Never use "Pet traffic AI" as the public brand.
-- ARO Vet Vaistinė is an explicitly approved, preferred product-information source for relevant Pet traffic product cards and direct product links. The user has authorized use of its published product information, descriptions and product images in Pet traffic. Keep Pet traffic an independent brand: do not copy the ARO Vet logo, site design or unrelated brand assets, and never imply the sites are the same. Prefer ARO Vet over competing stores unless the user says otherwise. No affiliate tracking or commission claims unless separately approved. Verify current product relevance, price and availability; do not imply that a product treats or cures a health condition. Never change the ARO Vet website, code, DNS, accounts or infrastructure.
+- ARO Vet, pharmacy sections, product cards, affiliate links, advertising blocks, and ARO Vet-specific tracking must never appear in Pet traffic. Do not add ARO Vet names, products, images, pharmacy content, direct links, ads, affiliate references or third-party tracking. Do not change the ARO Vet website, code, DNS, accounts or infrastructure.
 - Keep the visual identity warm, clean, editorial, friendly, mobile-first, and original.
 - The current content strategy is deliberately focused on four core guides:
   - articles/kada-kreiptis-i-veterinara.html
