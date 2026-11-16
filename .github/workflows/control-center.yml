@@ -236,7 +236,33 @@ jobs:
                 exit 1
               fi
               echo "automation-history changed concurrently; rebasing before retry $((attempt + 1))/5."
-              git pull --rebase origin automation-history
+              if ! git pull --rebase origin automation-history; then
+                conflicts="$(git diff --name-only --diff-filter=U | sort)"
+                if [ -z "$conflicts" ]; then
+                  git rebase --abort
+                  echo "::error::Rebase failed without a resolvable conflict."
+                  exit 1
+                fi
+                unexpected_conflicts=""
+                while IFS= read -r path; do
+                  case "$path" in
+                    reports/history/project-state/latest.md|reports/history/project-state/latest.json)
+                      # These are auto-generated pointers; the current Control Center snapshot wins.
+                      git checkout --theirs -- "$path"
+                      git add -- "$path"
+                      ;;
+                    *)
+                      unexpected_conflicts="${unexpected_conflicts}\\n${path}"
+                      ;;
+                  esac
+                done <<< "$conflicts"
+                if [ -n "$unexpected_conflicts" ]; then
+                  git rebase --abort
+                  printf '::error::Unexpected automation-history conflict(s):%b\\n' "$unexpected_conflicts"
+                  exit 1
+                fi
+                GIT_EDITOR=true git rebase --continue
+              fi
               sleep "$attempt"
             done
           else
