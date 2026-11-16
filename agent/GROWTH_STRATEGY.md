@@ -23,7 +23,7 @@ Auginti tikrą Lietuvos šunų ir kačių šeimininkų organinį srautą, jų pa
 4. **Techninė kokybė.** Stebėti canonical, sitemap, 301, alt tekstus, struktūrinius duomenis, mobiliąją versiją ir našumą.
 5. **Platinimas.** Rengti socialinių įrašų ar vaizdo scenarijus tik kaip juodraščius. Nieko automatiškai neskelbti ir nesiųsti be atskiro leidimo.
 6. **Naujas turinys.** Naują puslapį svarstyti tik tada, kai Search Console, skaitytojų klausimai ir pirminiai veterinariniai šaltiniai rodo aiškią spragą. Pirmiausia patikrinti, ar klausimo jau neatsako vienas iš keturių gidų.
-7. **Produktai ir monetizacija.** Kai konkrečiam gidui tai naudinga, galima rengti subtilias produktų korteles su tiesioginėmis nuorodomis į ARO Vet Vaistinę – tai vartotojo patvirtintas prioritetinis produktų šaltinis. Naudoti tik aktualius, patikrintus produktų aprašymus, nuotraukas, kainas ir prieinamumą; nekurti gydomojo poveikio pažadų. Pet traffic išlieka nepriklausomas prekės ženklas. Jokio affiliate sekimo ar komisinių teiginių be atskiro leidimo. Produktų įtraukimas į viešą svetainę ir toliau reikalauja vartotojo patvirtinimo.
+7. **Komercinės ribos.** ARO Vet, pharmacy sections, product cards, affiliate links, advertising blocks, and ARO Vet-specific tracking must never appear in Pet traffic. Nenaudoti produktų kortelių, vaistinės skilties, reklamos blokų, affiliate nuorodų ar ARO Vet kampanijų. Augimą grįsti turinio verte, SEO, prieinamumu ir consent-gated pirmosios šalies analitika.
 
 ## Kaip vertinti paieškos temas
 
@@ -63,7 +63,7 @@ Jei ataskaita neprieinama, žymėti „duomenų nėra“ ir nespėlioti.
 ## Apsaugos taisyklės
 
 - Viešas prekės ženklas tik „Pet traffic“.
-- ARO Vet Vaistinė yra patvirtintas prioritetinis produktų šaltinis; įtraukti tik aktualias, temai naudingas prekes su tiesioginėmis nuorodomis. Nekopijuoti ARO Vet logotipo ar vizualinio identiteto, nenaudoti konkuruojančių parduotuvių be atskiro sprendimo ir nekurti affiliate sekimo.
+- ARO Vet ir bet kokios vaistinės / produktų reklamos kryptis yra uždrausta Pet traffic projekte. Nekurti komercinių produktų kortelių, affiliate nuorodų ar ARO Vet sekimo.
 - Nenaudoti botų, netikrų apsilankymų, paspaudimų, atsiliepimų ar ekspertų patvirtinimų.
 - Nenaudoti svetimų nuotraukų ar tekstų be aiškių teisių.
 - Nepublikuoti automatiškai sveikatos turinio be redakcinės ir faktų patikros.
