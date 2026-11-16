@@ -100,6 +100,21 @@ test("model JSON with missing schema fields is preserved as needs_evidence",()=>
  assert.equal(parseResult('{"status":"reviewed","findings":[],"recommendations":[],"evidence_gaps":[]}').status,"reviewed");
 });
 
+test("model JSON with non-string array items is never marked reviewed",()=>{
+ const partial=parseResult(JSON.stringify({
+  status:"reviewed",
+  findings:["Valid bounded finding",{unexpected:"object"}],
+  recommendations:[42],
+  evidence_gaps:[false],
+ }));
+ assert.equal(partial.status,"needs_evidence");
+ assert.equal(partial.partial_schema,true);
+ assert.deepEqual(partial.findings,["Valid bounded finding"]);
+ assert.deepEqual(partial.recommendations,[]);
+ assert.match(partial.evidence_gaps[0],/recommendations, evidence_gaps/);
+ assert.equal(partial.requires_human_approval,true);
+});
+
 test("model statuses are normalized to the control-core status contract",()=>{
  const noData=parseResult(JSON.stringify({status:"no data",findings:["There is no verified topic demand."],recommendations:[],evidence_gaps:["No search-volume evidence."]}));
  assert.equal(noData.status,"needs_evidence");
