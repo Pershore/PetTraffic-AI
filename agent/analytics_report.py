@@ -509,10 +509,11 @@ def main() -> int:
                     impressions = metric_value(row, "impressions")
                     ctr = metric_value(row, "ctr")
                     position = metric_value(row, "position")
+                    ctr_display = f"{ctr:.1%}" if ctr is not None else "Duomenų nėra"
+                    position_display = f"{position:.1f}" if position is not None else "Duomenų nėra"
                     lines.append(
                         f"| {page_url} | {fmt_gsc(clicks)} | {fmt_gsc(impressions)} | "
-                        f"{f'{ctr:.1%}' if ctr is not None else 'Duomenų nėra'} | "
-                        f"{f'{position:.1f}' if position is not None else 'Duomenų nėra'} |"
+                        f"{ctr_display} | {position_display} |"
                     )
             else:
                 lines.append("_Search Console puslapių eilučių nepateikė._")
