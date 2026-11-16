@@ -72,8 +72,19 @@ jobs:
           git add reports/history/analytics
           if ! git diff --cached --quiet; then
             git commit -m "chore: archive aggregate analytics history"
-            git pull --rebase origin automation-history
-            git push origin automation-history
+            for attempt in 1 2 3 4 5; do
+              if git push origin automation-history; then
+                echo "Automation history archived successfully (attempt $attempt/5)."
+                break
+              fi
+              if [ "$attempt" -eq 5 ]; then
+                echo "::error::Could not push automation-history after 5 attempts."
+                exit 1
+              fi
+              echo "automation-history changed concurrently; rebasing before retry $((attempt + 1))/5."
+              git pull --rebase origin automation-history
+              sleep "$attempt"
+            done
           else
             echo "No new analytics snapshot to archive."
           fi
