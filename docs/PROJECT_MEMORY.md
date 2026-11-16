@@ -26,7 +26,7 @@
 
 ## 2026-11-15 – istorinis vartotojo sprendimas: ARO Vet Vaistinė laikinai leista (PANAUKINTA 2026-11-16)
 
-Tai buvo 2026-11-15 galiojęs istorinis leidimas. 2026-11-16 vartotojas jį panaikino ir nustatė absoliutų draudimą įtraukti ARO Vet ar vaistinės elementus į Pet traffic. Šio istorinio įrašo tolesnės produktų kortelių / nuorodų instrukcijos nebėra galiojančios. ARO Vet Vaistinė yra pageidaujamas produktų šaltinis; nekuriami konkuruojančių parduotuvių pasiūlymai, nebent vartotojas nurodys kitaip. Produktų kortelės turi būti saikingos, su tiesiogine nuoroda į atitinkamą produktą, patikrinta kaina / prieinamumu ir be nepagrįstų gydomojo poveikio pažadų. Jokių komisinių ar affiliate sekimo be atskiro leidimo. Pet traffic lieka nepriklausomas prekės ženklas: nekopijuoti ARO Vet logotipo, viso dizaino ar neklaidinti dėl bendros nuosavybės. Šis leidimas nesuteikia teisės keisti ARO Vet svetainę, kodą, DNS, paskyras ar infrastruktūrą. Viešas Pet traffic turinio publikavimas vis tiek reikalauja vartotojo patvirtinimo.
+Tai buvo 2026-11-15 galiojęs istorinis leidimas, kurį vartotojas panaikino 2026-11-16. Jokios jo produktų, kortelių, nuorodų ar reklamos nuostatos nebegalioja. Šis skyrius paliktas tik sprendimų istorijai; dabartinė vykdytina politika pateikta dokumento pradžioje.
 
 ## 2026-11-15 – savaitinė augimo ataskaita
 
@@ -109,7 +109,7 @@ Niekada nepaversti `LAUKIA`, `PARUOŠTA` ar `NEPATVIRTINTA` į `PATIKRINTA` be n
 - Jokių mokamų API, prenumeratų, papildomų paslaugų ar mokamų priklausomybių be aiškaus biudžeto patvirtinimo.
 - Turinį galima rengti ir tikrinti automatiškai; viešai publikuoti tik po vartotojo patvirtinimo.
 - Nekeisti DNS, domeno, Cloudflare teisių, production secrets, Worker/D1 schemos ar produkcinės konfigūracijos be atskiro aiškaus leidimo ir rizikos patikros.
-- ARO Vet svetainės, kodo, DNS, paskyros ir infrastruktūros nekeisti. Leidimas naudoti viešą produktų turinį / produktų nuotraukas Pet traffic viduje nėra leidimas administruoti ar redaguoti ARO Vet.
+- ARO Vet svetainės, kodo, DNS, paskyros ir infrastruktūros nekeisti. 2026-11-16 vartotojo sprendimu ARO Vet turinio naudojimas Pet traffic taip pat draudžiamas.
 - Niekada neprašyti slaptažodžių, MFA / device-code prisijungimo kodų, GitHub tokenų, Cloudflare API raktų, Global API Key ar service-account JSON pokalbyje.
 - Jokių savavališkų shell komandų, neapribotų užduočių eilių, automatinio PR sujungimo ar modelio išvesties suteiktų vykdymo teisių.
 - Nesiųsti laiškų, nepirkti, neskelbti socialinių įrašų ir nekontaktuoti trečiųjų šalių.
