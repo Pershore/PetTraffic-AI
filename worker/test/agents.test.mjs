@@ -238,7 +238,7 @@ test("heartbeat catch-up opens at 13:20 Vilnius in both winter and summer", () =
 });
 
 test("daily orchestration requires same-day Daily-suite schedule provenance", async () => {
- const controller = { cron: "*/15 * * * *", scheduledTime: Date.parse("2026-11-16T11:30:00.000Z") };
+ const controller = { cron: "*/15 * * * *", scheduledTime: Date.parse("2026-11-16T15:45:00.000Z") };
  const makeEnv = ({existingRun=null,rows=[]}={}) => ({
   DB: { prepare(sql) {
    return {
@@ -247,12 +247,12 @@ test("daily orchestration requires same-day Daily-suite schedule provenance", as
    };
   } },
  });
- const scheduled = {kind:"analytics_snapshot",payload_json:JSON.stringify({run_id:"daily-1",provenance:{source_event:"schedule",source_workflow_id:"418322987",source_run_id:"daily-1",source_run_created_at:"2026-11-16T15:34:13Z"}})};
- const push = {kind:"analytics_snapshot",payload_json:JSON.stringify({run_id:"push-1",provenance:{source_event:"push",source_workflow_id:"418322987",source_run_id:"push-1",source_run_created_at:"2026-11-16T10:00:00Z"}})};
- const manual = {kind:"topic_snapshot",payload_json:JSON.stringify({run_id:"manual-1",provenance:{source_event:"workflow_dispatch",source_workflow_id:"418322987",source_run_id:"manual-1",source_run_created_at:"2026-11-16T10:00:00Z"}})};
- const wrongWorkflow = {kind:"topic_snapshot",payload_json:JSON.stringify({run_id:"other-1",provenance:{source_event:"schedule",source_workflow_id:"999",source_run_id:"other-1",source_run_created_at:"2026-11-16T10:00:00Z"}})};
- const stale = {kind:"topic_snapshot",payload_json:JSON.stringify({run_id:"old-1",provenance:{source_event:"schedule",source_workflow_id:"418322987",source_run_id:"old-1",source_run_created_at:"2026-11-15T15:34:13Z"}})};
- const mismatched = {kind:"topic_snapshot",payload_json:JSON.stringify({run_id:"payload-id",provenance:{source_event:"schedule",source_workflow_id:"418322987",source_run_id:"other-id",source_run_created_at:"2026-11-16T15:34:13Z"}})};
+ const scheduled = {kind:"analytics_snapshot",payload_json:JSON.stringify({run_id:"daily-1",provenance:{source_event:"schedule",source_workflow_id:"418322987",source_run_id:"daily-1",source_run_created_at:"2026-11-16T15:34:13Z"}}),created_at:"2026-11-16T15:40:00Z"};
+ const push = {kind:"analytics_snapshot",payload_json:JSON.stringify({run_id:"push-1",provenance:{source_event:"push",source_workflow_id:"418322987",source_run_id:"push-1",source_run_created_at:"2026-11-16T10:00:00Z"}}),created_at:"2026-11-16T10:01:00Z"};
+ const manual = {kind:"topic_snapshot",payload_json:JSON.stringify({run_id:"manual-1",provenance:{source_event:"workflow_dispatch",source_workflow_id:"418322987",source_run_id:"manual-1",source_run_created_at:"2026-11-16T10:00:00Z"}}),created_at:"2026-11-16T10:01:00Z"};
+ const wrongWorkflow = {kind:"topic_snapshot",payload_json:JSON.stringify({run_id:"other-1",provenance:{source_event:"schedule",source_workflow_id:"999",source_run_id:"other-1",source_run_created_at:"2026-11-16T10:00:00Z"}}),created_at:"2026-11-16T10:01:00Z"};
+ const stale = {kind:"topic_snapshot",payload_json:JSON.stringify({run_id:"old-1",provenance:{source_event:"schedule",source_workflow_id:"418322987",source_run_id:"old-1",source_run_created_at:"2026-11-15T15:34:13Z"}}),created_at:"2026-11-15T15:40:00Z"};
+ const mismatched = {kind:"topic_snapshot",payload_json:JSON.stringify({run_id:"payload-id",provenance:{source_event:"schedule",source_workflow_id:"418322987",source_run_id:"other-id",source_run_created_at:"2026-11-16T15:34:13Z"}}),created_at:"2026-11-16T15:40:00Z"};
  assert.equal(await shouldRunAgentOrchestration(makeEnv({rows:[scheduled]}),controller), true);
  for (const row of [push,manual,wrongWorkflow,stale,mismatched,{kind:"analytics_snapshot",payload_json:"{bad"}]) {
   assert.equal(await shouldRunAgentOrchestration(makeEnv({rows:[row]}),controller),false);
@@ -261,11 +261,12 @@ test("daily orchestration requires same-day Daily-suite schedule provenance", as
 });
 
 test("only valid same-day scheduled Daily-suite snapshots pass provenance validation",()=>{
- const good={kind:"topic_snapshot",payload:{run_id:"suite-7",provenance:{source_event:"schedule",source_workflow_id:418322987,source_run_id:"suite-7",source_run_created_at:"2026-11-16T15:34:13Z"}}};
- assert.equal(isEligibleScheduledDailySuiteSnapshot(good,"2026-11-16"),true);
- assert.equal(isEligibleScheduledDailySuiteSnapshot({...good,payload:{...good.payload,provenance:{...good.payload.provenance,source_event:"push"}}},"2026-11-16"),false);
- assert.equal(isEligibleScheduledDailySuiteSnapshot({...good,payload:{...good.payload,run_id:"different"}},"2026-11-16"),false);
- assert.equal(isEligibleScheduledDailySuiteSnapshot({...good,payload:{...good.payload,provenance:{...good.payload.provenance,source_run_created_at:"2026-11-15T15:34:13Z"}}},"2026-11-16"),false);
+ const good={kind:"topic_snapshot",created_at:"2026-11-16T15:40:00Z",payload:{run_id:"suite-7",provenance:{source_event:"schedule",source_workflow_id:418322987,source_run_id:"suite-7",source_run_created_at:"2026-11-16T15:34:13Z"}}};
+ assert.equal(isEligibleScheduledDailySuiteSnapshot(good,"2026-11-16",Date.parse("2026-11-16T15:45:00Z")),true);
+ assert.equal(isEligibleScheduledDailySuiteSnapshot(good,"2026-11-16",Date.parse("2026-11-16T15:30:00Z")),false);
+ assert.equal(isEligibleScheduledDailySuiteSnapshot({...good,payload:{...good.payload,provenance:{...good.payload.provenance,source_event:"push"}}},"2026-11-16",Date.parse("2026-11-16T15:45:00Z")),false);
+ assert.equal(isEligibleScheduledDailySuiteSnapshot({...good,payload:{...good.payload,run_id:"different"}},"2026-11-16",Date.parse("2026-11-16T15:45:00Z")),false);
+ assert.equal(isEligibleScheduledDailySuiteSnapshot({...good,payload:{...good.payload,provenance:{...good.payload.provenance,source_run_created_at:"2026-11-15T15:34:13Z"}}},"2026-11-16",Date.parse("2026-11-16T15:45:00Z")),false);
 });
 
 test("daily orchestration never starts a second time after a run was reserved", async () => {
