@@ -21,7 +21,7 @@ class WorkerAgentDiagnosticsTests(unittest.TestCase):
         workflow = (ROOT / ".github" / "workflows" / "worker-agent-diagnostics.yml").read_text(encoding="utf-8")
         self.assertIn("workflow_dispatch:", workflow)
         self.assertIn("push:", workflow)
-        self.assertIn("permissions:\\n  contents: read", workflow)
+        self.assertIn("permissions:\n  contents: read", workflow)
         self.assertNotIn("contents: write", workflow)
         self.assertNotIn("wrangler deploy", workflow.lower())
         self.assertIn("SELECT-only requests", workflow)
