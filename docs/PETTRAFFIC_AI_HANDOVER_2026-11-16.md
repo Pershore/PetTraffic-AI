@@ -1,6 +1,6 @@
 # Pet traffic – perdavimas 2026-11-16
 
-Atnaujinta: 2026-11-16 18:42 Europe/Vilnius
+Atnaujinta: 2026-11-16 18:55 Europe/Vilnius
 
 ## Galiojanti vartotojo politika
 
@@ -63,3 +63,22 @@ ARO Vet svetainės, kodo, DNS, paskyrų ir infrastruktūros nekeisti. 2026-11-15
 - Jokio Worker/D1 production deploy, DNS, Access, secrets, paskyrų teisių, billing ar mokamų paslaugų pakeitimo be atskiro leidimo.
 - automation-history/latest.md ir .json yra automatiškai generuojami; jų rankiniu būdu nekeisti.
 - Jokių ARO Vet / vaistinės / produktų kortelių / affiliate / reklamos / tracking elementų Pet traffic projekte.
+
+
+## Papildomi patvirtinimai 2026-11-16 18:55 LT
+
+- Google API connectivity [#43911185204](https://github.com/Pershore/PetTraffic-AI/actions/runs/43911185204) buvo tikras `event=schedule`, success; logas patvirtina GA4 API OK ir Search Console API OK. Artifact [#14247442213](https://github.com/Pershore/PetTraffic-AI/actions/runs/43911185204/artifacts/14247442213). Tai tik ryšio testas, ne naujas analytics snapshot.
+- SEO clean-canonical PR #258 uždarytas be merge, nes atsiliko 9 main commit'ais. Pakaitinis [PR #264](https://github.com/Pershore/PetTraffic-AI/pull/264) paremtas naujausiu main: 1 commit ahead / 0 behind, 13 failai. Site validation [#43912644561](https://github.com/Pershore/PetTraffic-AI/actions/runs/43912644561) success (31 agent testas, 152 Python testai); Cloudflare Pages preview check success. PR draft, produkcija nepakeista.
+- Pagrindinė ChatGPT 11:45 LT automatika užregistruota failed (09:45 UTC suplanuota, 11:31:53 UTC start, 11:56:56 UTC fail); platforma rodo tik bendrą klaidą, traceback nėra. 12:00 LT būklės patikra completed, bet vėlavo iki 10:48:51 UTC start. 14:00 LT tikrintojo last_run_time ir run_details datos nesutampa, todėl dabartinio paleidimo PATIKRINTA būsena neteikiama.
+- Savaitinis growth review workflow cron yra `30 18 * * 1` UTC = 20:30 Europe/Vilnius. 18:55 LT metu dar nebuvo due; laukti numatyto laiko ir 60 min. grace.
+- Gyvas Worker /health HTTP 200, D1 connected, Control Core schema connected; heartbeat 16:45:13 UTC patvirtina site 200 ir D1. AI ciklas 2026-11-16 jau completed (5 calls), bet Control Core needs_evidence su 5 spragomis; issue #145 open.
+
+## Kitas pirmas neužbaigtas veiksmas (atnaujinta 18:55 LT)
+
+1. **AI agentai:** PR #261 palikti draft; Worker production deploy ir merge tik po atskiro leidimo. Kitas tikras Worker ciklas tik kitą Europe/Vilnius dieną; patikrinti validžius specialistų rezultatus, Control Core evidence ir D1 memory readback.
+2. **Daily-suite → D1:** PR #263 palikti draft; atskiras leidimas reikalingas dėl po-merge produkcinio D1 snapshot rašymo. Patikrinti, ar trūkstami 2026-11-16 analytics/topic snapshot įvykiai buvo atkurti; jų readback nepatvirtintas.
+3. **SEO / canonical:** PR #264 draft, CI ir preview patikros sėkmingos. Vieši canonical/OG/sitemap/navigacijos pakeitimai dar nepublikuoti; atskiras leidimas reikalingas.
+4. **ChatGPT automatikos:** ištirti pagrindinio koordinatoriaus bendrą platformos klaidą ir 14:00 verifier metadata neatitikimą; nespėlioti priežasties, nedubliuoti automatikų.
+5. **Savaitinė ataskaita:** laukti pirmadienio 18:30 UTC (20:30 LT) workflow ir iki 60 min. grace; rankinio paleidimo nedaryti iki lango pabaigos.
+6. **Autonomijos alert:** issue #145 neuždaryti, kol nėra validžių specialistų, pilno evidence ir recovery_confirmed=true.
+
