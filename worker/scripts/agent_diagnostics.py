@@ -226,6 +226,13 @@ def _resolve_database(account, token, configured_id):
     return str(result)
 
 
+def _assert_read_only_meta(meta):
+    if not isinstance(meta, dict) or "rows_written" not in meta:
+        raise RuntimeError("D1 did not return write-count metadata for the read-only query.")
+    if int(meta.get("rows_written") or 0) != 0:
+        raise RuntimeError("Read-only diagnostics unexpectedly reported a database write.")
+
+
 def _query(account, database, token, sql, params):
     if not sql.lstrip().upper().startswith("SELECT"):
         raise RuntimeError("Diagnostics only permit SELECT statements.")
@@ -236,8 +243,7 @@ def _query(account, database, token, sql, params):
     result = payload.get("result")
     if not isinstance(result, list) or not result or result[0].get("success") is not True:
         raise RuntimeError("Cloudflare did not confirm the read-only D1 query.")
-    if int((result[0].get("meta") or {}).get("rows_written") or 0) != 0:
-        raise RuntimeError("Read-only diagnostics unexpectedly reported a database write.")
+    _assert_read_only_meta(result[0].get("meta"))
     rows = result[0].get("results") or []
     return rows if isinstance(rows, list) else []
 

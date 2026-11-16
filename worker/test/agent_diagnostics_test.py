@@ -6,10 +6,26 @@ import unittest
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "worker" / "scripts"))
 
-from agent_diagnostics import build_diagnostics, classify_gap, render_markdown
+from agent_diagnostics import build_diagnostics, classify_gap, render_markdown, _assert_read_only_meta
 
 
 class WorkerAgentDiagnosticsTests(unittest.TestCase):
+    def test_d1_query_requires_explicit_zero_write_metadata(self):
+        self.assertIsNone(_assert_read_only_meta({"rows_written": 0}))
+        with self.assertRaises(RuntimeError):
+            _assert_read_only_meta({"rows_written": 1})
+        with self.assertRaises(RuntimeError):
+            _assert_read_only_meta({})
+
+    def test_workflow_is_manual_or_post_merge_and_read_only(self):
+        workflow = (ROOT / ".github" / "workflows" / "worker-agent-diagnostics.yml").read_text(encoding="utf-8")
+        self.assertIn("workflow_dispatch:", workflow)
+        self.assertIn("push:", workflow)
+        self.assertIn("permissions:\\n  contents: read", workflow)
+        self.assertNotIn("contents: write", workflow)
+        self.assertNotIn("wrangler deploy", workflow.lower())
+        self.assertIn("SELECT-only requests", workflow)
+
     def test_model_json_failures_are_classified_without_echoing_model_text(self):
         self.assertEqual(classify_gap("Model response was incomplete JSON; this specialist result was not used."), "model_output_incomplete_json")
         self.assertEqual(classify_gap("Model response was not valid JSON; this specialist result was not used."), "model_output_malformed_json")
