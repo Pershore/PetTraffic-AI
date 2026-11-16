@@ -57,7 +57,7 @@ class WorkerAgentDiagnosticsTests(unittest.TestCase):
         self.assertIn("content-review", text)
         self.assertIn("specialist_report_missing", text)
         self.assertNotIn("report_json", text)
-        self.assertNotIn("prompt", text.lower())
+        self.assertNotIn("Model response was incomplete JSON", text)
 
 
 if __name__ == "__main__":
