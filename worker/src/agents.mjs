@@ -43,7 +43,7 @@ export function isAgentCatchUpEvent(controller) {
   return vilniusMinutes(new Date(controller.scheduledTime)) >= 13 * 60 + 20;
 }
 
-export function isEligibleScheduledDailySuiteSnapshot(event, localDay) {
+export function isEligibleScheduledDailySuiteSnapshot(event, localDay, evidenceCutoff) {
  const payload=event?.payload&&typeof event.payload==="object" ? event.payload : (()=>{
   if(typeof event?.payload_json!=="string") return null;
   try { const parsed=JSON.parse(event.payload_json); return parsed&&typeof parsed==="object"&&!Array.isArray(parsed)?parsed:null; }
@@ -56,7 +56,9 @@ export function isEligibleScheduledDailySuiteSnapshot(event, localDay) {
  if(!sourceRunId || String(payload.run_id||"")!==sourceRunId) return false;
  if(typeof provenance.source_run_created_at!=="string") return false;
  const sourceCreatedAt=new Date(provenance.source_run_created_at);
- return Number.isFinite(sourceCreatedAt.getTime()) && vilniusDateKey(sourceCreatedAt)===localDay;
+ const cutoff=new Date(evidenceCutoff);
+ return Number.isFinite(sourceCreatedAt.getTime()) && Number.isFinite(cutoff.getTime()) &&
+  sourceCreatedAt.getTime()<=cutoff.getTime() && vilniusDateKey(sourceCreatedAt)===localDay;
 }
 
 export async function shouldRunAgentOrchestration(env, controller) {
@@ -82,7 +84,7 @@ export async function shouldRunAgentOrchestration(env, controller) {
 
   // Only a same-day, main-branch Daily-suite schedule snapshot is eligible.
   // Push/manual snapshots are retained for history but cannot unlock the AI cycle.
-  return (snapshots.results || []).some(row => isEligibleScheduledDailySuiteSnapshot(row, localDay));
+  return (snapshots.results || []).some(row => isEligibleScheduledDailySuiteSnapshot(row, localDay, scheduledAt));
 }
 
 import { buildControlDecision, persistControlDecision } from "./control-core.mjs";
@@ -275,9 +277,11 @@ async function reserveCall(env,date,expectedCall) {
   }
  }
 }
-export async function runAgentOrchestration(env) {
+export async function runAgentOrchestration(env, evidenceCutoffValue = Date.now()) {
  if(!env.DB||!env.AI)return {skipped:true,reason:!env.DB?"database_not_bound":"ai_binding_missing"};
- const date=new Date().toISOString().slice(0,10);
+ const parsedCutoff=new Date(evidenceCutoffValue);
+ const evidenceCutoff=Number.isFinite(parsedCutoff.getTime())?parsedCutoff:new Date();
+ const date=evidenceCutoff.toISOString().slice(0,10);
  const inserted=await env.DB.prepare("INSERT OR IGNORE INTO agent_runs (run_date,status,ai_calls,started_at) VALUES (?,'running',0,?)").bind(date,new Date().toISOString()).run();
  if(!inserted.meta?.changes)return {skipped:true,reason:"daily_run_already_started"};
  let stage="load_events";
@@ -298,9 +302,9 @@ export async function runAgentOrchestration(env) {
    if(agent.id==="content-review") {
     source={public_pages:pages};
    } else if(["analytics","topics"].includes(agent.id)) {
-    const localDay=vilniusDateKey(new Date(date+"T12:00:00Z"));
+    const localDay=vilniusDateKey(evidenceCutoff);
     const eligibleSourceEvents=eventData.events.filter(event=>
-     agent.kinds.includes(event.kind)&&isEligibleScheduledDailySuiteSnapshot(event,localDay)
+     agent.kinds.includes(event.kind)&&isEligibleScheduledDailySuiteSnapshot(event,localDay,evidenceCutoff)
     );
     source=selectLatestEventsByKind(eligibleSourceEvents,agent.kinds);
     source.ignored_unverified_snapshot_count=eventData.events.filter(event=>agent.kinds.includes(event.kind)).length-eligibleSourceEvents.length;
