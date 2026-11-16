@@ -2,10 +2,23 @@
 
 Atnaujinta: 2026-11-15
 
-## Naujausi vartotojo sprendimai (2026-11-15)
+## Naujausi vartotojo sprendimai (2026-11-16)
 
-- Ankstesnis draudimas naudoti ARO Vet Vaistinės turinį panaikintas. Leidžiama naudoti jos viešą produktų informaciją, aprašymus ir produktų nuotraukas kaip pageidaujamo produktų šaltinio medžiagą Pet traffic svetainėje, tik kai produktas tiesiogiai aktualus. Pet traffic išlieka nepriklausomas prekės ženklas; nekopijuoti ARO Vet logo / viso dizaino, nenaudoti affiliate sekimo be atskiro leidimo. ARO Vet svetainės ir infrastruktūros nekeisti. Viešą Pet traffic turinį publikuoti tik gavus vartotojo patvirtinimą.
+- ARO Vet, pharmacy sections, product cards, affiliate links, advertising blocks, and ARO Vet-specific tracking must never appear in Pet traffic. ARO Vet svetainės, kodo, DNS, paskyrų ir infrastruktūros nekeisti. Šis 2026-11-16 sprendimas panaikina 2026-11-15 istorinį leidimą.
 - Sistema turi kiekvieną savaitę pateikti sujungtą augimo ataskaitą iš GA4, Search Console, RSS temų, Lighthouse, automatizacijų ir Worker AI būsenos. Naudoti esamus duomenis / nemokamą Python, nekurti naujos ChatGPT automatikos ar papildomo mokamo AI kvietimo.
+
+## Naujausia patikrinta būsena (2026-11-16, 13:32 LT)
+
+- Worker AI ciklas: run_date 2026-11-16, pradėtas 13:20:24 LT, completed, 5 AI kvietimai, error_code=null. Tai patvirtina ciklo vykdymą, bet ne pilną autonomijos kokybę: Control Core needs_evidence, 5 spragos; analytics=needs_evidence, topics=reviewed, technical-seo=needs_evidence, content-review=invalid_json. D1 atminties eilutė yra; memory_updated_at=2026-11-16T11:20:31.068Z, sutampa su Control Core įrašo created_at; /health ją skaito tiesiogiai iš D1. Šiandien ciklo nekartoti dėl vieno ciklo per dieną ribos. Laukti 14:00 LT post-cycle tikrintojo.
+- Daily-suite: šiandienos event=schedule nėra. Saugus catch-up workflow_dispatch #43849430626 baigėsi success (analytics, topic-radar, live-check 3/3); D1 sync #43852322396 success su dviem write/readback. Per 20 val. jau yra sėkmingas dispatch, todėl naujos komandos nesiųsti.
+- Control Center: #43852345499 ir #43855770613 success; event-driven, atskiro daily cron nereikia. Naujausias 11:13 UTC snapshot sukurtas prieš 13:20 LT AI ciklą, todėl jo AI būsena pasenusi iki 14:00 tikrintojo.
+- Site-check: šiandienos event=schedule nėra; po main atnaujinimo site-check #43855424311 success. Live-check #43849430626 patvirtino 12 vidinių URL, sitemap, robots.txt, 404 ir 20 senų 301.
+- Lighthouse: šiandienos weekly event=schedule nėra, bet šiandienos push audit #43853564075 success ir turi 10 HTML/JSON ataskaitų. Mobile: home 98 (LCP 1.83 s, TBT 148 ms, CLS 0), cat-emergency 98, kiti 3 – 99; desktop visi 100; accessibility, best-practices ir SEO visi 100. Vieno matavimo svyravimai nėra kodo keitimo pagrindas.
+- Analitika: GA4 2026-11-09–15 – 7 aktyvūs, 19 sesijų, 82 peržiūros, patvirtintų organinių sesijų 0. GSC 2026-11-07–13 – 0 parodymų ir paspaudimų; sitemap pateiktas, bet laukia apdorojimo, 5 prioritetiniai URL Google dar nežinomi. RSS radaras – 31 unikali viešų antraščių nuoroda iš 7 temų; tai ne paieškų apimtys.
+- Atviri PR: #253 – canonical / OG / sitemap / navigacijos viešo URL pakeitimai; palikti atvirą, kol nėra atskiro vartotojo patvirtinimo. Issue #145 palikti atvirą, kol AI specialistų išvestys ir įrodymai bus pilnai patikrinti.
+- GitHub schedule failai atnaujinti 11:08 UTC, jau po šios dienos site-check / daily-suite / Lighthouse cron laikų; laukiama kito realaus schedule ciklo. Rankinis / push paleidimas nėra schedule įrodymas.
+- Galiojanti projekto politika: ARO Vet, pharmacy sections, product cards, affiliate links, advertising blocks, and ARO Vet-specific tracking must never appear in Pet traffic.
+
 
 Šis dokumentas yra trumpas sesijos pradžios kontrolinis sąrašas. Visa ilgalaikė atmintis, sprendimai, architektūra, prieigų matrica ir blokatoriai laikomi `docs/PROJECT_MEMORY.md`.
 
@@ -126,7 +139,7 @@ Tikras bootstrap iš Termux patvirtintas: Linux proot, Git, GitHub CLI, Codex CL
 ## 2026-11-15 – po-ciklinė AI patikra
 
 - Aktyvių suplanuotų užduočių limitas yra 3; nauja užduotis nebuvo sukurta. Esamas greičio stebėjimo agentas papildytas Worker AI 13:20 LT ciklo patikra ir perkeltas į 14:00 LT.
-- Pagrindinis koordinatorius lieka 11:45 LT; ARO Vet analitika lieka 18:24 LT. 14:00 agentas tikrina Control Center artefaktą ir nebandys rankiniu būdu paleisti Worker AI.
+- Pagrindinis koordinatorius lieka 11:45 LT; 14:00 agentas tikrina tos pačios dienos Worker AI ciklą. Atskira ARO Vet analitikos automatika, jei palikta įjungta, yra už Pet traffic projekto ribų ir nesuteikia leidimo įtraukti ARO Vet turinio ar sekimo į Pet traffic.
 
 
 ## 2026-11-15 17:35 LT – AI ciklo vėluojančių duomenų atkūrimo pataisa (PR #240)
