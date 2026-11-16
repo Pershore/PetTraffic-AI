@@ -24,6 +24,22 @@ class HistoryArchiveWorkflowTests(unittest.TestCase):
                 self.assertIn('if [ "$attempt" -eq 5 ]; then', workflow)
                 self.assertIn('echo "::error::Could not push automation-history after 5 attempts."', workflow)
 
+    def test_control_center_resolves_only_generated_latest_pointer_conflicts(self):
+        workflow = Path(".github/workflows/control-center.yml").read_text(encoding="utf-8")
+        self.assertIn('conflicts="$(git diff --name-only --diff-filter=U | sort)"', workflow)
+        self.assertIn("reports/history/project-state/latest.md|reports/history/project-state/latest.json)", workflow)
+        self.assertIn('git checkout --theirs -- "$path"', workflow)
+        self.assertIn("GIT_EDITOR=true git rebase --continue", workflow)
+        self.assertIn("git rebase --abort", workflow)
+        self.assertIn("Unexpected automation-history conflict(s)", workflow)
+
+        for relative_path in ARCHIVE_WORKFLOWS:
+            if relative_path == ".github/workflows/control-center.yml":
+                continue
+            with self.subTest(workflow=relative_path):
+                other_workflow = Path(relative_path).read_text(encoding="utf-8")
+                self.assertNotIn("git checkout --theirs", other_workflow)
+
 
 if __name__ == "__main__":
     unittest.main()
