@@ -76,9 +76,6 @@ class ChannelBreakdownStatusTests(unittest.TestCase):
         self.assertIn("nepateikė", note)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
 
 
 class MissingMetricTests(unittest.TestCase):
@@ -120,3 +117,7 @@ class MissingMetricTests(unittest.TestCase):
         ])
         self.assertEqual(result["simptomai_ir_sveikata"]["rows"],1)
         self.assertEqual(result["simptomai_ir_sveikata"]["impressions"],0)
+
+
+if __name__ == "__main__":
+    unittest.main()
