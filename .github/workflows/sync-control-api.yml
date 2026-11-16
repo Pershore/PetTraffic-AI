@@ -97,6 +97,9 @@ jobs:
             }
             core.setOutput("eligible", "true");
             core.setOutput("source_run_id", String(run.id));
+            core.setOutput("source_event", String(run.event));
+            core.setOutput("source_run_created_at", String(run.created_at));
+            core.setOutput("source_workflow_id", String(run.workflow_id));
             core.info("Validated daily-suite source run #" + run.id + " (" + run.event + ").");
       - name: Download source workflow artifact
         if: steps.config.outputs.enabled == 'true' && github.event_name == 'workflow_run' && github.event.workflow_run.workflow_id != 418322987
@@ -132,12 +135,18 @@ jobs:
         env:
           WORKFLOW_NAME: ${{ github.event_name == 'workflow_dispatch' && 'Pet traffic daily automation suite' || github.event.workflow_run.workflow_id == 418322987 && 'Pet traffic daily automation suite' || github.event.workflow_run.name }}
           SOURCE_RUN_ID: ${{ steps.suite-source.outputs.source_run_id || github.event.workflow_run.id }}
+          SOURCE_EVENT: ${{ github.event_name == 'workflow_dispatch' && steps.suite-source.outputs.source_event || github.event.workflow_run.event }}
+          SOURCE_RUN_CREATED_AT: ${{ github.event_name == 'workflow_dispatch' && steps.suite-source.outputs.source_run_created_at || github.event.workflow_run.created_at }}
+          SOURCE_WORKFLOW_ID: ${{ github.event_name == 'workflow_dispatch' && steps.suite-source.outputs.source_workflow_id || github.event.workflow_run.workflow_id }}
         run: |
           python worker/scripts/build_event.py \
             --workflow-name "$WORKFLOW_NAME" \
             --artifact-dir artifacts \
             --output-dir events \
-            --run-id "$SOURCE_RUN_ID"
+            --run-id "$SOURCE_RUN_ID" \
+            --source-event "$SOURCE_EVENT" \
+            --source-run-created-at "$SOURCE_RUN_CREATED_AT" \
+            --source-workflow-id "$SOURCE_WORKFLOW_ID"
       - name: Authenticate with short-lived GitHub OIDC and publish snapshots
         if: steps.config.outputs.enabled == 'true' && ((github.event_name == 'workflow_run' && github.event.workflow_run.workflow_id != 418322987) || steps.suite-source.outputs.eligible == 'true')
         env:
