@@ -44,7 +44,7 @@ jobs:
       actions: read
       contents: read
       id-token: write
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.name == 'Pet traffic daily automation suite'))
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.workflow_id == 418322987))
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -64,7 +64,7 @@ jobs:
           fi
       - name: Validate daily-suite source run
         id: suite-source
-        if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.name == 'Pet traffic daily automation suite'
+        if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.workflow_id == 418322987
         uses: actions/github-script@v9
         env:
           SOURCE_RUN_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.source_run_id || github.event.workflow_run.id }}
@@ -99,7 +99,7 @@ jobs:
             core.setOutput("source_run_id", String(run.id));
             core.info("Validated daily-suite source run #" + run.id + " (" + run.event + ").");
       - name: Download source workflow artifact
-        if: steps.config.outputs.enabled == 'true' && github.event_name == 'workflow_run' && github.event.workflow_run.name != 'Pet traffic daily automation suite'
+        if: steps.config.outputs.enabled == 'true' && github.event_name == 'workflow_run' && github.event.workflow_run.workflow_id != 418322987
         uses: actions/download-artifact@v8
         with:
           name: ${{ github.event.workflow_run.name == 'Pet traffic analytics snapshot' && 'pettraffic-analytics-7d' || github.event.workflow_run.name == 'Pet traffic daily topic radar' && 'pettraffic-topic-radar' || 'pettraffic-control-center' }}
@@ -128,9 +128,9 @@ jobs:
           repository: ${{ github.repository }}
           run-id: ${{ steps.suite-source.outputs.source_run_id }}
       - name: Prepare privacy-filtered event payloads
-        if: steps.config.outputs.enabled == 'true' && ((github.event_name == 'workflow_run' && github.event.workflow_run.name != 'Pet traffic daily automation suite') || steps.suite-source.outputs.eligible == 'true')
+        if: steps.config.outputs.enabled == 'true' && ((github.event_name == 'workflow_run' && github.event.workflow_run.workflow_id != 418322987) || steps.suite-source.outputs.eligible == 'true')
         env:
-          WORKFLOW_NAME: ${{ github.event_name == 'workflow_dispatch' && 'Pet traffic daily automation suite' || github.event.workflow_run.name }}
+          WORKFLOW_NAME: ${{ github.event_name == 'workflow_dispatch' && 'Pet traffic daily automation suite' || github.event.workflow_run.workflow_id == 418322987 && 'Pet traffic daily automation suite' || github.event.workflow_run.name }}
           SOURCE_RUN_ID: ${{ steps.suite-source.outputs.source_run_id || github.event.workflow_run.id }}
         run: |
           python worker/scripts/build_event.py \
@@ -139,7 +139,7 @@ jobs:
             --output-dir events \
             --run-id "$SOURCE_RUN_ID"
       - name: Authenticate with short-lived GitHub OIDC and publish snapshots
-        if: steps.config.outputs.enabled == 'true' && ((github.event_name == 'workflow_run' && github.event.workflow_run.name != 'Pet traffic daily automation suite') || steps.suite-source.outputs.eligible == 'true')
+        if: steps.config.outputs.enabled == 'true' && ((github.event_name == 'workflow_run' && github.event.workflow_run.workflow_id != 418322987) || steps.suite-source.outputs.eligible == 'true')
         env:
           API_URL: ${{ vars.PETTRAFFIC_CONTROL_API_URL || 'https://pettraffic-control-api.pauliusgrubliauskis.workers.dev' }}
         run: |
