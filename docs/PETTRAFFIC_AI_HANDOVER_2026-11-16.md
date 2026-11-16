@@ -10,6 +10,8 @@ ARO Vet svetainės, kodo, DNS, paskyrų ir infrastruktūros nekeisti. 2026-11-15
 
 ## Šios sesijos patvirtinti įrodymai
 
+- Galiojančios politikos suderinimas pateiktas PR #257. CI: site-check 149 testai success, Termux shell-validation success, Cloudflare Pages preview success. PR skirtas tik dokumentams ir regresijos testui; produkcijos svetainės turinys nebuvo keistas.
+
 - main HEAD: deb7f591f33c2639f3111459ac3a1faf3bd76eea. Atviras PR #253 keičia canonical / OG / sitemap / navigacijos URL; paliktas atviras, nes viešiems URL / metadata pakeitimams reikia atskiro vartotojo patvirtinimo.
 - Worker AI ciklas 2026-11-16 pradėtas 13:20:24 LT, completed, 5 AI calls, error_code=null. Control Core needs_evidence, 5 gaps, 1 recommendation; specialist statuses: analytics=needs_evidence, topics=reviewed, technical-seo=needs_evidence, content-review=invalid_json. D1 memory present; memory_updated_at=2026-11-16T11:20:31.068Z sutampa su Control Core created_at; /health skaito D1 atminties timestamp tiesiogiai.
 - Dėl vieno ciklo per dieną ribos AI ciklo nekartoti. 14:00 LT esamas post-cycle verifier turi patikrinti tos pačios dienos ciklą ir naują Control Center ataskaitą. Issue #145 neuždaryti iki visų specialistų validžių išvesčių ir įrodymų.
