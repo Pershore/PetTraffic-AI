@@ -127,8 +127,23 @@ export function parseResult(raw) {
  }
  if(!value||typeof value!=="object"||Array.isArray(value)) return invalidResult("invalid_json","Model response did not match the expected JSON object.");
  const required=["status","findings","recommendations","evidence_gaps"];
- if(typeof value.status!=="string"||!required.slice(1).every(key=>Array.isArray(value[key]))) {
-  return invalidResult("invalid_json","Model JSON did not contain the required status, findings, recommendations and evidence_gaps fields.");
+ const missingFields=required.filter(key=>key==="status"
+  ? typeof value[key]!=="string"
+  : !Array.isArray(value[key]));
+ if(missingFields.length) {
+  // Preserve typed fields from a parseable object, but never mark it reviewed.
+  const safeStrings=key=>Array.isArray(value[key])
+   ? value[key].filter(item=>typeof item==="string").slice(0,1).map(item=>item.slice(0,120))
+   : [];
+  const gap="Model JSON schema incomplete; missing or invalid required fields: "+missingFields.join(", ")+". Result marked needs_evidence.";
+  return {
+   status:"needs_evidence",
+   findings:safeStrings("findings"),
+   recommendations:safeStrings("recommendations"),
+   evidence_gaps:[gap,...safeStrings("evidence_gaps")].slice(0,2),
+   partial_schema:true,
+   requires_human_approval:true,
+  };
  }
  const rawStatus=value.status.trim().toLowerCase().replace(/[\s-]+/g,"_");
  const statusAliases={reviewed:"reviewed",ok:"reviewed",complete:"reviewed",completed:"reviewed",needs_evidence:"needs_evidence",no_data:"needs_evidence",error:"needs_evidence",monitor:"needs_evidence"};

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { runAgentOrchestration, isVilniusAgentRunTime, isAgentScheduledEvent, isAgentCatchUpEvent, shouldRunAgentOrchestration, parseResult, extractResponseText, callModel } from "../src/agents.mjs";
-function mockEnv({ai=true,existingRun=false,reserveErrorAt=0,reserveErrorBeforeCommit=false,reserveReadbackError=false,invalidEventPayload=false,modelResponse=null,modelResponses=null}={}) {
+function mockEnv({ai=true,existingRun=false,reserveErrorAt=0,reserveErrorBeforeCommit=false,reserveReadbackError=false,invalidEventPayload=false,modelResponse=null,modelResponses=null,modelResponder=null}={}) {
  const state={inserted:false,aiCalls:0,updates:[],reservationErrorThrown:false};
  const env={FETCH:async()=>new Response("<html><body><p>Test content</p></body></html>",{status:200}),DB:{prepare(sql){return {
   bind(...values){return {
@@ -11,7 +11,7 @@ function mockEnv({ai=true,existingRun=false,reserveErrorAt=0,reserveErrorBeforeC
   };},
   all:async()=>({results:invalidEventPayload?[{kind:"analytics_snapshot",payload_json:"{truncated",created_at:"2026-11-13T00:00:00.000Z"}]:[]}),
  };}}};
- if(ai)env.AI={run:async()=>({response:Array.isArray(modelResponses)?(modelResponses[state.aiCalls-1]??JSON.stringify({status:"reviewed",findings:[],recommendations:[],evidence_gaps:[]})):(modelResponse??JSON.stringify({status:"reviewed",findings:[],recommendations:[],evidence_gaps:[]}))})};
+ if(ai)env.AI={run:async(model,options)=>({response:typeof modelResponder==="function"?modelResponder(options,state):(Array.isArray(modelResponses)?(modelResponses[state.aiCalls-1]??JSON.stringify({status:"reviewed",findings:[],recommendations:[],evidence_gaps:[]})):(modelResponse??JSON.stringify({status:"reviewed",findings:[],recommendations:[],evidence_gaps:[]})))})};
  return{env,state};
 }
 test("orchestrator performs five capped AI calls and stores a read-only report",async()=>{const{env,state}=mockEnv();const result=await runAgentOrchestration(env);assert.equal(result.completed,true);assert.equal(result.ai_calls,5);assert.equal(state.aiCalls,5);assert.ok(state.updates.some(x=>x.sql.includes("status='completed'")));});
@@ -121,7 +121,7 @@ test("model output is bounded to one short item per array",()=>{
 test("partial JSON schema is preserved as needs_evidence and counted as degraded",async()=>{
  const valid=JSON.stringify({status:"reviewed",findings:[],recommendations:[],evidence_gaps:[]});
  const partial='{"status":"reviewed","findings":["Bounded finding"],"recommendations":[]}';
- const{env,state}=mockEnv({modelResponses:[valid,valid,valid,partial,valid]});
+ const{env,state}=mockEnv({modelResponder:options=>options.input?.some(item=>typeof item.content==="string"&&item.content.includes("Turinio peržiūros agentas"))?partial:valid});
  const result=await runAgentOrchestration(env);
  assert.equal(result.completed,true);
  assert.equal(result.ai_calls,5);
