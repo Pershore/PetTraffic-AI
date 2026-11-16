@@ -1,8 +1,8 @@
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
-- Atnaujinta: 2026-11-16T17:14:57.109218+00:00
+- Atnaujinta: 2026-11-16T17:57:31.774522+00:00
 - Būsena: **REIKIA DĖMESIO**
-- GitHub run: 43916302486
+- GitHub run: 43923741511
 - Šaltinio commit: a375f02ec0743e894cfd1620d9ee1800f89522ce
 
 ## Paskutinis patikrintas etapas
@@ -11,7 +11,7 @@ Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataska
 
 ## Kitas veiksmas
 
-Spręsti pirmą aptiktą problemą: Cloudflare Worker + D1 (api_error). Worker health patikra nepavyko (TimeoutError).
+Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (warning). AI agentų ciklas ir atminties įrašymas baigti; rekomendacijų: 1; trūksta įrodymų: 5.
 
 ## Patvirtinti procesai
 
@@ -20,10 +20,11 @@ Spręsti pirmą aptiktą problemą: Cloudflare Worker + D1 (api_error). Worker h
 - Lighthouse auditas: Paskutinis paleidimas sėkmingas.
 - Centrinis valdymo centras: Paskutinis paleidimas sėkmingas.
 - Debesijos read-only užduočių vykdytojas: Paskutinis debesijos užduoties vykdymas sėkmingas.
+- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 12 min.
 
 ## Problemos
 
-- **Cloudflare Worker + D1** (api_error): Worker health patikra nepavyko (TimeoutError). – https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health
+- **AI agentai + control-core atmintis** (warning): AI agentų ciklas ir atminties įrašymas baigti; rekomendacijų: 1; trūksta įrodymų: 5. – https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health
 
 ## Laukiančios patikros
 
@@ -31,7 +32,8 @@ Spręsti pirmą aptiktą problemą: Cloudflare Worker + D1 (api_error). Worker h
 
 ## AI agentų ir atminties patikra
 
-- Šiame valdymo centro cikle atskiro AI atminties įrašo nėra.
+- Būsena: **warning** – AI agentų ciklas ir atminties įrašymas baigti; rekomendacijų: 1; trūksta įrodymų: 5.
+- Patikros šaltinis: https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health
 
 ## Rekomendacijos
 
