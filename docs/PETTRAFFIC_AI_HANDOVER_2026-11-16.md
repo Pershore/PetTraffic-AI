@@ -1,35 +1,64 @@
 # Pet traffic – perdavimas 2026-11-16
 
-Atnaujinta: 2026-11-16 13:32 Europe/Vilnius
+Atnaujinta: 2026-11-16 15:06 Europe/Vilnius
 
 ## Galiojanti vartotojo politika
 
 ARO Vet, pharmacy sections, product cards, affiliate links, advertising blocks, and ARO Vet-specific tracking must never appear in Pet traffic.
 
-ARO Vet svetainės, kodo, DNS, paskyrų ir infrastruktūros nekeisti. 2026-11-15 leidimas naudoti ARO Vet produktų turinį yra panaikintas. Istoriniai leidimo įrašai nėra vykdytinos instrukcijos.
+ARO Vet svetainės, kodo, DNS, paskyrų ir infrastruktūros nekeisti. 2026-11-15 leidimas panaikintas; istoriniai leidimo įrašai nėra vykdytinos instrukcijos.
 
 ## Šios sesijos patvirtinti įrodymai
 
-- Galiojančios politikos suderinimas pateiktas PR #257. CI: site-check 149 testai success, Termux shell-validation success, Cloudflare Pages preview success. PR skirtas tik dokumentams ir regresijos testui; produkcijos svetainės turinys nebuvo keistas.
+### Worker AI ir D1
 
-- main HEAD: deb7f591f33c2639f3111459ac3a1faf3bd76eea. Atviras PR #253 keičia canonical / OG / sitemap / navigacijos URL; paliktas atviras, nes viešiems URL / metadata pakeitimams reikia atskiro vartotojo patvirtinimo.
-- Worker AI ciklas 2026-11-16 pradėtas 13:20:24 LT, completed, 5 AI calls, error_code=null. Control Core needs_evidence, 5 gaps, 1 recommendation; specialist statuses: analytics=needs_evidence, topics=reviewed, technical-seo=needs_evidence, content-review=invalid_json. D1 memory present; memory_updated_at=2026-11-16T11:20:31.068Z sutampa su Control Core created_at; /health skaito D1 atminties timestamp tiesiogiai.
-- Dėl vieno ciklo per dieną ribos AI ciklo nekartoti. 14:00 LT esamas post-cycle verifier turi patikrinti tos pačios dienos ciklą ir naują Control Center ataskaitą. Issue #145 neuždaryti iki visų specialistų validžių išvesčių ir įrodymų.
-- Daily-suite event=schedule 2026-11-16 nerasta. Catch-up #43849430626 buvo workflow_dispatch, success, 3/3 job; GA4/GSC ir RSS artefaktai sukurti. D1 sync #43852322396 success, du write/readback įvykiai. Per 20 val. sėkmingas dispatch jau yra, todėl nekartoti.
-- Control Center #43852345499 ir #43855770613 success; event-driven, atskiro daily cron nėra. #43855770613 snapshot buvo iki 13:20 LT AI ciklo.
-- Site-check #43855424311 success; live-check #43849430626 success. Homepage, 4 gidai, about, privacy HTTP 200; favicon.svg, robots.txt, sitemap.xml HTTP 200; custom 404 grąžina 404; 20 senų 301 patikrinti. Site validator patvirtino 9 HTML puslapius, alt tekstus, JSON-LD, canonical/OG, sitemap ir redirects.
-- Cloudflare Pages check-run main commit'e success; gyvas pagrindinis puslapis ir visi pagrindiniai puslapiai HTTP 200.
-- Lighthouse push #43853564075 success, 10 HTML/JSON ataskaitų: desktop visi 100; mobile home 98, emergency 98, kiti 3 – 99; a11y, best-practices, SEO visi 100. Home mobile LCP 1.83 s, TBT 148 ms, CLS 0.
-- GA4 2026-11-09–15: 7 active users, 19 sessions, 82 pageviews, 0 verified organic sessions. GSC 2026-11-07–13: 0 impressions/clicks; sitemap submitted/pending, 5 priority URLs unknown to Google. Topic radar: 31 unique public RSS links from 7 topics; not search volume.
-- 2026-11-16 schedule events for daily-suite, site-check and Lighthouse are missing; workflow files were updated 11:08 UTC, after today's scheduled times. Wait for the next genuine schedule event. Daily-suite and Lighthouse catch-up are not needed under their deduplication rules.
+- Worker AI ciklas 2026-11-16 pradėtas 13:20:24 LT, completed 13:20:31, 5 AI calls, error_code=null. D1 memory present; memory_updated_at 2026-11-16T11:20:31.068Z sutampa su Control Core created_at. Dėl vieno ciklo per dieną ribos nekartoti.
+- PR #259 (read-only Worker AI D1 diagnostics) ir PR #260 (missing JSON schema fields classifier) sujungti į main. Diagnostikos workflow #43870801165 success. Keturi D1 SELECT kvietimai; kiekvienas rows_written=0. D1 duomenys nepakeisti. Artefaktas #14228495547.
+- Specialistų diagnostika: analytics=needs_evidence (search_console_data_missing), topics=reviewed, technical-seo=needs_evidence (insufficient_evidence), content-review=invalid_json (model_output_missing_fields). Control Core=needs_evidence, 5 evidence gaps, 1 recommendation. Coordinator turi 2 pagrindines spragų kategorijas.
+- Content-review atsakymas buvo sintaksiškai validus JSON objektas, kuriame trūko privalomų schemos laukų. Nėra įrodymo, kad atsakymas buvo nukirstas ar sintaksiškai sugadintas.
+- Draft PR #261: dalinį validų JSON objektą išsaugo kaip needs_evidence, typed laukus apriboja, prideda synthetic evidence gap ir human approval guard. Naujausias CI #43872460237 success: 76 Node testai, 12 Python testų, Cloudflare validation success; deploy job skipped. PR paliktas draft ir nesujungtas; Worker production deploy reikalauja atskiro leidimo.
+- Issue #145 lieka open iki validžių specialistų rezultatų, pilno evidence ir recovery_confirmed.
+
+### Schedule ir ChatGPT automatizacija
+
+- 2026-11-16 nėra Daily-suite, site-check ar Lighthouse event=schedule vykdymų. Daily-suite catch-up #43849430626 buvo workflow_dispatch, success, 3/3 job; D1 sync #43852322396 success. Site-check #43861037085 push success. Lighthouse #43855151465 push success.
+- 2026-11-15 site-check schedule #43716344579 įvyko 12:55:59 UTC, daily-suite schedule #43721211747 – 13:51:47 UTC, nors numatyti laikai 05:37 ir 06:10 UTC. Abu runneriai pradėjo po ~2–3 sekundžių nuo run sukūrimo. Tai patvirtina schedule įvykio pristatymo vėlavimą; konkreti GitHub priežastis nepatvirtinta.
+- Pagrindinis ChatGPT koordinatorius (11:45 LT) 2026-11-16 startavo 13:31:53 LT ir baigėsi failed 13:56:56 LT. Platforma grąžino tik bendrą klaidos tekstą, be traceback/diagnostic code. Inline run_now inicijuotas šioje sesijoje, bet Automations peek nerodo naujo registruoto run; atsigavimas nepatvirtintas.
+- 12:00 būklės patikra užbaigta 13:10 LT, todėl buvo prieš AI ciklą. 14:00 post-cycle verifier neturi šiandienos registruoto užbaigimo. Šioje sesijoje atlikta nepriklausoma read-only patikra per D1 diagnostiką ir Control Center įrodymus.
+- Control Center yra event-driven; atskiro daily cron nereikia.
+
+### SEO / canonical URL
+
+- PR #253 uždarytas be merge kaip pasenęs; jo šaka apėmė pasenusias instrukcijas ir politiką.
+- PR #258: 13 canonical/OG/sitemap/navigation/redirect/validator/test failų, švariai paruoštų nuo dabartinio main. CI: 152 testai ir static validation success. Cloudflare Pages preview https://037ed7e2.pettraffic-ai.pages.dev patikrino keturis gidus, /about, /privacy ir sitemap HTTP 200, clean canonical URL ir 20 legacy 301 taisyklių.
+- PR #258 atviras, ready for review ir mergeable. Produkcijos canonical/OG/sitemap/navigacijos pakeitimai nepublikuoti; reikalingas atskiras leidimas.
+
+### Svetainė ir analitika
+
+- Gyvas homepage ir /control/ atsakė HTTP 200. /control/ lieka public READ-ONLY; noindex nėra autentifikacija.
+- GA4 2026-11-09–15: 7 active users, 19 sessions, 82 pageviews, 0 confirmed organic sessions.
+- GSC 2026-11-07–13: 0 impressions, 0 clicks; sitemap submitted/pending, 5 priority URLs dar Google nežinomi. Nulis nėra įrodymas, kad indeksavimas tikrai neveikia.
+- RSS radaras: 31 unikali viešų antraščių nuoroda / 7 temos; tai nėra paieškų apimtys.
+- Lighthouse push #43855151465: mobile 98–99, desktop 100; SEO/accessibility/best-practices 100. Tai nėra schedule įrodymas.
+
+### Privatus dashboard architektūros pasiūlymas
+
+- Rekomenduojamas atskiras Cloudflare Pages projektas privačiam UI, apsaugotas Cloudflare Access production ir preview hostname. Pirmas etapas – read-only.
+- Privatus Worker/API privalo tikrinti Access JWT (issuer, audience, JWKS, expiry, owner allowlist); CORS nėra autentifikacija.
+- Cloudflare Zero Trust Free planas skelbia $0 iki 50 naudotojų. Jokių Access/DNS/billing nustatymų šioje sesijoje nekeista; atskira schema aprašyta docs/PRIVATE_CONTROL_CENTER_ARCHITECTURE.md.
+- Vėlesnės valdymo komandos tik fixed allowlist task schemas + OIDC least privilege + tests + D1 readback. Jokio arbitrary shell ar model-generated code.
 
 ## Kitas pirmas neužbaigtas veiksmas
 
-**Laukti 14:00 LT post-cycle verifier.** Patikrinti specialistų validumą, Control Core evidence gaps, memory readback ir naują event-driven Control Center ataskaitą. Nekartoti AI ciklo šiandien; jei content-review=invalid_json ar kiti needs_evidence statusai lieka, palikti issue #145 atvirą ir nustatyti konkrečią priežastį tik iš saugių įrodymų.
+1. Sulaukti atskiro patvirtinimo dėl PR #258 produkcijos canonical/SEO/navigation publikavimo.
+2. Sulaukti atskiro Worker production deployment leidimo PR #261 prieš merge.
+3. Išsiaiškinti ChatGPT koordinatoriaus bendrą scheduled-task klaidą – platforma nepateikia traceback.
+4. Stebėti kitą tikrą Daily-suite/site-check event=schedule; nemaišyti su push ar manual.
+5. Tęsti privataus valdymo pulto dokumentavimą, bet nieko neįjungti Cloudflare paskyroje.
 
 ## Ribos
 
-- Jokio viešo turinio publikavimo ar SEO metadata / navigacijos pakeitimo be atskiro patvirtinimo.
-- Jokio DNS, Cloudflare Worker/D1 production, secrets, paskyrų teisių, billing ar mokamų paslaugų pakeitimo.
-- automation-history latest.md / latest.json yra automatiniai Control Center snapshot'ai; jų rankiniu būdu nekeisti.
-- Jokių ARO Vet, vaistinės, produktų kortelių, affiliate, reklamos ar ARO Vet sekimo elementų Pet traffic projekte.
+- Jokio viešo turinio / SEO URL / metadata publikavimo be atskiro patvirtinimo.
+- Jokio Worker/D1 production deploy, DNS, Access, secrets, paskyrų teisių, billing ar mokamų paslaugų pakeitimo be atskiro leidimo.
+- automation-history/latest.md ir .json yra automatiškai generuojami; jų rankiniu būdu nekeisti.
+- Jokių ARO Vet / vaistinės / produktų kortelių / affiliate / reklamos / tracking elementų Pet traffic projekte.
