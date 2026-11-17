@@ -95,3 +95,21 @@ Atnaujinta: 2026-11-17 15:45 Europe/Vilnius
 - Jokio Worker/D1 production deploy, DNS, Cloudflare Access, secrets, paskyrų teisių, billing ar mokamų paslaugų pakeitimo be atskiro leidimo.
 - Jokio arbitrary shell, model-generated code execution ar neapribotų task tipų.
 - automation-history latest.md/latest.json rankiniu būdu nekeisti.
+
+
+## 2026-11-17 21:20 LT – vakarinis darbų tęsinys
+
+### Atlikta ir patikrinta
+- PR #281 sujungtas į main: e8506e5243f64c403197c5a83daaa7e06f0da2cf.
+- Snapshot provenance įrašomas į event payload: pirminis event tipas, workflow ID, source run ID ir source run creation time. Daily-suite atranka remiasi workflow ID 418322987, ne dinaminiu pavadinimu.
+- Post-merge site-check #44156880643, central control center #44156880589 ir snapshot sync #44156985201 – success. D1 readback patvirtino du snapshot įrašus, perduotus per OIDC.
+- PR #282 testų pataisos paruoštos šakoje fix/ai-schedule-provenance-gate, head 5679785fefde8a7517ea1557b8c997ff49b6dfd1: 79/79 Worker Node testai, 20/20 Python testai, Cloudflare validation success, site-check 149 testai success.
+
+### Kas dar nepatvirtinta
+- PR #282 tebėra draft ir dar nesujungtas; Worker/D1 produkcinis diegimas iš šios šakos nevyko.
+- Nėra dar realaus Daily-suite event=schedule snapshot su nauja provenance schema ir nėra AI ciklo po šio pakeitimo. Tikras patvirtinimas laukia kito numatyto suplanuoto ciklo.
+- AI recovery patvirtinti tik kai sutampa tos pačios dienos source provenance, D1 įrašas/readback, 5 specialistų rezultatai, Control Core spragos ir memory readback. Issue #145 palikti open.
+
+### Kitas žingsnis
+- Gauti atskirą leidimą PR #282 sujungimui, nes tai sukels Worker/D1 produkcinį deploy; po sujungimo patikrinti deploy ir saugumo testus, o kitą suplanuotą ciklą naudoti tikram AI recovery įrodymui.
+- automation-history/latest.md ir latest.json yra automatiniai snapshot; rankiniu būdu jų neperrašyti.
