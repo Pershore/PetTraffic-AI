@@ -113,3 +113,10 @@ Atnaujinta: 2026-11-17 15:45 Europe/Vilnius
 ### Kitas žingsnis
 - Gauti atskirą leidimą PR #282 sujungimui, nes tai sukels Worker/D1 produkcinį deploy; po sujungimo patikrinti deploy ir saugumo testus, o kitą suplanuotą ciklą naudoti tikram AI recovery įrodymui.
 - automation-history/latest.md ir latest.json yra automatiniai snapshot; rankiniu būdu jų neperrašyti.
+
+
+## Papildomas grafiko įrodymas – 2026-11-17
+
+- Daily-suite run #44119444026 pagal GitHub run metadata buvo event=schedule, workflow ID 418322987, 3/3 job success.
+- .github/workflows/daily-suite.yml cron yra 06:10 UTC; run start 15:53:16 UTC, taigi maždaug 9 val. 43 min. vėlavimas. Tai patvirtina realų schedule įvykį ir reikšmingą delsą, o ne rankinį paleidimą.
+- Šis run įvyko iki PR #281 merge, todėl jame dar nėra naujos provenance schemos. Naujo perdavimo patvirtinimui reikia kito schedule po merge.
