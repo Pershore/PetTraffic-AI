@@ -1,5 +1,18 @@
 # Pet traffic – naujos sesijos pradžios protokolas
 
+## Naujausia patikrinta būsena (2026-11-17, 22:53 LT)
+
+- PR #283 sujungtas į main: `f41fee5e6f2db29067e8ab9523e40a777d626e40`.
+- Worker/D1 production deploy #44165044215 `event=push` success: D1 migracijos, Wrangler deploy, /health, API 401 ir Cloudflare grafikai patvirtinti. Worker testai 79/79 Node + 20/20 Python PR patikroje; po merge tie patys Worker test job ir Cloudflare validation success. Site-check #44165044246 success.
+- Worker heartbeat diagnostic #44165206828 success: heartbeat pasistūmėjo 15 min., D1, Control Core schema, site ir DB healthy. Site-check #44165427063 success.
+- Control Center #44167417153 success, bet 5 AI evidence gaps išlieka; automation-history latest snapshot 20:15:51Z. Issue #145 open.
+- Sync #44167513272 success, tačiau daily-suite source-run validation ir analytics/topic artifacts skipped – po PR #281 dar nėra naujo tikro schedule snapshot.
+- PR #284 yra DRAFT / PARUOŠTA, head `8519ad6135104a4dd960df3eb013eda55949518e`; Worker testai, Cloudflare validation, site-check ir snapshot event-builder CI success; deploy/sync PR event metu skipped. PR dar nesujungtas, todėl automatinis post-Control-Center D1 diagnostikos paleidimas neįjungtas.
+- PR #277 yra pasenęs (35 commit behind), #280 taip pat pasenęs (28 behind); nieko nemerginti aklai.
+- **Kitas veiksmas:** 2026-11-18 06:10 UTC / 08:10 LT tikrinti tikrą Daily-suite `event=schedule`, 3 job, provenance ir D1 readback; po to vienintelis 13:20 LT AI ciklas, specialistų įrodymai, Control Core ir memory readback. Issue #145 palikti open.
+- ARO Vet, DNS, secrets, billing, viešas turinys ir mokamos paslaugos nepakeisti. Dashboard lieka READ-ONLY.
+
+
 ## Naujausia patikrinta būsena (2026-11-17, 22:04 LT)
 
 - PR #283 sujungtas į main: `f41fee5e6f2db29067e8ab9523e40a777d626e40`.
