@@ -1,11 +1,32 @@
 # Pet traffic – vienintelė kanoninė projekto atmintis
 
-**Atnaujinta:** 2026-11-16 18:55 LT  
+**Atnaujinta:** 2026-11-17 15:03 LT  
 **Saugykla:** https://github.com/Pershore/PetTraffic-AI  
 **Pagrindinė šaka:** `main`  
 **Tikslas:** vienas patikimas tęstinumo šaltinis ChatGPT, Codex ir būsimiems projekto agentams.
 
 Šis dokumentas sujungia ilgalaikius sprendimus, patvirtintą architektūrą, dabartines integracijų būsenas, neišspręstus blokatorius ir kitus veiksmus. Jis nepakeičia GitHub testų ar realių vykdymų įrodymų. Kiekvieną būseną reikia tikrinti pagal naujausią commit, workflow run ir gyvą sistemos atsakymą.
+
+## Naujausia patikrinta būsena (2026-11-17, 15:03 LT)
+
+- **Main / PR:** main HEAD `0c2d29558328002ae42cc9aeda2e17b30322d02b`. PR #270, #271, #273 ir #274 sujungti; jų pakeitimai apsiribojo owner-only read-only diagnostikos dispatch ir diagnostikos klasifikatoriumi. PR #269 lieka senas dokumentacijos draft; jį pakeis šis atnaujinimas.
+- **Worker / D1 PATIKRINTA:** gyvas `/health` HTTP 200; D1 ir Control Core schema connected. Heartbeat 2026-11-17T13:00:13.735Z patvirtino site HTTP 200 ir database_ok=true.
+- **AI ciklas PATIKRINTA:** `run_date=2026-11-17`, pradžia 12:00:13.704Z, pabaiga 12:00:21.995Z, status completed, 5 AI calls, `error_code=null`. D1 Control Core sprendimas ir memory readback patvirtinti; `memory_updated_at=2026-11-17T12:00:21.622Z`.
+- **AI įrodymų kokybė NEPATVIRTINTA:** visi keturi specialistai ir koordinatorius liko `needs_evidence`; Control Core turi 5 spragas ir 1 rekomendaciją. Naujausia privatumo filtruota D1 diagnostika [#44088717319](https://github.com/Pershore/PetTraffic-AI/actions/runs/44088717319) (push po klasifikatoriaus PR, ne AI ciklo pakartojimas) parodė: analytics=other, topics=insufficient_evidence, technical-seo=other, content-review=insufficient_evidence, coordinator=other. Bendra kategorija: 2 `insufficient_evidence`, 3 `other`. Žali modelio tekstai sąmoningai neįtraukiami. Nėra pagrindo teigti, kad specialistų kokybė jau pataisyta.
+- **Šaltinių D1 įrašai PATIKRINTI:** analytics snapshot 1 (run #44077181860, 11:49:23Z), topic snapshot 1 (tas pats run, 11:49:24Z); Control Center snapshot 18 ir recommendation snapshot 18 iki 13:01:35Z. Visi keturi diagnostikos SELECT grąžino `rows_written=0`.
+- **Daily-suite schedule NEĮVYKO:** 2026-11-17 06:10 UTC tikro `event=schedule` run nerasta. Rankinis catch-up [#44077181860](https://github.com/Pershore/PetTraffic-AI/actions/runs/44077181860) buvo `workflow_dispatch`, 3 job success; jis nėra schedule įrodymas. Paskutinis tikras schedule #43897746978 sukurtas 2026-11-16 15:34:13Z, 9 val. 24 min. po cron; priežastis nepatvirtinta. 20 val. bridge apsauga reiškia, kad kito catch-up nesiųsti iki 2026-11-18 07:47 UTC; pirmiau tikrinti 2026-11-18 06:10 UTC schedule.
+- **Control Center / istorija PATIKRINTA:** naujausias Control Center [#44088767083](https://github.com/Pershore/PetTraffic-AI/actions/runs/44088767083) `workflow_run` success; `automation-history/latest.md` sugeneruotas 13:02:36Z. Ankstesnis push vykdymas #44088716708 buvo cancelled dėl persidengusių paleidimų, tačiau po jo įvykęs workflow_run sėkmingai užbaigė ataskaitą.
+- **Issue #145 ir #248:** abu palikti open. #145 neuždaryti, kol specialistų įrodymai ir Control Core būsena realiai atsistatys. #248 privataus valdymo pulto autentifikacija lieka neįgyvendinta; viešas `/control/` yra read-only.
+- **Saugumas:** nebuvo Worker production deploy, D1 write iš diagnostikos, DNS, Cloudflare teisių, secrets, billing, viešo turinio ar ARO Vet pakeitimų. Naujų paslaugų / išlaidų nėra.
+
+## Pirmi neužbaigti veiksmai (2026-11-17, 15:03 LT)
+
+1. Pagerinti specialistų įrodymų kokybę: nustatyti, kokių struktūruotų duomenų trūksta kiekvienam specialistui; nenaudoti nepatikrintų prielaidų ir nekeisti Worker production be atskiro patvirtinimo.
+2. 2026-11-18 06:10 UTC tikrinti tikrą daily-suite `event=schedule`; jei jo nėra, po 20 val. deduplikavimo lango naudoti esamą owner bridge vieną kartą ir patikrinti visus 3 job, artefaktus bei D1 readback.
+3. Issue #145 laikyti atvirą iki specialistų įrodymų ir Control Core atsigavimo įrodymo.
+4. Issue #248 palikti atvirą; jokio viešo write API ar Cloudflare Access pakeitimų be atskiro leidimo.
+5. Google Search Console sitemap ir 5 prioritetinių URL būsenas tikrinti kitame tikrame rinkime; nulinės metrikos nelaikyti neveikimo įrodymu.
+6. Lighthouse TTFB/LCP anomalijas lyginti su kitu tikru savaitiniu schedule; pagal vieną matavimą svetainės kodo nekeisti.
 
 ## Naujausia patikrinta būsena (2026-11-17, 12:11 LT)
 
