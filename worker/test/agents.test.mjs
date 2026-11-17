@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { runAgentOrchestration, isVilniusAgentRunTime, isAgentScheduledEvent, isAgentCatchUpEvent, shouldRunAgentOrchestration, parseResult, extractResponseText, callModel, getEvents } from "../src/agents.mjs";
+import { runAgentOrchestration, isVilniusAgentRunTime, isAgentScheduledEvent, isAgentCatchUpEvent, shouldRunAgentOrchestration, isEligibleScheduledDailySuiteSnapshot, parseResult, extractResponseText, callModel, getEvents } from "../src/agents.mjs";
 function mockEnv({ai=true,existingRun=false,reserveErrorAt=0,reserveErrorBeforeCommit=false,reserveReadbackError=false,invalidEventPayload=false,modelResponse=null,modelResponses=null}={}) {
  const state={inserted:false,aiCalls:0,updates:[],reservationErrorThrown:false};
  const env={FETCH:async()=>new Response("<html><body><p>Test content</p></body></html>",{status:200}),DB:{prepare(sql){return {
@@ -268,4 +268,37 @@ test("coordinator evidence gaps are preserved when specialists also need evidenc
  const report=JSON.parse(completed.values[0]);
  assert.ok(report.coordinator.evidence_gaps.includes("Cross-specialist evidence conflict requires review."));
  assert.ok(report.control_decision.evidence_gaps.some(x=>x.includes("Cross-specialist evidence conflict")));
+});
+
+test("only same-day successful Daily-suite schedule provenance can unlock an AI cycle", () => {
+ const good = {
+  kind: "analytics_snapshot",
+  created_at: "2026-11-16T15:40:00.000Z",
+  payload: {
+   run_id: "suite-123",
+   provenance: {
+    source_event: "schedule",
+    source_workflow_id: "418322987",
+    source_run_id: "suite-123",
+    source_run_created_at: "2026-11-16T15:34:13.000Z",
+   },
+  },
+ };
+ const cutoff = Date.parse("2026-11-16T15:45:00.000Z");
+ assert.equal(isEligibleScheduledDailySuiteSnapshot(good, "2026-11-16", cutoff), true);
+ const reject = (changes, day = "2026-11-16", time = cutoff) =>
+  isEligibleScheduledDailySuiteSnapshot({
+   ...good,
+   ...changes,
+   payload: { ...good.payload, ...changes.payload,
+    provenance: { ...good.payload.provenance, ...(changes.payload?.provenance || {}) } },
+  }, day, time);
+ assert.equal(reject({payload:{provenance:{source_event:"push"}}}), false);
+ assert.equal(reject({payload:{provenance:{source_event:"workflow_dispatch"}}}), false);
+ assert.equal(reject({payload:{provenance:{source_workflow_id:"999"}}}), false);
+ assert.equal(reject({payload:{provenance:{source_run_id:"other"}}}), false);
+ assert.equal(reject({payload:{provenance:{source_run_created_at:"2026-11-15T15:34:13.000Z"}}}), false);
+ assert.equal(reject({}, "2026-11-15"), false);
+ assert.equal(reject({}, "2026-11-16", Date.parse("2026-11-16T15:30:00.000Z")), false);
+ assert.equal(isEligibleScheduledDailySuiteSnapshot({...good,payload_json:"{bad",payload:undefined},"2026-11-16",cutoff), false);
 });
