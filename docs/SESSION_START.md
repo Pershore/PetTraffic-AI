@@ -7,6 +7,16 @@ Atnaujinta: 2026-11-16
 - ARO Vet, pharmacy sections, product cards, affiliate links, advertising blocks, and ARO Vet-specific tracking must never appear in Pet traffic. ARO Vet svetainės, kodo, DNS, paskyrų ir infrastruktūros nekeisti. Šis 2026-11-16 sprendimas panaikina 2026-11-15 istorinį leidimą.
 - Sistema turi kiekvieną savaitę pateikti sujungtą augimo ataskaitą iš GA4, Search Console, RSS temų, Lighthouse, automatizacijų ir Worker AI būsenos. Naudoti esamus duomenis / nemokamą Python, nekurti naujos ChatGPT automatikos ar papildomo mokamo AI kvietimo.
 
+## Naujausia patikrinta būsena (2026-11-17, 15:03 LT)
+
+- Main HEAD `0c2d29558328002ae42cc9aeda2e17b30322d02b`; PR #270/#271/#273/#274 sujungti. PR #269 – senas dokumentacijos draft, peržiūrėti ar uždaryti kaip superseded.
+- Worker /health HTTP 200; D1 ir Control Core connected; heartbeat 13:00:13Z site 200, DB true.
+- 2026-11-17 AI ciklas completed, 5 AI calls, error_code=null; D1 Control Core ir memory readback sutampa 12:00:21.622Z. Tačiau 4 specialistai ir koordinatorius `needs_evidence`; 5 spragos (2 insufficient_evidence, 3 other). Naujausia read-only diagnostika #44088717319 success, rows_written=0; AI ciklas nekartotas.
+- Owner bridge turi `/pettraffic-run-agent-diagnostics` komandą su 30 min. dedupe; savininko komanda patikrinta.
+- Daily-suite 2026-11-17 `event=schedule` nerasta; #44077181860 yra workflow_dispatch, 3 job success. Paskutinis tikras schedule #43897746978 vėlavo 9h24; priežastis nepatvirtinta. 20h dedupe iki 2026-11-18 07:47 UTC; pirmiau tikrinti 06:10 UTC schedule.
+- Control Center #44088767083 success; automation-history latest.md sugeneruotas 13:02:36Z. Issue #145 ir #248 lieka open.
+- Jokio Worker production, D1 write, DNS, secrets, billing, ARO Vet ar viešo turinio pakeitimo.
+
 ## Naujausia patikrinta būsena (2026-11-16, 18:55 LT)
 
 - **Worker / D1 PATIKRINTA:** gyvas `/health` HTTP 200; database ir Control Core schema connected. Heartbeat 2026-11-16T16:45:13Z patvirtino site HTTP 200 ir D1. Tos pačios dienos AI ciklas: run_date=2026-11-16, completed, 5 AI calls, error_code=null; memory present. Tačiau Control Core vis dar `needs_evidence`, 5 spragos; specialistai: analytics=needs_evidence, topics=reviewed, technical-seo=needs_evidence, content-review=invalid_json. Antro ciklo nekartoti; issue #145 open.
