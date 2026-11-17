@@ -317,6 +317,7 @@ test("only same-day successful Daily-suite schedule provenance can unlock an AI 
  assert.equal(reject({payload:{provenance:{source_workflow_id:"999"}}}), false);
  assert.equal(reject({payload:{provenance:{source_run_id:"other"}}}), false);
  assert.equal(reject({payload:{provenance:{source_run_created_at:"2026-11-15T15:34:13.000Z"}}}), false);
+ assert.equal(reject({created_at:"2026-11-16T15:30:00.000Z"}), false);
  assert.equal(reject({}, "2026-11-15"), false);
  assert.equal(reject({}, "2026-11-16", Date.parse("2026-11-16T15:30:00.000Z")), false);
  assert.equal(isEligibleScheduledDailySuiteSnapshot({...good,payload_json:"{bad",payload:undefined},"2026-11-16",cutoff), false);
