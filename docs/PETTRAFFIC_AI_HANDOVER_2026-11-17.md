@@ -62,3 +62,30 @@ Atnaujinta: 2026-11-17 12:11 Europe/Vilnius
 - Jokio Worker/D1 production deploy, DNS, Cloudflare Access, secrets, paskyrų teisių, billing ar mokamų paslaugų pakeitimo be atskiro leidimo.
 - Jokio arbitrary shell, model-generated code execution ar neapribotų task tipų.
 - automation-history latest.md/latest.json rankiniu būdu nekeisti.
+
+
+## 2026-11-17 13:55 LT – tęstinis perdavimas
+
+### PATIKRINTA
+- Daily-suite #44077181860: workflow_dispatch, visi analytics / topic-radar / live-check job success; live-check patvirtino core pages, internal links, sitemap, robots, 404 ir 20 senų 301 redirect.
+- D1 sync #44077423350: source run valid, analytics/topic artefaktai atsisiųsti, 2 agreguoti įvykiai įrašyti ir perskaityti atgal.
+- Read-only D1 diagnostic #43870801165 attempt 2: šiandienos analytics_snapshot ir topic_snapshot jau D1; šiandienos agent_run, specialistų rezultatai ir Control Core dar nėra. Atmintis tebėra 2026-11-16 needs_evidence.
+- Worker /health 200; DB ir Control Core schema connected; paskutinis heartbeat 11:45:14Z, site_status 200.
+- Worker cron diagnostic #44077019257: Cloudflare schedule config check success, heartbeat observation in progress.
+
+### NEPATVIRTINTA / LAUKIA
+- 2026-11-17 tikras daily-suite schedule paleidimas vis dar nerastas. Manual catch-up #44077181860 jo nepakeičia. Paskutinis schedule #43897746978 buvo sukurtas 15:34:13Z 2026-11-16 ir truko 34 s.
+- 14:00 LT heartbeat turėtų atlikti Worker catch-up, nes D1 jau yra šios dienos analytics/topic snapshot. Tai prognozė pagal main Worker kodą, ne patvirtintas rezultatas.
+- Po 14:00 tikrinti /health ir pakartoti read-only D1 diagnostiką. Reikalauti run_date=2026-11-17, 5 AI kvietimų, specialistų įrodymų, Control Core sprendimo ir memory readback. Jei specialistų evidence gaps išlieka, issue #145 palikti atvirą.
+- PR #263 ir #261 draft; #263 pirmas, #261 tik su atskiru leidimu. Manual workflow_dispatch niekada nelaikyti schedule įrodymu.
+
+### Analitika
+- GA4 2026-11-10–16: 9 aktyvūs, 26 sesijos, 90 peržiūrų, 0 organinių sesijų.
+- GSC 2026-11-08–14: 0 parodymų / paspaudimų, sitemap pending, 5 URL indeksavimas nežinomas.
+- Temų radaras: 29 RSS nuorodos / 7 temos, ne paieškų apimtys.
+
+### Saugumo ribos
+- Kodo, Worker deploy, DNS, D1 schemos, secrets, billing ar turinio publikavimo pakeitimų nebuvo; tik agreguotų snapshot įrašymas į D1 per esamą OIDC sync ir readback.
+- Dashboard viešas read-only; noindex nėra autentifikacija; #248 atviras.
+- ARO Vet neliečiamas; pagrindiniuose viešuose puslapiuose ARO Vet elementų nerasta.
+- `reports/history/project-state/latest.md` ir `latest.json` generuoja Control Center; rankiniu būdu jų neredaguoti.
