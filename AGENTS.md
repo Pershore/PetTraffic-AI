@@ -103,3 +103,14 @@ Be factual, concise, and never overstate completion.
 - Allowed event names are restricted to workflow_run and workflow_dispatch. Push, schedule, issue_comment and other events remain rejected. Any change requires worker tests, PR review, CI and verified Worker deployment.
 
 - Daily post-cycle verification: the existing performance automation also checks the Worker AI cycle after 13:20 LT at 14:00 LT. Keep the main catch-up coordinator at 11:45 LT; do not create duplicate scheduled tasks.
+
+
+## Resource efficiency and evidence-first execution
+- Prefer the cheapest reliable check that proves the requested state: reuse fresh verified artifacts and cached snapshots before making external requests.
+- Never repeat a successful workflow, API call, crawl, or AI stage unless its evidence is stale, incomplete, invalid, or a named dependency changed. Record why a repeat was necessary.
+- Batch independent read-only lookups where practical; keep independent GitHub Actions jobs parallel. Do not serialize work that has no dependency.
+- Avoid broad crawls when a targeted URL or changed-page check is sufficient. Respect provider credit limits and rate limits; do not enable paid credits, plans, services, or dependencies.
+- Before an AI call, validate that required inputs exist, are fresh, belong to the same run/cycle, and have trusted provenance. If evidence is missing, stop that specialist or cycle with an explicit gap instead of spending calls on guesswork.
+- Reuse one cycle identifier and one bounded context across specialist stages; persist only useful, privacy-filtered deltas. Do not duplicate large snapshots into logs or memory.
+- Measure before optimizing runtime. Separate queue/schedule delay from execution time; do not optimize an intentionally long heartbeat wait or a short step without evidence of material benefit.
+- Preserve correctness, security, test coverage, and source provenance. Never lower verification standards to save credits or time.
