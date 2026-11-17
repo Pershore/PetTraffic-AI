@@ -43,6 +43,27 @@ export function isAgentCatchUpEvent(controller) {
   return vilniusMinutes(new Date(controller.scheduledTime)) >= 13 * 60 + 20;
 }
 
+export function isEligibleScheduledDailySuiteSnapshot(event, localDay, evidenceCutoff) {
+ const payload=event?.payload&&typeof event.payload==="object" ? event.payload : (()=>{
+  if(typeof event?.payload_json!=="string") return null;
+  try { const parsed=JSON.parse(event.payload_json); return parsed&&typeof parsed==="object"&&!Array.isArray(parsed)?parsed:null; }
+  catch { return null; }
+ })();
+ if(!payload || !["analytics_snapshot","topic_snapshot"].includes(event?.kind)) return false;
+ const provenance=payload.provenance;
+ if(!provenance || provenance.source_event!=="schedule" || String(provenance.source_workflow_id)!=="418322987") return false;
+ const sourceRunId=String(provenance.source_run_id||"");
+ if(!sourceRunId || String(payload.run_id||"")!==sourceRunId) return false;
+ if(typeof provenance.source_run_created_at!=="string") return false;
+ const sourceCreatedAt=new Date(provenance.source_run_created_at);
+ const persistedAt=new Date(event.created_at);
+ const cutoff=new Date(evidenceCutoff);
+ return Number.isFinite(sourceCreatedAt.getTime()) && Number.isFinite(persistedAt.getTime()) &&
+  Number.isFinite(cutoff.getTime()) && persistedAt.getTime()>=sourceCreatedAt.getTime() &&
+  sourceCreatedAt.getTime()<=cutoff.getTime() &&
+  persistedAt.getTime()<=cutoff.getTime() && vilniusDateKey(sourceCreatedAt)===localDay;
+}
+
 export async function shouldRunAgentOrchestration(env, controller) {
   if (!env?.DB || !(isAgentScheduledEvent(controller) || isAgentCatchUpEvent(controller))) return false;
 
@@ -59,21 +80,16 @@ export async function shouldRunAgentOrchestration(env, controller) {
 
   const localDay = vilniusDateKey(scheduledAt);
   const snapshots = await env.DB.prepare(
-    "SELECT kind, created_at FROM events " +
-    "WHERE kind IN ('analytics_snapshot', 'topic_snapshot') " +
-    "ORDER BY created_at DESC LIMIT 30"
-  ).all();
+    "SELECT kind, payload_json, created_at FROM events " +
+    "WHERE kind IN ('analytics_snapshot', 'topic_snapshot') AND created_at <= ? " +
+    "ORDER BY created_at DESC LIMIT 100"
+  ).bind(scheduledAt.toISOString()).all();
 
-  // Require at least one valid daily-suite input written on the current
-  // Vilnius day. Partial suites are allowed; the missing specialist will
-  // report an evidence gap instead of analysing yesterday's snapshot.
-  return (snapshots.results || []).some(row => {
-    if (!["analytics_snapshot", "topic_snapshot"].includes(row.kind) || typeof row.created_at !== "string") {
-      return false;
-    }
-    const createdAt = new Date(row.created_at);
-    return Number.isFinite(createdAt.getTime()) && vilniusDateKey(createdAt) === localDay;
-  });
+  // Require a same-day Daily-suite snapshot whose original event provenance
+  // proves that GitHub's scheduled workflow (not push/manual) produced it.
+  return (snapshots.results || []).some(row =>
+    isEligibleScheduledDailySuiteSnapshot(row, localDay, scheduledAt)
+  );
 }
 
 import { buildControlDecision, persistControlDecision } from "./control-core.mjs";
@@ -173,42 +189,59 @@ const EVENT_KINDS = ["analytics_snapshot","topic_snapshot","control_center_snaps
 
 // Select the newest row independently for each source kind. A global LIMIT
 // lets repeated Control Center snapshots evict the daily analytics/topic rows.
-export async function getEvents(env, expectedRunDate = new Date().toISOString().slice(0,10)) {
+export async function getEvents(env, expectedRunDate = new Date().toISOString().slice(0,10), evidenceCutoff = new Date()) {
  const events=[];
  const missingKinds=[];
  const staleKinds=[];
  let invalidPayloadCount=0;
+ const cutoff=new Date(evidenceCutoff);
+ if(!Number.isFinite(cutoff.getTime())) {
+  return {events,invalidPayloadCount,missingKinds:EVENT_KINDS.slice(),staleKinds};
+ }
+ const localDay=vilniusDateKey(cutoff);
  for(const kind of EVENT_KINDS) {
   const result=await env.DB.prepare(
-   "SELECT kind,payload_json,created_at FROM events WHERE kind = ? ORDER BY created_at DESC LIMIT 1"
-  ).bind(kind).all();
-  const row=(result.results||[])[0];
-  if(!row) {
+   "SELECT kind,payload_json,created_at FROM events WHERE kind = ? AND created_at <= ? ORDER BY created_at DESC LIMIT 100"
+  ).bind(kind,cutoff.toISOString()).all();
+  const rows=result.results||[];
+  if(!rows.length) {
    missingKinds.push(kind);
    continue;
   }
-  const createdAt=typeof row.created_at==="string"?new Date(row.created_at):null;
-  if(!createdAt||!Number.isFinite(createdAt.getTime())) {
-   invalidPayloadCount++;
-   missingKinds.push(kind);
-   continue;
-  }
-  if(createdAt.toISOString().slice(0,10)!==expectedRunDate) {
-   staleKinds.push(kind);
-   continue;
-  }
-  try {
-   const payload=JSON.parse(row.payload_json);
-   if(!payload||typeof payload!=="object"||Array.isArray(payload)) {
+  let selected=null;
+  let sawStale=false;
+  for(const row of rows) {
+   const createdAt=typeof row.created_at==="string"?new Date(row.created_at):null;
+   if(!createdAt||!Number.isFinite(createdAt.getTime())) {
     invalidPayloadCount++;
-    missingKinds.push(kind);
     continue;
    }
-   events.push({kind,created_at:row.created_at,payload});
-  } catch {
-   invalidPayloadCount++;
-   missingKinds.push(kind);
+   if(createdAt.toISOString().slice(0,10)!==expectedRunDate) {
+    sawStale=true;
+    continue;
+   }
+   let payload;
+   try {
+    payload=JSON.parse(row.payload_json);
+   } catch {
+    invalidPayloadCount++;
+    continue;
+   }
+   if(!payload||typeof payload!=="object"||Array.isArray(payload)) {
+    invalidPayloadCount++;
+    continue;
+   }
+   if((kind==="analytics_snapshot"||kind==="topic_snapshot") &&
+      !isEligibleScheduledDailySuiteSnapshot({kind,created_at:row.created_at,payload},localDay,cutoff)) {
+    sawStale=true;
+    continue;
+   }
+   selected={kind,created_at:row.created_at,payload};
+   break;
   }
+  if(selected) events.push(selected);
+  else if(sawStale) staleKinds.push(kind);
+  else missingKinds.push(kind);
  }
  return {events,invalidPayloadCount,missingKinds,staleKinds};
 }
@@ -255,9 +288,11 @@ async function reserveCall(env,date,expectedCall) {
   }
  }
 }
-export async function runAgentOrchestration(env) {
+export async function runAgentOrchestration(env, scheduledTime = new Date()) {
  if(!env.DB||!env.AI)return {skipped:true,reason:!env.DB?"database_not_bound":"ai_binding_missing"};
- const date=new Date().toISOString().slice(0,10);
+ const scheduledAt=new Date(scheduledTime);
+ if(!Number.isFinite(scheduledAt.getTime()))return {skipped:true,reason:"invalid_scheduled_time"};
+ const date=scheduledAt.toISOString().slice(0,10);
  const inserted=await env.DB.prepare("INSERT OR IGNORE INTO agent_runs (run_date,status,ai_calls,started_at) VALUES (?,'running',0,?)").bind(date,new Date().toISOString()).run();
  if(!inserted.meta?.changes)return {skipped:true,reason:"daily_run_already_started"};
  let stage="load_events";
@@ -270,7 +305,7 @@ export async function runAgentOrchestration(env) {
   return reserved;
  };
  try {
-  const eventData=await getEvents(env,date);
+  const eventData=await getEvents(env,date,scheduledAt);
   stage="fetch_public_content";
   const pages=await getPublicContent(env);
   for(const agent of AGENTS) {

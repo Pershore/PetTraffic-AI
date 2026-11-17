@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { runAgentOrchestration, isVilniusAgentRunTime, isAgentScheduledEvent, isAgentCatchUpEvent, shouldRunAgentOrchestration, parseResult, extractResponseText, callModel, getEvents } from "../src/agents.mjs";
+import { runAgentOrchestration, isVilniusAgentRunTime, isAgentScheduledEvent, isAgentCatchUpEvent, shouldRunAgentOrchestration, isEligibleScheduledDailySuiteSnapshot, parseResult, extractResponseText, callModel, getEvents } from "../src/agents.mjs";
 function mockEnv({ai=true,existingRun=false,reserveErrorAt=0,reserveErrorBeforeCommit=false,reserveReadbackError=false,invalidEventPayload=false,modelResponse=null,modelResponses=null}={}) {
  const state={inserted:false,aiCalls:0,updates:[],reservationErrorThrown:false};
  const env={FETCH:async()=>new Response("<html><body><p>Test content</p></body></html>",{status:200}),DB:{prepare(sql){return {
@@ -201,18 +201,37 @@ test("heartbeat catch-up opens at 13:20 Vilnius in both winter and summer", () =
  assert.equal(isAgentCatchUpEvent({ cron: "20 10,11 * * *", scheduledTime: winter.scheduledTime }), false);
 });
 
-test("daily orchestration waits for a same-day analytics or topic snapshot", async () => {
+test("daily orchestration waits for a same-day scheduled Daily-suite snapshot", async () => {
  const controller = { cron: "*/15 * * * *", scheduledTime: Date.parse("2026-11-15T11:30:00.000Z") };
  const makeEnv = ({existingRun=null,rows=[]}={}) => ({
   DB: { prepare(sql) {
    return {
-    bind() { return { first: async () => sql.includes("FROM agent_runs") ? existingRun : null }; },
-    all: async () => ({results: rows}),
+    bind() { return {
+     first: async () => sql.includes("FROM agent_runs") ? existingRun : null,
+     all: async () => ({results: rows}),
+    }; },
    };
   } },
  });
- const today = makeEnv({rows:[{kind:"analytics_snapshot",created_at:"2026-11-15T13:51:00.000Z"}]});
- const yesterday = makeEnv({rows:[{kind:"topic_snapshot",created_at:"2026-11-14T13:51:00.000Z"}]});
+ const provenance = {
+  source_event: "schedule",
+  source_workflow_id: "418322987",
+  source_run_id: "suite-today",
+  source_run_created_at: "2026-11-15T11:24:00.000Z",
+ };
+ const today = makeEnv({rows:[{
+  kind:"analytics_snapshot",
+  created_at:"2026-11-15T11:25:00.000Z",
+  payload_json:JSON.stringify({run_id:"suite-today",provenance}),
+ }]});
+ const yesterday = makeEnv({rows:[{
+  kind:"topic_snapshot",
+  created_at:"2026-11-14T11:25:00.000Z",
+  payload_json:JSON.stringify({
+   run_id:"suite-yesterday",
+   provenance:{...provenance,source_run_id:"suite-yesterday",source_run_created_at:"2026-11-14T11:24:00.000Z"},
+  }),
+ }]});
  const none = makeEnv();
  assert.equal(await shouldRunAgentOrchestration(today,controller), true);
  assert.equal(await shouldRunAgentOrchestration(yesterday,controller), false);
@@ -231,20 +250,26 @@ test("daily orchestration never starts a second time after a run was reserved", 
 });
 
 
-test("source selection keeps the newest daily snapshot for every kind despite repeated control snapshots",async()=>{
+test("source selection uses scheduled analytics/topic snapshots and excludes newer manual rows",async()=>{
  const rows=[];
  for(let i=0;i<18;i++) {
-  const stamp=new Date(Date.parse("2026-11-17T12:00:00.000Z")+i*1000).toISOString();
+  const stamp=new Date(Date.parse("2026-11-17T11:50:00.000Z")+i*1000).toISOString();
   rows.push({kind:"control_center_snapshot",created_at:stamp,payload_json:JSON.stringify({run_id:"cc-"+i})});
   rows.push({kind:"recommendation_snapshot",created_at:stamp,payload_json:JSON.stringify({run_id:"rec-"+i})});
  }
- rows.push({kind:"analytics_snapshot",created_at:"2026-11-17T11:49:23.651Z",payload_json:JSON.stringify({run_id:"analytics-today"})});
- rows.push({kind:"topic_snapshot",created_at:"2026-11-17T11:49:24.352Z",payload_json:JSON.stringify({run_id:"topics-today"})});
+ const provenance=(runId,sourceEvent="schedule",createdAt="2026-11-17T11:48:00.000Z")=>({
+  source_event:sourceEvent,source_workflow_id:"418322987",source_run_id:runId,source_run_created_at:createdAt,
+ });
+ rows.push({kind:"analytics_snapshot",created_at:"2026-11-17T11:49:00.000Z",payload_json:JSON.stringify({run_id:"analytics-scheduled",provenance:provenance("analytics-scheduled")})});
+ rows.push({kind:"analytics_snapshot",created_at:"2026-11-17T11:49:23.651Z",payload_json:JSON.stringify({run_id:"analytics-manual",provenance:provenance("analytics-manual","workflow_dispatch")})});
+ rows.push({kind:"topic_snapshot",created_at:"2026-11-17T11:49:24.352Z",payload_json:JSON.stringify({run_id:"topics-scheduled",provenance:provenance("topics-scheduled")})});
  const queried=[];
- const env={DB:{prepare(sql){assert.match(sql,/WHERE kind = \?/);return{bind(kind){queried.push(kind);return{all:async()=>({results:rows.filter(row=>row.kind===kind).sort((a,b)=>b.created_at.localeCompare(a.created_at)).slice(0,1)})};}};}}};
- const data=await getEvents(env,"2026-11-17");
+ const env={DB:{prepare(sql){assert.match(sql,/WHERE kind = \? AND created_at <= \?/);return{bind(kind,cutoff){queried.push(kind);return{all:async()=>({results:rows.filter(row=>row.kind===kind&&row.created_at<=cutoff).sort((a,b)=>b.created_at.localeCompare(a.created_at)).slice(0,100)})};}};}}};
+ const data=await getEvents(env,"2026-11-17",new Date("2026-11-17T11:55:00.000Z"));
  assert.deepEqual(queried,["analytics_snapshot","topic_snapshot","control_center_snapshot","recommendation_snapshot"]);
  assert.deepEqual(data.events.map(row=>row.kind),["analytics_snapshot","topic_snapshot","control_center_snapshot","recommendation_snapshot"]);
+ assert.equal(data.events[0].payload.run_id,"analytics-scheduled");
+ assert.equal(data.events[1].payload.run_id,"topics-scheduled");
  assert.deepEqual(data.missingKinds,[]);
  assert.deepEqual(data.staleKinds,[]);
  assert.equal(data.invalidPayloadCount,0);
@@ -268,4 +293,38 @@ test("coordinator evidence gaps are preserved when specialists also need evidenc
  const report=JSON.parse(completed.values[0]);
  assert.ok(report.coordinator.evidence_gaps.includes("Cross-specialist evidence conflict requires review."));
  assert.ok(report.control_decision.evidence_gaps.some(x=>x.includes("Cross-specialist evidence conflict")));
+});
+
+test("only same-day successful Daily-suite schedule provenance can unlock an AI cycle", () => {
+ const good = {
+  kind: "analytics_snapshot",
+  created_at: "2026-11-16T15:40:00.000Z",
+  payload: {
+   run_id: "suite-123",
+   provenance: {
+    source_event: "schedule",
+    source_workflow_id: "418322987",
+    source_run_id: "suite-123",
+    source_run_created_at: "2026-11-16T15:34:13.000Z",
+   },
+  },
+ };
+ const cutoff = Date.parse("2026-11-16T15:45:00.000Z");
+ assert.equal(isEligibleScheduledDailySuiteSnapshot(good, "2026-11-16", cutoff), true);
+ const reject = (changes, day = "2026-11-16", time = cutoff) =>
+  isEligibleScheduledDailySuiteSnapshot({
+   ...good,
+   ...changes,
+   payload: { ...good.payload, ...changes.payload,
+    provenance: { ...good.payload.provenance, ...(changes.payload?.provenance || {}) } },
+  }, day, time);
+ assert.equal(reject({payload:{provenance:{source_event:"push"}}}), false);
+ assert.equal(reject({payload:{provenance:{source_event:"workflow_dispatch"}}}), false);
+ assert.equal(reject({payload:{provenance:{source_workflow_id:"999"}}}), false);
+ assert.equal(reject({payload:{provenance:{source_run_id:"other"}}}), false);
+ assert.equal(reject({payload:{provenance:{source_run_created_at:"2026-11-15T15:34:13.000Z"}}}), false);
+ assert.equal(reject({created_at:"2026-11-16T15:30:00.000Z"}), false);
+ assert.equal(reject({}, "2026-11-15"), false);
+ assert.equal(reject({}, "2026-11-16", Date.parse("2026-11-16T15:30:00.000Z")), false);
+ assert.equal(isEligibleScheduledDailySuiteSnapshot({...good,payload_json:"{bad",payload:undefined},"2026-11-16",cutoff), false);
 });
