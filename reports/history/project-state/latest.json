@@ -1,20 +1,13 @@
 {
   "schema_version": 1,
   "project": "PetTraffic AI",
-  "generated_at": "2026-11-17T13:02:08.916734+00:00",
-  "run_id": "44088684649",
-  "source_commit": "286b3960ff5f6347109703e494acdcb831cd4004",
+  "generated_at": "2026-11-17T13:02:36.928154+00:00",
+  "run_id": "44088767083",
+  "source_commit": "4b1113dceade5948bdf7553a72266e9b279c921c",
   "overall_status": "needs_attention",
   "last_verified_stage": "Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataskaitoje.",
   "next_action": "Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas (warning). Suplanuotas ciklas nuo 2026-11-17 06:10 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-16T15:34:13Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.",
   "verified_processes": [
-    {
-      "name": "Centrinės API sinchronizavimas",
-      "state": "success",
-      "detail": "Paskutinis paleidimas sėkmingas.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44088614251",
-      "created_at": "2026-11-17T13:01:26Z"
-    },
     {
       "name": "Lighthouse auditas",
       "state": "success",
@@ -46,6 +39,13 @@
       "created_at": "2026-11-17T11:47:34Z"
     },
     {
+      "name": "Centrinis valdymo centras",
+      "state": "warning",
+      "detail": "Paskutinio paleidimo rezultatas: cancelled.",
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44088716708",
+      "created_at": "2026-11-17T13:02:04Z"
+    },
+    {
       "name": "AI agentai + control-core atmintis",
       "state": "warning",
       "detail": "AI agentų ciklas ir atminties įrašymas baigti; rekomendacijų: 1; trūksta įrodymų: 5.",
@@ -55,11 +55,11 @@
   ],
   "pending_checks": [
     {
-      "name": "Centrinis valdymo centras",
+      "name": "Centrinės API sinchronizavimas",
       "state": "running",
-      "detail": "Vyksta (pending).",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44088716708",
-      "created_at": "2026-11-17T13:02:04Z"
+      "detail": "Vyksta (in_progress).",
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44088796679",
+      "created_at": "2026-11-17T13:02:34Z"
     }
   ],
   "ai_agent_memory_check": {
