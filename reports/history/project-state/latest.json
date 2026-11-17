@@ -1,20 +1,13 @@
 {
   "schema_version": 1,
   "project": "PetTraffic AI",
-  "generated_at": "2026-11-17T12:55:16.197473+00:00",
-  "run_id": "44087636682",
-  "source_commit": "d0ff1fb064546e0b9a7d99f97b84683407795486",
+  "generated_at": "2026-11-17T12:55:44.299653+00:00",
+  "run_id": "44087705843",
+  "source_commit": "c35ccca38dfd69e57be11dad0b330ace851792ca",
   "overall_status": "needs_attention",
   "last_verified_stage": "Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataskaitoje.",
   "next_action": "Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas (warning). Suplanuotas ciklas nuo 2026-11-17 06:10 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-16T15:34:13Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.",
   "verified_processes": [
-    {
-      "name": "Centrinės API sinchronizavimas",
-      "state": "success",
-      "detail": "Paskutinis paleidimas sėkmingas.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44087600435",
-      "created_at": "2026-11-17T12:54:56Z"
-    },
     {
       "name": "Lighthouse auditas",
       "state": "success",
@@ -26,8 +19,8 @@
       "name": "Centrinis valdymo centras",
       "state": "success",
       "detail": "Paskutinis paleidimas sėkmingas.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44087520939",
-      "created_at": "2026-11-17T12:54:25Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44087636682",
+      "created_at": "2026-11-17T12:55:10Z"
     },
     {
       "name": "Debesijos read-only užduočių vykdytojas",
@@ -60,7 +53,15 @@
       "created_at": null
     }
   ],
-  "pending_checks": [],
+  "pending_checks": [
+    {
+      "name": "Centrinės API sinchronizavimas",
+      "state": "running",
+      "detail": "Vyksta (in_progress).",
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44087706641",
+      "created_at": "2026-11-17T12:55:37Z"
+    }
+  ],
   "ai_agent_memory_check": {
     "name": "AI agentai + control-core atmintis",
     "state": "warning",
