@@ -186,3 +186,25 @@ Atnaujinta: 2026-11-17 15:45 Europe/Vilnius
 - PR #284 šaka: `8519ad6135104a4dd960df3eb013eda55949518e`; compare yra 2 ahead / 11 behind, status `diverged`, GitHub `mergeable=false`.
 - PR paliekamas draft. Nenaudoti force-push; prieš merge sukurti naują šaką nuo latest main ir perkelti tik du patikrintus pakeistus failus, tada pakartoti CI.
 - Po dokumentavimo `site-check #44174641522` ir `automatic work log #44174641374` abu success.
+
+
+## 2026-11-17 23:06 LT – automatinė D1 diagnostika ir source-event pataisa
+
+## Naujausia patikrinta būsena (2026-11-17, 23:06 LT)
+
+- **PR #283 – ATLIKTA / Worker-D1 deploy PATIKRINTA:** merge `f41fee5e6f2db29067e8ab9523e40a777d626e40`; deploy #44165044215 `push` success. D1 migration, Wrangler deploy, /health, neautentifikuotas API 401 ir Cron grafikai sėkmingai patikrinti. Worker 79 Node + 20 Python testai, Cloudflare validation ir post-merge site-check #44165044246 success.
+- **PR #285 – ATLIKTA:** merge `013d6954c9886ccc9081d435190214377dbc7470`. Esama privacy-filtered SELECT-only D1 diagnostika automatiškai vykdoma po sėkmingo Control Center `workflow_run`, tik jei pats Control Center buvo paleistas `workflow_run` įvykiu; push/manual/PR Control Center atvejai atmetami. PR CI: Worker testai, Cloudflare validation, site-check #44173856206 ir sync test success; deploy/sync PR event metu skipped.
+- **PR #285 automatinis trigeris – dalinai PATIKRINTA:** po Control Center #44175241202 (`event=push`) diagnostikos downstream #44175334429 buvo skipped, kaip reikalauja apsauga. Po Control Center #44176135676 (`event=workflow_run`) diagnostika #44176227901 (`event=workflow_run`) sėkmingai suveikė. Tiksli Daily-suite schedule grandinė bus patikrinta po 2026-11-18 tikro schedule.
+- **PR #286 – ATLIKTA / diagnostikos pataisa PATIKRINTA:** merge `6e340f3f3058cc10f2846612f611e140fb274135`. Panaikintas globalus `LIMIT 40`, kuris galėjo paslėpti analytics/topic eilutes po Control Center duomenimis. Dabar kiekviena iš 4 event rūšių skaitoma atskiru SELECT, tik pasirinktai Vilniaus kalendorinei dienai, iki 100 įrašų kiekvienai rūšiai. Datų klasifikacija naudoja Europe/Vilnius, ne UTC datos prefiksą. CI: Worker test job #44176107019 success, Cloudflare validation success, deploy skipped; site-check #44176106926 success; sync event-builder test #44176106790 success, sync skipped.
+- **Naujas D1 diagnostikos readback – PATIKRINTA:** po PR #286 push diagnostika #44176277012 success, artifact #14370920739. Ji parodė 1 `analytics_snapshot` ir 1 `topic_snapshot` tos dienos įrašą (abu run ID `44077181860`), 41 `control_center_snapshot` ir 41 `recommendation_snapshot`. Tai patvirtina, kad senasis globalus LIMIT slėpė šaltinių eilutes.
+- **Šaltinio kilmė – PATIKRINTA, bet netinkama AI vartams:** GitHub run #44077181860 buvo `event=workflow_dispatch`, workflow ID `418322987`, success. Todėl šie 2 snapshot įrašai nėra tikro suplanuoto schedule įrodymas ir negali patvirtinti AI recovery po PR #283. Kito tinkamo Daily-suite schedule po PR #281 dar nėra.
+- **AI ciklas – NEPATVIRTINTA:** diagnostika rodo `run_date=2026-11-17`, status `completed`, 5 AI kvietimus, `error_code=null`, tačiau visi 4 specialistai ir koordinatorius `needs_evidence`; Control Core turi 5 evidence gaps ir 1 rekomendaciją; memory įrašas yra ir sutampa su to paties ciklo data/laiku. Tai nėra recovery. Antro ciklo nekartoti; Issue #145 palikti open.
+- **Pasenę PR uždaryti kaip superseded:** #277 ir #284 uždaryti su paaiškinančiais komentarais; jų šakų istorija išsaugota. PR #285/#286 dabar yra sujungti pakaitalai.
+- **Saugumas:** PR #285/#286 nekeitė Worker runtime kodo, D1 schemos ar duomenų, DNS, secrets, Cloudflare teisių, billing, ARO Vet, viešo turinio ar mokamų paslaugų. Diagnostika naudoja SELECT-only užklausas ir tikrina `rows_written=0`.
+- **Kitas privalomas etapas:** 2026-11-18 Daily-suite cron 06:10 UTC / 08:10 LT: tikrinti tikrą `event=schedule`, workflow ID 418322987, visus 3 job, artefaktus, D1 snapshot provenance ir readback. Tik po to laukti vienintelio Worker AI ciklo apie 13:20 LT; sutikrinti 5 specialistų įrodymus, Control Core, `recovery_confirmed` ir memory readback.
+
+- PR #285: https://github.com/Pershore/PetTraffic-AI/pull/285 (merge `013d6954c9886ccc9081d435190214377dbc7470`). PR #286: https://github.com/Pershore/PetTraffic-AI/pull/286 (merge `6e340f3f3058cc10f2846612f611e140fb274135`).
+- Trigger evidence: Control Center #44175241202 event=push → diagnostic #44175334429 skipped; Control Center #44176135676 event=workflow_run → diagnostic #44176227901 event=workflow_run success. Po PR #286 push diagnostika #44176277012 success, artifact #14370920739.
+- Naujas diagnostikos artifact rodo analytics/topic count=1 kiekvienam, run ID `44077181860`; GitHub metadata patvirtina source `event=workflow_dispatch`, ne schedule. Specialistų ir Control Core būklė liko needs_evidence (5 gaps); AI ciklas nekartotas.
+- PR #277 ir #284 uždaryti kaip superseded, jų istorija neištrinta.
+- Kitas įrodymas laukia 2026-11-18 06:10 UTC Daily-suite schedule ir po jo vienintelio 13:20 LT Worker AI ciklo. Issue #145 palikti open.
