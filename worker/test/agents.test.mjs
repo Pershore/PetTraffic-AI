@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { runAgentOrchestration, isVilniusAgentRunTime, isAgentScheduledEvent, isAgentCatchUpEvent, shouldRunAgentOrchestration, parseResult, extractResponseText, callModel } from "../src/agents.mjs";
+import { runAgentOrchestration, isVilniusAgentRunTime, isAgentScheduledEvent, isAgentCatchUpEvent, shouldRunAgentOrchestration, parseResult, extractResponseText, callModel, getEvents } from "../src/agents.mjs";
 function mockEnv({ai=true,existingRun=false,reserveErrorAt=0,reserveErrorBeforeCommit=false,reserveReadbackError=false,invalidEventPayload=false,modelResponse=null,modelResponses=null}={}) {
  const state={inserted:false,aiCalls:0,updates:[],reservationErrorThrown:false};
  const env={FETCH:async()=>new Response("<html><body><p>Test content</p></body></html>",{status:200}),DB:{prepare(sql){return {
@@ -228,4 +228,46 @@ test("daily orchestration never starts a second time after a run was reserved", 
   }; } }; } },
  };
  assert.equal(await shouldRunAgentOrchestration(env,controller), false);
+});
+
+
+test("source selection keeps the newest daily snapshot for every kind despite repeated control snapshots",async()=>{
+ const rows=[];
+ for(let i=0;i<18;i++) {
+  const stamp=new Date(Date.parse("2026-11-17T12:00:00.000Z")+i*1000).toISOString();
+  rows.push({kind:"control_center_snapshot",created_at:stamp,payload_json:JSON.stringify({run_id:"cc-"+i})});
+  rows.push({kind:"recommendation_snapshot",created_at:stamp,payload_json:JSON.stringify({run_id:"rec-"+i})});
+ }
+ rows.push({kind:"analytics_snapshot",created_at:"2026-11-17T11:49:23.651Z",payload_json:JSON.stringify({run_id:"analytics-today"})});
+ rows.push({kind:"topic_snapshot",created_at:"2026-11-17T11:49:24.352Z",payload_json:JSON.stringify({run_id:"topics-today"})});
+ const queried=[];
+ const env={DB:{prepare(sql){assert.match(sql,/WHERE kind = \?/);return{bind(kind){queried.push(kind);return{all:async()=>({results:rows.filter(row=>row.kind===kind).sort((a,b)=>b.created_at.localeCompare(a.created_at)).slice(0,1)})};}};}}};
+ const data=await getEvents(env,"2026-11-17");
+ assert.deepEqual(queried,["analytics_snapshot","topic_snapshot","control_center_snapshot","recommendation_snapshot"]);
+ assert.deepEqual(data.events.map(row=>row.kind),["analytics_snapshot","topic_snapshot","control_center_snapshot","recommendation_snapshot"]);
+ assert.deepEqual(data.missingKinds,[]);
+ assert.deepEqual(data.staleKinds,[]);
+ assert.equal(data.invalidPayloadCount,0);
+});
+
+test("source selection excludes stale evidence and reports the stale kind",async()=>{
+ const env={DB:{prepare(){return{bind(kind){return{all:async()=>({results:kind==="analytics_snapshot"?[{kind,created_at:"2026-11-16T11:49:23.651Z",payload_json:"{}"}]:[]})};}};}}};
+ const data=await getEvents(env,"2026-11-17");
+ assert.equal(data.events.length,0);
+ assert.ok(data.staleKinds.includes("analytics_snapshot"));
+ assert.ok(data.missingKinds.includes("topic_snapshot"));
+});
+
+test("coordinator does not add a duplicate unsupported gap when specialists already expose evidence gaps",async()=>{
+ const specialist=(name)=>JSON.stringify({status:"needs_evidence",findings:[],recommendations:[],evidence_gaps:[name+" source evidence is incomplete."]});
+ const responses=[specialist("analytics"),specialist("topics"),specialist("technical SEO"),specialist("content"),JSON.stringify({status:"needs_evidence",findings:[],recommendations:[],evidence_gaps:["Coordinator lacks additional context."]})];
+ const{env,state}=mockEnv({modelResponses:responses});
+ const result=await runAgentOrchestration(env);
+ assert.equal(result.completed,true);
+ const completed=state.updates.find(x=>x.sql.includes("status='completed'"));
+ const report=JSON.parse(completed.values[0]);
+ assert.deepEqual(report.coordinator.evidence_gaps,[]);
+ const decision=report.control_decision;
+ assert.ok(decision.evidence_gaps.some(x=>x.startsWith("analytics:")));
+ assert.ok(!decision.evidence_gaps.some(x=>x.includes("Coordinator lacks additional context")));
 });
