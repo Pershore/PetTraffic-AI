@@ -1,8 +1,8 @@
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
-- Atnaujinta: 2026-11-17T12:59:18.694614+00:00
+- Atnaujinta: 2026-11-17T13:00:33.452949+00:00
 - Būsena: **REIKIA DĖMESIO**
-- GitHub run: 44088177657
+- GitHub run: 44088442125
 - Šaltinio commit: 2eedecb46c4217f87f2d48cb82b3342a99e7548a
 
 ## Paskutinis patikrintas etapas
@@ -15,10 +15,11 @@ Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas
 
 ## Patvirtinti procesai
 
+- Centrinės API sinchronizavimas: Paskutinis paleidimas sėkmingas.
 - Lighthouse auditas: Paskutinis paleidimas sėkmingas.
 - Centrinis valdymo centras: Paskutinis paleidimas sėkmingas.
 - Debesijos read-only užduočių vykdytojas: Paskutinis debesijos užduoties vykdymas sėkmingas.
-- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 14 min.
+- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 0 min.
 
 ## Problemos
 
@@ -27,7 +28,7 @@ Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas
 
 ## Laukiančios patikros
 
-- Centrinės API sinchronizavimas: Vyksta (in_progress).
+- Nėra.
 
 ## AI agentų ir atminties patikra
 
