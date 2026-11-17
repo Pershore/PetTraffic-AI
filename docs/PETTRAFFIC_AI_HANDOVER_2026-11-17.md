@@ -117,3 +117,12 @@ Atnaujinta: 2026-11-17 15:45 Europe/Vilnius
 - Į `AGENTS.md`, `docs/SESSION_START.md` ir `docs/PROJECT_MEMORY.md` įtrauktos taisyklės: naudoti šviežius patikrintus artefaktus, nekartoti sėkmingų veiksmų be priežasties, nepriklausomus darbus vykdyti lygiagrečiai, tikrinti AI įvesčių kilmę ir pilnumą, matuoti prieš optimizuojant vykdymo trukmę.
 - Nekeisti workflow grafiko vien dėl trumpinimo: paskutinis matuotas Daily-suite truko apie 39 s, o trys job jau veikė lygiagrečiai; didesnė nauda – pašalinti nereikalingus paleidimus ir pataisyti schedule patikimumą.
 - Pakeitimai tik dokumentacijoje PR #280 šakoje. Nėra Worker/D1, DNS, Cloudflare, secrets, mokamų paslaugų, viešo turinio ar ARO Vet pakeitimų. Automation-history `latest.md` neliečiamas.
+
+
+## 2026-11-17 vakaro tęsinys – AI snapshot kilmės vartai
+
+- PR #281 CI: test job #44112379712 **success**, sync job **skipped** (teisinga PR event riba); tikras schedule dar nepatvirtintas. Šaka 5 ahead / 2 behind.
+- PR #263 25 commit už main, PR #261 27 commit už main; neperkelti aklai.
+- Draft PR #282 nuo dabartinio main įgyvendina AI ciklo vartus: tik tos pačios Vilniaus dienos Daily-suite `schedule` snapshot, workflow ID 418322987, sutampantys run ID, source/D1 laikas iki scheduledTime. Push, rankinis paleidimas, kitas workflow, stale, netaisyklingi ar po scheduledTime įrašyti duomenys neatveria AI ciklo.
+- PR #282 2 ahead / 0 behind; paskutiniam commit CI dar nepradėtas / negrąžintas. Todėl **NEPATVIRTINTA**; sujungti negalima.
+- Kitas žingsnis: sulaukti #282 CI, peržiūrėti testų logus; atskirai perkelti #261 JSON schema apsaugas ant dabartinio agents.mjs, išsaugant #278 latest-per-kind ir evidence gaps. Tik po atskiro leidimo svarstyti merge / Worker deploy. Nekeisti production ir nekartoti tos dienos AI ciklo.
