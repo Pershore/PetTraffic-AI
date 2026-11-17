@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { runAgentOrchestration, isVilniusAgentRunTime, isAgentScheduledEvent, isAgentCatchUpEvent, shouldRunAgentOrchestration, parseResult, extractResponseText, callModel } from "../src/agents.mjs";
-function mockEnv({ai=true,existingRun=false,reserveErrorAt=0,reserveErrorBeforeCommit=false,reserveReadbackError=false,invalidEventPayload=false,modelResponse=null,modelResponses=null}={}) {
+import { runAgentOrchestration, isVilniusAgentRunTime, isAgentScheduledEvent, isAgentCatchUpEvent, shouldRunAgentOrchestration, isEligibleScheduledDailySuiteSnapshot, parseResult, extractResponseText, callModel } from "../src/agents.mjs";
+function mockEnv({ai=true,existingRun=false,reserveErrorAt=0,reserveErrorBeforeCommit=false,reserveReadbackError=false,invalidEventPayload=false,modelResponse=null,modelResponses=null,modelResponder=null}={}) {
  const state={inserted:false,aiCalls:0,updates:[],reservationErrorThrown:false};
  const env={FETCH:async()=>new Response("<html><body><p>Test content</p></body></html>",{status:200}),DB:{prepare(sql){return {
   bind(...values){return {
@@ -11,7 +11,7 @@ function mockEnv({ai=true,existingRun=false,reserveErrorAt=0,reserveErrorBeforeC
   };},
   all:async()=>({results:invalidEventPayload?[{kind:"analytics_snapshot",payload_json:"{truncated",created_at:"2026-11-13T00:00:00.000Z"}]:[]}),
  };}}};
- if(ai)env.AI={run:async()=>({response:Array.isArray(modelResponses)?(modelResponses[state.aiCalls-1]??JSON.stringify({status:"reviewed",findings:[],recommendations:[],evidence_gaps:[]})):(modelResponse??JSON.stringify({status:"reviewed",findings:[],recommendations:[],evidence_gaps:[]}))})};
+ if(ai)env.AI={run:async(model,options)=>({response:typeof modelResponder==="function"?modelResponder(options,state):(Array.isArray(modelResponses)?(modelResponses[state.aiCalls-1]??JSON.stringify({status:"reviewed",findings:[],recommendations:[],evidence_gaps:[]})):(modelResponse??JSON.stringify({status:"reviewed",findings:[],recommendations:[],evidence_gaps:[]})))})};
  return{env,state};
 }
 test("orchestrator performs five capped AI calls and stores a read-only report",async()=>{const{env,state}=mockEnv();const result=await runAgentOrchestration(env);assert.equal(result.completed,true);assert.equal(result.ai_calls,5);assert.equal(state.aiCalls,5);assert.ok(state.updates.some(x=>x.sql.includes("status='completed'")));});
@@ -92,9 +92,27 @@ test("orchestrator skips malformed stored event JSON and preserves an evidence g
  assert.ok(report.coordinator.evidence_gaps.some(x=>x.includes("invalid stored event payload")));
 });
 
-test("model JSON must contain every required schema field",()=>{
- assert.equal(parseResult('{"status":"reviewed"}').status,"invalid_json");
+test("model JSON with missing schema fields is preserved as needs_evidence",()=>{
+ const partial=parseResult('{"status":"reviewed"}');
+ assert.equal(partial.status,"needs_evidence");
+ assert.equal(partial.partial_schema,true);
+ assert.match(partial.evidence_gaps[0],/findings, recommendations, evidence_gaps/);
  assert.equal(parseResult('{"status":"reviewed","findings":[],"recommendations":[],"evidence_gaps":[]}').status,"reviewed");
+});
+
+test("model JSON with non-string array items is never marked reviewed",()=>{
+ const partial=parseResult(JSON.stringify({
+  status:"reviewed",
+  findings:["Valid bounded finding",{unexpected:"object"}],
+  recommendations:[42],
+  evidence_gaps:[false],
+ }));
+ assert.equal(partial.status,"needs_evidence");
+ assert.equal(partial.partial_schema,true);
+ assert.deepEqual(partial.findings,["Valid bounded finding"]);
+ assert.deepEqual(partial.recommendations,[]);
+ assert.match(partial.evidence_gaps[0],/recommendations, evidence_gaps/);
+ assert.equal(partial.requires_human_approval,true);
 });
 
 test("model statuses are normalized to the control-core status contract",()=>{
@@ -116,6 +134,24 @@ test("model output is bounded to one short item per array",()=>{
  assert.deepEqual(result.findings,["first"]);
  assert.deepEqual(result.recommendations,["first"]);
  assert.deepEqual(result.evidence_gaps,["first"]);
+});
+
+test("partial JSON schema is preserved as needs_evidence and counted as degraded",async()=>{
+ const valid=JSON.stringify({status:"reviewed",findings:[],recommendations:[],evidence_gaps:[]});
+ const partial='{"status":"reviewed","findings":["Bounded finding"],"recommendations":[]}';
+ const{env,state}=mockEnv({modelResponder:options=>options.input?.some(item=>typeof item.content==="string"&&item.content.includes("Peržiūrėk viešų puslapių tekstą ir struktūrą."))?partial:valid});
+ const result=await runAgentOrchestration(env);
+ assert.equal(result.completed,true);
+ assert.equal(result.ai_calls,5);
+ const completed=state.updates.find(x=>x.sql.includes("status='completed'"));
+ const report=JSON.parse(completed.values[0]);
+ const specialist=report.specialists["content-review"];
+ assert.equal(specialist.status,"needs_evidence");
+ assert.equal(specialist.partial_schema,true);
+ assert.match(specialist.evidence_gaps[0],/evidence_gaps/);
+ assert.equal(report.data_quality.partial_schema_specialist_count,1);
+ assert.equal(report.data_quality.degraded_specialist_count,1);
+ assert.ok(report.coordinator.evidence_gaps.some(x=>x.includes("content-review")));
 });
 
 test("invalid specialist output is retained as an evidence gap and does not stop the daily cycle",async()=>{
@@ -201,8 +237,8 @@ test("heartbeat catch-up opens at 13:20 Vilnius in both winter and summer", () =
  assert.equal(isAgentCatchUpEvent({ cron: "20 10,11 * * *", scheduledTime: winter.scheduledTime }), false);
 });
 
-test("daily orchestration waits for a same-day analytics or topic snapshot", async () => {
- const controller = { cron: "*/15 * * * *", scheduledTime: Date.parse("2026-11-15T11:30:00.000Z") };
+test("daily orchestration requires same-day Daily-suite schedule provenance", async () => {
+ const controller = { cron: "*/15 * * * *", scheduledTime: Date.parse("2026-11-16T15:45:00.000Z") };
  const makeEnv = ({existingRun=null,rows=[]}={}) => ({
   DB: { prepare(sql) {
    return {
@@ -211,12 +247,28 @@ test("daily orchestration waits for a same-day analytics or topic snapshot", asy
    };
   } },
  });
- const today = makeEnv({rows:[{kind:"analytics_snapshot",created_at:"2026-11-15T13:51:00.000Z"}]});
- const yesterday = makeEnv({rows:[{kind:"topic_snapshot",created_at:"2026-11-14T13:51:00.000Z"}]});
- const none = makeEnv();
- assert.equal(await shouldRunAgentOrchestration(today,controller), true);
- assert.equal(await shouldRunAgentOrchestration(yesterday,controller), false);
- assert.equal(await shouldRunAgentOrchestration(none,controller), false);
+ const scheduled = {kind:"analytics_snapshot",payload_json:JSON.stringify({run_id:"daily-1",provenance:{source_event:"schedule",source_workflow_id:"418322987",source_run_id:"daily-1",source_run_created_at:"2026-11-16T15:34:13Z"}}),created_at:"2026-11-16T15:40:00Z"};
+ const push = {kind:"analytics_snapshot",payload_json:JSON.stringify({run_id:"push-1",provenance:{source_event:"push",source_workflow_id:"418322987",source_run_id:"push-1",source_run_created_at:"2026-11-16T10:00:00Z"}}),created_at:"2026-11-16T10:01:00Z"};
+ const manual = {kind:"topic_snapshot",payload_json:JSON.stringify({run_id:"manual-1",provenance:{source_event:"workflow_dispatch",source_workflow_id:"418322987",source_run_id:"manual-1",source_run_created_at:"2026-11-16T10:00:00Z"}}),created_at:"2026-11-16T10:01:00Z"};
+ const wrongWorkflow = {kind:"topic_snapshot",payload_json:JSON.stringify({run_id:"other-1",provenance:{source_event:"schedule",source_workflow_id:"999",source_run_id:"other-1",source_run_created_at:"2026-11-16T10:00:00Z"}}),created_at:"2026-11-16T10:01:00Z"};
+ const stale = {kind:"topic_snapshot",payload_json:JSON.stringify({run_id:"old-1",provenance:{source_event:"schedule",source_workflow_id:"418322987",source_run_id:"old-1",source_run_created_at:"2026-11-15T15:34:13Z"}}),created_at:"2026-11-15T15:40:00Z"};
+ const mismatched = {kind:"topic_snapshot",payload_json:JSON.stringify({run_id:"payload-id",provenance:{source_event:"schedule",source_workflow_id:"418322987",source_run_id:"other-id",source_run_created_at:"2026-11-16T15:34:13Z"}}),created_at:"2026-11-16T15:40:00Z"};
+ assert.equal(await shouldRunAgentOrchestration(makeEnv({rows:[scheduled]}),controller), true);
+ const beforeDataAvailable={cron:"*/15 * * * *",scheduledTime:Date.parse("2026-11-16T11:30:00.000Z")};
+ assert.equal(await shouldRunAgentOrchestration(makeEnv({rows:[scheduled]}),beforeDataAvailable),false);
+ for (const row of [push,manual,wrongWorkflow,stale,mismatched,{kind:"analytics_snapshot",payload_json:"{bad"}]) {
+  assert.equal(await shouldRunAgentOrchestration(makeEnv({rows:[row]}),controller),false);
+ }
+ assert.equal(await shouldRunAgentOrchestration(makeEnv(),controller),false);
+});
+
+test("only valid same-day scheduled Daily-suite snapshots pass provenance validation",()=>{
+ const good={kind:"topic_snapshot",created_at:"2026-11-16T15:40:00Z",payload:{run_id:"suite-7",provenance:{source_event:"schedule",source_workflow_id:418322987,source_run_id:"suite-7",source_run_created_at:"2026-11-16T15:34:13Z"}}};
+ assert.equal(isEligibleScheduledDailySuiteSnapshot(good,"2026-11-16",Date.parse("2026-11-16T15:45:00Z")),true);
+ assert.equal(isEligibleScheduledDailySuiteSnapshot(good,"2026-11-16",Date.parse("2026-11-16T15:30:00Z")),false);
+ assert.equal(isEligibleScheduledDailySuiteSnapshot({...good,payload:{...good.payload,provenance:{...good.payload.provenance,source_event:"push"}}},"2026-11-16",Date.parse("2026-11-16T15:45:00Z")),false);
+ assert.equal(isEligibleScheduledDailySuiteSnapshot({...good,payload:{...good.payload,run_id:"different"}},"2026-11-16",Date.parse("2026-11-16T15:45:00Z")),false);
+ assert.equal(isEligibleScheduledDailySuiteSnapshot({...good,payload:{...good.payload,provenance:{...good.payload.provenance,source_run_created_at:"2026-11-15T15:34:13Z"}}},"2026-11-16",Date.parse("2026-11-16T15:45:00Z")),false);
 });
 
 test("daily orchestration never starts a second time after a run was reserved", async () => {
@@ -228,4 +280,30 @@ test("daily orchestration never starts a second time after a run was reserved", 
   }; } }; } },
  };
  assert.equal(await shouldRunAgentOrchestration(env,controller), false);
+});
+
+
+test("specialists receive only the latest bounded snapshot of each required kind",async()=>{
+ const {selectLatestEventsByKind}=await import("../src/agents.mjs");
+ const events=[];
+ for(let index=0;index<14;index++) {
+  const created_at=new Date(Date.UTC(2026,10,16,12,index,0)).toISOString();
+  events.push({kind:"control_center_snapshot",created_at,payload:{run_id:String(index),detail:"c".repeat(1800)}});
+  events.push({kind:"recommendation_snapshot",created_at,payload:{run_id:String(index),detail:"r".repeat(900)}});
+ }
+ const source=selectLatestEventsByKind(events,["control_center_snapshot","recommendation_snapshot"]);
+ assert.equal(source.selection,"latest_per_kind");
+ assert.deepEqual(source.available_snapshot_counts,{control_center_snapshot:14,recommendation_snapshot:14});
+ assert.equal(source.verified_snapshots.length,2);
+ assert.deepEqual(source.verified_snapshots.map(item=>item.payload.run_id),["13","13"]);
+ assert.ok(JSON.stringify(source).length<6000,"selected evidence should fit the bounded model input");
+});
+
+test("specialist source selection reports missing evidence kinds explicitly",async()=>{
+ const {selectLatestEventsByKind}=await import("../src/agents.mjs");
+ const source=selectLatestEventsByKind([
+  {kind:"control_center_snapshot",created_at:"2026-11-16T12:00:00.000Z",payload:{run_id:"control-1"}},
+ ],["control_center_snapshot","recommendation_snapshot"]);
+ assert.deepEqual(source.available_snapshot_counts,{control_center_snapshot:1,recommendation_snapshot:0});
+ assert.deepEqual(source.verified_snapshots.map(item=>item.kind),["control_center_snapshot"]);
 });

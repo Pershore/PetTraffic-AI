@@ -43,6 +43,26 @@ export function isAgentCatchUpEvent(controller) {
   return vilniusMinutes(new Date(controller.scheduledTime)) >= 13 * 60 + 20;
 }
 
+export function isEligibleScheduledDailySuiteSnapshot(event, localDay, evidenceCutoff) {
+ const payload=event?.payload&&typeof event.payload==="object" ? event.payload : (()=>{
+  if(typeof event?.payload_json!=="string") return null;
+  try { const parsed=JSON.parse(event.payload_json); return parsed&&typeof parsed==="object"&&!Array.isArray(parsed)?parsed:null; }
+  catch { return null; }
+ })();
+ if(!payload || !["analytics_snapshot","topic_snapshot"].includes(event?.kind)) return false;
+ const provenance=payload.provenance;
+ if(!provenance || provenance.source_event!=="schedule" || String(provenance.source_workflow_id)!=="418322987") return false;
+ const sourceRunId=String(provenance.source_run_id||"");
+ if(!sourceRunId || String(payload.run_id||"")!==sourceRunId) return false;
+ if(typeof provenance.source_run_created_at!=="string") return false;
+ const sourceCreatedAt=new Date(provenance.source_run_created_at);
+ const persistedAt=new Date(event.created_at);
+ const cutoff=new Date(evidenceCutoff);
+ return Number.isFinite(sourceCreatedAt.getTime()) && Number.isFinite(persistedAt.getTime()) &&
+  Number.isFinite(cutoff.getTime()) && sourceCreatedAt.getTime()<=cutoff.getTime() &&
+  persistedAt.getTime()<=cutoff.getTime() && vilniusDateKey(sourceCreatedAt)===localDay;
+}
+
 export async function shouldRunAgentOrchestration(env, controller) {
   if (!env?.DB || !(isAgentScheduledEvent(controller) || isAgentCatchUpEvent(controller))) return false;
 
@@ -59,21 +79,14 @@ export async function shouldRunAgentOrchestration(env, controller) {
 
   const localDay = vilniusDateKey(scheduledAt);
   const snapshots = await env.DB.prepare(
-    "SELECT kind, created_at FROM events " +
+    "SELECT kind, payload_json, created_at FROM events " +
     "WHERE kind IN ('analytics_snapshot', 'topic_snapshot') " +
     "ORDER BY created_at DESC LIMIT 30"
   ).all();
 
-  // Require at least one valid daily-suite input written on the current
-  // Vilnius day. Partial suites are allowed; the missing specialist will
-  // report an evidence gap instead of analysing yesterday's snapshot.
-  return (snapshots.results || []).some(row => {
-    if (!["analytics_snapshot", "topic_snapshot"].includes(row.kind) || typeof row.created_at !== "string") {
-      return false;
-    }
-    const createdAt = new Date(row.created_at);
-    return Number.isFinite(createdAt.getTime()) && vilniusDateKey(createdAt) === localDay;
-  });
+  // Only a same-day, main-branch Daily-suite schedule snapshot is eligible.
+  // Push/manual snapshots are retained for history but cannot unlock the AI cycle.
+  return (snapshots.results || []).some(row => isEligibleScheduledDailySuiteSnapshot(row, localDay, scheduledAt));
 }
 
 import { buildControlDecision, persistControlDecision } from "./control-core.mjs";
@@ -127,8 +140,26 @@ export function parseResult(raw) {
  }
  if(!value||typeof value!=="object"||Array.isArray(value)) return invalidResult("invalid_json","Model response did not match the expected JSON object.");
  const required=["status","findings","recommendations","evidence_gaps"];
- if(typeof value.status!=="string"||!required.slice(1).every(key=>Array.isArray(value[key]))) {
-  return invalidResult("invalid_json","Model JSON did not contain the required status, findings, recommendations and evidence_gaps fields.");
+ const missingFields=required.filter(key=>key==="status"
+  ? typeof value[key]!=="string"
+  : !Array.isArray(value[key]));
+ const invalidArrayItems=["findings","recommendations","evidence_gaps"].filter(key=>
+  Array.isArray(value[key])&&value[key].some(item=>typeof item!=="string"));
+ const schemaIssues=[...new Set([...missingFields,...invalidArrayItems])];
+ if(schemaIssues.length) {
+  // Preserve typed fields from a parseable object, but never mark it reviewed.
+  const safeStrings=key=>Array.isArray(value[key])
+   ? value[key].filter(item=>typeof item==="string").slice(0,1).map(item=>item.slice(0,120))
+   : [];
+  const gap="Model JSON schema incomplete; missing or invalid required fields: "+schemaIssues.join(", ")+". Result marked needs_evidence.";
+  return {
+   status:"needs_evidence",
+   findings:safeStrings("findings"),
+   recommendations:safeStrings("recommendations"),
+   evidence_gaps:[gap,...safeStrings("evidence_gaps")].slice(0,2),
+   partial_schema:true,
+   requires_human_approval:true,
+  };
  }
  const rawStatus=value.status.trim().toLowerCase().replace(/[\s-]+/g,"_");
  const statusAliases={reviewed:"reviewed",ok:"reviewed",complete:"reviewed",completed:"reviewed",needs_evidence:"needs_evidence",no_data:"needs_evidence",error:"needs_evidence",monitor:"needs_evidence"};
@@ -187,6 +218,24 @@ async function getEvents(env) {
  }
  return {events,invalidPayloadCount};
 }
+export function selectLatestEventsByKind(events, kinds) {
+ const counts=Object.fromEntries(kinds.map(kind=>[kind,0]));
+ for(const event of events||[]) {
+  if(event&&kinds.includes(event.kind)) counts[event.kind]++;
+ }
+ const ordered=[...(events||[])].filter(event=>event&&kinds.includes(event.kind))
+  .sort((left,right)=>String(right.created_at||"").localeCompare(String(left.created_at||"")));
+ const latest=new Map();
+ for(const event of ordered) {
+  if(!latest.has(event.kind)) latest.set(event.kind,event);
+ }
+ return {
+  selection:"latest_per_kind",
+  available_snapshot_counts:counts,
+  verified_snapshots:kinds.flatMap(kind=>latest.has(kind)?[latest.get(kind)]:[]),
+ };
+}
+
 async function getPublicContent(env) {
  const pages=[]; const fetcher=env.FETCH||fetch;
  for(const path of CONTENT_PATHS) {
@@ -230,9 +279,11 @@ async function reserveCall(env,date,expectedCall) {
   }
  }
 }
-export async function runAgentOrchestration(env) {
+export async function runAgentOrchestration(env, evidenceCutoffValue = Date.now()) {
  if(!env.DB||!env.AI)return {skipped:true,reason:!env.DB?"database_not_bound":"ai_binding_missing"};
- const date=new Date().toISOString().slice(0,10);
+ const parsedCutoff=new Date(evidenceCutoffValue);
+ const evidenceCutoff=Number.isFinite(parsedCutoff.getTime())?parsedCutoff:new Date();
+ const date=evidenceCutoff.toISOString().slice(0,10);
  const inserted=await env.DB.prepare("INSERT OR IGNORE INTO agent_runs (run_date,status,ai_calls,started_at) VALUES (?,'running',0,?)").bind(date,new Date().toISOString()).run();
  if(!inserted.meta?.changes)return {skipped:true,reason:"daily_run_already_started"};
  let stage="load_events";
@@ -249,7 +300,19 @@ export async function runAgentOrchestration(env) {
   stage="fetch_public_content";
   const pages=await getPublicContent(env);
   for(const agent of AGENTS) {
-   const source=agent.id==="content-review"?{public_pages:pages}:{verified_snapshots:eventData.events.filter(e=>agent.kinds.includes(e.kind))};
+   let source;
+   if(agent.id==="content-review") {
+    source={public_pages:pages};
+   } else if(["analytics","topics"].includes(agent.id)) {
+    const localDay=vilniusDateKey(evidenceCutoff);
+    const eligibleSourceEvents=eventData.events.filter(event=>
+     agent.kinds.includes(event.kind)&&isEligibleScheduledDailySuiteSnapshot(event,localDay,evidenceCutoff)
+    );
+    source=selectLatestEventsByKind(eligibleSourceEvents,agent.kinds);
+    source.ignored_unverified_snapshot_count=eventData.events.filter(event=>agent.kinds.includes(event.kind)).length-eligibleSourceEvents.length;
+   } else {
+    source=selectLatestEventsByKind(eventData.events,agent.kinds);
+   }
    stage="reserve_"+agent.id;
    if(!(await reserveNextCall()))throw new Error("daily_ai_call_cap_reached");
    stage="model_"+agent.id;
@@ -259,7 +322,7 @@ export async function runAgentOrchestration(env) {
    // prevent the coordinator from persisting a bounded, evidence-aware result.
   }
   const degradedSpecialistIds=Object.entries(specialists)
-   .filter(([,result])=>!isUsableModelResult(result))
+   .filter(([,result])=>!isUsableModelResult(result)||result.partial_schema===true)
    .map(([id])=>id);
   const degradedSpecialists=degradedSpecialistIds.flatMap(id=>(specialists[id].evidence_gaps||[]).map(gap=>`${id}: ${gap}`));
   let coordinator;
@@ -280,7 +343,7 @@ export async function runAgentOrchestration(env) {
   if(eventData.invalidPayloadCount>0) {
    coordinator.evidence_gaps=[...(coordinator.evidence_gaps||[]),`Skipped ${eventData.invalidPayloadCount} invalid stored event payload(s); source data requires review.`].slice(0,5);
   }
-  const report={date_utc:date,generated_at:new Date().toISOString(),model:MODEL,ai_calls:reservedCalls,specialists,coordinator,data_quality:{invalid_event_payload_count:eventData.invalidPayloadCount,degraded_specialist_count:degradedSpecialistIds.length},read_only:true,publication_enabled:false};
+  const report={date_utc:date,generated_at:new Date().toISOString(),model:MODEL,ai_calls:reservedCalls,specialists,coordinator,data_quality:{invalid_event_payload_count:eventData.invalidPayloadCount,degraded_specialist_count:degradedSpecialistIds.length,partial_schema_specialist_count:Object.values(specialists).filter(result=>result.partial_schema===true).length},read_only:true,publication_enabled:false};
   stage="build_control_decision";
   const decision=buildControlDecision(report);
   stage="persist_control_decision";
