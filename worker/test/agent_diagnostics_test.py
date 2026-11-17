@@ -32,6 +32,19 @@ class WorkerAgentDiagnosticsTests(unittest.TestCase):
         self.assertEqual(classify_gap("Model response did not contain required fields."), "model_output_missing_fields")
         self.assertEqual(classify_gap("Model JSON did not contain the required status, findings, recommendations and evidence_gaps fields."), "model_output_missing_fields")
 
+    def test_lithuanian_evidence_gaps_are_classified_without_echoing_text(self):
+        cases = {
+            "Nepakanka patikimų įrodymų šiai išvadai.": "insufficient_evidence",
+            "Trūksta Search Console paieškos užklausų duomenų.": "search_console_data_missing",
+            "Nėra patikimų paieškos apimčių pagal raktinius žodžius.": "search_volume_not_available",
+            "Nepavyko pasiekti nurodyto šaltinio.": "source_unavailable",
+            "Modelio JSON nepateikė privalomų laukų.": "model_output_missing_fields",
+        }
+        for message, expected in cases.items():
+            with self.subTest(message=message):
+                self.assertEqual(classify_gap(message), expected)
+                self.assertNotEqual(classify_gap(message), message)
+
     def test_evidence_gaps_become_codes_and_free_text_is_never_returned(self):
         report = {
             "specialists": {
