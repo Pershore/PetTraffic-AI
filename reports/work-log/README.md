@@ -856,3 +856,13 @@ Kitas veiksmas: po 13:20 LT patikrinti tos dienos Worker AI ciklą; daily-suite 
 - Papildomai patikrinta, kad visi Daily-suite atpažinimo vartai naudoja workflow ID `418322987`, ne dinaminį vykdymo pavadinimą. Paskutinio PR #281 commit SHA: `a0d8755938352e2bd6a043b369ad2fb7c34d7cda`.
 - PR #281 lieka draft. Paskutinei galvai CI vykdymų dar negrąžinta; todėl testai **NEPATVIRTINTI**. PR lyginant su dabartiniu main yra 5 commit ahead / 2 behind; reikia atnaujinti pagrindą ir sulaukti CI prieš review ar merge.
 - Jokio Worker/D1 production pakeitimo, deploy, cron keitimo, DNS, secrets, viešo turinio, ARO Vet ar mokamų paslaugų pakeitimo neatlikta. PR #261 dar neatnaujintas, nes pirmiausia reikia patikrinti #281 CI ir tada perkelti jo Worker gate taip, kad išliktų PR #278 naujausių įrašų atranka.
+
+
+## 2026-11-17 – PR #281 CI patikra ir PR #282 AI schedule vartai
+
+- Gyvai sutikrinta: PR #263 atsilieka nuo main 25 commit, PR #261 – 27 commit; jų tiesiogiai perkelti / sujungti nesaugu. PR #281 palyginimas: 5 commit ahead / 2 behind; jo snapshot pakeitimai apima tik `.github/workflows/sync-control-api.yml`, `worker/scripts/build_event.py` ir testus.
+- PR #281 paskutinio commit CI run #44112379712: `test` job **success**, `sync` job **skipped**. Tai PR įvykio metu numatytas elgesys; jis nepatvirtina tikro schedule / workflow_run kelio. PR lieka draft, nesujungtas.
+- Sukurta nauja šaka `fix/ai-schedule-provenance-gate` ir draft PR #282. Dabartiniame `worker/src/agents.mjs` pridėtas patikrinimas, kad AI ciklą atrakintų tik tos pačios Vilniaus dienos Daily-suite snapshot su originaliu `source_event=schedule`, workflow ID `418322987`, sutampančiu source/payload run ID, tinkamu source sukūrimo laiku ir D1 įrašo laiku iki suplanuoto įvykio. `push`, `workflow_dispatch`, kitas workflow, pasenęs / nesutampantis / netaisyklingas payload atmetamas.
+- Užklausa apribota suplanuoto įvykio laiku (`created_at <= scheduledAt`) ir paskutinių 100 analytics/topic įrašų peržiūra. Pridėti regresiniai testai. PR #282 yra 2 commit ahead / 0 behind; paskutiniam commit dar nėra CI run ar status check – testų rezultatas **NEPATVIRTINTAS**.
+- Svarbu: PR #282 yra atskira draft šaka nuo dabartinio main ir sąmoningai neperkelia senojo PR #261 parserio / kitų pakeitimų. Juos reikia vertinti atskirai, išsaugant #278 latest-per-kind D1 atranką.
+- Nė vienas PR nesujungtas; Worker/D1 production, cron, DNS, secrets, viešas turinys, ARO Vet ir mokamos paslaugos nepakeistos. Automation-history `latest.md` neliečiamas.
