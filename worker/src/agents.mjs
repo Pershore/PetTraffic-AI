@@ -276,7 +276,14 @@ export async function runAgentOrchestration(env) {
   for(const agent of AGENTS) {
    const selectedSnapshots=eventData.events.filter(e=>agent.kinds.includes(e.kind));
    const missingOrStaleKinds=agent.kinds.filter(kind=>!selectedSnapshots.some(e=>e.kind===kind));
-   const source=agent.id==="content-review"?{public_pages:pages}:{
+   const source=agent.id==="content-review"?{
+    expected_run_date:date,
+    evidence_status:pages.every(page=>page.status===200&&page.text)? "available":"partial",
+    requested_pages:CONTENT_PATHS.length,
+    available_pages:pages.filter(page=>page.status===200&&page.text).length,
+    unavailable_pages:pages.filter(page=>page.status!==200||!page.text).map(page=>page.path),
+    public_pages:pages,
+   }:{
     expected_run_date:date,
     evidence_status:selectedSnapshots.length===agent.kinds.length?"available":selectedSnapshots.length?"partial":"missing_or_stale",
     missing_or_stale_kinds:missingOrStaleKinds,
@@ -303,15 +310,6 @@ export async function runAgentOrchestration(env) {
    coordinator=isUsableModelResult(coordinatorResult)
     ? coordinatorResult
     : buildFallbackCoordinator(specialists,coordinatorResult.status||"invalid_model_output");
-   // The coordinator only receives specialist summaries. When specialists
-   // already declare evidence gaps, do not add a second model-invented gap
-   // about the same evidence; Control Core aggregates the specialist gaps.
-   const specialistGapCount=Object.values(specialists).reduce(
-    (count,result)=>count+(Array.isArray(result.evidence_gaps)?result.evidence_gaps.length:0),0
-   );
-   if(isUsableModelResult(coordinatorResult)&&specialistGapCount>0) {
-    coordinator.evidence_gaps=[];
-   }
   } else {
    // If every specialist is unavailable, do not spend the fifth daily AI call
    // on a coordinator that has no validated evidence to synthesize.
