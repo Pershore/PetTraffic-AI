@@ -847,3 +847,12 @@ Kitas veiksmas: po 13:20 LT patikrinti tos dienos Worker AI ciklą; daily-suite 
 - Į `AGENTS.md`, `docs/SESSION_START.md` ir `docs/PROJECT_MEMORY.md` įtrauktos taisyklės: naudoti šviežius patikrintus artefaktus, nekartoti sėkmingų veiksmų be priežasties, nepriklausomus darbus vykdyti lygiagrečiai, tikrinti AI įvesčių kilmę ir pilnumą, matuoti prieš optimizuojant vykdymo trukmę.
 - Nekeisti workflow grafiko vien dėl trumpinimo: paskutinis matuotas Daily-suite truko apie 39 s, o trys job jau veikė lygiagrečiai; didesnė nauda – pašalinti nereikalingus paleidimus ir pataisyti schedule patikimumą.
 - Pakeitimai tik dokumentacijoje PR #280 šakoje. Nėra Worker/D1, DNS, Cloudflare, secrets, mokamų paslaugų, viešo turinio ar ARO Vet pakeitimų. Automation-history `latest.md` neliečiamas.
+
+
+## 2026-11-17 – PR #281: snapshot provenance port onto current main
+
+- Patikrinta gyvai: main pažengė nuo ankstesnio auditavimo; PR #263 tebėra 23 commit už main, o PR #261 – 25 commit už main ir turi konfliktų su dabartiniu Worker pakeitimu. Vietoj pasenusios šakos tiesioginio sujungimo sukurta nauja šaka nuo tuo metu patikrinto main HEAD.
+- Sukurtas draft PR #281 `fix/daily-suite-provenance-current-main`: perkelta PR #263 snapshot kilmės logika į `.github/workflows/sync-control-api.yml` ir `worker/scripts/build_event.py`; pridėti testai pirminiam `schedule` / `push` / `workflow_dispatch` atskyrimui bei stabiliam workflow ID.
+- Papildomai patikrinta, kad visi Daily-suite atpažinimo vartai naudoja workflow ID `418322987`, ne dinaminį vykdymo pavadinimą. Paskutinio PR #281 commit SHA: `a0d8755938352e2bd6a043b369ad2fb7c34d7cda`.
+- PR #281 lieka draft. Paskutinei galvai CI vykdymų dar negrąžinta; todėl testai **NEPATVIRTINTI**. PR lyginant su dabartiniu main yra 5 commit ahead / 2 behind; reikia atnaujinti pagrindą ir sulaukti CI prieš review ar merge.
+- Jokio Worker/D1 production pakeitimo, deploy, cron keitimo, DNS, secrets, viešo turinio, ARO Vet ar mokamų paslaugų pakeitimo neatlikta. PR #261 dar neatnaujintas, nes pirmiausia reikia patikrinti #281 CI ir tada perkelti jo Worker gate taip, kad išliktų PR #278 naujausių įrašų atranka.
