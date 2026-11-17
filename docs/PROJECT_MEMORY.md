@@ -767,3 +767,7 @@ Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama 
 - Issue #145 lieka open, kol neįrodytas tikras specialistų ir Control Core atsistatymas. Issue #248 lieka open; vieši `/dashboard/` ir `/control/` nėra autentifikuotas valdymas.
 - Kitas veiksmas: pirma atnaujinti #263 pagal dabartinį main ir patikrinti snapshot provenance; tada atnaujinti #261, integruoti su PR #278 pakeitimais ir patikrinti visus testus. Tik po to, gavus atskirą patvirtinimą, svarstyti sujungimą / Worker diegimą. 2026-11-18 patikrinti tikrą Daily-suite `event=schedule`, visus 3 job, D1 source provenance ir vienintelį tos dienos Worker AI ciklą su D1 memory readback. Nekartoti AI ciklo tą pačią run_date.
 - Firecrawl gyvas puslapio nuskaitymas šioje sesijoje buvo blokuotas dėl išnaudoto kredito; tai nepaneigia GitHub deploy job tiesioginio /health patikrinimo. Jokio ARO Vet, viešo turinio, DNS, Worker/D1 papildomo pakeitimo, secrets, billing ar mokamos paslaugos pakeitimo šio follow-up metu neatlikta.
+
+
+## 2026-11-17 – patvirtintas resursų optimizavimo principas
+Vartotojas patvirtino viso Pet traffic projekto optimizavimo kryptį: mažinti nereikalingus API/Firecrawl nuskaitymus, GitHub Actions paleidimus, AI kvietimus, dubliuotus duomenis ir ataskaitų apkrovą. Pirmiausia naudoti šviežius patikrintus artefaktus, vykdyti nepriklausomus darbus lygiagrečiai, tikrinti duomenų kilmę prieš AI kvietimus ir matuoti prieš keičiant našumą. Išlaikyti 0 €/mėn. biudžetą. Niekada netaupyti saugumo, testų, privatumo ar įrodymų kokybės sąskaita.
