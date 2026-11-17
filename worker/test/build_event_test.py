@@ -25,6 +25,8 @@ class BuildEventTests(unittest.TestCase):
             self.assertEqual(events[0]["kind"], "analytics_snapshot")
             self.assertEqual(events[0]["payload"]["run_id"], "run-123")
             self.assertEqual(events[0]["payload"]["metrics"]["sessions"], 14)
+            self.assertEqual(events[0]["payload"]["provenance"]["source_event"], "unknown")
+            self.assertEqual(events[0]["payload"]["provenance"]["source_run_id"], "run-123")
 
     def test_topic_artifact_stores_aggregates_not_headlines(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -114,6 +116,45 @@ class BuildEventTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 build_events("Other workflow", Path(directory), "run-x")
 
+
+    def test_daily_suite_preserves_original_schedule_provenance(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "analytics-7d.md").write_text(
+                "# Analytics\\nGA4 laikotarpis: 2026-11-09 – 2026-11-15\\n"
+                "## Pagrindiniai rodikliai (GA4)\\n"
+                "| Aktyvūs naudotojai | 7 |\\n",
+                encoding="utf-8",
+            )
+            events = build_events(
+                "Pet traffic daily automation suite", root, "43897746978",
+                source_event="schedule",
+                source_run_created_at="2026-11-16T15:34:13Z",
+                source_workflow_id="418322987",
+            )
+            self.assertEqual(events[0]["payload"]["provenance"], {
+                "source_event": "schedule",
+                "source_run_id": "43897746978",
+                "source_run_created_at": "2026-11-16T15:34:13Z",
+                "source_workflow_id": "418322987",
+            })
+
+    def test_push_and_manual_runs_keep_their_original_event_type(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "topic-radar.md").write_text(
+                "# Temų radaras\\n- **Katės mityba** – 5 antraščių\\n",
+                encoding="utf-8",
+            )
+            for source_event in ("push", "workflow_dispatch"):
+                events = build_events(
+                    "Pet traffic daily topic radar", root, "run-untrusted",
+                    source_event=source_event,
+                    source_run_created_at="2026-11-16T10:00:00Z",
+                    source_workflow_id="123456",
+                )
+                self.assertEqual(events[0]["payload"]["provenance"]["source_event"], source_event)
+                self.assertNotEqual(events[0]["payload"]["provenance"]["source_event"], "schedule")
 
 if __name__ == "__main__":
     unittest.main()
