@@ -1,5 +1,16 @@
 # Pet traffic – naujos sesijos pradžios protokolas
 
+## Naujausia patikrinta būsena (2026-11-17, 22:04 LT)
+
+- PR #283 sujungtas į main: `f41fee5e6f2db29067e8ab9523e40a777d626e40`.
+- Worker/D1 production deploy #44165044215 `event=push` success: D1 migracijos, Wrangler deploy, /health, API 401 ir Cloudflare grafikai patvirtinti. Worker testai 79/79 Node + 20/20 Python PR patikroje; po merge tie patys Worker test job ir Cloudflare validation success. Site-check #44165044246 success.
+- Control Center #44165206802 `workflow_run` success; automation-history latest snapshot 20:03:35Z vis dar rodo AI warning ir 5 evidence gaps.
+- Snapshot sync #44165135417 success, tačiau daily-suite source validation ir analytics/topic artefaktai skipped – naujo schedule run po PR #281 dar nėra.
+- Worker cron diagnostika #44165206828 dar vykdo 15 min. heartbeat stebėjimą.
+- **Kitas veiksmas:** 2026-11-18 06:10 UTC / 08:10 LT tikrinti Daily-suite `event=schedule`, 3 job, provenance ir D1 readback; po to 13:20 LT AI ciklą, specialistų įrodymus, Control Core ir memory readback. Issue #145 palikti open.
+- ARO Vet, DNS, secrets, billing, viešas turinys ir mokamos paslaugos nekeisti. Dashboard lieka READ-ONLY.
+
+
 ## Naujausia patikrinta būsena (2026-11-17, 15:45 LT)
 
 - **PR #278 – ATLIKTA:** sujungtas į `main` 2026-11-17 13:43:18 UTC, merge commit `1590a175f267c8b7873849c18b6d0aff80629c86`. Pagrindinė šaka po automatinių dokumentavimo veiksmų: `340dc7fa1cfe5042b4731da6984a0a9f7f3a4559`.
