@@ -710,3 +710,19 @@ Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama 
 - Ribos išlaikytos: tik viena allow-listed read-only užduotis; jokio arbitrary shell, svetainės redagavimo, publikavimo, DNS, ARO Vet, mokamų paslaugų ar viešo dashboard write API. Viešas `/control/` lieka read-only; privataus autentifikuoto valdymo ir dashboard task statuso dar nėra.
 - Issue #248 paliktas atviras privataus valdymo / dashboard integracijai. Issue #145 paliktas atviras, nes nepriklausomas kasdienio Worker AI/Control Core ciklo įspėjimas dar stale.
 - Kitas kritinis etapas: 2026-11-16 13:20 Europe/Vilnius patikrinti naują Worker AI ciklą ir D1 memory readback. Tik sėkmingas šis etapas patvirtins kasdienę AI analizės autonomiją.
+
+
+## Naujausia patikrinta būsena – 2026-11-17 13:55 LT
+
+- Main HEAD: `a5ae581dc6b530e210b64698dcf2c61e0d05cc37`. Atviri draft PR: #261, #263, #264, #266, #267. Issue #145 (autonomijos įspėjimas) ir #248 (privatus valdymas) atviri.
+- Daily-suite schedule workflow aktyvus; suplanuotas 06:10 UTC, bet 2026-11-17 schedule run nėra. Paskutinis schedule #43897746978: 2026-11-16 15:34:13Z–15:34:47Z (34 s), t. y. 9 h 24 min po numatyto laiko. Darbo vykdymas trumpas; problema yra schedule įvykio pristatymas / eilė, tiksli priežastis nepatvirtinta.
+- Vienkartinis daily-suite catch-up #44077181860 įvykdytas kaip workflow_dispatch, visi trys job success per 39 s. Live-check patvirtino pagrindinius puslapius, nuorodas, sitemap, robots.txt, 404 ir 20 nuolatinių senų URL peradresavimų.
+- Nauji duomenys: GA4 (2026-11-10–16) 9 aktyvūs naudotojai, 26 sesijos, 90 peržiūrų, 0 organinių sesijų; GSC (2026-11-08–14) 0 parodymų / paspaudimų, sitemap pending, 5 URL indeksavimas nežinomas. RSS temų radaras: 29 unikalios nuorodos, 7 temos (ne paieškų apimtys).
+- Daily-suite D1 sync neįvyko automatiškai po workflow_dispatch; panaudotas owner-only `/pettraffic-sync-latest` bridge. Run #44077423350 patvirtino source #44077181860, 2 agreguoti įvykiai įrašyti ir perskaityti iš D1 (readback success).
+- Read-only D1 diagnostics #43870801165 attempt 2 / job #134020179522 (2026-11-17 11:51:43Z): šiandienos analytics_snapshot=1, topic_snapshot=1, control_center_snapshot=8, recommendation_snapshot=8. Agent run, 4 specialistų rezultatai ir Control Core dar missing; atmintis tebėra 2026-11-16 11:20:31Z, status needs_evidence, gap codes insufficient_evidence, model_output_missing_fields, search_console_data_missing. Tai yra tiesioginis D1 SELECT įrodymas, ne vien /health santrauka.
+- Worker /health HTTP 200; DB ir Control Core schema connected; heartbeat 11:45:14Z, site_status 200. Worker catch-up logika leidžia po 13:20 LT heartbeat paleisti ciklą, kai šiandienos analytics/topic snapshot atsiranda. 14:00 LT heartbeat ir AI ciklo rezultatas dar laukia.
+- Worker cron diagnostic #44077019257: Cloudflare cron konfigūracijos žingsnis success; 15 min. heartbeat stebėjimas dar in_progress.
+- PR #263 išsaugo originalią workflow/run/event provenance; PR #261 uždaro AI ciklą tik įrodytam main Daily-suite schedule šaltiniui ir taiso dalinio JSON / evidence gap apdorojimą. Eiliškumas #263 pirmas, tada #261 tik su atskiru savininko patvirtinimu. Rankinis workflow_dispatch nėra schedule įrodymas; #145 neuždaryti.
+- Dashboard `/dashboard/` -> `/control/` yra viešas read-only skydas; noindex nėra autentifikacija, komandos tik kopijuojamos, Worker task API 503 disabled. #248 atviras.
+- Viešuose core puslapiuose ARO Vet elementų nerasta; ARO Vet infrastruktūra nekeista.
+- Jokio kodo, Worker deploy, DNS, schemos, secrets, billing ar turinio publikavimo pakeitimo nebuvo. Atlikti tik esamų agreguotų snapshot duomenų D1 write/readback per OIDC bridge.
