@@ -208,3 +208,12 @@ Atnaujinta: 2026-11-17 15:45 Europe/Vilnius
 - Naujas diagnostikos artifact rodo analytics/topic count=1 kiekvienam, run ID `44077181860`; GitHub metadata patvirtina source `event=workflow_dispatch`, ne schedule. Specialistų ir Control Core būklė liko needs_evidence (5 gaps); AI ciklas nekartotas.
 - PR #277 ir #284 uždaryti kaip superseded, jų istorija neištrinta.
 - Kitas įrodymas laukia 2026-11-18 06:10 UTC Daily-suite schedule ir po jo vienintelio 13:20 LT Worker AI ciklo. Issue #145 palikti open.
+
+
+## 2026-11-17 23:11 LT – paskutinis D1 diagnostikos readback
+
+- Naujausias diagnostikos workflow_run #44176706421 success, artifact #14369058763 (generated_at 21:08:53.137Z). Source counts: analytics=1, topics=1, control_center=43, recommendation=43.
+- analytics/topic rows siejami su run #44077181860, kurio event=`workflow_dispatch`; tai nepatvirtina schedule provenance. Tas pats 2026-11-17 AI ciklas completed, 5 calls, error_code=null, tačiau 5 evidence gaps / Control Core needs_evidence išlieka. Antro ciklo nebuvo.
+- automation-history latest snapshot #44176564991 sugeneruotas 21:08:23Z ir dar rodė sync in_progress; sync runs #44176630666 ir #44176706441 vėliau success. latest.md/latest.json rankiniu būdu nekeisti.
+- Galutinio work-log commit site-check #44177115424 success. Work-log 409 konfliktas #44176776182 ir vėlesnis success #44176789119 aprašyti žurnale.
+- Kitas AI recovery įrodymas laukia tikro 2026-11-18 06:10 UTC Daily-suite schedule, D1 provenance readback ir vienintelio 13:20 LT AI ciklo.
