@@ -36,7 +36,7 @@ def classify_gap(value: object) -> str:
         ("search_volume_not_available", ("search volume", "keyword volume", "paieškos apim", "paieskos apim", "paieškų apim", "paiesku apim", "raktinių žodžių apim", "raktiniu zodziu apim")),
         ("analytics_data_missing", ("ga4 data", "analytics data", "no analytics", "ga4 duomen", "analitikos duomen", "nėra ga4", "nera ga4")),
         ("source_unavailable", ("unavailable", "fetch failed", "http 4", "http 5", "nepasiekiam", "neprieinam", "nepavyko gauti", "nepavyko pasiekti", "užklausa nepavyko", "uzklausa nepavyko")),
-        ("insufficient_evidence", ("insufficient", "not enough evidence", "no verified evidence", "missing evidence", "evidence", "source", "nepakanka", "trūksta įrodym", "truksta irodym", "nėra pakankamai", "nera pakankamai", "nepakanka duomen", "nepatvirtinta")),
+        ("insufficient_evidence", ("insufficient", "not enough evidence", "no verified evidence", "missing evidence", "missing", "no data", "evidence", "source", "nepakanka", "trūksta įrodym", "truksta irodym", "nėra pakankamai", "nera pakankamai", "nepakanka duomen", "nepatvirtinta")),
     )
     for code, terms in rules:
         if any(term in text for term in terms):
