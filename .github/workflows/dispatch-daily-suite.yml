@@ -203,6 +203,29 @@ jobs:
               return;
             }
 
+            if (action === "agent-diagnostics") {
+              const workflow_id = "worker-agent-diagnostics.yml";
+              const { data } = await github.rest.actions.listWorkflowRuns({
+                owner, repo, workflow_id, branch: "main", per_page: 100
+              });
+              const cutoff = now - 30 * 60 * 1000;
+              const recent = data.workflow_runs.find(run =>
+                run.event === "workflow_dispatch" &&
+                Date.parse(run.created_at) >= cutoff &&
+                (run.status !== "completed" || run.conclusion === "success")
+              );
+              if (recent) {
+                core.notice("Worker agent diagnostics already started within 30 minutes: " +
+                  recent.html_url);
+                return;
+              }
+              await github.rest.actions.createWorkflowDispatch({
+                owner, repo, workflow_id, ref: "main"
+              });
+              core.notice("Authorized read-only Worker agent diagnostics workflow_dispatch sent to main.");
+              return;
+            }
+
             if (action === "task-check-site") {
               const token = await core.getIDToken("pettraffic-control-api");
               const apiUrl = (process.env.CONTROL_API_URL || "").replace(/\/$/, "");
