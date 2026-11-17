@@ -726,3 +726,9 @@ Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama 
 - Dashboard `/dashboard/` -> `/control/` yra viešas read-only skydas; noindex nėra autentifikacija, komandos tik kopijuojamos, Worker task API 503 disabled. #248 atviras.
 - Viešuose core puslapiuose ARO Vet elementų nerasta; ARO Vet infrastruktūra nekeista.
 - Jokio kodo, Worker deploy, DNS, schemos, secrets, billing ar turinio publikavimo pakeitimo nebuvo. Atlikti tik esamų agreguotų snapshot duomenų D1 write/readback per OIDC bridge.
+
+
+## Lighthouse schedule patikra – 2026-11-17 13:56 LT
+- PATIKRINTA: Lighthouse run #43915631789 buvo tikras `schedule`, ne `push` ar rankinis paleidimas. Numatyta `27 7 * * 1` (2026-11-16 07:27 UTC), run sukurtas tik 17:10:54Z ir baigtas 17:14:37Z – schedule pristatymas vėlavo apie 9 h 44 min., pats darbas truko 3 min. 43 s.
+- Lighthouse artefaktas #14249118806: dog-diarrhea mobile performance 55/100, LCP 9.78 s (TTFB 4.70 s); vet-visit desktop 55/100, LCP 8.08 s (TTFB 5.22 s); vet-visit mobile 60/100, LCP 5.55 s (TTFB 7.71 s). TBT=0 ms, CLS=0 visose šiose ataskaitose; kiti 7 puslapio/įrenginio balai 86–100, accessibility/best-practices/SEO 100.
+- Sprendimas: nekeisti kodo pagal vieną svyruojantį matavimą. Pakartoti per kitą suplanuotą auditą (2026-11-23) ir tikrinti TTFB / LCP tendenciją. Daily-suite ir Lighthouse vėlavimai panašūs, o pačių job trukmės trumpos – tai sustiprina schedule event eilės/pristatymo problemos hipotezę, bet neįrodo tikslios GitHub priežasties.
