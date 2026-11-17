@@ -20,6 +20,12 @@ class WorkerAgentDiagnosticsTests(unittest.TestCase):
     def test_workflow_is_manual_or_post_merge_and_read_only(self):
         workflow = (ROOT / ".github" / "workflows" / "worker-agent-diagnostics.yml").read_text(encoding="utf-8")
         self.assertIn("workflow_dispatch:", workflow)
+        self.assertIn("workflow_run:", workflow)
+        self.assertIn('workflows: ["Pet traffic central control center"]', workflow)
+        self.assertIn("types: [completed]", workflow)
+        self.assertIn("branches: [main]", workflow)
+        self.assertIn("github.event.workflow_run.conclusion == 'success'", workflow)
+        self.assertIn("github.event.workflow_run.event == 'workflow_run'", workflow)
         self.assertIn("push:", workflow)
         self.assertIn("permissions:\n  contents: read", workflow)
         self.assertNotIn("contents: write", workflow)
