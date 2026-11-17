@@ -1,6 +1,18 @@
 # Pet traffic – perdavimas 2026-11-17
 
-Atnaujinta: 2026-11-17 12:11 Europe/Vilnius
+Atnaujinta: 2026-11-17 15:03 Europe/Vilnius
+
+## Naujausias papildymas (15:03 LT)
+
+- Main HEAD: `0c2d29558328002ae42cc9aeda2e17b30322d02b`.
+- PR #270, #271, #273, #274 sujungti; visi jų PR patikrinimai success. Pakeitimai: savininko komanda `/pettraffic-run-agent-diagnostics`, 30 min. deduplikacija ir privatumo filtruoto diagnostikos klasifikatoriaus plėtra. Worker production deploy liko skipped.
+- Owner-only komanda #6948636088 paleido diagnostiką [#44087687833](https://github.com/Pershore/PetTraffic-AI/actions/runs/44087687833) (`workflow_dispatch`), o vėlesni push diagnostikos paleidimai #44088150248, #44088489664 ir #44088717319 pakartotinai perskaitė tą patį D1 ciklą – nebuvo pakartotinio AI ciklo.
+- Naujausia diagnostika #44088717319 success, artefaktas #14330697108. `rows_written=0` visoms keturioms SELECT užklausoms. AI run 2026-11-17 completed, 5/5 AI calls, error_code=null; Control Core `needs_evidence`, 5 spragos; memory present, atnaujinta 12:00:21.622Z.
+- Specialistai: analytics=needs_evidence (code other), topics=needs_evidence (insufficient_evidence), technical-seo=needs_evidence (other), content-review=needs_evidence (insufficient_evidence); coordinator=needs_evidence (other). Bendra 2 insufficient_evidence + 3 other. Diagnostika neatskleidžia raw model output; priežasčių detalumas dar nepakankamas.
+- Gyvas Worker /health HTTP 200; D1 ir Control Core connected; heartbeat 13:00:13Z patvirtino site 200 ir DB.
+- Daily-suite 2026-11-17 schedule vis dar nerastas. Run #44077181860 buvo workflow_dispatch (3/3 job success), todėl schedule neįrodo. 20 val. dedupe langas baigiasi 2026-11-18 07:47 UTC; pirmiausia tikrinti 06:10 UTC cron. Priežastis, kodėl schedule vėluoja, lieka nepatvirtinta.
+- Naujausias Control Center #44088767083 workflow_run success; automation-history latest.md atnaujintas 13:02:36Z. Issue #145 ir #248 open.
+- Jokių Worker production, D1 write, DNS, secrets, billing, viešo turinio ar ARO Vet pakeitimų.
 
 ## Galiojanti politika
 
