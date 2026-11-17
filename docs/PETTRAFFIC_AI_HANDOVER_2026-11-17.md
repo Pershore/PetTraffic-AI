@@ -120,3 +120,12 @@ Atnaujinta: 2026-11-17 15:45 Europe/Vilnius
 - Daily-suite run #44119444026 pagal GitHub run metadata buvo event=schedule, workflow ID 418322987, 3/3 job success.
 - .github/workflows/daily-suite.yml cron yra 06:10 UTC; run start 15:53:16 UTC, taigi maždaug 9 val. 43 min. vėlavimas. Tai patvirtina realų schedule įvykį ir reikšmingą delsą, o ne rankinį paleidimą.
 - Šis run įvyko iki PR #281 merge, todėl jame dar nėra naujos provenance schemos. Naujo perdavimo patvirtinimui reikia kito schedule po merge.
+
+
+## 2026-11-17 – PR #283 AI evidence gate
+
+- PR #282 buvo pasenęs, konfliktavo su nauja main ir jo testai naudojo seną bazę; uždarytas kaip superseded, nesujungtas.
+- Vietoje jo PR #283 sukurtas nuo naujausio main HEAD 6003e26fb42466a59da414f128e22ecd668b3647. Head d7b6defb5c28eb4e59771b4c7451467167a02191; 3 pakeisti failai.
+- AI orkestratorius gauna originalų Cloudflare scheduledTime; D1 event atranka ribojama iki šio laiko. Analytics/topic specialistams parenkami tik tos pačios Vilniaus dienos Daily-suite įrašai su source_event=schedule, workflow ID 418322987, sutampančiu run ID ir teisinga laiko seka. Naujesnis manual/push įrašas nėra naudojamas.
+- PR #283 patikros: Worker 79/79 Node, 20/20 Python, Cloudflare validation success, site-check 149 testai success. Pull request metu deploy job skipped; produkcija nepakeista.
+- PR #283 tebėra draft ir laukia konkretaus leidimo merge, nes tai sukels Worker/D1 production deploy. Po merge reikės patikrinti deployment, o kitą realų Daily-suite schedule ir AI ciklą naudoti recovery įrodymui. Issue #145 neuždaryti.
