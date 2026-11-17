@@ -1,11 +1,25 @@
 # Pet traffic – vienintelė kanoninė projekto atmintis
 
-**Atnaujinta:** 2026-11-17 22:04 LT  
+**Atnaujinta:** 2026-11-17 22:53 LT
 **Saugykla:** https://github.com/Pershore/PetTraffic-AI  
 **Pagrindinė šaka:** `main`  
 **Tikslas:** vienas patikimas tęstinumo šaltinis ChatGPT, Codex ir būsimiems projekto agentams.
 
 Šis dokumentas sujungia ilgalaikius sprendimus, patvirtintą architektūrą, dabartines integracijų būsenas, neišspręstus blokatorius ir kitus veiksmus. Jis nepakeičia GitHub testų ar realių vykdymų įrodymų. Kiekvieną būseną reikia tikrinti pagal naujausią commit, workflow run ir gyvą sistemos atsakymą.
+
+## Naujausia patikrinta būsena (2026-11-17 22:53 LT)
+
+- **PR #283 – ATLIKTA:** squash merge į main `f41fee5e6f2db29067e8ab9523e40a777d626e40`. Įdiegti Daily-suite provenance vartai: AI ciklui tinka tik tos pačios Vilniaus dienos `event=schedule` snapshot iš workflow ID `418322987`, sutampantis source/run ID ir įrašo laikas iki Cloudflare `scheduledTime` ribos.
+- **Worker + D1 deploy – PATIKRINTA:** [#44165044215](https://github.com/Pershore/PetTraffic-AI/actions/runs/44165044215), `event=push`, success. D1 migracijos, Wrangler deploy, /health, neautentifikuotas /v1/events=401 ir abu Cron schedule sėkmingai patikrinti. Worker Node/Python test job ir Cloudflare validation success; po-merge site-check #44165044246 success.
+- **Worker heartbeat – PATIKRINTA:** [#44165206828](https://github.com/Pershore/PetTraffic-AI/actions/runs/44165206828) success. Cloudflare schedule `*/15 * * * *` ir `20 10,11 * * *` patvirtinti; heartbeat pasistūmėjo iš 2026-11-17T20:00:13.377Z į 20:15:13.503Z. D1, Control Core schema, svetainė ir DB healthy.
+- **Po dokumentavimo site-check – PATIKRINTA:** [#44165427063](https://github.com/Pershore/PetTraffic-AI/actions/runs/44165427063) success; HTML, SEO/sitemap, dashboard JS, compile ir analytics/topic testų žingsniai success.
+- **Control Center / automatinė istorija – PATIKRINTA:** [#44167417153](https://github.com/Pershore/PetTraffic-AI/actions/runs/44167417153) event=`workflow_run`, success; automation-history latest snapshot sugeneruotas 2026-11-17T20:15:51.384Z. Jis vis dar rodo AI/Control Core warning ir 5 evidence gaps; Issue #145 lieka open ir atnaujintas.
+- **D1 snapshot sync – dalinai PATIKRINTA:** [#44167513272](https://github.com/Pershore/PetTraffic-AI/actions/runs/44167513272) success, bet daily-suite source-run validation ir analytics/topic artifacts skipped. Nėra naujo po PR #281 tikro Daily-suite `event=schedule` įrašo, todėl schedule provenance / AI įvesties atsigavimas dar NEPATVIRTINTA.
+- **PR #284 – PARUOŠTA:** šaka `ci/agent-d1-diagnostics-after-control-center-main-20261117`, head `8519ad6135104a4dd960df3eb013eda55949518e`, 2 ahead / 0 behind nuo dabartinio main (kai sukurta). Įjungia jau esamą SELECT-only, privacy-filtered D1 agent diagnostiką po sėkmingo Control Center, tik kai pats Control Center įvyko per `workflow_run`; manual/push/PR atvejai atmetami. CI: Worker Node/Python test job success, Cloudflare validation success, site-check success, snapshot event-builder test success; deploy ir snapshot sync jobs PR event metu skipped. Nėra Worker kodo, D1 schemos/rašymo, DNS, secrets, ARO Vet, viešo turinio, billing ar mokamų paslaugų pakeitimų. PR paliktas draft; veikimas po merge dar nepatikrintas.
+- **Seni PR:** #277 draft lieka 35 commit atsilikęs ir dubliuojamas nauju #284; #280 docs draft 28 commit atsilikęs. Jų šakos nejungti aklai; išsaugoti kol nuspręsta dėl uždarymo kaip superseded.
+- **AI recovery – NEPATVIRTINTA:** naujo AI ciklo po PR #283 deploy nėra. Nėra pagrindo pakartoti tos pačios dienos ciklo. Issue #145 palikti open.
+- **Kitas privalomas įrodymas:** 2026-11-18 Daily-suite cron 06:10 UTC / 08:10 LT. Tikrinti tikrą `event=schedule`, workflow ID, 3 job, artefaktus, snapshot provenance ir D1 readback. Po to laukti vienintelio AI ciklo apie 13:20 LT; tikrinti 5 specialistų evidence, Control Core, `recovery_confirmed` ir memory readback.
+- **Saugumas:** jokio ARO Vet, viešo svetainės turinio, DNS, Cloudflare teisių, secrets, billing ar mokamų paslaugų pakeitimo. Dashboard lieka READ-ONLY; Issue #248 open.
 
 ## Naujausia patikrinta būsena (2026-11-17 22:04 LT)
 
