@@ -7,7 +7,7 @@ function mockEnv({ai=true,existingRun=false,reserveErrorAt=0,reserveErrorBeforeC
   bind(...values){return {
    run:async()=>{if(sql.includes("INSERT OR IGNORE INTO agent_runs")){if(state.inserted||existingRun)return{meta:{changes:0}};state.inserted=true;return{meta:{changes:1}};}state.updates.push({sql,values});return{meta:{changes:1}};},
    first:async()=>{if(sql.includes("UPDATE agent_runs SET ai_calls")){const next=state.aiCalls+1;if(reserveErrorAt===next&&!state.reservationErrorThrown){state.reservationErrorThrown=true;if(!reserveErrorBeforeCommit)state.aiCalls=next;throw new SyntaxError("Unexpected_end_of_JSON_input");}state.aiCalls=next;return state.aiCalls<=5?{ai_calls:state.aiCalls}:null;}if(sql.includes("SELECT ai_calls FROM agent_runs")){if(reserveReadbackError)throw new SyntaxError("Unexpected_end_of_JSON_input");return{ai_calls:state.aiCalls};}return null;},
-   all:async()=>({results:[]}),
+   all:async()=>({results:invalidEventPayload&&values[0]==="analytics_snapshot"?[{kind:"analytics_snapshot",payload_json:"{truncated",created_at:new Date().toISOString()}]:[]}),
   };},
   all:async()=>({results:invalidEventPayload?[{kind:"analytics_snapshot",payload_json:"{truncated",created_at:"2026-11-13T00:00:00.000Z"}]:[]}),
  };}}};
