@@ -253,7 +253,7 @@ test("daily orchestration never starts a second time after a run was reserved", 
 test("source selection uses scheduled analytics/topic snapshots and excludes newer manual rows",async()=>{
  const rows=[];
  for(let i=0;i<18;i++) {
-  const stamp=new Date(Date.parse("2026-11-17T12:00:00.000Z")+i*1000).toISOString();
+  const stamp=new Date(Date.parse("2026-11-17T11:50:00.000Z")+i*1000).toISOString();
   rows.push({kind:"control_center_snapshot",created_at:stamp,payload_json:JSON.stringify({run_id:"cc-"+i})});
   rows.push({kind:"recommendation_snapshot",created_at:stamp,payload_json:JSON.stringify({run_id:"rec-"+i})});
  }
@@ -264,7 +264,7 @@ test("source selection uses scheduled analytics/topic snapshots and excludes new
  rows.push({kind:"analytics_snapshot",created_at:"2026-11-17T11:49:23.651Z",payload_json:JSON.stringify({run_id:"analytics-manual",provenance:provenance("analytics-manual","workflow_dispatch")})});
  rows.push({kind:"topic_snapshot",created_at:"2026-11-17T11:49:24.352Z",payload_json:JSON.stringify({run_id:"topics-scheduled",provenance:provenance("topics-scheduled")})});
  const queried=[];
- const env={DB:{prepare(sql){assert.match(sql,/WHERE kind = \? AND created_at <= \?/);return{bind(kind){queried.push(kind);return{all:async()=>({results:rows.filter(row=>row.kind===kind).sort((a,b)=>b.created_at.localeCompare(a.created_at)).slice(0,100)})};}};}}};
+ const env={DB:{prepare(sql){assert.match(sql,/WHERE kind = \? AND created_at <= \?/);return{bind(kind,cutoff){queried.push(kind);return{all:async()=>({results:rows.filter(row=>row.kind===kind&&row.created_at<=cutoff).sort((a,b)=>b.created_at.localeCompare(a.created_at)).slice(0,100)})};}};}}};
  const data=await getEvents(env,"2026-11-17",new Date("2026-11-17T11:55:00.000Z"));
  assert.deepEqual(queried,["analytics_snapshot","topic_snapshot","control_center_snapshot","recommendation_snapshot"]);
  assert.deepEqual(data.events.map(row=>row.kind),["analytics_snapshot","topic_snapshot","control_center_snapshot","recommendation_snapshot"]);
