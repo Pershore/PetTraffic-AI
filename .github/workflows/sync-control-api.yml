@@ -64,7 +64,7 @@ jobs:
           fi
       - name: Validate daily-suite source run
         id: suite-source
-        if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.name == 'Pet traffic daily automation suite'
+        if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.workflow_id == 418322987
         uses: actions/github-script@v9
         env:
           SOURCE_RUN_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.source_run_id || github.event.workflow_run.id }}
@@ -131,7 +131,7 @@ jobs:
           repository: ${{ github.repository }}
           run-id: ${{ steps.suite-source.outputs.source_run_id }}
       - name: Prepare privacy-filtered event payloads
-        if: steps.config.outputs.enabled == 'true' && ((github.event_name == 'workflow_run' && github.event.workflow_run.name != 'Pet traffic daily automation suite') || steps.suite-source.outputs.eligible == 'true')
+        if: steps.config.outputs.enabled == 'true' && ((github.event_name == 'workflow_run' && github.event.workflow_run.workflow_id != 418322987) || steps.suite-source.outputs.eligible == 'true')
         env:
           WORKFLOW_NAME: ${{ github.event_name == 'workflow_dispatch' && 'Pet traffic daily automation suite' || github.event.workflow_run.workflow_id == 418322987 && 'Pet traffic daily automation suite' || github.event.workflow_run.name }}
           SOURCE_RUN_ID: ${{ steps.suite-source.outputs.source_run_id || github.event.workflow_run.id }}
@@ -148,7 +148,7 @@ jobs:
             --source-run-created-at "$SOURCE_RUN_CREATED_AT" \
             --source-workflow-id "$SOURCE_WORKFLOW_ID"
       - name: Authenticate with short-lived GitHub OIDC and publish snapshots
-        if: steps.config.outputs.enabled == 'true' && ((github.event_name == 'workflow_run' && github.event.workflow_run.name != 'Pet traffic daily automation suite') || steps.suite-source.outputs.eligible == 'true')
+        if: steps.config.outputs.enabled == 'true' && ((github.event_name == 'workflow_run' && github.event.workflow_run.workflow_id != 418322987) || steps.suite-source.outputs.eligible == 'true')
         env:
           API_URL: ${{ vars.PETTRAFFIC_CONTROL_API_URL || 'https://pettraffic-control-api.pauliusgrubliauskis.workers.dev' }}
         run: |
