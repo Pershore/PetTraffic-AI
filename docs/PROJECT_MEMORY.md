@@ -1,6 +1,6 @@
 # Pet traffic – vienintelė kanoninė projekto atmintis
 
-**Atnaujinta:** 2026-11-17 23:06 LT
+**Atnaujinta:** 2026-11-17 23:11 LT
 **Saugykla:** https://github.com/Pershore/PetTraffic-AI  
 **Pagrindinė šaka:** `main`  
 **Tikslas:** vienas patikimas tęstinumo šaltinis ChatGPT, Codex ir būsimiems projekto agentams.
@@ -21,6 +21,13 @@
 - **Kitas privalomas įrodymas:** 2026-11-18 Daily-suite cron 06:10 UTC / 08:10 LT. Tikrinti tikrą `event=schedule`, workflow ID, 3 job, artefaktus, snapshot provenance ir D1 readback. Po to laukti vienintelio AI ciklo apie 13:20 LT; tikrinti 5 specialistų evidence, Control Core, `recovery_confirmed` ir memory readback.
 - **Saugumas:** jokio ARO Vet, viešo svetainės turinio, DNS, Cloudflare teisių, secrets, billing ar mokamų paslaugų pakeitimo. Dashboard lieka READ-ONLY; Issue #248 open.
 
+## Papildomas read-only įrodymas (2026-11-17, 23:11 LT)
+
+- Naujausias po-Control-Center D1 diagnostikos vykdymas [#44176706421](https://github.com/Pershore/PetTraffic-AI/actions/runs/44176706421), event=`workflow_run`, success; artifact #14369058763 sugeneruotas 2026-11-17T21:08:53.137Z.
+- Tas pats ciklas: run_date=2026-11-17, completed, 5 AI calls, error_code=null, visi 4 specialistai + coordinator `needs_evidence`, Control Core 5 gaps, memory present ir atnaujinta 12:00:21.622Z.
+- Source events: analytics=1, topics=1, control_center=43, recommendation=43. Analytics/topic source run ID 44077181860 patvirtintas kaip `workflow_dispatch`, todėl nėra leistinas schedule provenance AI vartams. Naujas AI ciklas nebuvo paleistas.
+- `automation-history/latest.md/latest.json` naujausias snapshot #44176564991 sugeneruotas 21:08:23Z ir jame dar nurodytas snapshot sync `in_progress`. Vėlesni job metaduomenys rodo sync #44176630666 ir #44176706441 success (21:08:31Z ir 21:08:58Z); snapshot buvo sugeneruotas prieš šių job completion, todėl jis laikomas tuo metu teisingu, bet dabar pasenusiu. Failai palikti automatiškai generuojami, rankiniu būdu neperrašyti.
+- Po galutinio work-log atnaujinimo site-check [#44177115424](https://github.com/Pershore/PetTraffic-AI/actions/runs/44177115424) success. Automatinio work-log pirmas vykdymas #44176776182 gavo HTTP 409 dėl lygiagretaus README turinio pakeitimo; vėlesnis #44176789119 baigėsi success, o ši sesija papildomai užfiksavo konfliktą žurnale.
 ## Naujausia patikrinta būsena (2026-11-17, 23:06 LT)
 
 - **PR #283 – ATLIKTA / Worker-D1 deploy PATIKRINTA:** merge `f41fee5e6f2db29067e8ab9523e40a777d626e40`; deploy #44165044215 `push` success. D1 migration, Wrangler deploy, /health, neautentifikuotas API 401 ir Cron grafikai sėkmingai patikrinti. Worker 79 Node + 20 Python testai, Cloudflare validation ir post-merge site-check #44165044246 success.
