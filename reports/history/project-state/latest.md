@@ -1,8 +1,8 @@
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
-- Atnaujinta: 2026-11-16T17:57:31.774522+00:00
-- Būsena: **REIKIA DĖMESIO**
-- GitHub run: 43923741511
+- Atnaujinta: 2026-11-17T02:00:18.433315+00:00
+- Būsena: **VYKSTA / LAUKIAMA**
+- GitHub run: 43999740328
 - Šaltinio commit: a375f02ec0743e894cfd1620d9ee1800f89522ce
 
 ## Paskutinis patikrintas etapas
@@ -11,7 +11,7 @@ Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataska
 
 ## Kitas veiksmas
 
-Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (warning). AI agentų ciklas ir atminties įrašymas baigti; rekomendacijų: 1; trūksta įrodymų: 5.
+Tęsti laukiančių patikrų stebėseną: AI agentai + control-core atmintis.
 
 ## Patvirtinti procesai
 
@@ -20,26 +20,25 @@ Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (warning)
 - Lighthouse auditas: Paskutinis paleidimas sėkmingas.
 - Centrinis valdymo centras: Paskutinis paleidimas sėkmingas.
 - Debesijos read-only užduočių vykdytojas: Paskutinis debesijos užduoties vykdymas sėkmingas.
-- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 12 min.
+- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 0 min.
 
 ## Problemos
 
-- **AI agentai + control-core atmintis** (warning): AI agentų ciklas ir atminties įrašymas baigti; rekomendacijų: 1; trūksta įrodymų: 5. – https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health
+- Šiame cikle problemų nenustatyta.
 
 ## Laukiančios patikros
 
-- Nėra.
+- AI agentai + control-core atmintis: Paskutinis AI agentų ciklas dar neįvyko 13:20 Lietuvos laiku lange; laukiama šiandienos suplanuoto ciklo.
 
 ## AI agentų ir atminties patikra
 
-- Būsena: **warning** – AI agentų ciklas ir atminties įrašymas baigti; rekomendacijų: 1; trūksta įrodymų: 5.
+- Būsena: **waiting** – Paskutinis AI agentų ciklas dar neįvyko 13:20 Lietuvos laiku lange; laukiama šiandienos suplanuoto ciklo.
 - Patikros šaltinis: https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health
 
 ## Rekomendacijos
 
 - **[medium] Patikrinti Google paieškos matomumą** – Patikrinti URL indeksavimo būseną, sitemap apdorojimą ir ar svarbiausi puslapiai prieinami Googlebot.
 - **[info] Stebėti Google sitemap apdorojimą** – Pakartotinai patikrinti kitame cikle; sitemap pakartotinai neteikti, jei jis jau pateiktas.
-- **[high] Pašalinti automatizacijų būklės problemas** – Atidaryti centrinio valdymo GitHub įspėjimą ir taisyti konkretaus proceso klaidą.
 
 ## Nekeičiamos saugumo ribos
 

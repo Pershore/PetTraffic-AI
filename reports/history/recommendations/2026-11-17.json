@@ -1,0 +1,27 @@
+{
+  "date": "2026-11-17",
+  "snapshots": [
+    {
+      "generated_at": "2026-11-17T02:00:30.084628+00:00",
+      "run_id": "43999740328",
+      "recommendations": [
+        {
+          "id": "search-visibility",
+          "priority": "medium",
+          "title": "Patikrinti Google paieškos matomumą",
+          "evidence": "Dviejuose naujausiuose prieinamuose Search Console laikotarpiuose parodymai ir paspaudimai buvo nuliniai.",
+          "next_action": "Patikrinti URL indeksavimo būseną, sitemap apdorojimą ir ar svarbiausi puslapiai prieinami Googlebot.",
+          "status": "monitor"
+        },
+        {
+          "id": "sitemap-processing",
+          "priority": "info",
+          "title": "Stebėti Google sitemap apdorojimą",
+          "evidence": "Search Console nurodo, kad sitemap dar laukia apdorojimo.",
+          "next_action": "Pakartotinai patikrinti kitame cikle; sitemap pakartotinai neteikti, jei jis jau pateiktas.",
+          "status": "monitor"
+        }
+      ]
+    }
+  ]
+}
