@@ -59,7 +59,8 @@ export function isEligibleScheduledDailySuiteSnapshot(event, localDay, evidenceC
  const persistedAt=new Date(event.created_at);
  const cutoff=new Date(evidenceCutoff);
  return Number.isFinite(sourceCreatedAt.getTime()) && Number.isFinite(persistedAt.getTime()) &&
-  Number.isFinite(cutoff.getTime()) && sourceCreatedAt.getTime()<=cutoff.getTime() &&
+  Number.isFinite(cutoff.getTime()) && persistedAt.getTime()>=sourceCreatedAt.getTime() &&
+  sourceCreatedAt.getTime()<=cutoff.getTime() &&
   persistedAt.getTime()<=cutoff.getTime() && vilniusDateKey(sourceCreatedAt)===localDay;
 }
 
