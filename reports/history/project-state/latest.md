@@ -49,3 +49,8 @@ Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas
 - AI rekomendacijos yra patariamosios; modelio išvestys nesuteikia vykdymo teisių.
 
 > Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.
+
+## Papildomas audito radinys – Lighthouse (2026-11-17)
+
+- **PATIKRINTA:** schedule run #43915631789 artefaktas #14249118806 turi 21 failą ir 10 puslapio / įrenginio ataskaitų. Našumas: dog-diarrhea mobile 55/100, vet-visit desktop 55/100, vet-visit mobile 60/100; likę 7 balai 86–100. Visų ataskaitų prieinamumas, geriausia praktika ir SEO – 100. Lėtiems variantams LCP 9,779 s / 8,078 s / 5,548 s, TBT=0, CLS=0; šakninis dokumento atsako laikas 4,35 s / 2,56 s / 2,14 s.
+- **PLANUOJAMA:** pakartoti matavimą kitame savaitiniame Lighthouse cikle (2026-11-23); vieno audito nepakanka kodo pakeitimui pagrįsti.
