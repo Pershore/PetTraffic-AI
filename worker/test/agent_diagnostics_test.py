@@ -32,6 +32,10 @@ class WorkerAgentDiagnosticsTests(unittest.TestCase):
         self.assertEqual(classify_gap("Model response did not contain required fields."), "model_output_missing_fields")
         self.assertEqual(classify_gap("Model JSON did not contain the required status, findings, recommendations and evidence_gaps fields."), "model_output_missing_fields")
 
+    def test_missing_and_no_data_gaps_match_worker_health_category(self):
+        self.assertEqual(classify_gap("Missing metrics prevent a verified conclusion."), "insufficient_evidence")
+        self.assertEqual(classify_gap("No data was available for the requested comparison."), "insufficient_evidence")
+
     def test_generic_english_evidence_and_source_gaps_match_worker_health_category(self):
         self.assertEqual(
             classify_gap("The source does not contain enough verifiable material for this conclusion."),
