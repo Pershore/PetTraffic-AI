@@ -133,7 +133,7 @@ jobs:
       - name: Prepare privacy-filtered event payloads
         if: steps.config.outputs.enabled == 'true' && ((github.event_name == 'workflow_run' && github.event.workflow_run.name != 'Pet traffic daily automation suite') || steps.suite-source.outputs.eligible == 'true')
         env:
-          WORKFLOW_NAME: ${{ github.event_name == 'workflow_dispatch' && 'Pet traffic daily automation suite' || github.event.workflow_run.name }}
+          WORKFLOW_NAME: ${{ github.event_name == 'workflow_dispatch' && 'Pet traffic daily automation suite' || github.event.workflow_run.workflow_id == 418322987 && 'Pet traffic daily automation suite' || github.event.workflow_run.name }}
           SOURCE_RUN_ID: ${{ steps.suite-source.outputs.source_run_id || github.event.workflow_run.id }}
           SOURCE_EVENT: ${{ github.event_name == 'workflow_dispatch' && steps.suite-source.outputs.source_event || github.event.workflow_run.event }}
           SOURCE_RUN_CREATED_AT: ${{ github.event_name == 'workflow_dispatch' && steps.suite-source.outputs.source_run_created_at || github.event.workflow_run.created_at }}
