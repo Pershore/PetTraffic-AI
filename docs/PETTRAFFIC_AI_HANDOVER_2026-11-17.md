@@ -95,3 +95,34 @@ Atnaujinta: 2026-11-17 15:45 Europe/Vilnius
 - Jokio Worker/D1 production deploy, DNS, Cloudflare Access, secrets, paskyrų teisių, billing ar mokamų paslaugų pakeitimo be atskiro leidimo.
 - Jokio arbitrary shell, model-generated code execution ar neapribotų task tipų.
 - automation-history latest.md/latest.json rankiniu būdu nekeisti.
+
+
+## 2026-11-17 – AI įrodymų kilmės follow-up (po PR #278)
+
+- Main HEAD patikros metu: `dc8f2c8cf829fc13af3f026fe12c4cf59c700ee1`. PR #278 sujungtas commit `1590a175f267c8b7873849c18b6d0aff80629c86`; PR #279 dokumentavimo pakeitimas taip pat sujungtas.
+- Worker deploy #44095563330 – success. 2026-11-17 13:44 UTC logas patvirtina: D1 migracijų nereikėjo; Worker versija `ea9f3133-5b48-4978-b533-04daca108558`; /health tiesiogiai patvirtino Worker, D1 ir Control Core schemą; neautentifikuotas `/v1/events` grąžino 401; Cloudflare patvirtino `*/15 * * * *` ir `20 10,11 * * *`. Site-check #44095563353 – success, 149 Python testai praėjo; Worker deploy test job – success (Node ir Python Worker testai).
+- 2026-11-17 AI diagnostikos artefaktas #14330697108 (workflow #44088717319; sugeneruotas 13:02:12 UTC) rodo: run_date=2026-11-17, started_at=12:00:13 UTC, completed, 5 AI kvietimai, error_code=null, valid JSON report, 0 invalid event payloads, 0 degraded specialistų pagal techninį parserį. Tačiau visi 4 specialistai ir koordinatorius turi `needs_evidence`; Control Core `needs_evidence`, 5 spragos (2 `insufficient_evidence`, 3 `other`); D1 atmintis yra, updated_at=12:00:21.622Z, last_run_date=2026-11-17.
+- Šaltinių kilmė: analytics_snapshot ir topic_snapshot buvo įrašyti 11:49:23Z / 11:49:24Z iš Daily-suite run ID `44077181860`. To run visi trys job (analytics, topic-radar, live-check) buvo success, bet tai buvo `workflow_dispatch`, ne `schedule`. 2026-11-17 06:10 UTC suplanuoto Daily-suite įvykio Control Center snapshot 13:46 UTC dar nepatvirtino; paskutinis rastas tikras schedule buvo 2026-11-16 15:34:13Z. Rankinis / push / PR / workflow_run paleidimas schedule nepakeičia.
+- Kodo priežastis patikrinta `worker/src/agents.mjs`: heartbeat catch-up po 13:20 Europe/Vilnius gali paleisti dienos AI ciklą, kai randa bent vieną tos pačios Vilniaus dienos analytics arba topic snapshot. Šioje dabartinėje main versijoje ši parengties patikra dar neįrodo pirminio snapshot įvykio kilmės. Todėl rankiniu būdu surinkti tos pačios dienos snapshot galėjo tapti AI įvestimi.
+- PR #278 pataisė atskirą šaltinių atrankos problemą: specialistams atrenkamas naujausias įrašas pagal kiekvieną leidžiamą event kind, pasenę įrašai atmetami, trūkstamos būsenos aiškiai perduodamos, koordinatoriaus spragos neištrinamos. Tačiau 2026-11-17 AI ciklas prasidėjo 12:00 UTC – prieš PR #278 Worker deploy 13:44 UTC; šis ciklas negali įrodyti naujos pataisos veikimo.
+- PR #263 (snapshot event provenance) ir #261 (AI gate on verified scheduled evidence) lieka draft. Palyginus su main HEAD `dc8f2c8`, #263 yra 23 commit už main, #261 – 25 commit už main; #261 liečia `worker/src/agents.mjs`, kurį taip pat keitė #278, todėl prieš bet kokį sujungimą būtina atnaujinti šakas, peržiūrėti konfliktus ir pakartoti testus. PR #277 (automatinė post-Control-Center D1 diagnostika) yra 7 commit už main. Nė vienas iš jų šiame etape nesujungtas.
+- Daily-suite ataskaitos artefaktas #14325901072: GA4 2026-11-10–16 – 9 aktyvūs / nauji naudotojai, 26 sesijos, 90 peržiūrų; Direct 15, AI Assistant 11, organinės sesijos 0. GSC 2026-11-08–14 – 0 parodymų / paspaudimų, sitemap pateiktas, bet laukia apdorojimo, 5 prioritetinių URL Google dar nežino / nėra tikrinęs. Topic Radar artefaktas #14326060946: 29 unikalios nuorodos, 7 temos; tai antraščių stebėsena, ne paieškų apimtys.
+- Issue #145 lieka open, kol neįrodytas tikras specialistų ir Control Core atsistatymas. Issue #248 lieka open; vieši `/dashboard/` ir `/control/` nėra autentifikuotas valdymas.
+- Kitas veiksmas: pirma atnaujinti #263 pagal dabartinį main ir patikrinti snapshot provenance; tada atnaujinti #261, integruoti su PR #278 pakeitimais ir patikrinti visus testus. Tik po to, gavus atskirą patvirtinimą, svarstyti sujungimą / Worker diegimą. 2026-11-18 patikrinti tikrą Daily-suite `event=schedule`, visus 3 job, D1 source provenance ir vienintelį tos dienos Worker AI ciklą su D1 memory readback. Nekartoti AI ciklo tą pačią run_date.
+- Firecrawl gyvas puslapio nuskaitymas šioje sesijoje buvo blokuotas dėl išnaudoto kredito; tai nepaneigia GitHub deploy job tiesioginio /health patikrinimo. Jokio ARO Vet, viešo turinio, DNS, Worker/D1 papildomo pakeitimo, secrets, billing ar mokamos paslaugos pakeitimo šio follow-up metu neatlikta.
+
+
+## 2026-11-17 – patvirtintas resursų optimizavimo principas
+- Vartotojas patvirtino viso Pet traffic projekto resursų optimizavimą, išlaikant 0 €/mėn. biudžetą ir nekertant saugumo / įrodymų kokybės.
+- Į `AGENTS.md`, `docs/SESSION_START.md` ir `docs/PROJECT_MEMORY.md` įtrauktos taisyklės: naudoti šviežius patikrintus artefaktus, nekartoti sėkmingų veiksmų be priežasties, nepriklausomus darbus vykdyti lygiagrečiai, tikrinti AI įvesčių kilmę ir pilnumą, matuoti prieš optimizuojant vykdymo trukmę.
+- Nekeisti workflow grafiko vien dėl trumpinimo: paskutinis matuotas Daily-suite truko apie 39 s, o trys job jau veikė lygiagrečiai; didesnė nauda – pašalinti nereikalingus paleidimus ir pataisyti schedule patikimumą.
+- Pakeitimai tik dokumentacijoje PR #280 šakoje. Nėra Worker/D1, DNS, Cloudflare, secrets, mokamų paslaugų, viešo turinio ar ARO Vet pakeitimų. Automation-history `latest.md` neliečiamas.
+
+
+## 2026-11-17 vakaro tęsinys – AI snapshot kilmės vartai
+
+- PR #281 CI: test job #44112379712 **success**, sync job **skipped** (teisinga PR event riba); tikras schedule dar nepatvirtintas. Šaka 5 ahead / 2 behind.
+- PR #263 25 commit už main, PR #261 27 commit už main; neperkelti aklai.
+- Draft PR #282 nuo dabartinio main įgyvendina AI ciklo vartus: tik tos pačios Vilniaus dienos Daily-suite `schedule` snapshot, workflow ID 418322987, sutampantys run ID, source/D1 laikas iki scheduledTime. Push, rankinis paleidimas, kitas workflow, stale, netaisyklingi ar po scheduledTime įrašyti duomenys neatveria AI ciklo.
+- PR #282 2 ahead / 0 behind; paskutiniam commit CI dar nepradėtas / negrąžintas. Todėl **NEPATVIRTINTA**; sujungti negalima.
+- Kitas žingsnis: sulaukti #282 CI, peržiūrėti testų logus; atskirai perkelti #261 JSON schema apsaugas ant dabartinio agents.mjs, išsaugant #278 latest-per-kind ir evidence gaps. Tik po atskiro leidimo svarstyti merge / Worker deploy. Nekeisti production ir nekartoti tos dienos AI ciklo.
