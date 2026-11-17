@@ -752,3 +752,12 @@ Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama 
 - Ribos išlaikytos: tik viena allow-listed read-only užduotis; jokio arbitrary shell, svetainės redagavimo, publikavimo, DNS, ARO Vet, mokamų paslaugų ar viešo dashboard write API. Viešas `/control/` lieka read-only; privataus autentifikuoto valdymo ir dashboard task statuso dar nėra.
 - Issue #248 paliktas atviras privataus valdymo / dashboard integracijai. Issue #145 paliktas atviras, nes nepriklausomas kasdienio Worker AI/Control Core ciklo įspėjimas dar stale.
 - Kitas kritinis etapas: 2026-11-16 13:20 Europe/Vilnius patikrinti naują Worker AI ciklą ir D1 memory readback. Tik sėkmingas šis etapas patvirtins kasdienę AI analizės autonomiją.
+
+
+## 2026-11-17 vakarinis tęsinys – snapshot provenance ir AI schedule gate
+
+- PR #281 – ATLIKTA: squash merge į main, commit e8506e5243f64c403197c5a83daaa7e06f0da2cf. Snapshot event payload dabar saugo pirminį source_event, source_run_id, source_run_created_at ir source_workflow_id; Daily-suite atpažįstamas pagal nekintamą workflow ID 418322987, ne pagal dinaminį pavadinimą.
+- Po merge – PATIKRINTA: site checks #44156880643 success; central control center #44156880589 success; sync #44156985201 success. Sync naudojo trumpalaikį GitHub OIDC, įrašė du privacy-filtered snapshot event'us ir abiejų ID readback iš D1 buvo sėkmingas. Tai patvirtina centrinio valdymo snapshot perdavimą, bet dar ne Daily-suite schedule provenance kelią.
+- PR #282 – PARUOŠTA TESTAMS / LAUKIA: šakoje fix/ai-schedule-provenance-gate suderinti #281 pakeisti workflow/event-builder/test failai ir pataisytas AI gate testo D1 mock'as. Head 5679785fefde8a7517ea1557b8c997ff49b6dfd1; Node testai 79/79, Python testai 20/20, Cloudflare validation success, site-check 149 testai success. PR tebėra draft; Worker/D1 produkcinis deploy neįvyko.
+- AI recovery – NEPATVIRTINTA: nauja logika leidžia AI ciklą tik tada, kai D1 snapshot įrodo tą pačią Vilniaus dieną įvykusį Daily-suite schedule (workflow ID 418322987), suderintą run ID ir laiko ribas. Realiam patvirtinimui būtinas kitas suplanuotas Daily-suite ciklas, D1 readback su provenance ir vėlesnis AI ciklas su 5 specialistų įrodymais, Control Core spragomis bei memory readback. Nekartoti AI ciklo tą pačią dieną.
+- Saugumo ribos: PR #282 dar nesujungtas; jo merge sukeltų Worker/D1 produkcinį deploy, todėl prieš tai būtinas atskiras aiškus vartotojo leidimas. Issue #145 lieka open. Vieši dashboard lieka read-only; ARO Vet, DNS, secrets, billing, viešas turinys ir mokamos paslaugos nepaliesti.
