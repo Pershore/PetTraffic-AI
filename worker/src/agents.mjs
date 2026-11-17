@@ -189,42 +189,59 @@ const EVENT_KINDS = ["analytics_snapshot","topic_snapshot","control_center_snaps
 
 // Select the newest row independently for each source kind. A global LIMIT
 // lets repeated Control Center snapshots evict the daily analytics/topic rows.
-export async function getEvents(env, expectedRunDate = new Date().toISOString().slice(0,10)) {
+export async function getEvents(env, expectedRunDate = new Date().toISOString().slice(0,10), evidenceCutoff = new Date()) {
  const events=[];
  const missingKinds=[];
  const staleKinds=[];
  let invalidPayloadCount=0;
+ const cutoff=new Date(evidenceCutoff);
+ if(!Number.isFinite(cutoff.getTime())) {
+  return {events,invalidPayloadCount,missingKinds:EVENT_KINDS.slice(),staleKinds};
+ }
+ const localDay=vilniusDateKey(cutoff);
  for(const kind of EVENT_KINDS) {
   const result=await env.DB.prepare(
-   "SELECT kind,payload_json,created_at FROM events WHERE kind = ? ORDER BY created_at DESC LIMIT 1"
-  ).bind(kind).all();
-  const row=(result.results||[])[0];
-  if(!row) {
+   "SELECT kind,payload_json,created_at FROM events WHERE kind = ? AND created_at <= ? ORDER BY created_at DESC LIMIT 100"
+  ).bind(kind,cutoff.toISOString()).all();
+  const rows=result.results||[];
+  if(!rows.length) {
    missingKinds.push(kind);
    continue;
   }
-  const createdAt=typeof row.created_at==="string"?new Date(row.created_at):null;
-  if(!createdAt||!Number.isFinite(createdAt.getTime())) {
-   invalidPayloadCount++;
-   missingKinds.push(kind);
-   continue;
-  }
-  if(createdAt.toISOString().slice(0,10)!==expectedRunDate) {
-   staleKinds.push(kind);
-   continue;
-  }
-  try {
-   const payload=JSON.parse(row.payload_json);
-   if(!payload||typeof payload!=="object"||Array.isArray(payload)) {
+  let selected=null;
+  let sawStale=false;
+  for(const row of rows) {
+   const createdAt=typeof row.created_at==="string"?new Date(row.created_at):null;
+   if(!createdAt||!Number.isFinite(createdAt.getTime())) {
     invalidPayloadCount++;
-    missingKinds.push(kind);
     continue;
    }
-   events.push({kind,created_at:row.created_at,payload});
-  } catch {
-   invalidPayloadCount++;
-   missingKinds.push(kind);
+   if(createdAt.toISOString().slice(0,10)!==expectedRunDate) {
+    sawStale=true;
+    continue;
+   }
+   let payload;
+   try {
+    payload=JSON.parse(row.payload_json);
+   } catch {
+    invalidPayloadCount++;
+    continue;
+   }
+   if(!payload||typeof payload!=="object"||Array.isArray(payload)) {
+    invalidPayloadCount++;
+    continue;
+   }
+   if((kind==="analytics_snapshot"||kind==="topic_snapshot") &&
+      !isEligibleScheduledDailySuiteSnapshot({kind,created_at:row.created_at,payload},localDay,cutoff)) {
+    sawStale=true;
+    continue;
+   }
+   selected={kind,created_at:row.created_at,payload};
+   break;
   }
+  if(selected) events.push(selected);
+  else if(sawStale) staleKinds.push(kind);
+  else missingKinds.push(kind);
  }
  return {events,invalidPayloadCount,missingKinds,staleKinds};
 }
@@ -271,9 +288,11 @@ async function reserveCall(env,date,expectedCall) {
   }
  }
 }
-export async function runAgentOrchestration(env) {
+export async function runAgentOrchestration(env, scheduledTime = new Date()) {
  if(!env.DB||!env.AI)return {skipped:true,reason:!env.DB?"database_not_bound":"ai_binding_missing"};
- const date=new Date().toISOString().slice(0,10);
+ const scheduledAt=new Date(scheduledTime);
+ if(!Number.isFinite(scheduledAt.getTime()))return {skipped:true,reason:"invalid_scheduled_time"};
+ const date=scheduledAt.toISOString().slice(0,10);
  const inserted=await env.DB.prepare("INSERT OR IGNORE INTO agent_runs (run_date,status,ai_calls,started_at) VALUES (?,'running',0,?)").bind(date,new Date().toISOString()).run();
  if(!inserted.meta?.changes)return {skipped:true,reason:"daily_run_already_started"};
  let stage="load_events";
@@ -286,7 +305,7 @@ export async function runAgentOrchestration(env) {
   return reserved;
  };
  try {
-  const eventData=await getEvents(env,date);
+  const eventData=await getEvents(env,date,scheduledAt);
   stage="fetch_public_content";
   const pages=await getPublicContent(env);
   for(const agent of AGENTS) {
