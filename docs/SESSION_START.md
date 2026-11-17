@@ -1,5 +1,15 @@
 # Pet traffic – naujos sesijos pradžios protokolas
 
+## Naujausia patikrinta būsena (2026-11-17, 15:45 LT)
+
+- **PR #278 – ATLIKTA:** sujungtas į `main` 2026-11-17 13:43:18 UTC, merge commit `1590a175f267c8b7873849c18b6d0aff80629c86`. Pagrindinė šaka po automatinių dokumentavimo veiksmų: `340dc7fa1cfe5042b4731da6984a0a9f7f3a4559`.
+- **Worker produkcinis diegimas – PATIKRINTA:** GitHub Actions [#44095563330](https://github.com/Pershore/PetTraffic-AI/actions/runs/44095563330), event=`push`, success. D1 migracijų komanda ir Wrangler deploy sėkmingi; Worker versija `ea9f3133-5b48-4978-b533-04daca108558`.
+- **Po diegimo saugumo / sveikatos patikros – PATIKRINTA:** `/health` patvirtino Worker, D1 ir Control Core schema; neautentifikuotas `/v1/events` grąžino 401; Cloudflare API patvirtino abu grafikus: `*/15 * * * *` ir `20 10,11 * * *`. Deploy job visi žingsniai success.
+- **Testai po merge – PATIKRINTA:** 78/78 Worker Node testai, 15/15 Worker Python testai; Cloudflare token / D1 / Worker prieigos validacija success. Site-check [#44095563353](https://github.com/Pershore/PetTraffic-AI/actions/runs/44095563353) ir Control Center [#44095562936](https://github.com/Pershore/PetTraffic-AI/actions/runs/44095562936) taip pat success.
+- **AI įrodymų kokybė – NEPATVIRTINTA iki kito ciklo:** diegimas pakeitė šaltinių atranką, pasenusių šaltinių filtrą ir viešų puslapių aprėpties žymėjimą. Koordinatoriaus nepriklausomos spragos išsaugomos; nė viena spraga automatiškai nepervadinama į `reviewed`. Gyvas /health paskutiniame prieinamame snapshot vis dar rodė 2026-11-17 ciklą: 5 AI kvietimai, `error_code=null`, Control Core `needs_evidence`, 5 spragos (2 `insufficient_evidence`, 3 `other`). Šiandien antras AI ciklas draudžiamas pagal 1 ciklo/dieną ribą.
+- **Kitas įrodymas:** 2026-11-18 daily-suite `event=schedule` numatytas 06:10 UTC / 08:10 LT; tikrinti tikrą schedule įvykį, tris job'us, artefaktus ir D1 readback. Worker AI ciklas – ne anksčiau nei rytoj 13:20 LT; sutikrinti specialistų būsenas, Control Core ir memory readback. Issue #145 palikti open, kol `recovery_confirmed=true` ir įrodymai sutaps.
+- **Saugumo ribos išlaikytos:** ARO Vet, svetainės turinys, DNS, Cloudflare permissions, secrets, billing, paskyrų savininkai ir mokamos paslaugos nekeisti. PR #278 nekeičia viešo turinio ar AI vykdymo teisių.
+
 Atnaujinta: 2026-11-16
 
 ## Naujausi vartotojo sprendimai (2026-11-16)
