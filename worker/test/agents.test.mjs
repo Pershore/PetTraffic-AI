@@ -250,20 +250,26 @@ test("daily orchestration never starts a second time after a run was reserved", 
 });
 
 
-test("source selection keeps the newest daily snapshot for every kind despite repeated control snapshots",async()=>{
+test("source selection uses scheduled analytics/topic snapshots and excludes newer manual rows",async()=>{
  const rows=[];
  for(let i=0;i<18;i++) {
   const stamp=new Date(Date.parse("2026-11-17T12:00:00.000Z")+i*1000).toISOString();
   rows.push({kind:"control_center_snapshot",created_at:stamp,payload_json:JSON.stringify({run_id:"cc-"+i})});
   rows.push({kind:"recommendation_snapshot",created_at:stamp,payload_json:JSON.stringify({run_id:"rec-"+i})});
  }
- rows.push({kind:"analytics_snapshot",created_at:"2026-11-17T11:49:23.651Z",payload_json:JSON.stringify({run_id:"analytics-today"})});
- rows.push({kind:"topic_snapshot",created_at:"2026-11-17T11:49:24.352Z",payload_json:JSON.stringify({run_id:"topics-today"})});
+ const provenance=(runId,sourceEvent="schedule",createdAt="2026-11-17T11:48:00.000Z")=>({
+  source_event:sourceEvent,source_workflow_id:"418322987",source_run_id:runId,source_run_created_at:createdAt,
+ });
+ rows.push({kind:"analytics_snapshot",created_at:"2026-11-17T11:49:00.000Z",payload_json:JSON.stringify({run_id:"analytics-scheduled",provenance:provenance("analytics-scheduled")})});
+ rows.push({kind:"analytics_snapshot",created_at:"2026-11-17T11:49:23.651Z",payload_json:JSON.stringify({run_id:"analytics-manual",provenance:provenance("analytics-manual","workflow_dispatch")})});
+ rows.push({kind:"topic_snapshot",created_at:"2026-11-17T11:49:24.352Z",payload_json:JSON.stringify({run_id:"topics-scheduled",provenance:provenance("topics-scheduled")})});
  const queried=[];
- const env={DB:{prepare(sql){assert.match(sql,/WHERE kind = \?/);return{bind(kind){queried.push(kind);return{all:async()=>({results:rows.filter(row=>row.kind===kind).sort((a,b)=>b.created_at.localeCompare(a.created_at)).slice(0,1)})};}};}}};
- const data=await getEvents(env,"2026-11-17");
+ const env={DB:{prepare(sql){assert.match(sql,/WHERE kind = \? AND created_at <= \?/);return{bind(kind){queried.push(kind);return{all:async()=>({results:rows.filter(row=>row.kind===kind).sort((a,b)=>b.created_at.localeCompare(a.created_at)).slice(0,100)})};}};}}};
+ const data=await getEvents(env,"2026-11-17",new Date("2026-11-17T11:55:00.000Z"));
  assert.deepEqual(queried,["analytics_snapshot","topic_snapshot","control_center_snapshot","recommendation_snapshot"]);
  assert.deepEqual(data.events.map(row=>row.kind),["analytics_snapshot","topic_snapshot","control_center_snapshot","recommendation_snapshot"]);
+ assert.equal(data.events[0].payload.run_id,"analytics-scheduled");
+ assert.equal(data.events[1].payload.run_id,"topics-scheduled");
  assert.deepEqual(data.missingKinds,[]);
  assert.deepEqual(data.staleKinds,[]);
  assert.equal(data.invalidPayloadCount,0);
