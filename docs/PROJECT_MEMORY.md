@@ -761,3 +761,8 @@ Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama 
 - PR #282 – PARUOŠTA TESTAMS / LAUKIA: šakoje fix/ai-schedule-provenance-gate suderinti #281 pakeisti workflow/event-builder/test failai ir pataisytas AI gate testo D1 mock'as. Head 5679785fefde8a7517ea1557b8c997ff49b6dfd1; Node testai 79/79, Python testai 20/20, Cloudflare validation success, site-check 149 testai success. PR tebėra draft; Worker/D1 produkcinis deploy neįvyko.
 - AI recovery – NEPATVIRTINTA: nauja logika leidžia AI ciklą tik tada, kai D1 snapshot įrodo tą pačią Vilniaus dieną įvykusį Daily-suite schedule (workflow ID 418322987), suderintą run ID ir laiko ribas. Realiam patvirtinimui būtinas kitas suplanuotas Daily-suite ciklas, D1 readback su provenance ir vėlesnis AI ciklas su 5 specialistų įrodymais, Control Core spragomis bei memory readback. Nekartoti AI ciklo tą pačią dieną.
 - Saugumo ribos: PR #282 dar nesujungtas; jo merge sukeltų Worker/D1 produkcinį deploy, todėl prieš tai būtinas atskiras aiškus vartotojo leidimas. Issue #145 lieka open. Vieši dashboard lieka read-only; ARO Vet, DNS, secrets, billing, viešas turinys ir mokamos paslaugos nepaliesti.
+
+
+## 2026-11-17 schedule įvykio patikslinimas
+
+GitHub API patvirtino, kad Daily-suite run #44119444026 buvo tikras event=schedule (workflow ID 418322987), ne workflow_dispatch. Cron nustatytas 06:10 UTC, tačiau run prasidėjo 15:53:16 UTC – maždaug 9 val. 43 min. vėliau. 3/3 job success. Tai įrodo, kad schedule paleidimas įvyko, bet parodo didelį eilės / vykdymo vėlavimą. Run įvyko prieš PR #281 merge, todėl dar nepatvirtina naujo provenance perdavimo.
