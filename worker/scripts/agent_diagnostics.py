@@ -22,21 +22,21 @@ def classify_gap(value: object) -> str:
     """Convert a model/evidence message to a bounded code; never return the message."""
     text = str(value or "").lower()
     rules = (
-        ("model_output_incomplete_json", ("incomplete json", "unexpected end of json")),
-        ("model_output_malformed_json", ("not valid json", "invalid json")),
+        ("model_output_incomplete_json", ("incomplete json", "unexpected end of json", "nepilnas json", "neužbaigtas json", "neuzbaigtas json", "json nepilnas")),
+        ("model_output_malformed_json", ("not valid json", "invalid json", "neteisingas json", "netaisyklingas json", "negaliojantis json")),
         ("model_output_invalid_shape", ("expected json object", "did not match expected json object")),
-        ("model_output_missing_fields", ("required fields", "did not contain required", "did not contain the required")),
+        ("model_output_missing_fields", ("required fields", "did not contain required", "did not contain the required", "trūksta lauk", "truksta lauk", "privalomų lauk", "privalomu lauk", "nepateikti privalomi lauk")),
         ("model_output_empty", ("no text output", "empty model response")),
         ("workers_ai_unavailable", ("workers ai", "model unavailable", "inference failed")),
         ("analytics_snapshot_missing", ("analytics_snapshot", "ga4 snapshot")),
         ("topic_snapshot_missing", ("topic_snapshot", "topic radar snapshot")),
         ("control_center_snapshot_missing", ("control_center_snapshot",)),
         ("recommendation_snapshot_missing", ("recommendation_snapshot",)),
-        ("search_console_data_missing", ("search console", "gsc query", "gsc rows")),
-        ("search_volume_not_available", ("search volume", "keyword volume")),
-        ("analytics_data_missing", ("ga4 data", "analytics data", "no analytics")),
-        ("source_unavailable", ("unavailable", "fetch failed", "http 4", "http 5")),
-        ("insufficient_evidence", ("insufficient", "not enough evidence", "no verified evidence", "missing evidence")),
+        ("search_console_data_missing", ("search console", "gsc query", "gsc rows", "paieškos konsol", "paieskos konsol", "paieškos užklaus", "paieskos uzklaus")),
+        ("search_volume_not_available", ("search volume", "keyword volume", "paieškos apim", "paieskos apim", "paieškų apim", "paiesku apim", "raktinių žodžių apim", "raktiniu zodziu apim")),
+        ("analytics_data_missing", ("ga4 data", "analytics data", "no analytics", "ga4 duomen", "analitikos duomen", "nėra ga4", "nera ga4")),
+        ("source_unavailable", ("unavailable", "fetch failed", "http 4", "http 5", "nepasiekiam", "neprieinam", "nepavyko gauti", "nepavyko pasiekti", "užklausa nepavyko", "uzklausa nepavyko")),
+        ("insufficient_evidence", ("insufficient", "not enough evidence", "no verified evidence", "missing evidence", "nepakanka", "trūksta įrodym", "truksta irodym", "nėra pakankamai", "nera pakankamai", "nepakanka duomen", "nepatvirtinta")),
     )
     for code, terms in rules:
         if any(term in text for term in terms):
