@@ -171,3 +171,10 @@ Atnaujinta: 2026-11-17 15:45 Europe/Vilnius
 - PR #284 tebėra draft. Jis dar neįjungtas į main; automatinio diagnostikos suveikimo po Control Center produkcijoje dar nėra.
 - Senasis PR #277 liko atviras draft ir 35 commit atsilikęs; #284 yra jo atnaujintas, nuo dabartinio main sukurtas pakaitalas. PR #280 taip pat pasenęs; nemerginti nei vieno aklai.
 - Kito etapo schedule: 2026-11-18 06:10 UTC (08:10 LT), workflow ID `418322987`; po sėkmingo schedule patikrinti snapshot artifact D1 provenance ir tik po jo laukti vienintelio 13:20 LT Worker AI ciklo. Issue #145 neuždaryti, kol Control Core ir specialistų evidence nepatvirtina `recovery_confirmed=true`.
+
+
+## 2026-11-17 22:56 LT – PR #284 šakos būsenos patikslinimas
+
+- Po dokumentavimo commitų `main` HEAD pasistūmėjo iki `c14e60f35536cee15ffbb80cdfcce2d83c97ece5`.
+- PR #284 šaka `ci/agent-d1-diagnostics-after-control-center-main-20261117` liko head `8519ad6135104a4dd960df3eb013eda55949518e`; compare: 2 ahead / 6 behind, GitHub `mergeable=false`.
+- PR #284 paliktas DRAFT ir nesujungtas, nors jo pirminiai CI run'ai buvo sėkmingi. Prieš bet kokį merge reikia atkurti tą patį mažą pakeitimą ant naujausio `main`, atidaryti šviežią PR ir pakartoti CI; senos šakos istorijos neperrašyti.
