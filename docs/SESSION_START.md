@@ -7,6 +7,14 @@ Atnaujinta: 2026-11-16
 - ARO Vet, pharmacy sections, product cards, affiliate links, advertising blocks, and ARO Vet-specific tracking must never appear in Pet traffic. ARO Vet svetainės, kodo, DNS, paskyrų ir infrastruktūros nekeisti. Šis 2026-11-16 sprendimas panaikina 2026-11-15 istorinį leidimą.
 - Sistema turi kiekvieną savaitę pateikti sujungtą augimo ataskaitą iš GA4, Search Console, RSS temų, Lighthouse, automatizacijų ir Worker AI būsenos. Naudoti esamus duomenis / nemokamą Python, nekurti naujos ChatGPT automatikos ar papildomo mokamo AI kvietimo.
 
+## Papildymas (2026-11-17, 15:38 LT)
+
+- PR #278 atviras draft; nustatyta, kad globalus D1 `LIMIT 30` galėjo išstumti naujausius analytics/topic snapshot, kai buvo 18 Control Center ir 18 recommendation įrašų. Atskiras per-source parinkimas, same-day patikra, turinio puslapių aprėpties būsena ir nepriklausomų koordinatoriaus spragų išsaugojimas įtraukti į PR #278.
+- Naujausio PR commit `89fc9969a7a603c27b48996ab8ff6bb197d9d388` patikros sėkmingos: 78 Node + 15 Python Worker testų, 31 agent testas, 149 Python/static testai; Cloudflare validacija success, production deploy skipped.
+- Worker production nepakeistas. Reikalingas atskiras konkretus leidimas diegti Worker pataisą; iki tada AI įrodymų atsigavimas NEPATVIRTINTAS.
+- 2026-11-18 daily-suite cron 06:10 UTC / 08:10 LT. 20 val. catch-up dedupe baigiasi 07:47 UTC; pirmiausia tikrinti tikrą `event=schedule`. Esama įjungta pagrindinė priežiūros automatika numatyta apie 11:45 LT ir tikrina schedule po grace; tai nėra išankstinis suveikimo įrodymas.
+- Issue #145 palikti open.
+
 ## Naujausia patikrinta būsena (2026-11-17, 15:03 LT)
 
 - Main HEAD `0c2d29558328002ae42cc9aeda2e17b30322d02b`; PR #270/#271/#273/#274 sujungti. PR #269 – senas dokumentacijos draft, peržiūrėti ar uždaryti kaip superseded.

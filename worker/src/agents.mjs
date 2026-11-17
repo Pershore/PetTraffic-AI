@@ -169,23 +169,48 @@ export async function callModel(env,system,input) {
   return invalidResult("unavailable","Workers AI request failed; this specialist result was not used.");
  }
 }
-async function getEvents(env) {
- const rows=await env.DB.prepare("SELECT kind,payload_json,created_at FROM events ORDER BY created_at DESC LIMIT 30").all();
+const EVENT_KINDS = ["analytics_snapshot","topic_snapshot","control_center_snapshot","recommendation_snapshot"];
+
+// Select the newest row independently for each source kind. A global LIMIT
+// lets repeated Control Center snapshots evict the daily analytics/topic rows.
+export async function getEvents(env, expectedRunDate = new Date().toISOString().slice(0,10)) {
  const events=[];
+ const missingKinds=[];
+ const staleKinds=[];
  let invalidPayloadCount=0;
- for(const row of rows.results||[]) {
+ for(const kind of EVENT_KINDS) {
+  const result=await env.DB.prepare(
+   "SELECT kind,payload_json,created_at FROM events WHERE kind = ? ORDER BY created_at DESC LIMIT 1"
+  ).bind(kind).all();
+  const row=(result.results||[])[0];
+  if(!row) {
+   missingKinds.push(kind);
+   continue;
+  }
+  const createdAt=typeof row.created_at==="string"?new Date(row.created_at):null;
+  if(!createdAt||!Number.isFinite(createdAt.getTime())) {
+   invalidPayloadCount++;
+   missingKinds.push(kind);
+   continue;
+  }
+  if(createdAt.toISOString().slice(0,10)!==expectedRunDate) {
+   staleKinds.push(kind);
+   continue;
+  }
   try {
    const payload=JSON.parse(row.payload_json);
    if(!payload||typeof payload!=="object"||Array.isArray(payload)) {
     invalidPayloadCount++;
+    missingKinds.push(kind);
     continue;
    }
-   events.push({kind:row.kind,created_at:row.created_at,payload});
+   events.push({kind,created_at:row.created_at,payload});
   } catch {
    invalidPayloadCount++;
+   missingKinds.push(kind);
   }
  }
- return {events,invalidPayloadCount};
+ return {events,invalidPayloadCount,missingKinds,staleKinds};
 }
 async function getPublicContent(env) {
  const pages=[]; const fetcher=env.FETCH||fetch;
@@ -245,11 +270,25 @@ export async function runAgentOrchestration(env) {
   return reserved;
  };
  try {
-  const eventData=await getEvents(env);
+  const eventData=await getEvents(env,date);
   stage="fetch_public_content";
   const pages=await getPublicContent(env);
   for(const agent of AGENTS) {
-   const source=agent.id==="content-review"?{public_pages:pages}:{verified_snapshots:eventData.events.filter(e=>agent.kinds.includes(e.kind))};
+   const selectedSnapshots=eventData.events.filter(e=>agent.kinds.includes(e.kind));
+   const missingOrStaleKinds=agent.kinds.filter(kind=>!selectedSnapshots.some(e=>e.kind===kind));
+   const source=agent.id==="content-review"?{
+    expected_run_date:date,
+    evidence_status:pages.every(page=>page.status===200&&page.text)? "available":"partial",
+    requested_pages:CONTENT_PATHS.length,
+    available_pages:pages.filter(page=>page.status===200&&page.text).length,
+    unavailable_pages:pages.filter(page=>page.status!==200||!page.text).map(page=>page.path),
+    public_pages:pages,
+   }:{
+    expected_run_date:date,
+    evidence_status:selectedSnapshots.length===agent.kinds.length?"available":selectedSnapshots.length?"partial":"missing_or_stale",
+    missing_or_stale_kinds:missingOrStaleKinds,
+    verified_snapshots:selectedSnapshots,
+   };
    stage="reserve_"+agent.id;
    if(!(await reserveNextCall()))throw new Error("daily_ai_call_cap_reached");
    stage="model_"+agent.id;
@@ -280,7 +319,7 @@ export async function runAgentOrchestration(env) {
   if(eventData.invalidPayloadCount>0) {
    coordinator.evidence_gaps=[...(coordinator.evidence_gaps||[]),`Skipped ${eventData.invalidPayloadCount} invalid stored event payload(s); source data requires review.`].slice(0,5);
   }
-  const report={date_utc:date,generated_at:new Date().toISOString(),model:MODEL,ai_calls:reservedCalls,specialists,coordinator,data_quality:{invalid_event_payload_count:eventData.invalidPayloadCount,degraded_specialist_count:degradedSpecialistIds.length},read_only:true,publication_enabled:false};
+  const report={date_utc:date,generated_at:new Date().toISOString(),model:MODEL,ai_calls:reservedCalls,specialists,coordinator,data_quality:{invalid_event_payload_count:eventData.invalidPayloadCount,degraded_specialist_count:degradedSpecialistIds.length,missing_source_kinds:eventData.missingKinds,stale_source_kinds:eventData.staleKinds},read_only:true,publication_enabled:false};
   stage="build_control_decision";
   const decision=buildControlDecision(report);
   stage="persist_control_decision";
