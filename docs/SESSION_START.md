@@ -1,5 +1,17 @@
 # Pet traffic – naujos sesijos pradžios protokolas
 
+## Naujausia patikrinta būsena (2026-11-17, 23:06 LT)
+
+- PR #283 merge ir Worker/D1 deploy patvirtinti (#44165044215 success; /health, 401, grafikai, Worker testai success).
+- PR #285 sujungtas (`013d6954`): automatinė SELECT-only D1 diagnostika po sėkmingo Control Center workflow_run. Patikrinta: push kilmės Control Center sukelta diagnostika skipped (#44175334429), o workflow_run kilmės Control Center sukelta diagnostika success (#44176227901).
+- PR #286 sujungtas (`6e340f3f`): source events skaitomi atskiromis per-kind SELECT užklausomis, Vilniaus vietos data, limit 100 kiekvienai rūšiai. Worker tests/Cloudflare validation/site-check/sync test CI success; deploy/sync PR event metu skipped.
+- Naujas diagnostikos artefaktas #44176277012 / #14370920739 rodo analytics=1, topics=1, control_center=41, recommendation=41. Abu analytics/topic įrašai kilo iš run #44077181860 `event=workflow_dispatch`, ne schedule. Tai nėra tinkamas AI vartas.
+- AI run_date=2026-11-17: completed, 5 calls, error_code=null, bet 5 evidence gaps lieka; Control Core needs_evidence, memory present. Nekartoti dienos ciklo; Issue #145 open.
+- PR #277 ir #284 uždaryti kaip superseded, istorija išsaugota. #248 remains open; dashboard read-only.
+- Kitas: 2026-11-18 06:10 UTC / 08:10 LT tikrinti tikrą Daily-suite `event=schedule`, 3 jobs, provenance ir D1 readback; tada vienintelis 13:20 LT AI ciklas.
+- ARO Vet, DNS, secrets, billing, viešas turinys ir mokamos paslaugos nepakeisti.
+
+
 ## Naujausia patikrinta būsena (2026-11-17, 22:53 LT)
 
 - PR #283 sujungtas į main: `f41fee5e6f2db29067e8ab9523e40a777d626e40`.
