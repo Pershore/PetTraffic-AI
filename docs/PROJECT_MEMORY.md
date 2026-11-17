@@ -1,11 +1,23 @@
 # Pet traffic – vienintelė kanoninė projekto atmintis
 
-**Atnaujinta:** 2026-11-17 15:45 LT  
+**Atnaujinta:** 2026-11-17 22:04 LT  
 **Saugykla:** https://github.com/Pershore/PetTraffic-AI  
 **Pagrindinė šaka:** `main`  
 **Tikslas:** vienas patikimas tęstinumo šaltinis ChatGPT, Codex ir būsimiems projekto agentams.
 
 Šis dokumentas sujungia ilgalaikius sprendimus, patvirtintą architektūrą, dabartines integracijų būsenas, neišspręstus blokatorius ir kitus veiksmus. Jis nepakeičia GitHub testų ar realių vykdymų įrodymų. Kiekvieną būseną reikia tikrinti pagal naujausią commit, workflow run ir gyvą sistemos atsakymą.
+
+## Naujausia patikrinta būsena (2026-11-17 22:04 LT)
+
+- **PR #283 – ATLIKTA:** squash merge į `main`, commit `f41fee5e6f2db29067e8ab9523e40a777d626e40`. Įgyvendintas griežtas Daily-suite provenance vartas: AI ciklui tinkami tik tos pačios Vilniaus dienos `event=schedule` snapshot iš workflow ID `418322987`, sutampantis source/run ID, teisinga įrašymo seka ir įvykio `scheduledTime` riba. Naujesni `push` / `workflow_dispatch` snapshot nenaudojami.
+- **Worker + D1 produkcinis diegimas – PATIKRINTA:** [run #44165044215](https://github.com/Pershore/PetTraffic-AI/actions/runs/44165044215), `event=push`, success. D1 migracijos ir Wrangler deploy success; po diegimo `/health` patvirtino Worker, D1 ir Control Core schemą, neautentifikuotas `/v1/events` grąžino 401, Cloudflare patvirtino grafikus `*/15 * * * *` ir `20 10,11 * * *`.
+- **Testai – PATIKRINTA:** PR head patikros: Worker 79/79 Node, 20/20 Python, Cloudflare validation success, site-check #44158357057 (149 testai) success. Po merge Worker Node/Python test job ir Cloudflare validation #44165044215 success; post-merge site-check #44165044246 success.
+- **Control Center / istorija – PATIKRINTA:** push Control Center #44165044212 ir workflow_run #44165206802 success. Automatinis `automation-history` snapshot #44165206802 sugeneruotas 2026-11-17T20:03:35.959Z; jis patvirtina Worker/D1 healthy, bet AI agentų / Control Core būsena vis dar warning su 5 įrodymų spragomis.
+- **Snapshot sync – dalinai PATIKRINTA:** #44165135417 success, tačiau daily-suite source validation ir analytics/topic artefaktų parsisiuntimas buvo skipped, nes po PR #281 dar nėra naujo tikro Daily-suite schedule. Šis sync nėra naujo analytics/topic provenance patvirtinimas.
+- **Worker cron diagnostika – LAUKIA:** #44165206828 (`workflow_run`) tikrina Cloudflare grafikus ir stebi vieną 15 min. heartbeat intervalą; vykdymas dar nebaigtas. Jo rezultato nevadinti PATIKRINTA.
+- **AI recovery – NEPATVIRTINTA:** po diegimo naujas AI ciklas dar neįvyko. Paskutinis turimas Control Center snapshot rodo 5 evidence gaps; Issue #145 lieka open. Nekartoti AI ciklo tą pačią dieną.
+- **Kitas privalomas įrodymas:** 2026-11-18 Daily-suite `event=schedule` pagal cron 06:10 UTC / 08:10 LT; patikrinti 3 job, artefaktus, provenance ir D1 readback. Tik po jo laukti Worker AI ciklo apie 13:20 LT ir tikrinti 5 specialistų įrodymus, Control Core, `recovery_confirmed` ir memory readback.
+- **Saugumas:** nebuvo pakeistas viešas svetainės turinys, DNS, secrets, Cloudflare teisės, billing, mokamos paslaugos ar ARO Vet. Vieši dashboard lieka READ-ONLY; Issue #248 lieka atskiras.
 
 ## Naujausia patikrinta būsena (2026-11-17, 15:45 LT)
 
