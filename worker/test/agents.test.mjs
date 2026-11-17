@@ -258,16 +258,14 @@ test("source selection excludes stale evidence and reports the stale kind",async
  assert.ok(data.missingKinds.includes("topic_snapshot"));
 });
 
-test("coordinator does not add a duplicate unsupported gap when specialists already expose evidence gaps",async()=>{
+test("coordinator evidence gaps are preserved when specialists also need evidence",async()=>{
  const specialist=(name)=>JSON.stringify({status:"needs_evidence",findings:[],recommendations:[],evidence_gaps:[name+" source evidence is incomplete."]});
- const responses=[specialist("analytics"),specialist("topics"),specialist("technical SEO"),specialist("content"),JSON.stringify({status:"needs_evidence",findings:[],recommendations:[],evidence_gaps:["Coordinator lacks additional context."]})];
+ const responses=[specialist("analytics"),specialist("topics"),specialist("technical SEO"),specialist("content"),JSON.stringify({status:"needs_evidence",findings:[],recommendations:[],evidence_gaps:["Cross-specialist evidence conflict requires review."]})];
  const{env,state}=mockEnv({modelResponses:responses});
  const result=await runAgentOrchestration(env);
  assert.equal(result.completed,true);
  const completed=state.updates.find(x=>x.sql.includes("status='completed'"));
  const report=JSON.parse(completed.values[0]);
- assert.deepEqual(report.coordinator.evidence_gaps,[]);
- const decision=report.control_decision;
- assert.ok(decision.evidence_gaps.some(x=>x.startsWith("analytics:")));
- assert.ok(!decision.evidence_gaps.some(x=>x.includes("Coordinator lacks additional context")));
+ assert.ok(report.coordinator.evidence_gaps.includes("Cross-specialist evidence conflict requires review."));
+ assert.ok(report.control_decision.evidence_gaps.some(x=>x.includes("Cross-specialist evidence conflict")));
 });
