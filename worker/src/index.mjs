@@ -502,7 +502,7 @@ async function runScheduledHealthCheck(env) {
 async function runAgentOrchestrationWhenReady(env, controller) {
   try {
     if (!(await shouldRunAgentOrchestration(env, controller))) return;
-    const result = await runAgentOrchestration(env);
+    const result = await runAgentOrchestration(env, controller.scheduledTime);
     if (result?.completed) {
       console.info("PetTraffic daily AI orchestration completed and persisted.", {
         run_date: result.run_date,
