@@ -766,3 +766,11 @@ Vartotojo pateikta galutinė bootstrap išvestis patvirtina, kad telefone esama 
 ## 2026-11-17 schedule įvykio patikslinimas
 
 GitHub API patvirtino, kad Daily-suite run #44119444026 buvo tikras event=schedule (workflow ID 418322987), ne workflow_dispatch. Cron nustatytas 06:10 UTC, tačiau run prasidėjo 15:53:16 UTC – maždaug 9 val. 43 min. vėliau. 3/3 job success. Tai įrodo, kad schedule paleidimas įvyko, bet parodo didelį eilės / vykdymo vėlavimą. Run įvyko prieš PR #281 merge, todėl dar nepatvirtina naujo provenance perdavimo.
+
+
+## 2026-11-17 – AI evidence selection papildymas
+
+- PR #283 sukurtas nuo naujausio main (be atsilikimo / merge konflikto), nes ankstesnė PR #282 šaka buvo pasenusi; PR #282 uždarytas kaip superseded, nesujungtas.
+- PR #283 head d7b6defb5c28eb4e59771b4c7451467167a02191. Jis perduoda Cloudflare scheduledTime į AI orkestratorių, riboja D1 įvykius iki scheduled cutoff ir užtikrina, kad analytics/topic specialistai pasirinktų tik schedule provenance atitinkantį Daily-suite įrašą. Jei naujesnis manual/push įrašas yra, pasirenkamas tinkamas suplanuotas įrašas, o ne rankinis.
+- PR #283 patikros: 79/79 Worker Node testai, 20/20 Python testai, Cloudflare validation success, 149 site-check testai success. Deploy job pull_request event metu skipped; produkcinis Worker/D1 pakeitimas neatliktas.
+- PR #283 tebėra draft ir laukia atskiro leidimo sujungti, nes merge sukels Worker/D1 produkcinį diegimą. Tikras schedule provenance D1 readback ir AI ciklo atsigavimas dar NEPATVIRTINTA; Issue #145 lieka open.
