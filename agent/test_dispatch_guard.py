@@ -33,6 +33,7 @@ class DispatchGuardTests(unittest.TestCase):
             "/pettraffic-run-site-check": "site-check",
             "/pettraffic-run-connectivity": "connectivity",
             "/pettraffic-run-worker-diagnostics": "worker-diagnostics",
+            "/pettraffic-run-agent-diagnostics": "agent-diagnostics",
             "/pettraffic-enqueue-site-check": "task-check-site",
         }
         self.assertEqual(COMMAND_ACTIONS, expected)
