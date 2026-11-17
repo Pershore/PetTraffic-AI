@@ -9,7 +9,7 @@ Atnaujinta: 2026-11-16
 
 ## Papildymas (2026-11-17, 15:38 LT)
 
-- PR #278 atviras draft; nustatyta, kad globalus D1 `LIMIT 30` galėjo išstumti naujausius analytics/topic snapshot, kai buvo 18 Control Center ir 18 recommendation įrašų. Atskiras per-source parinkimas, same-day patikra ir koordinatoriaus spragos deduplikacija paruošti PR #278.
+- PR #278 atviras draft; nustatyta, kad globalus D1 `LIMIT 30` galėjo išstumti naujausius analytics/topic snapshot, kai buvo 18 Control Center ir 18 recommendation įrašų. Atskiras per-source parinkimas, same-day patikra, turinio puslapių aprėpties būsena ir nepriklausomų koordinatoriaus spragų išsaugojimas įtraukti į PR #278.
 - Naujausio PR commit `89fc9969a7a603c27b48996ab8ff6bb197d9d388` patikros sėkmingos: 78 Node + 15 Python Worker testų, 31 agent testas, 149 Python/static testai; Cloudflare validacija success, production deploy skipped.
 - Worker production nepakeistas. Reikalingas atskiras konkretus leidimas diegti Worker pataisą; iki tada AI įrodymų atsigavimas NEPATVIRTINTAS.
 - 2026-11-18 daily-suite cron 06:10 UTC / 08:10 LT. 20 val. catch-up dedupe baigiasi 07:47 UTC; pirmiausia tikrinti tikrą `event=schedule`. Esama įjungta pagrindinė priežiūros automatika numatyta apie 11:45 LT ir tikrina schedule po grace; tai nėra išankstinis suveikimo įrodymas.
