@@ -201,18 +201,37 @@ test("heartbeat catch-up opens at 13:20 Vilnius in both winter and summer", () =
  assert.equal(isAgentCatchUpEvent({ cron: "20 10,11 * * *", scheduledTime: winter.scheduledTime }), false);
 });
 
-test("daily orchestration waits for a same-day analytics or topic snapshot", async () => {
+test("daily orchestration waits for a same-day scheduled Daily-suite snapshot", async () => {
  const controller = { cron: "*/15 * * * *", scheduledTime: Date.parse("2026-11-15T11:30:00.000Z") };
  const makeEnv = ({existingRun=null,rows=[]}={}) => ({
   DB: { prepare(sql) {
    return {
-    bind() { return { first: async () => sql.includes("FROM agent_runs") ? existingRun : null }; },
-    all: async () => ({results: rows}),
+    bind() { return {
+     first: async () => sql.includes("FROM agent_runs") ? existingRun : null,
+     all: async () => ({results: rows}),
+    }; },
    };
   } },
  });
- const today = makeEnv({rows:[{kind:"analytics_snapshot",created_at:"2026-11-15T13:51:00.000Z"}]});
- const yesterday = makeEnv({rows:[{kind:"topic_snapshot",created_at:"2026-11-14T13:51:00.000Z"}]});
+ const provenance = {
+  source_event: "schedule",
+  source_workflow_id: "418322987",
+  source_run_id: "suite-today",
+  source_run_created_at: "2026-11-15T11:24:00.000Z",
+ };
+ const today = makeEnv({rows:[{
+  kind:"analytics_snapshot",
+  created_at:"2026-11-15T11:25:00.000Z",
+  payload_json:JSON.stringify({run_id:"suite-today",provenance}),
+ }]});
+ const yesterday = makeEnv({rows:[{
+  kind:"topic_snapshot",
+  created_at:"2026-11-14T11:25:00.000Z",
+  payload_json:JSON.stringify({
+   run_id:"suite-yesterday",
+   provenance:{...provenance,source_run_id:"suite-yesterday",source_run_created_at:"2026-11-14T11:24:00.000Z"},
+  }),
+ }]});
  const none = makeEnv();
  assert.equal(await shouldRunAgentOrchestration(today,controller), true);
  assert.equal(await shouldRunAgentOrchestration(yesterday,controller), false);
