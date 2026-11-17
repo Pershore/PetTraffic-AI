@@ -265,3 +265,13 @@ Tikras bootstrap iš Termux patvirtintas: Linux proot, Git, GitHub CLI, Codex CL
 - Issue #145 lieka open, kol neįrodytas tikras specialistų ir Control Core atsistatymas. Issue #248 lieka open; vieši `/dashboard/` ir `/control/` nėra autentifikuotas valdymas.
 - Kitas veiksmas: pirma atnaujinti #263 pagal dabartinį main ir patikrinti snapshot provenance; tada atnaujinti #261, integruoti su PR #278 pakeitimais ir patikrinti visus testus. Tik po to, gavus atskirą patvirtinimą, svarstyti sujungimą / Worker diegimą. 2026-11-18 patikrinti tikrą Daily-suite `event=schedule`, visus 3 job, D1 source provenance ir vienintelį tos dienos Worker AI ciklą su D1 memory readback. Nekartoti AI ciklo tą pačią run_date.
 - Firecrawl gyvas puslapio nuskaitymas šioje sesijoje buvo blokuotas dėl išnaudoto kredito; tai nepaneigia GitHub deploy job tiesioginio /health patikrinimo. Jokio ARO Vet, viešo turinio, DNS, Worker/D1 papildomo pakeitimo, secrets, billing ar mokamos paslaugos pakeitimo šio follow-up metu neatlikta.
+
+
+## Resursų optimizavimo taisyklė (galioja visam projektui)
+- Pirmiausia naudoti šviežius, patikrintus artefaktus ir talpyklą; iš naujo rinkti tik pasenusius, nepilnus ar neteisingus duomenis.
+- Nekartoti sėkmingų workflow, API, Firecrawl nuskaitymų ar AI etapų be konkrečios priežasties.
+- Nepriklausomas užduotis vykdyti lygiagrečiai; priklausomas – tik po būtino ankstesnio etapo.
+- Prieš AI kvietimus patikrinti duomenų pilnumą, šviežumą, vienodą ciklo identifikatorių ir patikimą kilmę. Trūkstant įrodymų, sustoti ir aiškiai pažymėti spragą.
+- Matavimais atskirti cron eilės vėlavimą nuo realios vykdymo trukmės. Nekeisti greito darbo etapo be įrodytos naudos.
+- Laikytis 0 €/mėn. biudžeto; neaktyvuoti mokamų kreditų, planų, paslaugų ar priklausomybių.
+- Optimizavimas negali mažinti saugumo, testų, privatumo ar įrodymų kokybės.
