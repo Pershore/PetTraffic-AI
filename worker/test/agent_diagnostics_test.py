@@ -2,14 +2,60 @@ from pathlib import Path
 import json
 import sys
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "worker" / "scripts"))
 
-from agent_diagnostics import build_diagnostics, classify_gap, render_markdown, _assert_read_only_meta
+from agent_diagnostics import (
+    build_diagnostics, classify_gap, render_markdown, _assert_read_only_meta,
+    _load_source_events,
+)
 
 
 class WorkerAgentDiagnosticsTests(unittest.TestCase):
+    def test_source_events_are_loaded_with_independent_kind_scoped_queries(self):
+        calls = []
+        sample = {
+            "analytics_snapshot": [{"kind": "analytics_snapshot", "created_at": "2026-11-17T00:30:00Z", "run_id": "a1"}],
+            "topic_snapshot": [{"kind": "topic_snapshot", "created_at": "2026-11-17T01:00:00Z", "run_id": "t1"}],
+            "control_center_snapshot": [{"kind": "control_center_snapshot", "created_at": "2026-11-17T02:00:00Z", "run_id": "c1"}],
+            "recommendation_snapshot": [{"kind": "recommendation_snapshot", "created_at": "2026-11-17T03:00:00Z", "run_id": "r1"}],
+        }
+
+        def fake_query(account, database, token, sql, params):
+            calls.append((sql, params))
+            return sample[params[0]]
+
+        with patch("agent_diagnostics._query", side_effect=fake_query):
+            events = _load_source_events("account", "database", "token", "2026-11-17")
+
+        self.assertEqual(
+            [params[0] for _, params in calls],
+            ["analytics_snapshot", "topic_snapshot", "control_center_snapshot", "recommendation_snapshot"],
+        )
+        self.assertEqual([event["kind"] for event in events], [
+            "analytics_snapshot", "topic_snapshot", "control_center_snapshot", "recommendation_snapshot"
+        ])
+        for sql, params in calls:
+            self.assertIn("WHERE kind = ? AND created_at >= ? AND created_at < ?", sql)
+            self.assertIn("ORDER BY created_at DESC LIMIT 100", sql)
+            self.assertEqual(params[1], "2026-11-16T22:00:00+00:00")
+            self.assertEqual(params[2], "2026-11-17T22:00:00+00:00")
+
+    def test_source_event_counts_use_vilnius_calendar_date_not_utc_date_prefix(self):
+        events = [
+            {"kind": "analytics_snapshot", "created_at": "2026-11-16T22:30:00Z", "run_id": "analytics-after-midnight-lt"},
+            {"kind": "topic_snapshot", "created_at": "2026-11-16T21:30:00Z", "run_id": "topic-before-midnight-lt"},
+            {"kind": "control_center_snapshot", "created_at": "2026-11-17T20:30:00Z", "run_id": "control-today"},
+            {"kind": "recommendation_snapshot", "created_at": "2026-11-17T22:30:00Z", "run_id": "recommendation-next-day-lt"},
+        ]
+        data = build_diagnostics("2026-11-17", None, None, None, events)
+        self.assertEqual(data["source_events"]["analytics_snapshot"]["count_on_run_date"], 1)
+        self.assertEqual(data["source_events"]["topic_snapshot"]["count_on_run_date"], 0)
+        self.assertEqual(data["source_events"]["control_center_snapshot"]["count_on_run_date"], 1)
+        self.assertEqual(data["source_events"]["recommendation_snapshot"]["count_on_run_date"], 0)
+
     def test_d1_query_requires_explicit_zero_write_metadata(self):
         self.assertIsNone(_assert_read_only_meta({"rows_written": 0}))
         with self.assertRaises(RuntimeError):

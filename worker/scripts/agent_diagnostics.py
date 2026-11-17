@@ -2,7 +2,7 @@
 """Read-only, privacy-filtered diagnostics for one Pet traffic Worker AI run."""
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 import json
@@ -109,8 +109,7 @@ def build_diagnostics(run_date, agent_run, control_run, memory_row, event_rows, 
     for kind in EVENT_KINDS:
         matches = [
             row for row in event_rows
-            if row.get("kind") == kind and isinstance(row.get("created_at"), str)
-            and row["created_at"][:10] == run_date
+            if row.get("kind") == kind and _is_on_vilnius_date(row.get("created_at"), run_date)
         ]
         matches.sort(key=lambda row: row.get("created_at", ""), reverse=True)
         latest = matches[0] if matches else None
@@ -195,6 +194,19 @@ def render_markdown(data):
     return "\n".join(lines)
 
 
+def _is_on_vilnius_date(value: object, run_date: str) -> bool:
+    """Interpret D1 timestamps in the project's Vilnius-local run_date, not UTC date text."""
+    if not isinstance(value, str):
+        return False
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=timezone.utc)
+        return parsed.astimezone(ZoneInfo("Europe/Vilnius")).date().isoformat() == run_date
+    except (TypeError, ValueError):
+        return False
+
+
 def _api_json(url, token, method="GET", body=None):
     data = json.dumps(body).encode("utf-8") if body is not None else None
     request = urllib.request.Request(
@@ -248,6 +260,31 @@ def _query(account, database, token, sql, params):
     return rows if isinstance(rows, list) else []
 
 
+def _load_source_events(account, database, token, run_date):
+    """Read a bounded set per event kind for the exact Vilnius calendar day.
+
+    Separate kind-scoped SELECTs prevent busy Control Center streams from
+    evicting the analytics/topic evidence rows from a global LIMIT.
+    """
+    local_start = datetime.strptime(run_date, "%Y-%m-%d").replace(
+        tzinfo=ZoneInfo("Europe/Vilnius")
+    )
+    local_end = local_start + timedelta(days=1)
+    start_utc = local_start.astimezone(timezone.utc).isoformat()
+    end_utc = local_end.astimezone(timezone.utc).isoformat()
+    events = []
+    for kind in EVENT_KINDS:
+        rows = _query(
+            account, database, token,
+            "SELECT kind, created_at, json_extract(payload_json, '$.run_id') AS run_id FROM events "
+            "WHERE kind = ? AND created_at >= ? AND created_at < ? "
+            "ORDER BY created_at DESC LIMIT 100",
+            [kind, start_utc, end_utc],
+        )
+        events.extend(rows)
+    return events
+
+
 def main():
     token = os.environ.get("CLOUDFLARE_API_TOKEN", "")
     account = os.environ.get("CLOUDFLARE_ACCOUNT_ID", "")
@@ -272,11 +309,7 @@ def main():
     memory = _query(account, database, token,
         "SELECT memory_key, value_json, updated_at FROM control_core_memory WHERE memory_key = 'latest_control_decision' LIMIT 1",
         [])
-    events = _query(account, database, token,
-        "SELECT kind, created_at, json_extract(payload_json, '$.run_id') AS run_id FROM events "
-        "WHERE kind IN ('analytics_snapshot', 'topic_snapshot', 'control_center_snapshot', 'recommendation_snapshot') "
-        "ORDER BY created_at DESC LIMIT 40",
-        [])
+    events = _load_source_events(account, database, token, run_date)
 
     result = build_diagnostics(
         run_date, agent[0] if agent else None, core[0] if core else None,
@@ -288,7 +321,7 @@ def main():
         json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
     (report_dir / "worker-agent-diagnostics.md").write_text(render_markdown(result), encoding="utf-8")
-    print(f"Read-only Worker AI diagnostics generated for {run_date}; rows_written=0 for all four queries.")
+    print(f"Read-only Worker AI diagnostics generated for {run_date}; rows_written=0 for all seven SELECT queries.")
     return 0
 
 
