@@ -39,17 +39,35 @@ def control_payload(data: dict, run_id: str) -> dict:
     }
 
 
-def build_events(workflow_name: str, artifact_dir: Path, run_id: str) -> list[dict]:
+def build_events(
+    workflow_name: str,
+    artifact_dir: Path,
+    run_id: str,
+    source_event: str = "unknown",
+    source_run_created_at: str | None = None,
+    source_workflow_id: str | None = None,
+) -> list[dict]:
     if not run_id:
         raise ValueError("run_id is required")
+    provenance = {
+        "source_event": str(source_event or "unknown"),
+        "source_run_id": str(run_id),
+        "source_run_created_at": source_run_created_at,
+        "source_workflow_id": str(source_workflow_id) if source_workflow_id is not None else None,
+    }
+
+    def attach_provenance(events: list[dict]) -> list[dict]:
+        for event in events:
+            event["payload"]["provenance"] = provenance
+        return events
     if workflow_name == "Pet traffic analytics snapshot":
         report = find_file(artifact_dir, "analytics-7d.md").read_text(encoding="utf-8")
         snapshot = parse_analytics_report(report, run_id)
-        return [{"kind": "analytics_snapshot", "payload": snapshot}]
+        return attach_provenance([{"kind": "analytics_snapshot", "payload": snapshot}])
     if workflow_name == "Pet traffic daily topic radar":
         report = find_file(artifact_dir, "topic-radar.md").read_text(encoding="utf-8")
         snapshot = parse_topic_report(report, run_id)
-        return [{"kind": "topic_snapshot", "payload": snapshot}]
+        return attach_provenance([{"kind": "topic_snapshot", "payload": snapshot}])
     if workflow_name == "Pet traffic daily automation suite":
         events = []
         analytics_report = next(iter(sorted(artifact_dir.rglob("analytics-7d.md"))), None)
@@ -62,7 +80,7 @@ def build_events(workflow_name: str, artifact_dir: Path, run_id: str) -> list[di
             events.append({"kind": "topic_snapshot", "payload": snapshot})
         if not events:
             raise FileNotFoundError("Daily suite did not produce an analytics or topic artifact")
-        return events
+        return attach_provenance(events)
     if workflow_name == "Pet traffic central control center":
         control = json.loads(find_file(artifact_dir, "control-center.json").read_text(encoding="utf-8"))
         events = [{
@@ -80,7 +98,7 @@ def build_events(workflow_name: str, artifact_dir: Path, run_id: str) -> list[di
                     "recommendations": recommendations.get("recommendations", []),
                 },
             })
-        return events
+        return attach_provenance(events)
     raise ValueError(f"Unsupported workflow: {workflow_name}")
 
 
@@ -90,8 +108,14 @@ def main() -> int:
     parser.add_argument("--artifact-dir", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--run-id", required=True)
+    parser.add_argument("--source-event", required=True)
+    parser.add_argument("--source-run-created-at", required=True)
+    parser.add_argument("--source-workflow-id", required=True)
     args = parser.parse_args()
-    events = build_events(args.workflow_name, args.artifact_dir, args.run_id)
+    events = build_events(
+        args.workflow_name, args.artifact_dir, args.run_id,
+        args.source_event, args.source_run_created_at, args.source_workflow_id,
+    )
     args.output_dir.mkdir(parents=True, exist_ok=True)
     for index, event in enumerate(events, start=1):
         path = args.output_dir / f"event-{index}.json"
