@@ -7,6 +7,10 @@ on:
         description: "Optional run_date to inspect (YYYY-MM-DD); defaults to today's Vilnius date."
         required: false
         type: string
+  workflow_run:
+    workflows: ["Pet traffic central control center"]
+    types: [completed]
+    branches: [main]
   push:
     branches: [main]
     paths:
@@ -23,7 +27,7 @@ concurrency:
 
 jobs:
   diagnose:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && (github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'workflow_run'))
     name: Read-only D1 agent evidence inspection
     runs-on: ubuntu-latest
     timeout-minutes: 5
