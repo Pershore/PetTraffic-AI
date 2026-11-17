@@ -178,3 +178,11 @@ Atnaujinta: 2026-11-17 15:45 Europe/Vilnius
 - Po dokumentavimo commitų `main` HEAD pasistūmėjo iki `c14e60f35536cee15ffbb80cdfcce2d83c97ece5`.
 - PR #284 šaka `ci/agent-d1-diagnostics-after-control-center-main-20261117` liko head `8519ad6135104a4dd960df3eb013eda55949518e`; compare: 2 ahead / 6 behind, GitHub `mergeable=false`.
 - PR #284 paliktas DRAFT ir nesujungtas, nors jo pirminiai CI run'ai buvo sėkmingi. Prieš bet kokį merge reikia atkurti tą patį mažą pakeitimą ant naujausio `main`, atidaryti šviežią PR ir pakartoti CI; senos šakos istorijos neperrašyti.
+
+
+## 2026-11-17 22:57 LT – PR #284 compare po automatinio work-log commit
+
+- Dabartinis main HEAD: `d912e267d09a02cbc9a6a473c0c99d875c214c7c`.
+- PR #284 šaka: `8519ad6135104a4dd960df3eb013eda55949518e`; compare yra 2 ahead / 11 behind, status `diverged`, GitHub `mergeable=false`.
+- PR paliekamas draft. Nenaudoti force-push; prieš merge sukurti naują šaką nuo latest main ir perkelti tik du patikrintus pakeistus failus, tada pakartoti CI.
+- Po dokumentavimo `site-check #44174641522` ir `automatic work log #44174641374` abu success.
