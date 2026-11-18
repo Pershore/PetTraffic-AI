@@ -1,19 +1,19 @@
 {
   "schema_version": 1,
   "project": "PetTraffic AI",
-  "generated_at": "2026-11-17T21:08:23.314917+00:00",
-  "run_id": "44176564991",
-  "source_commit": "610bdf59efb17c8aefd03f2e682f1408a6eb6086",
+  "generated_at": "2026-11-18T10:14:12.798850+00:00",
+  "run_id": "44283434049",
+  "source_commit": "0cbace2e8fa6fb93cdc81c5c4fdb72d744a94a82",
   "overall_status": "needs_attention",
   "last_verified_stage": "Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataskaitoje.",
-  "next_action": "Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (warning). AI agentų ciklas ir atminties įrašymas baigti; rekomendacijų: 1; trūksta įrodymų: 5.",
+  "next_action": "Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas (warning). Suplanuotas ciklas nuo 2026-11-18 06:10 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-17T15:53:16Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.",
   "verified_processes": [
     {
-      "name": "GA4, temų radaras ir svetainės stebėjimas",
+      "name": "Centrinės API sinchronizavimas",
       "state": "success",
       "detail": "Paskutinis paleidimas sėkmingas.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44119444026",
-      "created_at": "2026-11-17T15:53:16Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44176706441",
+      "created_at": "2026-11-17T21:08:45Z"
     },
     {
       "name": "Lighthouse auditas",
@@ -26,8 +26,8 @@
       "name": "Centrinis valdymo centras",
       "state": "success",
       "detail": "Paskutinis paleidimas sėkmingas.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44176545678",
-      "created_at": "2026-11-17T21:07:49Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44176564991",
+      "created_at": "2026-11-17T21:07:56Z"
     },
     {
       "name": "Debesijos read-only užduočių vykdytojas",
@@ -39,33 +39,33 @@
     {
       "name": "Cloudflare Worker + D1",
       "state": "success",
-      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 8 min.",
+      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 14 min.",
       "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
       "created_at": null
     }
   ],
   "problems": [
     {
-      "name": "AI agentai + control-core atmintis",
+      "name": "GA4, temų radaras ir svetainės stebėjimas",
       "state": "warning",
-      "detail": "AI agentų ciklas ir atminties įrašymas baigti; rekomendacijų: 1; trūksta įrodymų: 5.",
-      "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
-      "created_at": null
+      "detail": "Suplanuotas ciklas nuo 2026-11-18 06:10 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-17T15:53:16Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.",
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44119444026",
+      "created_at": "2026-11-17T15:53:16Z"
     }
   ],
   "pending_checks": [
     {
-      "name": "Centrinės API sinchronizavimas",
-      "state": "running",
-      "detail": "Vyksta (in_progress).",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44176630666",
-      "created_at": "2026-11-17T21:08:19Z"
+      "name": "AI agentai + control-core atmintis",
+      "state": "waiting",
+      "detail": "Paskutinis AI agentų ciklas dar neįvyko 13:20 Lietuvos laiku lange; laukiama šiandienos suplanuoto ciklo.",
+      "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
+      "created_at": null
     }
   ],
   "ai_agent_memory_check": {
     "name": "AI agentai + control-core atmintis",
-    "state": "warning",
-    "detail": "AI agentų ciklas ir atminties įrašymas baigti; rekomendacijų: 1; trūksta įrodymų: 5.",
+    "state": "waiting",
+    "detail": "Paskutinis AI agentų ciklas dar neįvyko 13:20 Lietuvos laiku lange; laukiama šiandienos suplanuoto ciklo.",
     "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
     "created_at": null
   },
