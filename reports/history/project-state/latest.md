@@ -92,3 +92,9 @@ Kitas veiksmas: laukti tikro Daily-suite `event=schedule`, po jo patikrinti Cont
 - **NEVEIKIA / LAUKIA – schedule priežastis:** workflow YAML grafikas patvirtintas, tačiau tikro schedule run nėra. Tiksli priežastis nepatvirtinta; dabartinė GitHub jungtis neparodo Actions enablement/repository settings būsenos. Nekeista repo konfigūracija.
 - **ATLIKTA:** tik read-only auditai; jokio Worker/D1, ARO Vet, viešo turinio, DNS, secrets, permissions ar mokamų paslaugų pakeitimo. Jokio kodo pakeitimo ar PR kūrimo, nes nėra patikimo optimizavimo prieš/po matavimo.
 - **Kitas veiksmas:** po kito tikro Daily-suite schedule patikrinti D1 source provenance, event-driven Control Center ir Worker AI ciklą po 13:20 LT (5 AI calls, completed, error_code=null, memory present). Issue #145 neuždaryti iki `recovery_confirmed=true`.
+
+
+## 2026-11-18 – po darbo žurnalo commit atlikta CI patikra
+
+- **PATIKRINTA:** darbo žurnalo atnaujinimas main sukūrė commit `15080e5e4ea387005962e6f3acaa7e7bf06490d6`. Jo `push` paleido site-check #44311774654; run success, 21 s (13:14:55Z–13:15:16Z), visi JavaScript, HTML/SEO/sitemap, automation compile, topic-radar ir analytics testų žingsniai success.
+- **ATLIKTA:** po-commit patikra patvirtino, kad dokumentavimo pakeitimas nesulaužė statinės svetainės ar automatizavimo testų. Tai nėra Daily-suite `event=schedule` įrodymas ir nekeičia Worker AI būsenos.
