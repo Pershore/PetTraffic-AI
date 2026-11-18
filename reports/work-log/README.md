@@ -926,3 +926,9 @@ Kitas veiksmas: laukti tikro `event=schedule` Daily-suite; po jo patvirtinti Con
 - **PATIKRINTA – klaidos ir optimizacijos:** naujausi stebėti site-check, Control Center, sync ir D1 diagnostikos run sėkmingi. Aiškaus pasikartojančio lėto žingsnio, kurį būtų saugu optimizuoti be pakeitimų rizikos, nenustatyta; didžiausias matuotas įprastas etapas – Control Center report build 13 s, live-site check 13 s, GA4/GSC fetch 10 s. Kodo pakeitimų, naujo PR ar greičio pagerėjimo teiginio nėra; Worker cron diagnostikos 15 min. laukimas sąmoningas.
 - **ATLIKTA:** tik read-only auditai ir artefaktų analizė. Nekeista Worker/D1, ARO Vet, viešas turinys, DNS, secrets, repository settings, permissions ar mokamos paslaugos. Issue #145 neuždarytas, `recovery_confirmed=false`.
 - **Kitas žingsnis:** patikrinti kitą tikrą Daily-suite `event=schedule`; po jo patvirtinti D1 provenance, event-driven Control Center ir po 13:20 LT Worker AI ciklą (šiandienos run_date, started_at po 13:20 LT, completed, 5 AI calls, error_code=null, memory present). Jei schedule vėl neatsiras, tiksliai nustatyti Actions workflow/repository enablement būseną per savininko administratoriaus UI; dabartinė jungtis neparodo šių nustatymų, todėl schedule nebuvimo priežastis lieka nenustatyta. Aktyvus darbo laikas NEMATUOTAS.
+
+
+## 2026-11-18 – po darbo žurnalo commit atlikta CI patikra
+
+- **PATIKRINTA:** darbo žurnalo atnaujinimas main sukūrė commit `15080e5e4ea387005962e6f3acaa7e7bf06490d6`. Jo `push` paleido site-check #44311774654; run success, 21 s (13:14:55Z–13:15:16Z), visi JavaScript, HTML/SEO/sitemap, automation compile, topic-radar ir analytics testų žingsniai success.
+- **ATLIKTA:** po-commit patikra patvirtino, kad dokumentavimo pakeitimas nesulaužė statinės svetainės ar automatizavimo testų. Tai nėra Daily-suite `event=schedule` įrodymas ir nekeičia Worker AI būsenos.
