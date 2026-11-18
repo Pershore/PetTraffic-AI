@@ -1,13 +1,13 @@
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
-- Atnaujinta: 2026-11-18T10:49:01+00:00
+- Atnaujinta: 2026-11-18T10:52:35+00:00
 - Būsena: **REIKIA DĖMESIO**
-- GitHub run: 44288897470
-- Šaltinio commit: 3aaf95c6d3f37aa0a97bcc118d3fb3cd4d2d9909
+- GitHub run: 44289410034
+- Šaltinio commit: a5d6c51ac16e5aae0ce3d3f0441c14235002706f
 
 ## Paskutinis patikrintas etapas
 
-Nepriklausoma patikra: Control Center #44288823686 success, D1 sync #44288897205 success, read-only Worker diagnostika #44288897470 success. Main HEAD nepasikeitė nuo 3aaf95c.
+Nepriklausoma patikra: Control Center #44288823686 success, D1 sync #44288897205 success, read-only Worker diagnostika #44288897470 success. Po work-log commit papildomas site-check push #44289410034 taip pat success. Main HEAD nepasikeitė nuo 3aaf95c.
 
 ## Kitas veiksmas
 
@@ -18,7 +18,7 @@ Nepriklausoma patikra: Control Center #44288823686 success, D1 sync #44288897205
 ## Schedule įvykiai – patvirtinti pagal event=schedule
 
 - **Daily-suite:** paskutinis #44119444026, 2026-11-17 15:53:16 UTC, 3/3 job success. 2026-11-18 schedule įvykio nėra. Cron konfigūracija: kasdien 06:10 UTC.
-- **Site-check:** paskutinis #44107609945, 2026-11-17 14:50:56 UTC, success. 2026-11-18 schedule įvykio nėra. Naujausias push #44285727832 success nėra schedule. Cron konfigūracija: kasdien 05:37 UTC.
+- **Site-check:** paskutinis #44107609945, 2026-11-17 14:50:56 UTC, success. 2026-11-18 schedule įvykio nėra. Naujausias push #44289410034 success nėra schedule. Cron konfigūracija: kasdien 05:37 UTC.
 - **Lighthouse:** paskutinis #43915631789, 2026-11-16 17:10:54 UTC, success; 21 ataskaitos failas išsaugotas. Savaitinis cron pirmadieniais 07:27 UTC; kitas numatytas 2026-11-23.
 - **Control Center:** #44288823686 success, event-driven `workflow_run`; atskiro schedule nereikia.
 
