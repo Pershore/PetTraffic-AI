@@ -60,3 +60,14 @@ Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas
 - **PATIKRINTA – schedule:** Daily-suite 2026-11-18 `event=schedule` nėra (paskutinis #44119444026, 2026-11-17 15:53 UTC); Site-check 2026-11-18 `event=schedule` nėra (paskutinis #44107609945, 2026-11-17 14:50 UTC; naujausias #44309206637 buvo push, success). Lighthouse paskutinis schedule #43915631789, 2026-11-16 17:10 UTC; savaitinis kitas numatomas 2026-11-23. Control Center #44309248812 buvo `workflow_run`, success, event-driven.
 - **PATIKRINTA – GitHub priežiūra:** `main` prieš paskutinį dokumentavimo įrašą `af870781e24d473157893961dca396cb8389b4b6`; 7 atviri draft PR (#288, #280, #267, #266, #264, #263, #261), 2 atviri issue (#145, #248). PR #288 šaka 2 commits ahead, 4 behind main; draft, nesujungtas.
 - **ATLIKTA:** papildyta nepriklausomos patikros būsena. ARO Vet, viešas turinys, produkcinis Worker/D1, DNS, secrets, paskyrų teisės ir mokamos paslaugos nekeistos.
+
+
+## 2026-11-18 papildomas Worker cron ir AI provenance patikslinimas (13:00 UTC)
+
+- **PATIKRINTA:** Cloudflare Worker schedules registruoti (`*/15 * * * *`, `20 10,11 * * *`); read-only cron diagnostika #44306925697 success, heartbeat pažengė nuo 12:45:13.387Z iki 13:00:13.463Z; D1, Control Core schema, site ir database healthy.
+- **PATIKRINTA:** rankinis Daily-suite #44307684666 ir D1 sync #44308657828 success; D1 readback #44308744802 rodo vieną analytics ir vieną topic snapshot, abu iš `workflow_dispatch` šaltinio. Tikras 2026-11-18 `event=schedule` Daily-suite nėra.
+- **LAUKIA – Worker AI:** `worker/src/agents.mjs` reikalauja tos pačios dienos snapshot su `provenance.source_event="schedule"` ir workflow ID `418322987`; rankinis fallback AI vartams netinka. D1 `agent_run` šiandien missing, `ai_calls=0`, `error_code=null`; Control Core šiandien missing; memory present, bet paskutinis run_date 2026-11-17 (`needs_evidence`, `insufficient_evidence` ir `other`). AI ciklas nepatvirtintas; jokių rankinių AI endpointų nekviesta.
+- **PATIKRINTA:** Control Center #44308676333 success, bet `recovery_confirmed=false`; issue #145 paliktas open. PR #288 draft, 2 ahead / 4 behind main, mergeable=false; CI ant esamo head sėkmingas, PR nesujungtas.
+- **NEPATVIRTINTA:** `content-review_model_output_invalid_json` šiandien negalima pakartotinai patikrinti, nes AI ciklas neįvyko. Greičio pagerėjimas neskaičiuotas; kontroliuojamo prieš/po matavimo nėra.
+
+Kitas veiksmas: laukti tikro Daily-suite `event=schedule`, po jo patikrinti Control Center ataskaitą, Worker AI `started_at` po 13:20 LT, 5 AI calls, `status=completed`, `error_code=null`, memory present ir `recovery_confirmed=true`. Issue #145 neuždaryti iki visų šių įrodymų.
