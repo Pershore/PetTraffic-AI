@@ -1,126 +1,91 @@
 {
   "schema_version": 1,
   "project": "PetTraffic AI",
-  "generated_at": "2026-11-18T10:52:35+00:00",
-  "run_id": "44289410034",
+  "generated_at": "2026-11-18T12:42:27.523779+00:00",
+  "run_id": "44306466222",
   "source_commit": "a5d6c51ac16e5aae0ce3d3f0441c14235002706f",
   "overall_status": "needs_attention",
-  "last_verified_stage": "Po darbo žurnalo atnaujinimo site-check push #44289410034 success; ankstesni Control Center #44288823686, D1 sync #44288897205 ir Worker diagnostika #44288897470 patikrinti.",
-  "next_action": "Peržiūrėti draft PR #288 (CI sėkmingas, nesujungtas); sulaukti 2026-11-18 13:20 LT AI ciklo; Daily-suite ir site-check schedule įvykių šiandien dar nėra.",
+  "last_verified_stage": "Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataskaitoje.",
+  "next_action": "Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas (warning). Suplanuotas ciklas nuo 2026-11-18 06:10 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-17T15:53:16Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.",
   "verified_processes": [
     {
-      "name": "Centrinis valdymo centras",
+      "name": "Centrinės API sinchronizavimas",
       "state": "success",
-      "detail": "Read-only ataskaita sėkminga; Worker API/D1 healthy, heartbeat prieš 3 min. ataskaitos metu.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44288823686",
-      "created_at": "2026-11-18T10:48:17Z"
-    },
-    {
-      "name": "D1 snapshot sync",
-      "state": "success",
-      "detail": "Du privatumo filtruoti įvykiai įrašyti ir perskaityti atgal; sync baigėsi 10:49:01Z.",
+      "detail": "Paskutinis paleidimas sėkmingas.",
       "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44288897205",
       "created_at": "2026-11-18T10:48:46Z"
     },
     {
-      "name": "Worker agent diagnostics",
+      "name": "Lighthouse auditas",
       "state": "success",
-      "detail": "7 SELECT-only užklausos; diagnostika baigėsi prieš sync, todėl naujausi Control Center įvykiai dar nebuvo matomi.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44288897470",
-      "created_at": "2026-11-18T10:48:46Z"
-    },
-    {
-      "name": "Daily-suite snapshots",
-      "state": "success",
-      "detail": "Paskutinis tikras schedule #44119444026; GA4, GSC ir RSS artefaktai išsaugoti.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44119444026",
-      "created_at": "2026-11-17T15:53:16Z"
-    },
-    {
-      "name": "Site-check",
-      "state": "success",
-      "detail": "Po darbo žurnalo atnaujinimo push patikra #44289410034 success; tai nėra event=schedule. Paskutinis tikras schedule #44107609945.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44289410034",
-      "created_at": "2026-11-18T10:52:09Z"
-    },
-    {
-      "name": "Lighthouse",
-      "state": "success",
-      "detail": "Paskutinis savaitinis schedule #43915631789; artefaktas su 21 failu išsaugotas.",
+      "detail": "Paskutinis paleidimas sėkmingas.",
       "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43915631789",
       "created_at": "2026-11-16T17:10:54Z"
+    },
+    {
+      "name": "Centrinis valdymo centras",
+      "state": "success",
+      "detail": "Paskutinis paleidimas sėkmingas.",
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44288823686",
+      "created_at": "2026-11-18T10:48:17Z"
+    },
+    {
+      "name": "Debesijos read-only užduočių vykdytojas",
+      "state": "success",
+      "detail": "Paskutinis debesijos užduoties vykdymas sėkmingas.",
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43740434516",
+      "created_at": "2026-11-15T17:19:17Z"
+    },
+    {
+      "name": "Cloudflare Worker + D1",
+      "state": "success",
+      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 12 min.",
+      "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
+      "created_at": null
     }
   ],
   "problems": [
     {
-      "name": "Daily-suite schedule",
+      "name": "GA4, temų radaras ir svetainės stebėjimas",
       "state": "warning",
-      "detail": "2026-11-18 event=schedule nėra; paskutinis tikras schedule #44119444026 2026-11-17T15:53:16Z.",
+      "detail": "Suplanuotas ciklas nuo 2026-11-18 06:10 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-17T15:53:16Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.",
       "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44119444026",
       "created_at": "2026-11-17T15:53:16Z"
     },
     {
-      "name": "Site-check schedule",
-      "state": "warning",
-      "detail": "2026-11-18 event=schedule nėra; paskutinis tikras schedule #44107609945 2026-11-17T14:50:56Z.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44107609945",
-      "created_at": "2026-11-17T14:50:56Z"
-    },
-    {
-      "name": "D1 diagnostic ordering",
-      "state": "warning",
-      "detail": "Worker diagnostics #44288897470 finished before sync #44288897205; draft PR #288 moves diagnostics after sync.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/pull/288",
-      "created_at": "2026-11-18T10:48:54Z"
+      "name": "AI agentai + control-core atmintis",
+      "state": "stale",
+      "detail": "Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-17.",
+      "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
+      "created_at": null
     }
   ],
-  "pending_checks": [
-    {
-      "name": "AI agentai + Control Core atmintis",
-      "state": "waiting",
-      "detail": "2026-11-18 10:48:54Z diagnostika: agent_run missing, ai_calls=0, error_code=null; specialist reports ir Control Core įrašas missing. 13:20 LT ciklas dar laukia.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44288897470",
-      "created_at": "2026-11-18T10:48:54Z"
-    },
-    {
-      "name": "PR #288 – diagnostikos seka",
-      "state": "review",
-      "detail": "Draft PR; CI success, production deploy skipped; savininko peržiūra laukia.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/pull/288",
-      "created_at": "2026-11-18T10:48:08Z"
-    }
-  ],
+  "pending_checks": [],
   "ai_agent_memory_check": {
-    "name": "AI agentai + Control Core atmintis",
-    "state": "waiting",
-    "detail": "Šiandienos AI run dar nėra prieš 13:20 LT ciklą. Memory present, updated_at=2026-11-17T12:00:21.622Z, last_status=needs_evidence; Control Core šios dienos įrašas missing.",
-    "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44288897470",
-    "created_at": "2026-11-18T10:48:54Z"
+    "name": "AI agentai + control-core atmintis",
+    "state": "stale",
+    "detail": "Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-17.",
+    "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
+    "created_at": null
   },
   "recommendations": [
-    {
-      "id": "automation-schedule",
-      "priority": "high",
-      "title": "Atkurti Daily-suite ir site-check schedule stebėseną",
-      "next_action": "Sulaukti tikrų event=schedule įvykių; push, workflow_run ir rankiniai paleidimai jų nepakeičia."
-    },
-    {
-      "id": "diagnostic-order",
-      "priority": "high",
-      "title": "Vykdyti D1 diagnostiką po snapshot sync",
-      "next_action": "Peržiūrėti draft PR #288; CI praėjo, PR dar nesujungtas."
-    },
     {
       "id": "search-visibility",
       "priority": "medium",
       "title": "Patikrinti Google paieškos matomumą",
-      "next_action": "GSC 2026-11-08–14 turi 0 parodymų ir 0 paspaudimų; užklausų ir puslapių eilučių nėra, sitemap laukia apdorojimo."
+      "next_action": "Patikrinti URL indeksavimo būseną, sitemap apdorojimą ir ar svarbiausi puslapiai prieinami Googlebot."
     },
     {
       "id": "sitemap-processing",
       "priority": "info",
       "title": "Stebėti Google sitemap apdorojimą",
-      "next_action": "Pakartotinai tikrinti kitame Daily-suite cikle; sitemap pakartotinai neteikti, jei jis jau pateiktas."
+      "next_action": "Pakartotinai patikrinti kitame cikle; sitemap pakartotinai neteikti, jei jis jau pateiktas."
+    },
+    {
+      "id": "automation-health",
+      "priority": "high",
+      "title": "Pašalinti automatizacijų būklės problemas",
+      "next_action": "Atidaryti centrinio valdymo GitHub įspėjimą ir taisyti konkretaus proceso klaidą."
     }
   ],
   "safety_boundaries": [
