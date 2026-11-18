@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "project": "PetTraffic AI",
-  "generated_at": "2026-11-18T12:42:27.523779+00:00",
-  "run_id": "44306466222",
+  "generated_at": "2026-11-18T12:42:53.260175+00:00",
+  "run_id": "44306504521",
   "source_commit": "a5d6c51ac16e5aae0ce3d3f0441c14235002706f",
   "overall_status": "needs_attention",
   "last_verified_stage": "Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataskaitoje.",
@@ -26,8 +26,8 @@
       "name": "Centrinis valdymo centras",
       "state": "success",
       "detail": "Paskutinis paleidimas sėkmingas.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44288823686",
-      "created_at": "2026-11-18T10:48:17Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44306466222",
+      "created_at": "2026-11-18T12:42:19Z"
     },
     {
       "name": "Debesijos read-only užduočių vykdytojas",
