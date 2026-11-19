@@ -35,6 +35,8 @@ class DispatchBridgeWorkflowTests(unittest.TestCase):
     def test_daily_suite_fallback_uses_current_day_schedule_cutoff(self):
         workflow = Path(".github/workflows/dispatch-daily-suite.yml").read_text(encoding="utf-8")
         self.assertIn("dailySuiteScheduleAt.setUTCHours(6, 10, 0, 0)", workflow)
+        self.assertIn("scheduleGraceEndsAt = dailySuiteScheduleAt.getTime() + 60 * 60 * 1000", workflow)
+        self.assertIn("now < scheduleGraceEndsAt", workflow)
         self.assertIn("createdAt >= dailySuiteScheduleAt.getTime()", workflow)
         self.assertIn('run.event === "schedule"', workflow)
         self.assertIn('run.event === "workflow_dispatch"', workflow)
