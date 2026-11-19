@@ -1,6 +1,6 @@
 # Pet traffic – vienintelė kanoninė projekto atmintis
 
-**Atnaujinta:** 2026-11-19 11:46 LT
+**Atnaujinta:** 2026-11-19 19:40 LT
 **Saugykla:** https://github.com/Pershore/PetTraffic-AI  
 **Pagrindinė šaka:** `main`  
 **Tikslas:** vienas patikimas tęstinumo šaltinis ChatGPT, Codex ir būsimiems projekto agentams.
@@ -876,3 +876,19 @@ GitHub API patvirtino, kad Daily-suite run #44119444026 buvo tikras event=schedu
 - **NEPATVIRTINTA – GitHub schedulerio atstatymas:** PR #291 sutvarko mūsų atsarginio paleidimo blokavimo klaidą, bet neištaiso GitHub platformos `schedule` įvykių pristatymo vėlavimo. Jei tikras schedule ir toliau vėluos, ilgalaikiam patikimam suplanuotam AI paleidimui reikės GitHub platformos pusės sprendimo arba atskiro, saugiai autentifikuoto išorinio schedulerio. Jokio naujo mokamo serviso, tokeno ar secret neįdiegta.
 - **AI būklė nepasikeitė:** paskutinis Worker AI ciklas lieka 2026-11-18 `needs_evidence`; 2026-11-19 ciklas nebuvo paleistas, nes tikros schedule provenance trūko. Issue #145 lieka open.
 
+
+
+## Naujausia būsena – 2026-11-19 19:40 LT (po-ciklo įrodymai)
+
+- Tikras Daily-suite schedule #44557115983 įvyko 17:38:40 LT, apie 9 val. 28 min. po 06:10Z cron; 3/3 job success. Runner startas sutapo su run sukūrimu, taigi vėlavimas įvyko iki vykdymo, o ne job viduje.
+- D1 snapshot sync #44557230191 patvirtino analytics + topic snapshot write/readback su source run ID #44557115983.
+- Worker heartbeat catch-up ciklas #2026-11-19 prasidėjo 17:45:13 LT: status completed, 5 AI calls, error_code=null. Post-sync D1 diagnostika #44578859577 / artifact #14557009988 patvirtino 4 specialistų raportus, Control Core ir memory readback; memory updated 2026-11-19T15:45:21.548Z UTC.
+- Specialistų būsena: analytics needs_evidence (Search Console duomenys trūksta); topics needs_evidence (nėra paieškų apimčių); technical-seo reviewed; content-review needs_evidence (nepakanka įrodymų). Control Core needs_evidence, 4 gaps, viena rekomendacija. Tai techniškai sėkmingas ciklas, bet ne pilnas įrodymų / rekomendacijų atsigavimas.
+- Issue #145 atnaujintas iš klaidingai pasenusio pranešimo į `warning`; `recovery_confirmed=false`, todėl palikti open. Issue #248 dėl privataus valdymo plokštumos taip pat open.
+- Produkcijos live-check #44557115983: 12 URL, pagrindiniai puslapiai, sitemap, robots, 404 ir 20 301 redirect pass. Site-check schedule #44546115868 success; kontrolės testai #44579375931: 150/150 OK.
+- GA4 2026-11-12–18: 3 active, 2 new, 12 sessions, 23 pageviews, 0 organic. GSC 2026-11-10–16: 0 impressions/clicks, no query/page rows, sitemap pending. RSS temų signalai nėra search volume.
+- Lighthouse paskutinis schedule #43915631789 (2026-11-16); kitas savaitinis cron pagal YAML – pirmadienį 2026-11-23 07:27 UTC / 09:27 LT.
+- PR #290 (diagnostikos triggerio perkėlimas po D1 sync) draft, 5 commits behind latest main; nejungti be švaraus atnaujinimo ir CI. 7 atviri draft PR iš viso.
+- Tiesioginis external HTTP iš dabartinės vykdymo aplinkos nepatvirtintas dėl DNS resolve klaidos; Worker/D1 Control Center status tuo metu GERAI pagal /health ir heartbeat.
+- Šios sesijos metu nebuvo kodo, public site, Worker/D1 production, DNS, secrets, ARO Vet, billing ar paid-services pakeitimų. Buvo vykdyti tik bounded owner-only read-only AI diagnostics ir Control Center workflow. Automation-history latest.md/latest.json atnaujino Control Center workflow (latest timestamp 17:39:12Z).
+- Toliau: pagerinti GSC / turinio įrodymus; sekti schedule vėlavimą ir fallback; sutvarkyti PR #290 atskirai. Issue #145 neuždaryti, kol evidence gaps nepašalinti ir recovery_confirmed nepatvirtintas.
