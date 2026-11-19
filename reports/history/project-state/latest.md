@@ -2,7 +2,7 @@
 
 - Atnaujinta: 2026-11-19T10:19:55Z
 - Būsena: **REIKIA DĖMESIO**
-- Main HEAD: `00d8bee31ffc7fb9f0aec2c726a20d641f46357e`
+- Main HEAD po audito žurnalo įrašo: `34ef34f594b39b66b61290ac63c72e20ecc9eb05` (audito pradžioje buvo `00d8bee31ffc7fb9f0aec2c726a20d641f46357e`).
 - Control Center run: [44485441791](https://github.com/Pershore/PetTraffic-AI/actions/runs/44485441791)
 - Worker D1 diagnostics run: [44485513822](https://github.com/Pershore/PetTraffic-AI/actions/runs/44485513822)
 
@@ -11,6 +11,7 @@
 - **PATIKRINTA** – GitHub main HEAD yra `00d8bee`; naujausi commit: `00d8bee` ir `ec23c40`.
 - **PATIKRINTA** – Daily-suite paskutinis tikras `event=schedule`: [#44336724612](https://github.com/Pershore/PetTraffic-AI/actions/runs/44336724612), 2026-11-18 15:32:01 UTC, success. Analytics, topic-radar ir live-check darbai visi success.
 - **LAUKIA** – 2026-11-19 Daily-suite `event=schedule` paleidimo iki 10:19 UTC nematyti. Workflow faile yra cron `10 6 * * *`, bet cron konfigūracija nėra paleidimo įrodymas.
+- **PATIKRINTA** – Po darbo žurnalo įrašo main šakoje site-check push run [#44505988093](https://github.com/Pershore/PetTraffic-AI/actions/runs/44505988093) baigėsi success 2026-11-19 10:28:46 UTC; tai nėra schedule įrodymas.
 - **PATIKRINTA** – Site-check paskutinis tikras `event=schedule`: [#44324894236](https://github.com/Pershore/PetTraffic-AI/actions/runs/44324894236), 2026-11-18 14:29:58 UTC, success. Naujausias push patikrinimas [#44501750138](https://github.com/Pershore/PetTraffic-AI/actions/runs/44501750138) 2026-11-19 10:01:26 UTC, success.
 - **LAUKIA** – 2026-11-19 Site-check `event=schedule` įvykio iki 10:19 UTC nematyti. Workflow faile yra cron `37 5 * * *`.
 - **PATIKRINTA** – Lighthouse paskutinis tikras `event=schedule`: [#43915631789](https://github.com/Pershore/PetTraffic-AI/actions/runs/43915631789), 2026-11-16 17:10:54 UTC, success. Tai savaitinis pirmadienio workflow; kitas suplanuotas langas – 2026-11-23.
