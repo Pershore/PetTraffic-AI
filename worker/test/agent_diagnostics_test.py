@@ -63,10 +63,11 @@ class WorkerAgentDiagnosticsTests(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             _assert_read_only_meta({})
 
-    def test_workflow_is_manual_or_post_merge_and_read_only(self):
+    def test_workflow_is_manual_or_post_sync_and_read_only(self):
         workflow = (ROOT / ".github" / "workflows" / "worker-agent-diagnostics.yml").read_text(encoding="utf-8")
         self.assertIn("workflow_dispatch:", workflow)
-        self.assertIn('workflows: ["Pet traffic central control center"]', workflow)
+        self.assertIn('workflows: ["Sync PetTraffic snapshots to central API"]', workflow)
+        self.assertNotIn('workflows: ["Pet traffic central control center"]', workflow)
         self.assertIn("types: [completed]", workflow)
         self.assertIn("branches: [main]", workflow)
         self.assertIn("github.event.workflow_run.conclusion == 'success'", workflow)
