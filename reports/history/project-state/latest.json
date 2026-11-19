@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "project": "PetTraffic AI",
-  "generated_at": "2026-11-19T12:33:46.812458+00:00",
-  "run_id": "44525008109",
+  "generated_at": "2026-11-19T12:37:39.539905+00:00",
+  "run_id": "44525590774",
   "source_commit": "34ef34f594b39b66b61290ac63c72e20ecc9eb05",
   "overall_status": "needs_attention",
   "last_verified_stage": "Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataskaitoje.",
@@ -12,8 +12,8 @@
       "name": "Centrinės API sinchronizavimas",
       "state": "success",
       "detail": "Paskutinis paleidimas sėkmingas.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44524801609",
-      "created_at": "2026-11-19T12:32:18Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44525573307",
+      "created_at": "2026-11-19T12:37:17Z"
     },
     {
       "name": "Lighthouse auditas",
@@ -26,8 +26,8 @@
       "name": "Centrinis valdymo centras",
       "state": "success",
       "detail": "Paskutinis paleidimas sėkmingas.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44524715447",
-      "created_at": "2026-11-19T12:31:44Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44525008109",
+      "created_at": "2026-11-19T12:33:38Z"
     },
     {
       "name": "Debesijos read-only užduočių vykdytojas",
@@ -39,7 +39,7 @@
     {
       "name": "Cloudflare Worker + D1",
       "state": "success",
-      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 3 min.",
+      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 7 min.",
       "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
       "created_at": null
     }
