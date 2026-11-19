@@ -46,14 +46,15 @@ jobs:
 
               // Match the current UTC day's 06:10 schedule, not yesterday's
               // delayed schedule run. Keep this UTC time aligned with daily-suite.yml.
-              const dailySuiteScheduleAt = new Date();
+              const utcDayStart = new Date();
+              utcDayStart.setUTCHours(0, 0, 0, 0);
+              const dailySuiteScheduleAt = new Date(utcDayStart);
               dailySuiteScheduleAt.setUTCHours(6, 10, 0, 0);
               const scheduleGraceEndsAt = dailySuiteScheduleAt.getTime() + 60 * 60 * 1000;
               if (now < scheduleGraceEndsAt) {
                 core.notice("Daily-suite fallback is not eligible until the 60-minute schedule grace has passed.");
                 return;
               }
-              const manualCutoff = now - 20 * 60 * 60 * 1000;
               const recent = data.workflow_runs.find(run => {
                 const createdAt = Date.parse(run.created_at);
                 const activeOrSuccessful =
@@ -64,7 +65,7 @@ jobs:
                   activeOrSuccessful;
                 const recentManualFallback =
                   run.event === "workflow_dispatch" &&
-                  createdAt >= manualCutoff &&
+                  createdAt >= utcDayStart.getTime() &&
                   activeOrSuccessful;
                 return currentDaySchedule || recentManualFallback;
               });
