@@ -23,7 +23,7 @@ AI ciklas lapkričio 18 d. techniškai įvyko ir įrašė Control Core bei atmin
 
 - Daily-suite #44336724612: event=schedule, 3/3 job success, ~36 s. Sync #44336852000: source event=schedule, workflow ID 418322987, source run ID #44336724612; analytics/topic snapshot D1 write/readback success.
 - Worker AI catch-up įvyko 15:45Z / 17:45 LT, po vėlyvo snapshot sync. Tai rodo, kad pati job trukmė nėra 9 val. vėlavimo priežastis.
-- 2026-11-19 10:07 LT: naujų tos dienos site-check, Daily-suite ir connectivity schedule run dar nėra. Tai laukianti būsena prieš 13:20 AI ciklą, ne šios dienos AI nesėkmė.
+- 2026-11-19 11:46 LT: naujų tos dienos site-check, Daily-suite ir connectivity schedule run dar nėra. Tai laukianti būsena prieš 13:20 AI ciklą, ne šios dienos AI nesėkmė.
 - Tiksli GitHub schedule vėlavimo priežastis NEPATVIRTINTA; Actions administravimo nustatymai per dabartinę integraciją nematomi.
 
 ## Įvesties duomenų kokybė (Daily-suite #44336724612)
@@ -51,3 +51,22 @@ AI ciklas lapkričio 18 d. techniškai įvyko ir įrašė Control Core bei atmin
 ## Saugumo ribos
 
 Šio audito metu nebuvo keistas kodas, Worker/D1 produkcija, DNS, secrets, permissions, billing, ARO Vet ar viešas turinys. Naujų mokamų paslaugų nėra. Issue #145 neuždarytas.
+
+
+## 2026-11-19 11:46 LT – atnaujinta patikra
+
+- Main HEAD `ba208461e8d07026dadeb35163a26119b2a5f83d`; paskutinis commit pakeitė tik work-log. PR #289 turi 2 sėkmingas patikras (static site-check ir Cloudflare Pages), bet lieka draft; nesujungtas.
+- Gyvi puslapiai: homepage, keturi gidai, about, privacy, robots ir sitemap HTTP 200; netikras URL HTTP 404. Live-check #44336724612 patvirtino 12 vidinių URL ir 20 senų straipsnių 301. Sitemap turi 7 URL. Keturi gidai turi canonical/title/description/OG/Article + BreadcrumbList JSON-LD; homepage WebSite JSON-LD. About/privacy OG/JSON-LD trūksta; tai tik neblokuojanti galimybė. GA4 paleidžiamas tik po sutikimo.
+- 2026-11-19 Daily-suite event=schedule nėra iki 09:45:13Z. Paskutinis tikras schedule #44336724612 – Nov 18 15:32:01Z, 3/3 job success (~36 s). Bridge 20h dedupe baigiasi Nov 19 11:32:01Z / 13:32 LT; šiuo metu jis dar aktyvus, todėl /pettraffic-run-daily-suite komentaras nebuvo siunčiamas – bridge atmestų.
+- 2026-11-18 Control Center #44336851843 workflow_run success; D1 sync #44336852000 patvirtino schedule provenance ir abiejų analytics/topic snapshot write/readback. Site-check ir connectivity schedule vėlavo atitinkamai apie 8h53m ir 9h14m; Daily-suite apie 9h22m. Job trukmės trumpos, tiksli GitHub priežastis nepatvirtinta.
+- Worker /health 09:45:13Z: Worker/D1 healthy, site 200. AI run 2026-11-18 completed 5 calls, error_code=null; Control Core needs_evidence, 4 spragos (3 insufficient_evidence, 1 other), 3 specialistai needs_evidence, technical-seo reviewed; memory readback updated 15:45:25.164Z, tas pats ciklas. 2026-11-19 ciklas iki 13:20 LT LAUKIA. Diagnostika #44485513822 08:11Z buvo prieš dienos ciklą, todėl jos missing nėra nesėkmės įrodymas.
+- Control Center #44485441791 workflow_run success, artifact #14511010012; `recovery_confirmed=false`. Issue #145 lieka open.
+- GA4 artifact #14442635651: 2026-11-11–17, 4 active, 18 sessions, 51 views, 0 organic. GSC 2026-11-09–15: 0 impressions/clicks, no query/page rows, sitemap pending. Topic radar #14442685485: 27 RSS links, 7 topics, not search volume.
+- Lighthouse schedule #43915631789 (Nov 16) 10 HTML/JSON reports; dog-diarrhea mobile and vet-visit desktop/mobile show high TTFB/LCP outliers, TBT=0/CLS=0; no code regression proven. Next weekly audit Nov 23.
+- `docs/WEEKLY_GROWTH_REVIEW.md` pasenęs ARO Vet produktų šaltinio leidimas pataisytas šio PR šakoje pagal dabartinį draudimą. Jokio viešo turinio ar produkcijos pakeitimo nėra.
+
+## Toliau
+
+1. Po 13:20 LT patikrinti vienintelį 2026-11-19 Worker AI ciklą; 14:00 LT esamas verifier.
+2. Jei eligible Daily-suite schedule vis dar nėra, nekurti antro AI ciklo. Daily-suite bridge naudoti tik po 13:32 LT, jei dedupe pasibaigęs ir nėra kito vykstančio/sėkmingo run.
+3. Issue #145 neuždaryti, kol `recovery_confirmed=true` ir specialistų įrodymai pakankami.

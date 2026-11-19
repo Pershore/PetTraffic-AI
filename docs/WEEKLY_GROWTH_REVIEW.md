@@ -41,6 +41,10 @@ Kiekvieną savaitę sujungti jau surinktus SEO, lankomumo, turinio temų, techni
 - Lighthouse istorijoje saugomi tik kategorijų balai ir pagrindiniai Web Vitals, ne visas diagnostikos payload.
 - Naudojami jau turimi GA4, Search Console, RSS, Lighthouse, GitHub Actions ir Python įrankiai. Savaitinė peržiūra neatlieka papildomų AI kvietimų ir neprideda mokamų paslaugų.
 
-## Turinio ir produktų sprendimai
+## Turinio ir komercinės veiklos ribos
 
-Ataskaita gali pasiūlyti redakcinį darbą ar produkto informacijos tyrimą. Ji nesuteikia leidimo automatiškai publikuoti. ARO Vet Vaistinė yra vartotojo patvirtintas prioritetinis produktų šaltinis; jos vieša produktų informacija ir produktų nuotraukos gali būti naudojamos tik kai konkreti prekė tiesiogiai naudinga skaitytojui. Pet traffic išlieka nepriklausomas prekės ženklas, o pati ARO Vet svetainė ir infrastruktūra neliečiama.
+- Ataskaita gali siūlyti redakcinį darbą tik pagal realius Search Console / GA4 duomenis, skaitytojų klausimus ir patikrintus pirminius veterinarinius šaltinius. RSS antraštės nėra paieškų apimtys.
+- Ataskaita nesuteikia leidimo automatiškai publikuoti turinio, keisti title/meta ar navigacijos.
+- Pet traffic yra nepriklausomas informacinis prekės ženklas. ARO Vet, vaistinės skiltis, produktų kortelės, affiliate nuorodos, reklama ir partnerių sekimas negali būti grąžinami.
+- 2026-11-15 buvęs laikinas ARO Vet produktų šaltinio leidimas panaikintas 2026-11-16; jis nebegalioja. Istorinis sprendimas paliktas tik kanoninėje projekto atmintyje kaip panaikintas.
+- Leidžiama esama pirmosios šalies GA4 analitika tik po aiškaus slapukų sutikimo, kaip aprašyta privatumo politikoje.
