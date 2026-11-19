@@ -105,3 +105,16 @@ Ankstesnė šio handover išvada, kad 2026-11-19 AI ciklas neįvyko, galiojo tik
 ## Kitas prioritetas
 
 Gerinti įrodymų kokybę, ypač Search Console ir turinio faktų šaltinius; toliau stebėti GitHub schedule vėlavimą bei fallback; PR #290 atnaujinti tik atskiroje šakoje su CI. Issue #145 palikti open, kol evidence gaps nepašalinti ir `recovery_confirmed=true`.
+
+
+## 2026-11-19 20:23 LT – papildoma gyva patikra
+
+Live Worker /health HTTP 200, D1 connected, heartbeat 18:15:13Z site HTTP 200. AI run 2026-11-19 completed, 5 AI calls, error null; Control Core needs_evidence, 4 gaps, memory readback present. Pakartotinė read-only diagnostika #44587172481 patvirtino specialistų spragas: analytics search_console_data_missing, topics search_volume_not_available, technical-seo reviewed, content-review insufficient_evidence. Nėra antro dienos AI ciklo.
+
+Viešas robots.txt HTTP 200 ir leidžia crawling (`Allow: /`); sitemap HTTP 200 ir turi 7 URL; homepage ir vienas prioritetinis straipsnis HTTP 200, meta robots index,follow. GSC API connectivity veikia. Sitemap pateiktas 2026-11-10, Google dar neatsisiuntė, isPending=true; visi 5 prioritetiniai URL URL Inspection nežinomi Google, last crawl nėra, GSC laikotarpis 2026-11-10–16 0 parodymų/paspaudimų. Nėra įrodymo apie robots/noindex blokavimą ar API permissions klaidą. Toliau stebėti crawl, sitemap pakartotinai neteikti.
+
+Temų RSS antraštės nėra search volume, todėl topics agento spraga teisinga. Content-review gauna tik pirmus 900 simbolių kiekvieno puslapio; tai apriboja analizės aprėptį, bet prieš pataisą reikia testų ir tiksliai patikrinti, kokia dalis turinio perduodama modeliui.
+
+Dokumentavimo push site-check #44580661889 success; Control Center #44587090846 success ir automation-history latest.md/latest.json atnaujinti 18:22:29Z. Issue #145 paliktas open; recovery_confirmed=false. GitHub schedule vėlavimas išlieka apie 9 val. iki runnerio starto; vidinė priežastis nežinoma.
+
+Kodo / Worker / D1 produkcijos, DNS, Cloudflare, secrets, ARO Vet, publikavimo, billing ar mokamų paslaugų pakeitimų nebuvo.
