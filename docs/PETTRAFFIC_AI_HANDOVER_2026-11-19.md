@@ -84,3 +84,24 @@ AI ciklas lapkričio 18 d. techniškai įvyko ir įrašė Control Core bei atmin
 - **NEPATVIRTINTA – GitHub schedulerio atstatymas:** PR #291 sutvarko mūsų atsarginio paleidimo blokavimo klaidą, bet neištaiso GitHub platformos `schedule` įvykių pristatymo vėlavimo. Jei tikras schedule ir toliau vėluos, ilgalaikiam patikimam suplanuotam AI paleidimui reikės GitHub platformos pusės sprendimo arba atskiro, saugiai autentifikuoto išorinio schedulerio. Jokio naujo mokamo serviso, tokeno ar secret neįdiegta.
 - **AI būklė nepasikeitė:** paskutinis Worker AI ciklas lieka 2026-11-18 `needs_evidence`; 2026-11-19 ciklas nebuvo paleistas, nes tikros schedule provenance trūko. Issue #145 lieka open.
 
+
+
+## 2026-11-19 19:40 LT – po-ciklo patikros atnaujinimas
+
+Ankstesnė šio handover išvada, kad 2026-11-19 AI ciklas neįvyko, galiojo tik prieš vėlyvą Daily-suite ir jo D1 sinchronizaciją. Nauji po-sync įrodymai ją patikslina:
+
+- Daily-suite #44557115983 buvo tikras `event=schedule`, startas 2026-11-19T15:38:40Z (17:38:40 LT), ~9 h 28 min. po cron 06:10Z. 3/3 job success.
+- D1 sync #44557230191 įrašė analytics ir topic snapshot ir patvirtino abiejų readback.
+- Worker heartbeat catch-up paleido AI 2026-11-19T15:45:13Z (17:45:13 LT); status `completed`, 5 calls, `error_code=null`.
+- Post-sync SELECT-only D1 diagnostika #44578859577, artifact #14557009988, patvirtino: 4 specialistų raportai, Control Core `needs_evidence`, 4 evidence gaps, memory updated 2026-11-19T15:45:21.548Z UTC. Specialists: analytics `search_console_data_missing`, topics `search_volume_not_available`, technical-seo `reviewed`, content-review `insufficient_evidence`.
+- Control Center #44579375931 ir #44579391856 success; automatizuota automation-history latest state atnaujinta 2026-11-19T17:39:12Z. Issue #145 lieka open, `recovery_confirmed=false`, nes AI ciklas yra techniškai pavykęs, bet įrodymų kokybė dar nepakankama.
+- Live-site check #44557115983 patikrino 12 URL, pagrindinius puslapius, sitemap, robots.txt, 404 ir 20 senųjų URL redirect; success. Site-check schedule #44546115868 success. 150 kontrolės testų #44579375931 – OK.
+- GA4 2026-11-12–18: 3 active, 2 new, 12 sessions, 23 views, 0 organic. GSC 2026-11-10–16: 0 impressions/clicks, no query/page rows, sitemap pending; URL Inspection ankstesnėje suvestinėje 5 prioritetiniai URL liko nežinomi Google. RSS nėra search volume.
+- GitHub schedule vėlavimas išlieka: Daily-suite startas apie 9 h 28 min. po cron, bet pats runner startavo iškart po sukūrimo. Tiksli vidinė GitHub priežastis nėra matoma. Worker catch-up mechanizmas šį kartą suveikė po D1 sync.
+- PR #290 lieka draft ir 5 commits behind main; jo po-sync diagnostikos pataisa dar nepatikrinta po sujungimo. Issue #248 dėl privataus valdymo plokštumos open; dashboard /control vieši READ-ONLY.
+- Tiesioginis HTTP fetch iš šios sesijos vykdymo aplinkos nepavyko dėl DNS resolve ribojimo; nepaversti to produkcijos outage įrodymu. Control Center Worker/D1 status įvertintas GERAI pagal /health ir heartbeat.
+- Jokio kodo, viešo turinio, Worker/D1 production, DNS, secrets, ARO Vet, billing ar mokamos paslaugos pakeitimo nebuvo. Tik bounded owner-only read-only diagnostika ir Control Center; automation-history atnaujino workflow.
+
+## Kitas prioritetas
+
+Gerinti įrodymų kokybę, ypač Search Console ir turinio faktų šaltinius; toliau stebėti GitHub schedule vėlavimą bei fallback; PR #290 atnaujinti tik atskiroje šakoje su CI. Issue #145 palikti open, kol evidence gaps nepašalinti ir `recovery_confirmed=true`.
