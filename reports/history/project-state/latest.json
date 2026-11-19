@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "project": "PetTraffic AI",
-  "generated_at": "2026-11-19T14:09:37.657629+00:00",
-  "run_id": "44540715247",
-  "source_commit": "9b11843e6e90f556e1535df726ad4956682ba374",
+  "generated_at": "2026-11-19T14:11:17.239550+00:00",
+  "run_id": "44541010391",
+  "source_commit": "7ff766701b1877ceacf145c7e8b44bdfd7a0f400",
   "overall_status": "needs_attention",
   "last_verified_stage": "Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataskaitoje.",
   "next_action": "Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas (warning). Suplanuotas ciklas nuo 2026-11-19 06:10 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-18T15:32:01Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.",
@@ -12,8 +12,8 @@
       "name": "Centrinės API sinchronizavimas",
       "state": "success",
       "detail": "Paskutinis paleidimas sėkmingas.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44528042602",
-      "created_at": "2026-11-19T12:53:07Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44540799756",
+      "created_at": "2026-11-19T14:09:59Z"
     },
     {
       "name": "Lighthouse auditas",
@@ -26,8 +26,8 @@
       "name": "Centrinis valdymo centras",
       "state": "success",
       "detail": "Paskutinis paleidimas sėkmingas.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44527976145",
-      "created_at": "2026-11-19T12:52:42Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44540715247",
+      "created_at": "2026-11-19T14:09:30Z"
     },
     {
       "name": "Debesijos read-only užduočių vykdytojas",
@@ -39,7 +39,7 @@
     {
       "name": "Cloudflare Worker + D1",
       "state": "success",
-      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 9 min.",
+      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 11 min.",
       "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
       "created_at": null
     }
