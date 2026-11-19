@@ -43,23 +43,42 @@ jobs:
               const { data } = await github.rest.actions.listWorkflowRuns({
                 owner, repo, workflow_id, branch: "main", per_page: 100
               });
-              const cutoff = now - 20 * 60 * 60 * 1000;
-              const recent = data.workflow_runs.find(run =>
-                Date.parse(run.created_at) >= cutoff &&
-                ((run.event === "workflow_dispatch" &&
-                    (run.status !== "completed" || run.conclusion === "success")) ||
-                  (run.event === "schedule" &&
-                    (run.status !== "completed" || run.conclusion === "success")))
-              );
+
+              // Match the current UTC day's 06:10 schedule, not yesterday's
+              // delayed schedule run. Keep this UTC time aligned with daily-suite.yml.
+              const utcDayStart = new Date();
+              utcDayStart.setUTCHours(0, 0, 0, 0);
+              const dailySuiteScheduleAt = new Date(utcDayStart);
+              dailySuiteScheduleAt.setUTCHours(6, 10, 0, 0);
+              const scheduleGraceEndsAt = dailySuiteScheduleAt.getTime() + 60 * 60 * 1000;
+              if (now < scheduleGraceEndsAt) {
+                core.notice("Daily-suite fallback is not eligible until the 60-minute schedule grace has passed.");
+                return;
+              }
+              const recent = data.workflow_runs.find(run => {
+                const createdAt = Date.parse(run.created_at);
+                const activeOrSuccessful =
+                  run.status !== "completed" || run.conclusion === "success";
+                const currentDaySchedule =
+                  run.event === "schedule" &&
+                  createdAt >= dailySuiteScheduleAt.getTime() &&
+                  activeOrSuccessful;
+                const recentManualFallback =
+                  run.event === "workflow_dispatch" &&
+                  createdAt >= utcDayStart.getTime() &&
+                  activeOrSuccessful;
+                return currentDaySchedule || recentManualFallback;
+              });
               if (recent) {
-                core.notice("Daily suite already started within 20 hours: #" + recent.run_number +
+                core.notice("Daily suite already started: #" + recent.run_number +
                   " (" + recent.event + ") " + recent.html_url);
                 return;
               }
               await github.rest.actions.createWorkflowDispatch({
                 owner, repo, workflow_id, ref: "main"
               });
-              core.notice("Authorized daily-suite workflow_dispatch sent to main.");
+              core.notice("Authorized daily-suite workflow_dispatch fallback sent to main. " +
+                "This manual fallback is not schedule provenance and does not open the Worker AI schedule gate.");
               return;
             }
 
