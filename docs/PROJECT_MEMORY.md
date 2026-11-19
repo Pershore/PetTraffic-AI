@@ -892,3 +892,16 @@ GitHub API patvirtino, kad Daily-suite run #44119444026 buvo tikras event=schedu
 - Tiesioginis external HTTP iš dabartinės vykdymo aplinkos nepatvirtintas dėl DNS resolve klaidos; Worker/D1 Control Center status tuo metu GERAI pagal /health ir heartbeat.
 - Šios sesijos metu nebuvo kodo, public site, Worker/D1 production, DNS, secrets, ARO Vet, billing ar paid-services pakeitimų. Buvo vykdyti tik bounded owner-only read-only AI diagnostics ir Control Center workflow. Automation-history latest.md/latest.json atnaujino Control Center workflow (latest timestamp 17:39:12Z).
 - Toliau: pagerinti GSC / turinio įrodymus; sekti schedule vėlavimą ir fallback; sutvarkyti PR #290 atskirai. Issue #145 neuždaryti, kol evidence gaps nepašalinti ir recovery_confirmed nepatvirtintas.
+
+
+## 2026-11-19 20:23 LT – tęstinė gyva patikra
+
+- Live Worker /health HTTP 200; D1 ir Control Core schema connected; heartbeat 18:15:13Z site HTTP 200; 2026-11-19 AI ciklas completed, 5 calls, error null, Control Core + memory readback present.
+- Post-control-center read-only D1 diagnostics #44587172481 / artifact #14559544767 success; tas pats vienintelis dienos ciklas, 4 specialistų atsakymai; analytics search_console_data_missing, topics search_volume_not_available, technical-seo reviewed, content-review insufficient_evidence. Control Core 4 gaps, memory present. Nėra antro AI ciklo.
+- Live robots.txt HTTP 200 ir Allow: /; sitemap.xml HTTP 200, validus XML, 7 URL. Homepage ir vienas skubus straipsnis HTTP 200, robots index,follow. Nėra gyvo robots/noindex blokavimo požymio tuose patikrintuose URL.
+- GSC API connectivity success, sitemap pateiktas 2026-11-10, bet Google dar neatsisiuntė; isPending=true. 5 prioritetiniai URL Search Console URL Inspection grąžina NEUTRAL / URL nežinomas Google, last crawl nėra. 2026-11-10–16 ataskaitoje 0 impressions/clicks. Tai nėra API auth klaida; tikslus atradimo / crawl priežasties kodas dar nežinomas. Sitemap pakartotinai nepateikti.
+- RSS antraštės nėra keyword search volume; topics agento evidence gap teisingas. Content-review kodas riboja kiekvieno puslapio tekstą iki 900 simbolių; tai apriboja aprėptį, bet neįrodyta kaip vienintelė spragos priežastis.
+- Docs push CI #44580661889 success: JS syntax, validate_site, compileall, agent tests, tests tests. Control Center #44587090846 success, automation-history latest generated_at 18:22:29Z, AI warning ir recovery_confirmed=false išsaugoti; issue #145 open.
+- Daily-suite #44557115983 ir site-check #44546115868 buvo tikri schedule, abu ~9h pavėlavę iki runner sukūrimo; tiksli GitHub schedulerio priežastis nežinoma.
+- Kodo, Worker/D1 production, DNS, secrets, Cloudflare, ARO Vet, turinio publikavimo, billing ar paid-service pakeitimų nebuvo. Jokio papildomo AI ciklo ar sitemap resubmit.
+- Toliau: stebėti jau pateikto sitemap crawl, po kito suplanuoto GSC snapshot tikrinti URL Inspection; content-review aprėpties pataisai pirma sukurti testus; PR #290 perbazavimas / CI atskirai.
