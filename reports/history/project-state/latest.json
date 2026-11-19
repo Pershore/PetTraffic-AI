@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "project": "PetTraffic AI",
-  "generated_at": "2026-11-19T17:35:59.047348+00:00",
-  "run_id": "44578887479",
+  "generated_at": "2026-11-19T17:38:45.779981+00:00",
+  "run_id": "44579375931",
   "source_commit": "999e867088a8754eb7cf46bb778d7c5fde0c2bb3",
   "overall_status": "needs_attention",
   "last_verified_stage": "Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataskaitoje.",
@@ -19,8 +19,8 @@
       "name": "Centrinės API sinchronizavimas",
       "state": "success",
       "detail": "Paskutinis paleidimas sėkmingas.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44557317191",
-      "created_at": "2026-11-19T15:39:45Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44578985013",
+      "created_at": "2026-11-19T17:36:24Z"
     },
     {
       "name": "Lighthouse auditas",
@@ -28,13 +28,6 @@
       "detail": "Paskutinis paleidimas sėkmingas.",
       "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43915631789",
       "created_at": "2026-11-16T17:10:54Z"
-    },
-    {
-      "name": "Centrinis valdymo centras",
-      "state": "success",
-      "detail": "Paskutinis paleidimas sėkmingas.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44557230322",
-      "created_at": "2026-11-19T15:39:17Z"
     },
     {
       "name": "Debesijos read-only užduočių vykdytojas",
@@ -46,7 +39,7 @@
     {
       "name": "Cloudflare Worker + D1",
       "state": "success",
-      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 5 min.",
+      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 8 min.",
       "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
       "created_at": null
     }
@@ -60,7 +53,15 @@
       "created_at": null
     }
   ],
-  "pending_checks": [],
+  "pending_checks": [
+    {
+      "name": "Centrinis valdymo centras",
+      "state": "running",
+      "detail": "Vyksta (pending).",
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44579391856",
+      "created_at": "2026-11-19T17:38:41Z"
+    }
+  ],
   "ai_agent_memory_check": {
     "name": "AI agentai + control-core atmintis",
     "state": "warning",
