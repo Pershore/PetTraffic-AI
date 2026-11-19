@@ -1,9 +1,9 @@
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
-- Atnaujinta: 2026-11-19T14:13:01.999187+00:00
+- Atnaujinta: 2026-11-19T15:39:24.849491+00:00
 - Būsena: **REIKIA DĖMESIO**
-- GitHub run: 44541315932
-- Šaltinio commit: 479c78446b06fb45864d866102e42b569d2e4798
+- GitHub run: 44557230322
+- Šaltinio commit: 999e867088a8754eb7cf46bb778d7c5fde0c2bb3
 
 ## Paskutinis patikrintas etapas
 
@@ -11,24 +11,23 @@ Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataska
 
 ## Kitas veiksmas
 
-Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas (warning). Suplanuotas ciklas nuo 2026-11-19 06:10 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-18T15:32:01Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.
+Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (stale). Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-18.
 
 ## Patvirtinti procesai
 
-- Centrinės API sinchronizavimas: Paskutinis paleidimas sėkmingas.
+- GA4, temų radaras ir svetainės stebėjimas: Paskutinis paleidimas sėkmingas.
 - Lighthouse auditas: Paskutinis paleidimas sėkmingas.
 - Centrinis valdymo centras: Paskutinis paleidimas sėkmingas.
 - Debesijos read-only užduočių vykdytojas: Paskutinis debesijos užduoties vykdymas sėkmingas.
-- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 12 min.
+- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 9 min.
 
 ## Problemos
 
-- **GA4, temų radaras ir svetainės stebėjimas** (warning): Suplanuotas ciklas nuo 2026-11-19 06:10 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-18T15:32:01Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia. – https://github.com/Pershore/PetTraffic-AI/actions/runs/44524989314
 - **AI agentai + control-core atmintis** (stale): Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-18. – https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health
 
 ## Laukiančios patikros
 
-- Nėra.
+- Centrinės API sinchronizavimas: Vyksta (in_progress).
 
 ## AI agentų ir atminties patikra
 
