@@ -333,7 +333,7 @@ test("only same-day successful Daily-suite schedule provenance can unlock an AI 
 test("content review keeps article structure, external veterinary sources and disclaimer within its evidence budget",()=>{
  const intro="Gyvūno sveikata ir svarbūs požymiai. ".repeat(20);
  const middle="Išsamus straipsnio tekstas apie simptomus ir saugius veiksmus. ".repeat(40);
- const html=\`<nav>NAVIGATION_NOISE</nav><main><h1>Katės sveikatos vadovas</h1><p>\${intro}</p><h2>Skubios pagalbos požymiai</h2><p>\${middle}</p><h2>Patikimi šaltiniai</h2><ul><li><a href="https://www.vet.cornell.edu/health">Cornell Veterinary Medicine</a></li><li><a href="https://www.acvs.org/small-animal/">American College of Veterinary Surgeons</a></li></ul><p>Šis straipsnis nepakeičia veterinarijos gydytojo apžiūros.</p></main><section>COOKIE_BANNER_NOISE</section>\`;
+ const html=`<nav>NAVIGATION_NOISE</nav><main><h1>Katės sveikatos vadovas</h1><p>${intro}</p><h2>Skubios pagalbos požymiai</h2><p>${middle}</p><h2>Patikimi šaltiniai</h2><ul><li><a href="https://www.vet.cornell.edu/health">Cornell Veterinary Medicine</a></li><li><a href="https://www.acvs.org/small-animal/">American College of Veterinary Surgeons</a></li></ul><p>Šis straipsnis nepakeičia veterinarijos gydytojo apžiūros.</p></main><section>COOKIE_BANNER_NOISE</section>`;
  const evidence=extractContentReviewEvidence(html);
  assert.ok(evidence.length<=1150);
  assert.match(evidence,/Katės sveikatos vadovas/);
@@ -345,7 +345,7 @@ test("content review keeps article structure, external veterinary sources and di
 });
 
 test("four compact content-review evidence records fit the existing model input budget",()=>{
- const html=\`<main><h1>Gyvūno priežiūra</h1><p>\${"Įžanginis tekstas. ".repeat(80)}</p><h2>Simptomai</h2><p>\${"Turinio dalis. ".repeat(100)}</p><h2>Šaltiniai</h2><a href="https://www.vet.cornell.edu/health">Cornell Veterinary Medicine</a><p>Informacija nepakeičia veterinaro apžiūros.</p></main>\`;
+ const html=`<main><h1>Gyvūno priežiūra</h1><p>${"Įžanginis tekstas. ".repeat(80)}</p><h2>Simptomai</h2><p>${"Turinio dalis. ".repeat(100)}</p><h2>Šaltiniai</h2><a href="https://www.vet.cornell.edu/health">Cornell Veterinary Medicine</a><p>Informacija nepakeičia veterinaro apžiūros.</p></main>`;
  const publicPages=Array.from({length:4},(_,i)=>({path:"/articles/guide-"+i+".html",status:200,text:extractContentReviewEvidence(html)}));
  const input=JSON.stringify({task:"Peržiūrėk viešų puslapių tekstą ir struktūrą.",source:{expected_run_date:"2026-11-20",evidence_status:"available",requested_pages:4,available_pages:4,unavailable_pages:[],public_pages:publicPages}});
  assert.ok(input.length<=6000,"all four page summaries should fit MAX_INPUT_CHARS without truncating the final page");
