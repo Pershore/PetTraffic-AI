@@ -24,7 +24,7 @@ class LiveRedirectMonitorTests(unittest.TestCase):
 
     def test_fetch_redirect_returns_first_301_location_without_following(self):
         headers = Message()
-        headers["Location"] = "/articles/kada-kreiptis-i-veterinara.html"
+        headers["Location"] = "/articles/kada-kreiptis-i-veterinara"
         error = HTTPError(
             "https://pettraffic-ai.pages.dev/articles/old.html",
             301,
@@ -35,7 +35,7 @@ class LiveRedirectMonitorTests(unittest.TestCase):
         with patch("agent.check_live_site.build_opener", return_value=FakeOpener(error)):
             status, location = fetch_redirect("https://pettraffic-ai.pages.dev/articles/old.html")
         self.assertEqual(status, 301)
-        self.assertEqual(location, "/articles/kada-kreiptis-i-veterinara.html")
+        self.assertEqual(location, "/articles/kada-kreiptis-i-veterinara")
 
     def test_redirect_handler_does_not_follow_redirects(self):
         handler = NoRedirectHandler()
