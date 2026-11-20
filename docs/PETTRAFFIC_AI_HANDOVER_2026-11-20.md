@@ -108,3 +108,13 @@ Aktyvus darbo laikas NEMATUOTAS. Įrankių laiko žymos: 06:22–06:30 LT.
 
 - **2026-11-20 16:30 LT schedule root-cause narrowing:** daily-suite.yml is present on default branch main, cron 06:10 UTC; repo archived=false / disabled=false. Last Daily-suite schedule #44557115983 and last workflow-file author were both Pershore (last workflow change 2026-11-16). No evidence of a disabled workflow or suspended actor. GitHub docs confirm scheduled events can be delayed/dropped under Actions load and separately may stop if associated actor is suspended/deprovisioned; exact cause remains unconfirmed. Cron already uses minute :10, so no speculative cron change or external paid scheduler. Collect more event evidence; consider GitHub Support if repeats.
 - PR #298 after sync: 21 commits ahead / 0 behind, but actual code diff remains 13 target files. New CI #44753769889 and Cloudflare preview still running; draft only.
+
+
+## 2026-11-20 tęstinis patikrinimas – PR #298 preview
+
+- **PATIKRINTA:** PR #298 head `b42f08d88dbba1222ae25490aef294b9935ede31`; GitHub site-check #44754030399 success; Cloudflare Pages check-run #136349216197 success. Preview URL: https://152caf4f.pettraffic-ai.pages.dev . Branch preview: https://seo-canonical-clean-urls-202.pettraffic-ai.pages.dev .
+- **PATIKRINTA:** branch sitemap turi 7 extensionless canonical URL; 20 senų 301 taisyklių išsaugotos. CI validatorius sėkmingas.
+- **NEPATVIRTINTA:** preview puslapių, sitemap, robots ir 20 gyvų redirect atsakymų nepatikrinome, nes Firecrawl kredito limitas išnaudotas, o web peržiūros įrankis preview domeno nepasiekia. Todėl preview deploy success nelaikomas pilnu SEO veikimo įrodymu.
+- PR #298 lieka open + DRAFT; nemerge'inti ir nepublikuoti be gyvos preview patikros ir atskiro savininko patvirtinimo.
+- **AI / schedule:** Daily-suite #44716442982 yra workflow_dispatch, ne schedule; Worker diagnostika #44753087484 rodo 0 AI calls, 4 specialist reports missing, Control Core missing, memory last updated 2026-11-19. Issue #145 lieka open. Dienos ciklo nekartoti.
+- **Toliau:** kai prieinama, gyvai patikrinti 7 puslapius, sitemap.xml, robots.txt, 20 redirect; po kito tikro schedule ir D1 sync patikrinti vieną AI ciklą su specialistų įrodymais ir memory readback.
