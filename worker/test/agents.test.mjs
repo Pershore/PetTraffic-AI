@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { runAgentOrchestration, isVilniusAgentRunTime, isAgentScheduledEvent, isAgentCatchUpEvent, shouldRunAgentOrchestration, isEligibleScheduledDailySuiteSnapshot, parseResult, extractResponseText, callModel, getEvents } from "../src/agents.mjs";
+import { runAgentOrchestration, isVilniusAgentRunTime, isAgentScheduledEvent, isAgentCatchUpEvent, shouldRunAgentOrchestration, isEligibleScheduledDailySuiteSnapshot, parseResult, extractResponseText, callModel, getEvents, extractContentReviewEvidence } from "../src/agents.mjs";
 function mockEnv({ai=true,existingRun=false,reserveErrorAt=0,reserveErrorBeforeCommit=false,reserveReadbackError=false,invalidEventPayload=false,modelResponse=null,modelResponses=null}={}) {
  const state={inserted:false,aiCalls:0,updates:[],reservationErrorThrown:false};
  const env={FETCH:async()=>new Response("<html><body><p>Test content</p></body></html>",{status:200}),DB:{prepare(sql){return {
@@ -345,7 +345,9 @@ test("content review keeps article structure, external veterinary sources and di
 });
 
 test("four compact content-review evidence records fit the existing model input budget",()=>{
- const html=`<main><h1>Gyvūno priežiūra</h1><p>${"Įžanginis tekstas. ".repeat(80)}</p><h2>Simptomai</h2><p>${"Turinio dalis. ".repeat(100)}</p><h2>Šaltiniai</h2><a href="https://www.vet.cornell.edu/health">Cornell Veterinary Medicine</a><p>Informacija nepakeičia veterinaro apžiūros.</p></main>`;
+ const headings=Array.from({length:20},(_,i)=>`<h2>Ilgas skyriaus pavadinimas ${i} apie svarbius augintinio sveikatos požymius</h2>`).join("");
+ const sources=Array.from({length:4},(_,i)=>`<a href="https://source${i}.example.org/veterinary/long-reference">Autoritetingas veterinarinės medicinos informacijos šaltinis numeris ${i}</a>`).join("");
+ const html=`<main><h1>Gyvūno priežiūra</h1><p>${"Įžanginis tekstas apie augintinio sveikatą. ".repeat(40)}</p>${headings}<p>${"Turinio dalis apie simptomus, rizikas ir saugius veiksmus. ".repeat(100)}</p><h2>Šaltiniai</h2>${sources}<p>Informacija nepakeičia veterinaro apžiūros. ${"Papildoma svarbi informacija. ".repeat(10)}</p></main>`;
  const publicPages=Array.from({length:4},(_,i)=>({path:"/articles/guide-"+i+".html",status:200,text:extractContentReviewEvidence(html)}));
  const input=JSON.stringify({task:"Peržiūrėk viešų puslapių tekstą ir struktūrą.",source:{expected_run_date:"2026-11-20",evidence_status:"available",requested_pages:4,available_pages:4,unavailable_pages:[],public_pages:publicPages}});
  assert.ok(input.length<=6000,"all four page summaries should fit MAX_INPUT_CHARS without truncating the final page");
