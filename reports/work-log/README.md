@@ -1118,3 +1118,14 @@ Kitas veiksmas: tikrinti kitą tikrą Daily-suite `event=schedule`; po jo laukti
 - **Worker AI būsena:** pagal paskutinę po-13:20 ataskaitą šiandienos agent_run / Control Core dar missing; AI ciklas nepatvirtintas. Jokio rankinio agentų paleidimo neatlikta.
 - **Kitas veiksmas:** po GitHub Actions schedule aktyvumo patikrinimo laukti kito 06:10 UTC grafiko; jei jis įvyksta, patikrinti Daily-suite `event=schedule` → Control Center → snapshot sync → read-only D1 diagnostiką → Worker AI 5/5 ir atmintį. Issue #145 palikti atvirą iki `recovery_confirmed=true`.
 - **Laikas:** aktyvus darbas NEMATUOTAS; workflow trukmė 54 s (esamas manual fallback #44716442982, ne šios sesijos paleidimas).
+
+
+## 2026-11-20 15:48 LT | Pakartotinis Daily-suite ciklo atkūrimo bandymas
+
+- Prieš veiksmus perskaityti `automation-history/reports/history/project-state/latest.md` (SHA `083ee16660fdb96c6e9c2967aab20f92565f5432`) ir `main/reports/work-log/README.md` (SHA `59df42b30e70e8042cd904310be58b6aace52b50`).
+- Pakartotinai patikrinti main workflow run sąrašą, naujausius commit, atvirus PR, issue #145 ir abiejų dispatch workflow failų turinį.
+- 2026-11-20 Daily-suite tikras `event=schedule` vis dar nerastas; #44716442982 yra successful `workflow_dispatch` (~54 s). Pakartotinis bridge komentaras būtų deduplikuotas, todėl jo nepridėjau.
+- Paskutinis Control Center #44740427191 success 14:59:52 LT; 15:48 LT dar galiojo 60 min. apsauga. Naujas Control Center komentaras nepridėtas.
+- Read-only Worker diagnostika #44740538647, snapshot sync #44740503319 ir Control Center #44740427191 success; šiandienos AI 5/5 ciklas nepatvirtintas. Naujausias site-check #44744111845 yra push, ne schedule.
+- Issue #145 lieka open. GitHub Actions nustatymų skaitymo API per šią integraciją neprieinama; reikia žmogaus patikros Settings → Actions → General.
+- Jokių workflow/kodo, Worker/D1 production, DNS, secrets, repo settings, ARO Vet, PR merge ar billing pakeitimų neatlikta. Aktyvus darbo laikas NEMATUOTAS.
