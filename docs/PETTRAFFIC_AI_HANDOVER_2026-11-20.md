@@ -1,6 +1,6 @@
 # Pet traffic – perdavimo ataskaita (2026-11-20)
 
-## Naujausia patikrinta būsena (2026-11-20 16:26 LT)
+## Naujausia patikrinta būsena (2026-11-20 16:30 LT)
 
 - **PR #298 / clean canonical:** seo/canonical-clean-urls-20261120, head 151b2d9b5e28366d6f2cdf47130727b2ffd19f82, 15 ahead / 0 behind prieš šios dokumentacijos sinchronizavimą; 13 failų. Static site-check CI success, Cloudflare Pages preview dar in_progress. Draft, nesujungtas, produkcija nepakeista. 20 senų 301 peradresavimų išsaugoti.
 - **Google indeksavimas:** rankinė Search Console užklausa visur grąžina "Quota exceeded"; tai nėra domeno blokavimo įrodymas. Robots ir sitemap failai anksčiau patikrinti: 7 URL, Allow: /, 4 gidai index,follow. Tiesioginis dabartinis GSC URL Inspection / live sitemap fetch šioje sesijoje neprieinamas; sitemap nepateikti iš naujo, Request indexing nekartoti.
@@ -102,3 +102,9 @@ Diagnostikos artefaktas #14601127810 patvirtino Control Center source run ID #44
 Diagnostika tik SELECT; 7 užklausose `rows_written=0`. Snapshot sync vykdė tik esamą privatumo filtruotų įvykių kelią per trumpalaikį OIDC, 2 įvykiams patvirtintas D1 write/readback. Worker produkcinis deploy, D1 schema, DNS, Cloudflare paskyros nustatymai, secrets, ARO Vet, viešas turinys, billing ir mokamos paslaugos nekeisti.
 
 Aktyvus darbo laikas NEMATUOTAS. Įrankių laiko žymos: 06:22–06:30 LT.
+
+
+
+
+- **2026-11-20 16:30 LT schedule root-cause narrowing:** daily-suite.yml is present on default branch main, cron 06:10 UTC; repo archived=false / disabled=false. Last Daily-suite schedule #44557115983 and last workflow-file author were both Pershore (last workflow change 2026-11-16). No evidence of a disabled workflow or suspended actor. GitHub docs confirm scheduled events can be delayed/dropped under Actions load and separately may stop if associated actor is suspended/deprovisioned; exact cause remains unconfirmed. Cron already uses minute :10, so no speculative cron change or external paid scheduler. Collect more event evidence; consider GitHub Support if repeats.
+- PR #298 after sync: 21 commits ahead / 0 behind, but actual code diff remains 13 target files. New CI #44753769889 and Cloudflare preview still running; draft only.
