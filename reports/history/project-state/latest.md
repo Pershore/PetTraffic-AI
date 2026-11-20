@@ -131,3 +131,13 @@ Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas
 - **TIKĖTINAS Kitas tikrinimo taškas:** individualus `daily-suite.yml` workflow gali būti išjungtas atskirai nuo bendro Actions nustatymo, arba GitHub cron event pristatymas neveikia. Ši integracija nepateikia workflow enable/disable statuso API; jo neatspėju ir pats nekeičiu.
 - **Kitas tikslus žingsnis:** atidaryti repo Actions → Daily automation suite workflow puslapį ir patikrinti, ar viršuje siūlomas mygtukas **Enable workflow** (tai reikštų, kad konkretus workflow išjungtas). Jei matomas **Disable workflow**, workflow jau įjungtas ir reikia tirti GitHub schedule event pristatymą.
 - **NEKEISTA:** jokie workflow failai, Actions/repo nustatymai, secrets, Worker/D1 production, DNS, ARO Vet, PR ar billing.
+
+
+## 2026-11-20 LT – cron diagnostika be vartotojo veiksmų
+- Vartotojas aiškiai nurodė, kad GitHub UI nieko nespaus; papildomų paspaudimų neprašoma.
+- Privalomas pradžios protokolas įvykdytas: latest.md perskaitytas iš `automation-history`, work-log iš `main`.
+- Patikrinta, ar prieinama GitHub integracija gali parodyti individualaus `daily-suite.yml` workflow aktyvumo būseną. Tinkamo įrankio nėra; GitHub `fetch` atmetė workflow puslapį ir Actions workflow API endpointus kaip neleidžiamus. Jokių nustatymų nekeičiau.
+- Patvirtinta ankstesnė diagnozė: bendrieji Actions / scheduled workflows vartotojo patvirtinti kaip įjungti; cron `10 6 * * *` yra workflow faile; 2026-11-20 tikro `event=schedule` vykdymo nėra. Manual `workflow_dispatch` jo nepakeičia.
+- Worker AI 5/5 ciklas ir D1 atminties atsistatymas lieka nepatvirtinti; Issue #145 paliekamas open iki `recovery_confirmed=true`.
+- Jokie kodo, workflow, repository/Actions settings, Worker/D1 production, DNS, secrets, ARO Vet, PR merge ar billing pakeitimai neatlikti. Aktyvus darbo laikas NEMATUOTAS.
+- Kitas žingsnis: tęsti read-only diagnostiką per prieinamus GitHub run, job ir artifact duomenis; vartotojo UI paspaudimų neprašyti.
