@@ -946,3 +946,12 @@ GitHub API patvirtino, kad Daily-suite run #44119444026 buvo tikras event=schedu
 - **NEKEISTA:** Worker kodas ir produkcinis diegimas, D1 schema, DNS, Cloudflare nustatymai, secrets, ARO Vet, viešas turinys, billing ir mokamos paslaugos. Esami snapshot sync workflow įrašė tik savo įprastus agreguotus snapshot įvykius.
 - **Kitas veiksmas:** po šiandienos 13:20 LT vienintelio Worker AI ciklo patikrinti tą patį run_date, 5 kvietimus, 4 specialistų įrodymus, Control Core ir memory readback per automatinę post-sync diagnostiką. Nekartoti ciklo, jei dienos run_date jau yra. Issue #145 uždaryti tik kai `recovery_confirmed=true` ir įrodymai sutampa.
 - **Darbo laikas:** aktyvus techninis laikas NEMATUOTAS; įrankių laiko žymos apima 06:22–06:30 LT.
+
+
+## 2026-11-20 16:26 LT – SEO / Worker AI tęstinės patikros papildymas
+
+- Google Search Console "Quota exceeded" nelaikyti domeno blokavimo įrodymu; rankinių Request indexing užklausų nekartoti, sitemap pakartotinai neteikti, kol nėra aiškaus GSC pagrindo.
+- Clean canonical URL pataisa paruošta PR #298 (seo/canonical-clean-urls-20261120), 13 failų; CI success, Cloudflare Pages preview vis dar in_progress. PR lieka DRAFT; viešas canonical/sitemap pakeitimas ir production publikavimas laukia preview bei atskiro savininko patvirtinimo. 20 senų 301 išsaugoti.
+- 2026-11-20 post-sync D1 diagnostika #44753087484 / artifact #14635433280 patvirtino: agent_run missing, 0 AI calls, 4 specialist reports missing, Control Core missing; memory vis dar 2026-11-19 needs_evidence. Šiandienos analytics/topic snapshot kilę iš #44716442982 workflow_dispatch, ne schedule; todėl tinkamo schedule provenance nėra ir Worker AI ciklas po 13:20 nepatvirtintas.
+- Daily-suite cron faile tebėra 06:10 UTC, bet 2026-11-20 tikro event=schedule nėra naujausiame 100 Actions run lange. Tiksli GitHub schedulerio priežastis nežinoma; cron nekeisti spėliojant. Site-check #44752353278 tikras schedule success, bet vėlavo apie 8 val. 42 min.
+- Issue #145 lieka open. Nekartoti AI ciklo rankiniu būdu; po tikro schedule + D1 sync tikrinti vieną tos pačios LT dienos ciklą, specialistų įrodymus, Control Core ir memory readback.
