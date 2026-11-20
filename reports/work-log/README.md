@@ -1129,3 +1129,12 @@ Kitas veiksmas: tikrinti kitą tikrą Daily-suite `event=schedule`; po jo laukti
 - Read-only Worker diagnostika #44740538647, snapshot sync #44740503319 ir Control Center #44740427191 success; šiandienos AI 5/5 ciklas nepatvirtintas. Naujausias site-check #44744111845 yra push, ne schedule.
 - Issue #145 lieka open. GitHub Actions nustatymų skaitymo API per šią integraciją neprieinama; reikia žmogaus patikros Settings → Actions → General.
 - Jokių workflow/kodo, Worker/D1 production, DNS, secrets, repo settings, ARO Vet, PR merge ar billing pakeitimų neatlikta. Aktyvus darbo laikas NEMATUOTAS.
+
+
+## 2026-11-20 15:52 LT | Actions įjungimo patvirtinimas ir cron diagnostika
+
+- Vartotojas patvirtino, kad Settings → Actions bendras nustatymas įjungtas.
+- Pakartotinai patikrintas GitHub Actions run sąrašas: `daily-suite.yml` šiandien turi tik #44716442982 (`workflow_dispatch`, success, 54 s); tikro `event=schedule` nėra. Naujausias main site-check #44744111845 success, bet tai `push`.
+- Repo aktyvus (šiandien push ir site-check), todėl 60 dienų neaktyvumo išjungimas nėra tikėtinas.
+- Individualaus daily-suite workflow enabled/disabled būsenos API integracija nepateikia. Kitas tikslus UI patikrinimas: ar workflow puslapyje rodomas **Enable workflow** ar **Disable workflow**. Nustatymų nekeičiau.
+- Jokie workflow/kodas, repo/Actions settings, secrets, Worker/D1 production, DNS, ARO Vet, PR merge ar billing pakeitimai neatlikti.
