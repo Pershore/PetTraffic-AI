@@ -8,7 +8,8 @@ on:
         required: false
         type: string
   workflow_run:
-    workflows: ["Pet traffic central control center"]
+    # Run only after the snapshot sync has completed and its D1 readback has succeeded.
+    workflows: ["Sync PetTraffic snapshots to central API"]
     types: [completed]
     branches: [main]
   push:
