@@ -1,6 +1,24 @@
 # Pet traffic – perdavimo ataskaita (2026-11-20)
 
-## Naujausia patikrinta būsena (2026-11-20 12:11 LT)
+## Naujausia patikrinta būsena (2026-11-20 12:28 LT)
+
+- **PR #296 – ATLIKTA:** sujungtas squash į `main`, merge commit `14167078eadd5264581ae314786cbad3bddad0d9`. Po merge site-check #44719066550 ir automatic work-log #44719066616 success. Privalomos Python patikros, HTML/SEO/sitemap, JS ir analytics/topic testai success.
+- **Cloudflare Pages deploy – PATIKRINTA:** check run #136229901443 (`cloudflare-workers-and-pages`) `success`, tekstas `Deployed successfully`, deployment ID `496393b4-10cb-4355-85a5-5f8a83014b31`; preview URL `https://496393b4.pettraffic-ai.pages.dev` HTTP 200. Production alias `https://pettraffic-ai.pages.dev/` po merge taip pat HTTP 200. Keturi gidai, about, privacy, robots.txt ir sitemap.xml – 200; neegzistuojantis URL – 404. Cloudflare check URL pažymėtas kaip preview, todėl production URL tikrintas atskirai.
+- **Main HEAD:** po PR merge ir papildomų work-log įrašų naujausias commit `b7768fe120a2f6e29d52e641f94b419f98343dac`; PR #296 buvo dokumentacinis, svetainės kodo ar viešo turinio nekeista.
+- **Dubliuojanti automatika – ATLIKTA:** išjungta aktyvi 12:00 LT `PetTraffic kasdienė būklės patikra`, nes jos promptas dubliavo 11:45 LT pagrindinį koordinatorių. Jau pradėtas 12:00 vykdymas spėjo užbaigti vieną work-log įrašą; naujų paleidimų nebebus. 11:45 LT koordinatorius lieka aktyvus, 14:00 LT greičio / post-cycle verifier paliktas aktyvus.
+- **Laukiantys darbai:** Daily-suite `event=schedule` šiandien neįvyko; manual fallback nėra schedule įrodymas. 13:20 LT patikrinti vienintelį Worker AI ciklą, 14:00 LT esamas verifier; kitas tikras Daily-suite schedule 2026-11-21 06:10 UTC. Issue #145 lieka open.
+
+### Pirmas neužbaigtas veiksmas
+
+13:20 LT patikrinti šiandienos Worker AI ciklą per `/health`; manual `workflow_dispatch` snapshot jo neatstoja. 14:00 LT esamas verifier patikrina tą patį ciklą. Jei po 13:20 nėra šiandienos run, žymėti STALE ir nekartoti.
+
+### Šios sesijos ribos
+
+Jokių viešo turinio, canonical, sitemap, DNS, Cloudflare Worker/D1 production, secrets, paskyrų teisių, ARO Vet, billing ar mokamų paslaugų pakeitimų. `docs/SESSION_START.md` nekeitėme, nes sesijos protokolas nepasikeitė.
+
+---
+
+## Ankstesnė patikrinta būsena (2026-11-20 12:11 LT)
 
 - **Main / PR:** `main` HEAD `55bd6d207b7ef3abbb723e03305b4c295f98c766`; 7 atviri PR. #294 – draft, 4 ahead / 2 behind; #264 clean-URL canonical pataisa – draft, 1 ahead / 117 behind. Nė vienas nejungtas.
 - **Schedule incidentas:** šiandienos Daily-suite `event=schedule` po 60 min. grace nerasta. Paskutinis tikras schedule #44557115983 (2026-11-19 15:38:40Z; `created_at=run_started_at`, baigėsi po 35 s); site-check schedule #44546115868 (14:39:25Z; `created_at=run_started_at`, baigėsi po 16 s). Vėlavimas įvyko iki GitHub run sukūrimo, ne runner eilėje. Tiksli scheduler priežastis nepatvirtinta.
