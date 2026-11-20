@@ -1,5 +1,17 @@
 # Pet traffic – perdavimo ataskaita (2026-11-20)
 
+## Naujausia patikrinta būsena (2026-11-20 16:26 LT)
+
+- **PR #298 / clean canonical:** seo/canonical-clean-urls-20261120, head 151b2d9b5e28366d6f2cdf47130727b2ffd19f82, 15 ahead / 0 behind prieš šios dokumentacijos sinchronizavimą; 13 failų. Static site-check CI success, Cloudflare Pages preview dar in_progress. Draft, nesujungtas, produkcija nepakeista. 20 senų 301 peradresavimų išsaugoti.
+- **Google indeksavimas:** rankinė Search Console užklausa visur grąžina "Quota exceeded"; tai nėra domeno blokavimo įrodymas. Robots ir sitemap failai anksčiau patikrinti: 7 URL, Allow: /, 4 gidai index,follow. Tiesioginis dabartinis GSC URL Inspection / live sitemap fetch šioje sesijoje neprieinamas; sitemap nepateikti iš naujo, Request indexing nekartoti.
+- **Daily-suite:** cron 06:10 UTC faile išlikęs, tačiau 2026-11-20 nėra event=schedule; šiandienos #44716442982 yra workflow_dispatch. Tiksli schedulerio priežastis nepatvirtinta. Site-check #44752353278 tikras schedule success, bet startavo apie 8 val. 42 min. po cron.
+- **Worker AI / D1:** po 13:20 LT post-sync SELECT-only diagnostika #44753087484 / artifact #14635433280 patvirtino 2026-11-20 agent_run.present=false, 0 AI calls, visi 4 specialistai missing, Control Core missing. Memory readback vis dar 2026-11-19T15:45:21.548Z, needs_evidence su trimis gap kodais. Šios dienos analytics/topic snapshot kilo iš manual run #44716442982, ne schedule; AI ciklas nepatvirtintas. 7 SELECT query, rows_written=0.
+- **Issue #145:** palikti open iki tikro AI ciklo, pakankamų specialistų įrodymų, Control Core ir D1 memory readback sutapimo / recovery_confirmed=true.
+- **Saugumas:** jokio Worker/D1 production, DNS, Cloudflare konfigūracijos, secrets, ARO Vet, viešo turinio, canonical/sitemap production pakeitimo, billing ar mokamų paslaugų pakeitimo.
+- **Kitas:** patikrinti PR #298 Cloudflare preview; toliau fiksuoti tikrą Daily-suite schedule (ne push/manual); po tinkamo schedule + D1 sync tikrinti vienintelį dienos AI ciklą. Nekartoti sitemap submit ar AI rankiniu būdu.
+
+---
+
 ## Naujausia patikrinta būsena (2026-11-20 12:11 LT)
 
 - **Main / PR:** `main` HEAD `55bd6d207b7ef3abbb723e03305b4c295f98c766`; 7 atviri PR. #294 – draft, 4 ahead / 2 behind; #264 clean-URL canonical pataisa – draft, 1 ahead / 117 behind. Nė vienas nejungtas.
