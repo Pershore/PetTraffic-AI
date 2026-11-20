@@ -1,9 +1,9 @@
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
-- Atnaujinta: 2026-11-20T04:28:14.950974+00:00
+- Atnaujinta: 2026-11-20T04:29:49.171848+00:00
 - Būsena: **VYKSTA / LAUKIAMA**
-- GitHub run: 44674590442
-- Šaltinio commit: 00402eafc94a26a66b5c5bee71f1b18d6f80f55c
+- GitHub run: 44674758643
+- Šaltinio commit: 1b8778bce67f9c495c7c3f2db09b0b510cfe5e69
 
 ## Paskutinis patikrintas etapas
 
@@ -11,15 +11,16 @@ Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataska
 
 ## Kitas veiksmas
 
-Tęsti laukiančių patikrų stebėseną: Centrinės API sinchronizavimas.
+Tęsti laukiančių patikrų stebėseną: AI agentai + control-core atmintis.
 
 ## Patvirtinti procesai
 
 - GA4, temų radaras ir svetainės stebėjimas: Paskutinis paleidimas sėkmingas.
+- Centrinės API sinchronizavimas: Paskutinis paleidimas sėkmingas.
 - Lighthouse auditas: Paskutinis paleidimas sėkmingas.
 - Centrinis valdymo centras: Paskutinis paleidimas sėkmingas.
 - Debesijos read-only užduočių vykdytojas: Paskutinis debesijos užduoties vykdymas sėkmingas.
-- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 13 min.
+- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 14 min.
 
 ## Problemos
 
@@ -27,7 +28,6 @@ Tęsti laukiančių patikrų stebėseną: Centrinės API sinchronizavimas.
 
 ## Laukiančios patikros
 
-- Centrinės API sinchronizavimas: Vyksta (in_progress).
 - AI agentai + control-core atmintis: Paskutinis AI agentų ciklas dar neįvyko 13:20 Lietuvos laiku lange; laukiama šiandienos suplanuoto ciklo.
 
 ## AI agentų ir atminties patikra
