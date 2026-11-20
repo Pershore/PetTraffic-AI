@@ -87,3 +87,10 @@ Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas
 - **PATIKRINTA – PR #297 būklė po šio audito work-log commit:** naujausias `main` HEAD `1af39ba542515afde310d9b25436fa3adcb987b2`; `compare_commits(main...perf/dedupe-control-center-bridge-20261120)` rodo 3 commits ahead / 2 behind, o PR API `mergeable=false`. PR lieka draft, nesujungtas.
 - Ankstesniame 15:10 įraše nurodyti 3 ahead / 1 behind atitiko tuometinį `main` HEAD `e1cfda9`; po work-log commit main pasistūmėjo dar vienu commit, todėl dabartinis atsilikimas yra 2.
 - **ATLIKTA:** PR neperbazavau ir nekeičiau, nes tam reikia naujos izoliuotos šakos/CI ciklo; jokių merge veiksmų neatlikta. Kitas žingsnis – atnaujinti PR šaką nuo dabartinio main ir iš naujo paleisti visus reikalingus testus tik prieš svarstant žmogaus peržiūrą.
+
+## 2026-11-20 15:12 LT – galutinė po-įrašo patikra
+
+- **PATIKRINTA – dabartinis main:** po dviejų šios sesijos darbo žurnalo commit `main` HEAD yra `87e5e29d3f4a67585ab96f58c6ca7fb277b55445`; `reports/work-log/README.md` blob SHA `98d5aad5879df52f76ce8157ac48f4d65cc3a0d6`.
+- **PATIKRINTA – po-įrašo CI:** site-check #44743287988 (`push` ant `1af39ba`) success, 18 s; site-check #44743563069 (`push` ant dabartinio `main` `87e5e29`) success, 21 s. Tai dokumentavimo commitų patikros, ne Daily-suite schedule įrodymai.
+- **PR #297 dabartinė būklė:** po paskutinio main dokumentavimo commit palyginimas rodo 3 commits ahead / 3 behind; PR lieka draft, `mergeable=false`, nesujungtas. Ankstesnis 2-behind matavimas buvo teisingas prieš paskutinį korekcijos work-log commit; dabar branch drift dar vienu commit didesnis. PR šakos neatnaujinau ir CI nepaleidau iš naujo.
+- **Kitas žingsnis:** PR #297 tik atnaujinti nuo dabartinio main atskiroje šakoje ir pakartoti CI po žmogaus peržiūros; Daily-suite schedule ir Worker AI recovery lieka pagrindiniai projekto blokatoriai.
