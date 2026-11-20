@@ -1194,3 +1194,11 @@ Kitas veiksmas: tikrinti kitą tikrą Daily-suite `event=schedule`; po jo laukti
 - **SPRENDIMAS:** domeno, DNS, Cloudflare Pages, viešo turinio, sitemap/canonical produkcijoje, Worker/D1, secrets, ARO Vet, billing ir mokamų paslaugų nekeisti. Viešo SEO pakeitimo nepublikuoti be atskiro patvirtinimo. Pirmas saugus tęsinys – naujo clean-URL PR paruošimas nuo naujausio main, įtraukiant testą, kad sitemap canonical URL nesukeltų redirect; po CI ir Pages preview pateikti savininkui publikavimo patvirtinimui.
 - **Atviri klausimai:** Daily-suite tikro `event=schedule` pristatymas 2026-11-20 vis dar nepatvirtintas; Worker AI 2026-11-20 ciklo recovery taip pat nėra įrodytas pagal ankstesnį 15:52 LT snapshot. Issue #145 paliekamas open.
 - **Aktyvus darbo laikas:** NEMATUOTAS. Jokių kodo ar produkcijos pakeitimų šiame audite neatlikta.
+
+
+## 2026-11-20 16:20 LT | Naujas schedule įrodymas po SEO audito
+
+- **PATIKRINTA – site-check schedule įvyko:** GitHub Actions run #44752353278 turi `event=schedule`, sukurtas 2026-11-20T14:19:33Z (16:19:33 LT), `success`; cron faile `37 5 * * *`, taigi paleidimas vėlavo apie 8 val. 42 min. Job #136343185167 baigėsi success; logas patvirtina 150 testų OK. Tai yra tikras schedule, ne push ar dispatch.
+- **Svarbi riba:** šio `site-check` workflow job tikrina statinį kodą ir testus; jis nėra tas pats, kas Daily-suite `live-check`. Paskutinis gyvas 12 URL / sitemap / robots / 404 / 20 redirect patikrinimas tebėra Daily-suite #44716442982 `workflow_dispatch`, 12:07 LT.
+- **Daily-suite:** po šio patikrinimo naujo 2026-11-20 `event=schedule` Daily-suite run neaptikta; šiandienos #44716442982 išlieka `workflow_dispatch`. Worker AI schedule vartai lieka nepatvirtinti.
+- **Dokumentavimo commit:** ankstesnė šio audito išvada išsaugota commit `581e659d99029362c9701b0cd41d49f0b461b9f7`; šis įrašas papildo tikslų vėliau atėjusio site-check schedule įrodymą. Kodo / svetainės / produkcijos pakeitimų nėra.
