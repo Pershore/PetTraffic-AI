@@ -959,3 +959,12 @@ GitHub API patvirtino, kad Daily-suite run #44119444026 buvo tikras event=schedu
 
 - **2026-11-20 16:30 LT schedule root-cause narrowing:** daily-suite.yml is present on default branch main, cron 06:10 UTC; repo archived=false / disabled=false. Last Daily-suite schedule #44557115983 and last workflow-file author were both Pershore (last workflow change 2026-11-16). No evidence of a disabled workflow or suspended actor. GitHub docs confirm scheduled events can be delayed/dropped under Actions load and separately may stop if associated actor is suspended/deprovisioned; exact cause remains unconfirmed. Cron already uses minute :10, so no speculative cron change or external paid scheduler. Collect more event evidence; consider GitHub Support if repeats.
 - PR #298 after sync: 21 commits ahead / 0 behind, but actual code diff remains 13 target files. New CI #44753769889 and Cloudflare preview still running; draft only.
+
+
+## 2026-11-20 – PR #298 preview diegimo patikra
+
+- PR #298 head `b42f08d88dbba1222ae25490aef294b9935ede31`: GitHub site-check #44754030399 sėkmingas; Cloudflare Pages check-run #136349216197 sėkmingas, preview deployment sukurtas: https://152caf4f.pettraffic-ai.pages.dev .
+- PR #298 lieka open + DRAFT, 13 failų; production merge/publish neatliktas. Šakos sitemap turi 7 canonical URL, o `site/_redirects` išsaugo 20 istorinių 301 taisyklių. Static validator CI success.
+- **NEPATVIRTINTA:** preview puslapių ir HTTP redirect grandinių gyvai patikrinti nepavyko: Firecrawl kredito limitas išnaudotas, o web peržiūros įrankis preview URL nepasiekė. Preview deployment success nėra visų URL veikimo įrodymas. Prieš merge būtina gyva patikra ir atskiras savininko patvirtinimas.
+- 2026-11-20 Daily-suite #44716442982 yra `workflow_dispatch`, ne `schedule`; site-check #44752353278 buvo tikras schedule success. Worker D1 diagnostika #44753087484: agent run missing, 0 AI calls, 4 specialist reports missing, Control Core missing; memory paskutinis įrašas 2026-11-19. Issue #145 lieka open; šiandienos ciklo nekartoti.
+- PR #297 ir #294 tebėra draft; jų base SHA atsilikę nuo dabartinio main, todėl prieš bet kokį svarstymą būtinas atnaujinimas ir pakartotinis CI. Nejungti.
