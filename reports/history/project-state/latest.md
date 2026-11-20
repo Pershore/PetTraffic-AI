@@ -94,3 +94,14 @@ Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas
 - **PATIKRINTA – po-įrašo CI:** site-check #44743287988 (`push` ant `1af39ba`) success, 18 s; site-check #44743563069 (`push` ant dabartinio `main` `87e5e29`) success, 21 s. Tai dokumentavimo commitų patikros, ne Daily-suite schedule įrodymai.
 - **PR #297 dabartinė būklė:** po paskutinio main dokumentavimo commit palyginimas rodo 3 commits ahead / 3 behind; PR lieka draft, `mergeable=false`, nesujungtas. Ankstesnis 2-behind matavimas buvo teisingas prieš paskutinį korekcijos work-log commit; dabar branch drift dar vienu commit didesnis. PR šakos neatnaujinau ir CI nepaleidau iš naujo.
 - **Kitas žingsnis:** PR #297 tik atnaujinti nuo dabartinio main atskiroje šakoje ir pakartoti CI po žmogaus peržiūros; Daily-suite schedule ir Worker AI recovery lieka pagrindiniai projekto blokatoriai.
+
+## 2026-11-20 15:23 LT – Daily-suite ciklo atkūrimo diagnozė
+
+- **PATIKRINTA:** pradžios dokumentai perskaityti teisingose šakose; latest.md pradinis blob SHA `27213d1b10e07fa4f4fd5af4b00bdb3ab0d12e8c`. main darbo žurnalas atskirai papildytas commit `5e2ce7b0e437a168d9548392ac256ea2f1111519`.
+- **PATIKRINTA:** `main/.github/workflows/daily-suite.yml` turi `schedule: "10 6 * * *"` ir `workflow_dispatch`; suplanuoto įvykio konfigūracija faile yra.
+- **NEVEIKIA:** 2026-11-20 tikras Daily-suite `event=schedule` nevyksta / neaptiktas. #44716442982 yra sėkmingas `workflow_dispatch` fallback (~54 s), ne cron įrodymas.
+- **PATIKRINTA:** esamas issue #145 bridge `/pettraffic-run-daily-suite` yra savininko autorizuotas, tačiau guard deduplikuoja, jei tą pačią UTC dieną jau yra sėkmingas ar vykdomas manual fallback. Kadangi #44716442982 jau sėkmingas, pakartotinis komentaras tik būtų no-op; jo nepridėjome.
+- **LAUKIA:** Worker AI šiandienos ciklas nepatvirtintas; manual fallback negali atitikti Worker `source_event=schedule` vartų. Nenaudoti `/v1/tasks` ar rankinių agentų endpointų.
+- **Blokatorius:** prieinama GitHub integracija neatskleidžia Actions scheduled-workflow aktyvumo/suspendavimo nustatymo. Reikalingas vienas tikslinis patikrinimas GitHub repo **Settings → Actions → General**: patvirtinti, kad Actions ir scheduled workflows nėra išjungti / pristabdyti. Repository settings nekeisti šio vykdymo metu.
+- **NEKEISTA:** jokie workflow/kodas, Worker/D1 produkcija, DNS, secrets, repo nustatymai, ARO Vet ar billing.
+- **Kitas veiksmas:** patvirtinus Actions schedule aktyvumą, laukti kito 06:10 UTC cron ir patikrinti tikrą `event=schedule` → Control Center → snapshot sync → SELECT-only D1 diagnostiką → AI 5/5 bei atmintį. Issue #145 lieka open iki `recovery_confirmed=true`. Aktyvus darbo laikas NEMATUOTAS.
