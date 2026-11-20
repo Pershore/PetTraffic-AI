@@ -1202,3 +1202,13 @@ Kitas veiksmas: tikrinti kitą tikrą Daily-suite `event=schedule`; po jo laukti
 - **Svarbi riba:** šio `site-check` workflow job tikrina statinį kodą ir testus; jis nėra tas pats, kas Daily-suite `live-check`. Paskutinis gyvas 12 URL / sitemap / robots / 404 / 20 redirect patikrinimas tebėra Daily-suite #44716442982 `workflow_dispatch`, 12:07 LT.
 - **Daily-suite:** po šio patikrinimo naujo 2026-11-20 `event=schedule` Daily-suite run neaptikta; šiandienos #44716442982 išlieka `workflow_dispatch`. Worker AI schedule vartai lieka nepatvirtinti.
 - **Dokumentavimo commit:** ankstesnė šio audito išvada išsaugota commit `581e659d99029362c9701b0cd41d49f0b461b9f7`; šis įrašas papildo tikslų vėliau atėjusio site-check schedule įrodymą. Kodo / svetainės / produkcijos pakeitimų nėra.
+
+
+## 2026-11-20 16:23 LT | Clean canonical URL pataisos PR paruošimas
+
+- **ATLIKTA – atskira šaka:** `seo/canonical-clean-urls-20261120` sukurta nuo tuo metu naujausio main `9a44ba02a0d3cae6aae6cef25614fd50d682aa63`; compare 13 commits ahead / 0 behind.
+- **ATLIKTA – draft PR #298:** https://github.com/Pershore/PetTraffic-AI/pull/298. 13 failų: keturi gidai, homepage, about/privacy, sitemap, 20 istorinių redirect tikslai, canonical validatorius, live monitorius ir regresijos testai. Turinio tekstai neperrašyti; keisti URL keliai ir jų patikros.
+- **PATIKRINTA – CI:** PR run #44752779040 `pull_request`, success. Static validation, JS check, Python compile, 31 agent testas ir 153 testai `tests/` – OK. Nauji canonical maršrutų testai įtraukti į 153.
+- **LAUKIA – Cloudflare Pages preview:** check-run #136344506894 dar `in_progress`; preview URL / galutiniai redirect rezultatai dar nepatvirtinti. PR lieka DRAFT ir nesujungtas.
+- **Saugumo / publikavimo vartai:** jokio production deploy, viešo canonical/sitemap pakeitimo, DNS, Worker/D1, ARO Vet, secrets ar billing pakeitimo. 20 senų 301 šaltinių išsaugoti; PR #264 senas draft paliktas atviras, kol naujas PR bus pilnai patikrintas.
+- **Kitas žingsnis:** sulaukti Cloudflare Pages preview, patikrinti homepage, keturis gidus, about/privacy, sitemap ir 20 senų 301; tik tada pateikti savininkui atskirą sprendimą dėl publikavimo. Daily-suite `event=schedule` ir Worker AI recovery lieka atskiri nepatvirtinti prioritetai.
