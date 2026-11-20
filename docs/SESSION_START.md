@@ -1,3 +1,15 @@
+# Naujausia sesijos būsena – 2026-11-20 06:30 LT
+
+- **D1 diagnostikos grandinė PATIKRINTA:** PR #293 sujungtas į main (`00402eafc94a26a66b5c5bee71f1b18d6f80f55c`). Diagnostika dabar paleidžiama po sėkmingo snapshot sync workflow_run.
+- Du nepriklausomi post-sync įrodymai: Control Center #44674550008 → sync #44674604295 → diagnostika #44674631557; ir Control Center #44674590442 → sync #44674641788 → diagnostika #44674688061. Abiejų sync D1 write/readback success; abiejų diagnostikų event=workflow_run, success, 11 s; artefaktai turi naujausią atitinkamą Control Center run ID.
+- Diagnostikos SELECT-only užklausos: rows_written=0 visoms 7 užklausoms. PR CI: Worker diagnostic tests 11/11, Cloudflare validation success, Worker deploy skipped, snapshot sync PR test success, site-check success. Po merge site-check #931 success.
+- Pasenęs PR #290 uždarytas kaip superseded; istorija išsaugota. PR #293 merged.
+- Gyvas Worker /health: ok=true, D1 ir Control Core schema connected, heartbeat site HTTP 200. Paskutinis AI ciklas 2026-11-19 completed / 5 calls / error_code=null, tačiau Control Core needs_evidence su 4 spragomis; memory readback tas pats ciklas.
+- 2026-11-20 06:30 LT dar nėra šiandienos AI ciklo – tai normalu prieš 13:20 LT langą. Nekartoti ciklo. Po 13:20 tikrinti specialistų įrodymus, Control Core, memory readback ir recovery_confirmed. Issue #145 palikti open iki įrodymų.
+- ARO Vet, Worker/D1 produkcinė konfigūracija, DNS, secrets, billing, viešas turinys ir mokamos paslaugos nepakeisti. Viešas dashboard lieka READ-ONLY.
+
+---
+
 # Pet traffic – naujos sesijos pradžios protokolas
 
 ## Naujausia patikrinta būsena (2026-11-17, 23:06 LT)
