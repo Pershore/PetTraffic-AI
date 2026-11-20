@@ -105,3 +105,19 @@ Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas
 - **Blokatorius:** prieinama GitHub integracija neatskleidžia Actions scheduled-workflow aktyvumo/suspendavimo nustatymo. Reikalingas vienas tikslinis patikrinimas GitHub repo **Settings → Actions → General**: patvirtinti, kad Actions ir scheduled workflows nėra išjungti / pristabdyti. Repository settings nekeisti šio vykdymo metu.
 - **NEKEISTA:** jokie workflow/kodas, Worker/D1 produkcija, DNS, secrets, repo nustatymai, ARO Vet ar billing.
 - **Kitas veiksmas:** patvirtinus Actions schedule aktyvumą, laukti kito 06:10 UTC cron ir patikrinti tikrą `event=schedule` → Control Center → snapshot sync → SELECT-only D1 diagnostiką → AI 5/5 bei atmintį. Issue #145 lieka open iki `recovery_confirmed=true`. Aktyvus darbo laikas NEMATUOTAS.
+
+
+## 2026-11-20 15:48 LT – pakartotinis ciklo atkūrimo bandymas
+
+- **PATIKRINTA – pradžios protokolas:** prieš tikrinimą iš naujo perskaitytas šis failas iš `automation-history` (blob SHA `083ee16660fdb96c6e9c2967aab20f92565f5432`) ir `main/reports/work-log/README.md` (blob SHA `59df42b30e70e8042cd904310be58b6aace52b50`).
+- **PATIKRINTA – naujausia GitHub būsena:** `main` naujausias commit `5e2ce7b0e437a168d9548392ac256ea2f1111519`; atviri draft PR: #297, #294, #280, #267, #266, #264, #263, #261. Nė vienas PR nesujungtas.
+- **NEVEIKIA – Daily-suite schedule:** šiandienos run sąraše vis dar nėra `event=schedule`. Vienintelis šiandienos Daily-suite #44716442982 yra `workflow_dispatch`, success, 54 s; tai nėra cron provenance. `.github/workflows/daily-suite.yml` cron `10 6 * * *` konfigūracija išlieka.
+- **PATIKRINTA – bridge saugikliai:** `dispatch-daily-suite.yml` patvirtina, kad dienos sėkmingas manual fallback #44716442982 deduplikuoja pakartotinį daily-suite komentarą. Todėl komandinis komentaras šį kartą nepridėtas – jis nebūtų atkūręs schedule.
+- **LAUKIA – Control Center:** paskutinis sėkmingas Control Center #44740427191 (event `workflow_run`, 12:59:52Z / 14:59:52 LT). 15:48 LT patikros metu dar nepraėjo 60 min. deduplikavimo langas; papildomas Control Center komentaras nepridėtas.
+- **PATIKRINTA – naujausi kiti procesai:** Worker read-only diagnostika #44740538647, snapshot sync #44740503319 ir Control Center #44740427191 success. Naujausi site-check #44744111845 success, tačiau jo `event=push` – ne schedule įrodymas.
+- **ISSUE #145:** lieka open; paskutinis atnaujinimas 13:00:12Z. Naujausios komandos jau apima Control Center ir agent diagnostics; šiame pakartojime naujų komandų nepridėta.
+- **Worker AI:** šiandienos 5/5 AI ciklas ir D1 memory recovery lieka nepatvirtinti. Manual fallback nesuteikia `source_event=schedule`; rankinių agentų endpointų nenaudota.
+- **Blokatorius:** GitHub API integracija neleidžia perskaityti repo Actions permissions nustatymų; šiuo vykdymu nustatymai nekeisti. Reikia žmogaus patikros Settings → Actions → General, ar Actions ir scheduled workflows įjungti.
+- **NEKEISTA:** jokie workflow/kodas, production Worker/D1, DNS, secrets, repo settings, ARO Vet, svetainės turinys, PR merge ar billing.
+- **Laikas:** aktyvus darbas NEMATUOTAS; dabartinės patikros laikas 15:48 LT, GitHub run trukmės – atskiri workflow elapsed matavimai.
+- **Kitas veiksmas:** patvirtinti Actions/scheduled workflows aktyvumą; po kito tikro cron tikrinti Daily-suite `event=schedule` → Control Center → sync → SELECT-only D1 diagnostika → AI 5/5 ir atmintį. Issue #145 palikti open iki `recovery_confirmed=true`.
