@@ -1,13 +1,22 @@
 # Pet traffic – vienintelė kanoninė projekto atmintis
 
-**Atnaujinta:** 2026-11-20 12:11 LT
+**Atnaujinta:** 2026-11-20 12:26 LT
 **Saugykla:** https://github.com/Pershore/PetTraffic-AI  
 **Pagrindinė šaka:** `main`  
 **Tikslas:** vienas patikimas tęstinumo šaltinis ChatGPT, Codex ir būsimiems projekto agentams.
 
 Šis dokumentas sujungia ilgalaikius sprendimus, patvirtintą architektūrą, dabartines integracijų būsenas, neišspręstus blokatorius ir kitus veiksmus. Jis nepakeičia GitHub testų ar realių vykdymų įrodymų. Kiekvieną būseną reikia tikrinti pagal naujausią commit, workflow run ir gyvą sistemos atsakymą.
 
-## Naujausia patikrinta būsena (2026-11-20 12:11 LT)
+## Naujausia patikrinta būsena (2026-11-20 12:26 LT)
+
+- **PR #296 / main – ATLIKTA:** dokumentavimo PR #296 sujungtas squash į `main`, merge commit `14167078eadd5264581ae314786cbad3bddad0d9`. Po automatinio work-log commit `74562afe6bb86b4252da47253683b0b674041f34` ir nepriklausomo darbo žurnalo commit `445b5372600a975f3c5ba2100e5d15fd58c710a8` naujausias `main` HEAD yra `445b5372600a975f3c5ba2100e5d15fd58c710a8`. PR #296 site-check #44718903704 success; po merge site-check #44719066550 ir work-log #44719066616 success. `python agent/validate_site.py`, `python -m compileall -q agent` ir `python -m unittest discover -s agent -p 'test_*.py' -v` vykdyti per site-check CI ir visi success; papildomi JS/analytics testai taip pat success.
+- **Cloudflare Pages – PATIKRINTA:** merge commit check run #136229901443, app `cloudflare-workers-and-pages`, `conclusion=success`, output `Deployed successfully`; deployment ID `496393b4-10cb-4355-85a5-5f8a83014b31`, preview URL `https://496393b4.pettraffic-ai.pages.dev` grąžino HTTP 200. Po merge production alias `https://pettraffic-ai.pages.dev/` taip pat HTTP 200; keturi gidai, about, privacy, robots.txt ir sitemap.xml – 200; neegzistuojantis URL – 404. Check run aiškiai vadina pateiktą URL `Preview URL`, todėl production alias 200 patvirtintas atskiru gyvu patikrinimu, ne vien preview nuoroda. Dokumentavimo PR nekeičia svetainės turinio ar kodo.
+- **Darbo žurnalas – PATIKRINTA:** PR #296 atnaujino Markdown lentelės separatorius į teisingą vietą; automatinis work-log workflow #44719066616 success. Papildomas commit #445b537 įrašė nepriklausomą 12:18 LT statuso patikrą; istorinis įrašas paliktas.
+- **Automatikų dubliavimo šalinimas – ATLIKTA:** aptikta aktyvi 12:00 LT `PetTraffic kasdienė būklės patikra`, kurios promptas dubliavo pagrindinio 11:45 LT koordinatoriaus scope. Ji išjungta, kad nebūtų dviejų kasdienių tų pačių patikrų ir pasikartojančių pranešimų. Pagrindinis 11:45 LT koordinatorius lieka aktyvus; atskiras 14:00 LT greičio / post-cycle verifier paliktas aktyvus.
+- **Likutis nepasikeitė:** 2026-11-20 Daily-suite `event=schedule` vis dar neįvyko; sėkmingas `workflow_dispatch` catch-up nėra schedule provenance ir neatveria Worker AI vartų. Worker AI ciklas dar laukia 13:20 LT; 14:00 LT verifier tikrina tą patį ciklą. Kitas tikras Daily-suite schedule – 2026-11-21 06:10 UTC. Issue #145 lieka open.
+- **Saugumas:** jokio viešo turinio, canonical/sitemap, Worker/D1 production, DNS, secrets, paskyrų teisių, ARO Vet, billing ar mokamų paslaugų pakeitimo. `docs/SESSION_START.md` nekeistas, nes sesijos protokolas nepasikeitė.
+
+## Ankstesnė patikrinta būsena (2026-11-20 12:11 LT)
 
 - **Main / PR – PATIKRINTA:** `main` HEAD `55bd6d207b7ef3abbb723e03305b4c295f98c766` (automatinis work-log commit; ankstesnis dokumentų commit `8465af50799caa12103007ccf9203f9128e17054`). Atviri 7 PR. #294 – draft, 4 ahead / 2 behind; #264 canonical-clean-URL pasiūlymas – draft, 1 ahead / 117 behind. Nei vienas nejungtas.
 - **Daily-suite / site-check schedule – NEĮVYKO šiandien:** po 60 min. grace nėra 2026-11-20 `event=schedule`. Paskutinis Daily-suite schedule #44557115983 sukurtas ir pradėtas 2026-11-19 15:38:40Z (apie 9 val. 28 min. po 06:10 UTC); baigėsi 15:39:15Z. Paskutinis site-check schedule #44546115868 sukurtas ir pradėtas 14:39:25Z (apie 9 val. 2 min. po 05:37 UTC); baigėsi 14:39:41Z. `created_at` ir `run_started_at` sutampa, todėl matomas vėlavimas yra iki run sukūrimo, ne GitHub runner eilėje ar pačiame job. Tiksli GitHub scheduler priežastis nepatvirtinta.
