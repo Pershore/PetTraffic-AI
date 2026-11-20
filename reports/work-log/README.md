@@ -1056,3 +1056,12 @@ Kitas veiksmas: tikrinti kitą tikrą Daily-suite `event=schedule`; po jo laukti
 - **PATIKRINTA – PR #294:** draft, 4 ahead / 2 behind main. Site-check #44701819393 success; Worker Node/Python testai ir Cloudflare validation #44701819438 success; deploy skipped. PR nebuvo merge'intas; prieš merge būtina atnaujinti nuo naujausio main ir pakartoti CI.
 - **NEKEISTA:** jokie failai, kodas, workflow, production Worker/D1, DNS, secrets, teisių nustatymai, ARO Vet, viešas turinys ar mokamos paslaugos nebuvo pakeisti. Aktyvus darbo laikas NEMATUOTAS.
 - **Kitas veiksmas:** po 13:20 LT patikrinti šiandienos AI ciklą, specialistų įrodymus, Control Core ir memory readback; Issue #145 palikti atvirą iki realaus atsistatymo.
+
+
+## 2026-11-20 12:26 LT – po-įrašo kontrolinis patikrinimas
+
+- **PATIKRINTA – naujausias main:** `445b5372600a975f3c5ba2100e5d15fd58c710a8` (šio audito darbo žurnalo įrašas).
+- **PATIKRINTA – po įrašo CI:** site-check #44719144080 (`push`, ne schedule) success ant commit `445b537`; ankstesnis work-log run #44719066616 success.
+- **PATIKRINTA – naujausia event-driven grandinė:** Control Center #44718948603 success → snapshot sync #44719014216 success → read-only Worker diagnostics #44719051028 success; artifact #14621211075 sukurtas 2026-11-20T10:25:10Z.
+- **PATIKRINTA – naujausias D1 readback:** 2026-11-20 agent_run vis dar missing, `ai_calls=0`, `error_code=null`; visi 4 specialist reports ir šiandienos Control Core missing; memory present, paskutinis įrašas 2026-11-19T15:45:21.548Z, `needs_evidence`. Analytics/topic snapshot po 1 kiekvieno iš manual #44716442982; control-center/recommendation snapshot po 8, naujausias #44718948603. 13:20 LT AI ciklas dar laukiamas, todėl šis readback nėra ciklo nesėkmės įrodymas.
+- **NEKEISTA:** papildomų kodo, workflow, PR merge, production, ARO Vet, DNS, secrets, teisių ar billing pakeitimų neatlikta.
