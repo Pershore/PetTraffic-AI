@@ -162,3 +162,16 @@ Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas
 - **DIAGNOZĖ:** didelė tikimybė, kad tai GitHub Actions schedule pristatymo / scheduler infrastruktūros sutrikimas, o ne klaidingas cron, išjungtas workflow ar neveikiantys job'ai. Tikslios vidinės priežasties GitHub vieša API neatskleidžia.
 - **SPRENDIMAS ŠIAME CIKLE:** jokio cron keitimo, workflow aktyvavimo, kodo ar Worker/D1 production pakeitimo neatlikta. Esami cron laikai nėra ties valandos pradžia, todėl aklas minutės pakeitimas nėra pagrįstas pataisymas. `workflow_dispatch` negali pakeisti tikro `schedule` įvykio dėl Worker `source_event=schedule` saugiklio.
 - **Kitas veiksmas:** išsaugoti run ID, tikėtinus cron laikus, `created_at`/`run_started_at`, workflow path ir `head_sha`; jei kelių dienų vėlavimas tęsis, šiuos įrodymus pateikti GitHub Support. Issue #145 paliekamas open, kol Worker AI 5/5 ir D1 memory recovery nepatvirtinti (`recovery_confirmed=true`). Aktyvus darbo laikas NEMATUOTAS.
+
+
+## 2026-11-20 – papildoma automatizacijų, GA4 ir D1 patikra
+
+- Privalomas pradžios protokolas įvykdytas: prieš veiksmus perskaityti history iš `automation-history` ir work-log iš `main`; prieš įrašymą abu failai dar kartą nuskaityti.
+- Naujausiame 100 Actions run API lange nėra `event=schedule` įvykių. Paskutinis patvirtintas Daily-suite schedule #44557115983 (2026-11-19T15:38:40Z). 2026-11-20 #44716442982 yra manual `workflow_dispatch`, success, 54 s; šiandienos `site-check` #44750129986 yra push, success, 19 s.
+- Manual Daily-suite #44716442982: analytics, topic-radar ir live-check job'ai success; analytics ir topic artefaktai sukurti. Analytics žurnalas patvirtina GA4 read timeout; antras bandymas praleistas. Todėl GA4 metrikų pilnumas nepatvirtintas.
+- Site-check #44750129986: dashboard JS sintaksė/validacija, HTML, vidinės nuorodos, SEO, sitemap, automatizacijų Python kompiliacija, topic parseris ir analytics API/istorijos testai success.
+- Control Center #44740427191 success. Read-only D1 diagnostika #44740538647 success; 7 SELECT užklausos, `rows_written=0`. Tuščias `PETTRAFFIC_D1_DATABASE_ID` buvo išspręstas per skripto DB vardo paieškos fallback; diagnostikos job nepatyrė klaidos.
+- Paskutiniai turimi AI/D1 diagnostikos duomenys vis dar rodo, kad 2026-11-20 agent_run nėra (0 AI calls), 4 specialistai ir Control Core missing; atmintis paskutinį kartą atnaujinta 2026-11-19, `recovery_confirmed=false`. Po #44740538647 naujesnio D1 readback nerasta, todėl būsena nepažymėta kaip atkurta.
+- Issue #145 open. Draft PR #297, #294, #280, #267, #266, #264, #263, #261 atviri; merge neatliktas.
+- Jokie workflow/cron, Worker/D1 production, DNS, secrets, repo nustatymai, ARO Vet, viešas turinys ar billing nepakeisti. Tik dokumentavimo įrašai.
+- Kitas veiksmas: tikras Daily-suite `event=schedule` → analytics/topic/live-check įrodymai → Control Center → nauja SELECT-only D1 diagnostika → AI 5/5 ir memory patvirtinimas. Jei schedule vėl vėluoja/neatvyksta, rinkti GitHub Support įrodymus; cron aklai nekeisti. Aktyvus darbo laikas NEMATUOTAS.
