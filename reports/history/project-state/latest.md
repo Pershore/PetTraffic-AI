@@ -65,7 +65,7 @@ Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas
 
 ## 2026-11-20 12:26 LT – po-įrašo kontrolinis patikrinimas
 
-- **PATIKRINTA – naujausias main:** `445b5372600a975f3c5ba2100e5d15fd58c710a8`; šio audito work-log commit jau patikrintas.
+- **PATIKRINTA – naujausias main:** `b7768fe120a2f6e29d52e641f94b419f98343dac` (įskaitant šios patikros work-log įrašą); po jo site-check #44719519986 success.
 - **PATIKRINTA – po-įrašo CI:** site-check #44719144080 (`push`) success; tai nėra schedule įrodymas.
 - **PATIKRINTA – naujausia Control Center grandinė:** #44718948603 → snapshot sync #44719014216 → read-only Worker diagnostics #44719051028, visi success. D1 artifact #14621211075 (2026-11-20T10:25:10Z) vis dar rodo šiandienos AI run missing, 0 calls, error_code null, 4 specialist reports missing, šiandienos Control Core missing; memory present, bet paskutinis įrašas 2026-11-19T15:45:21.548Z ir `needs_evidence`. Analytics/topic snapshot po 1 iš manual #44716442982; control-center/recommendation po 8, latest #44718948603.
 - **LAUKIA:** vienintelis šiandienos AI ciklas numatytas 13:20 LT; šios patikros laiku dar neįvykęs.
