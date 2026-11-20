@@ -1,6 +1,29 @@
 # Pet traffic – perdavimo ataskaita (2026-11-20)
 
-## Naujausia patikrinta būsena (2026-11-20 10:25 LT)
+## Naujausia patikrinta būsena (2026-11-20 12:11 LT)
+
+- **Main / PR:** `main` HEAD `55bd6d207b7ef3abbb723e03305b4c295f98c766`; 7 atviri PR. #294 – draft, 4 ahead / 2 behind; #264 clean-URL canonical pataisa – draft, 1 ahead / 117 behind. Nė vienas nejungtas.
+- **Schedule incidentas:** šiandienos Daily-suite `event=schedule` po 60 min. grace nerasta. Paskutinis tikras schedule #44557115983 (2026-11-19 15:38:40Z; `created_at=run_started_at`, baigėsi po 35 s); site-check schedule #44546115868 (14:39:25Z; `created_at=run_started_at`, baigėsi po 16 s). Vėlavimas įvyko iki GitHub run sukūrimo, ne runner eilėje. Tiksli scheduler priežastis nepatvirtinta.
+- **Atsarginis Daily-suite – ATLIKTA:** saugus bridge #44716426141 success; Daily-suite #44716442982 `workflow_dispatch` success; `live-check`, `topic-radar`, `analytics` visi success. Live-check: 12 vidinių URL, sitemap, robots, 404 ir 20 senų URL 301. Topic radar: 29 unikalios Google News RSS nuorodos, 7 temos. Tai duomenų surinkimas, ne schedule įrodymas ir neatveria Worker AI vartų.
+- **GA4 / GSC:** GA4 2026-11-13–19: 3 aktyvūs, 2 nauji naudotojai, 7 sesijos, 8 peržiūros, 0 patvirtintų organinių sesijų. GSC 2026-11-11–17: 0 parodymų, 0 paspaudimų; sitemap submitted/pending nuo 2026-11-10; 4 prioritetiniai URL nežinomi Google, vienas URL inspection baigėsi `ReadTimeout` (25 s). API statusas `available`.
+- **D1 – PATIKRINTA:** sync #44716942089 (`workflow_dispatch`) patvirtino source run #44716442982, workflow ID 418322987, paruošė 2 privacy-filtered event ir abiem atliko D1 write/readback. Po Control Center #44716957805 sync #44717015938 ir SELECT-only diagnostika #44717051367 success. Artifact #14619109891: analytics_snapshot=1 ir topic_snapshot=1, abu iš run #44716442982; control_center_snapshot=7, recommendation_snapshot=7. Source event išlieka `workflow_dispatch`.
+- **Worker AI – LAUKIA:** `/health` 10:00:13Z patvirtino Worker/D1 connected ir site HTTP 200. Paskutinis AI run – 2026-11-19 completed, 5 calls, `error_code=null`, Control Core `needs_evidence`, 4 spragos. 10:11Z diagnostika dar rodo 2026-11-20 agent_run missing, 0 calls ir specialist reports missing – iki 13:20 LT tai laukiama būsena. Manual fallback nėra tinkamas AI schedule evidence. Nekviesti AI rankiniu būdu.
+- **Lighthouse / greitis:** paskutinis sėkmingas schedule #43915631789 (2026-11-16), 10 HTML/JSON ataskaitų. Palyginus su #43855151465, dog mobile LCP 2.00→9.78 s / TTFB 90→4 347 ms; vet desktop LCP 0.54→8.08 s / TTFB 35→2 564 ms; vet mobile LCP 1.85→5.55 s / TTFB 90→2 143 ms. TBT ir CLS=0, perdavimo dydžiai stabilūs. Kodo regresija neįrodyta.
+- **SEO / URL neatitikimas:** Cloudflare Pages automatiškai nukreipia `.html` į extensionless URL ([Cloudflare docs](https://developers.cloudflare.com/pages/configuration/serving-pages/)), tačiau esami canonical ir sitemap dar `.html`. Tai sukuria nereikalingą redirect ir padidina LCP jautriuose puslapiuose. Esamas draft PR #264 siūlo clean URL canonical, bet 117 commitų atsilikęs; nejungti. Viešo URL/canonical pakeitimo be atskiro patvirtinimo nedaryti. About/privacy trūksta OG; homepage Twitter image nesutampa su OG.
+- **Gyva svetainė:** homepage, 4 gidai, about, privacy, robots, sitemap ir 404 patikrinti; 404=404, robots/sitemap=200. Keturi gidai turi canonical, meta, OG, Article/BreadcrumbList JSON-LD ir H1. GA4 kodas aktyvuojamas tik po sutikimo. Favicon source egzistuoja ir yra susietas, bet SVG HTTP statuso atskirai patvirtinti nepavyko.
+- **Cloudflare Pages deploy:** GitHub deployments API grąžino tuščią sąrašą, GitHub Pages API 404; gyvas puslapis pasiekiamas, Daily-suite live-check success, bet Cloudflare Pages deployment ID per GitHub neprieinamas. Jokio production pakeitimo nedaryta.
+
+### Pirmas neužbaigtas veiksmas
+
+13:20 LT patikrinti šiandienos Worker ciklą per `/health`; manual `workflow_dispatch` snapshot jo neatstoja. 14:00 LT esamas verifier patikrina tą patį ciklą. Jei po 13:20 nėra šiandienos run, žymėti STALE ir nekartoti. Issue #145 lieka open.
+
+### Šios sesijos ribos
+
+Jokių viešo turinio, canonical, sitemap, DNS, Cloudflare Pages/Worker/D1 production, secrets, paskyrų teisių, ARO Vet, billing ar mokamų paslaugų pakeitimų. `docs/SESSION_START.md` nekeitėme, nes sesijos protokolas nepasikeitė.
+
+---
+
+## Ankstesnė patikrinta būsena (2026-11-20 10:25 LT)
 
 - **Main / PR būklė – PATIKRINTA:** main HEAD `afeea3106d4c52dac221a9c88406dc251ae1e36b`; atvirų PR buvo 6 prieš šią sesiją. Sukurtas atskiras draft PR [#294](https://github.com/Pershore/PetTraffic-AI/pull/294), head `1fb282e7a9b4f804ef880bfc5354cb3b34824cf3`, tik Worker turinio peržiūros įvesties ir testų pakeitimai.
 - **Worker / D1 / AI – PATIKRINTA:** gyvas `/health` HTTP 200; D1 ir Control Core schema connected; heartbeat `2026-11-20T08:15:13.555Z`, site HTTP 200, database_ok=true. Paskutinis AI ciklas yra 2026-11-19: completed, 5 AI calls, `error_code=null`; Control Core `needs_evidence`, 4 spragos; memory `2026-11-19T15:45:21.548Z`.
