@@ -141,3 +141,11 @@ Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas
 - Worker AI 5/5 ciklas ir D1 atminties atsistatymas lieka nepatvirtinti; Issue #145 paliekamas open iki `recovery_confirmed=true`.
 - Jokie kodo, workflow, repository/Actions settings, Worker/D1 production, DNS, secrets, ARO Vet, PR merge ar billing pakeitimai neatlikti. Aktyvus darbo laikas NEMATUOTAS.
 - Kitas žingsnis: tęsti read-only diagnostiką per prieinamus GitHub run, job ir artifact duomenis; vartotojo UI paspaudimų neprašyti.
+
+
+## 2026-11-20 – Termux patvirtino Daily-suite schedule įvykius
+
+- Vartotojo Termux `gh` patikra patvirtino workflow `Pet traffic daily automation suite` ID `418322987`, būsena `active`; GitHub CLI autentifikacija veikia.
+- `gh run list -R Pershore/PetTraffic-AI --workflow daily-suite.yml --limit 20` parodė tikrus sėkmingus `event=schedule` vykdymus: #44119444026 (2026-11-17 15:53:16Z), #44336724612 (2026-11-18 15:32:01Z), #44557115983 (2026-11-19 15:38:40Z). 2026-11-20 sąraše matomas tik `workflow_dispatch` #44716442982.
+- Patikrintas workflow YAML ir istorinio run #44557115983 commit failas: abu turi cron `10 6 * * *` (06:10 UTC). Taigi schedule įvykiai veikia, tačiau jų užfiksuotas laikas 15:32–15:53 UTC neatitinka deklaruoto 06:10 UTC grafiko; neatitikimo priežastis dar nenustatyta.
+- Jokių workflow nustatymų, kodo ar produkcijos pakeitimų neatlikta. Toliau tirti schedule laiko neatitikimą; nevadinti schedule visiškai neveikiančiu.
