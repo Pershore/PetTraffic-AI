@@ -1100,3 +1100,9 @@ Kitas veiksmas: tikrinti kitą tikrą Daily-suite `event=schedule`; po jo laukti
 - **ATLIKTA / NEKEISTA:** šiame vykdyme kodo, workflow, PR, Worker/D1 produkcijos, D1 schemos/duomenų, DNS, secrets, repository settings, ARO Vet, viešo turinio ar mokamų paslaugų nepakeičiau. Naudoti esami GitHub Actions artefaktai; papildomų scrape ar mokamų paslaugų nenaudota.
 - **Kitas žingsnis:** laukti tikro Daily-suite `event=schedule`; jei jo vėl nėra, naudoti tik esamą bridge po jo grace ir deduplikavimo patikrų. Po tikro schedule patikrinti Control Center → snapshot sync → SELECT-only D1 readback ir Worker AI ciklą po 13:20 LT. Issue #145 neuždaryti, kol AI ciklas, D1 atmintis ir `recovery_confirmed=true` nepatvirtinti.
 - **Darbo laikas:** aktyvus techninis laikas NEMATUOTAS; GitHub trukmės yra atskiri workflow elapsed matavimai.
+
+## 2026-11-20 15:11 LT – PR #297 bazės pakartotinė patikra
+
+- **PATIKRINTA – PR #297 būklė po šio audito work-log commit:** naujausias `main` HEAD `1af39ba542515afde310d9b25436fa3adcb987b2`; `compare_commits(main...perf/dedupe-control-center-bridge-20261120)` rodo 3 commits ahead / 2 behind, o PR API `mergeable=false`. PR lieka draft, nesujungtas.
+- Ankstesniame 15:10 įraše nurodyti 3 ahead / 1 behind atitiko tuometinį `main` HEAD `e1cfda9`; po work-log commit main pasistūmėjo dar vienu commit, todėl dabartinis atsilikimas yra 2.
+- **ATLIKTA:** PR neperbazavau ir nekeičiau, nes tam reikia naujos izoliuotos šakos/CI ciklo; jokių merge veiksmų neatlikta. Kitas žingsnis – atnaujinti PR šaką nuo dabartinio main ir iš naujo paleisti visus reikalingus testus tik prieš svarstant žmogaus peržiūrą.
