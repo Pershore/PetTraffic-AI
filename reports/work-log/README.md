@@ -1138,3 +1138,12 @@ Kitas veiksmas: tikrinti kitą tikrą Daily-suite `event=schedule`; po jo laukti
 - Repo aktyvus (šiandien push ir site-check), todėl 60 dienų neaktyvumo išjungimas nėra tikėtinas.
 - Individualaus daily-suite workflow enabled/disabled būsenos API integracija nepateikia. Kitas tikslus UI patikrinimas: ar workflow puslapyje rodomas **Enable workflow** ar **Disable workflow**. Nustatymų nekeičiau.
 - Jokie workflow/kodas, repo/Actions settings, secrets, Worker/D1 production, DNS, ARO Vet, PR merge ar billing pakeitimai neatlikti.
+
+
+## 2026-11-20 LT – cron diagnostika be vartotojo veiksmų
+- Vartotojas aiškiai nurodė, kad GitHub UI nieko nespaus; papildomų paspaudimų neprašoma.
+- Privalomas pradžios protokolas įvykdytas: prieš tikrinimą perskaitytas `automation-history/reports/history/project-state/latest.md` ir `main/reports/work-log/README.md` iš teisingų šakų.
+- Pakartotinai ieškota GitHub integracijos galimybės nuskaityti individualaus workflow enabled/disabled būseną. Turimi GitHub įrankiai tokio skaitymo veiksmo neturi; `fetch` atmeta Actions workflow puslapį ir Actions workflow API endpointus kaip neleidžiamus. Jokių nustatymų nekeičiau.
+- Esama patvirtinta būsena nepasikeitė: bendrieji Actions / scheduled workflows vartotojo patvirtinti kaip įjungti; `daily-suite.yml` cron faile yra, bet 2026-11-20 tikro `event=schedule` vykdymo nėra. Šiandienos manual `workflow_dispatch` nėra cron įrodymas. Worker AI 5/5 ciklas ir D1 atminties atsistatymas lieka nepatvirtinti.
+- Jokių kodo, workflow, repository/Actions settings, Worker/D1 production, DNS, secrets, ARO Vet, PR merge ar billing pakeitimų neatlikta. Aktyvus darbo laikas NEMATUOTAS.
+- Kitas veiksmas: tęsti tik read-only GitHub run/artefaktų ir workflow turinio diagnostiką; vartotojo UI veiksmo nereikalauti. Jei prieinami įrodymai neleidžia nustatyti individualaus workflow aktyvumo, aiškiai palikti šį techninį apribojimą, o ne spėlioti.
