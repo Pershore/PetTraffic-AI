@@ -61,3 +61,11 @@ Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas
 - **PATIKRINTA – PR #294:** draft, 4 commits ahead ir 2 behind dabartinį main; turinio įrodymų ištraukimo pakeitimai + regresijos testai. Site-check #44701819393 success; Worker Node/Python testai ir Cloudflare resource validation #44701819438 success; deploy PR kontekste skipped. PR paliktas draft, nes šaka atsilieka ir reikia atnaujinti prieš galimą merge; automatiškai nejungtas.
 - **NEKEISTA:** šio audito metu nebuvo kodo ar workflow pakeitimų, PR merge, production Worker/D1, DNS, secrets, paskyrų teisių, ARO Vet, viešo turinio ar billing pakeitimų. Mokamos paslaugos – 0 €/mėn.
 - **Kitas veiksmas:** po 13:20 LT patikrinti vienintelį šiandienos AI ciklą ir jo post-sync diagnostiką; rytoj vėl atskirai patvirtinti tikrus Daily-suite ir site-check `event=schedule` įvykius. Issue #145 neuždaryti, kol schedule patikimumas ir AI evidence kokybė neatsistato.
+
+
+## 2026-11-20 12:26 LT – po-įrašo kontrolinis patikrinimas
+
+- **PATIKRINTA – naujausias main:** `445b5372600a975f3c5ba2100e5d15fd58c710a8`; šio audito work-log commit jau patikrintas.
+- **PATIKRINTA – po-įrašo CI:** site-check #44719144080 (`push`) success; tai nėra schedule įrodymas.
+- **PATIKRINTA – naujausia Control Center grandinė:** #44718948603 → snapshot sync #44719014216 → read-only Worker diagnostics #44719051028, visi success. D1 artifact #14621211075 (2026-11-20T10:25:10Z) vis dar rodo šiandienos AI run missing, 0 calls, error_code null, 4 specialist reports missing, šiandienos Control Core missing; memory present, bet paskutinis įrašas 2026-11-19T15:45:21.548Z ir `needs_evidence`. Analytics/topic snapshot po 1 iš manual #44716442982; control-center/recommendation po 8, latest #44718948603.
+- **LAUKIA:** vienintelis šiandienos AI ciklas numatytas 13:20 LT; šios patikros laiku dar neįvykęs.
