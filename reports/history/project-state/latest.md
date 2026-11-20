@@ -1,9 +1,9 @@
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
-- Atnaujinta: 2026-11-20T04:29:49.171848+00:00
-- Būsena: **VYKSTA / LAUKIAMA**
-- GitHub run: 44674758643
-- Šaltinio commit: 1b8778bce67f9c495c7c3f2db09b0b510cfe5e69
+- Atnaujinta: 2026-11-20T08:21:21.735692+00:00
+- Būsena: **REIKIA DĖMESIO**
+- GitHub run: 44701833679
+- Šaltinio commit: afeea3106d4c52dac221a9c88406dc251ae1e36b
 
 ## Paskutinis patikrintas etapas
 
@@ -11,20 +11,19 @@ Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataska
 
 ## Kitas veiksmas
 
-Tęsti laukiančių patikrų stebėseną: AI agentai + control-core atmintis.
+Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas (warning). Suplanuotas ciklas nuo 2026-11-20 06:10 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-19T15:38:40Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.
 
 ## Patvirtinti procesai
 
-- GA4, temų radaras ir svetainės stebėjimas: Paskutinis paleidimas sėkmingas.
 - Centrinės API sinchronizavimas: Paskutinis paleidimas sėkmingas.
 - Lighthouse auditas: Paskutinis paleidimas sėkmingas.
 - Centrinis valdymo centras: Paskutinis paleidimas sėkmingas.
 - Debesijos read-only užduočių vykdytojas: Paskutinis debesijos užduoties vykdymas sėkmingas.
-- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 14 min.
+- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 6 min.
 
 ## Problemos
 
-- Šiame cikle problemų nenustatyta.
+- **GA4, temų radaras ir svetainės stebėjimas** (warning): Suplanuotas ciklas nuo 2026-11-20 06:10 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-19T15:38:40Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia. – https://github.com/Pershore/PetTraffic-AI/actions/runs/44557115983
 
 ## Laukiančios patikros
 
@@ -39,6 +38,7 @@ Tęsti laukiančių patikrų stebėseną: AI agentai + control-core atmintis.
 
 - **[medium] Patikrinti Google paieškos matomumą** – Patikrinti URL indeksavimo būseną, sitemap apdorojimą ir ar svarbiausi puslapiai prieinami Googlebot.
 - **[info] Stebėti Google sitemap apdorojimą** – Pakartotinai patikrinti kitame cikle; sitemap pakartotinai neteikti, jei jis jau pateiktas.
+- **[high] Pašalinti automatizacijų būklės problemas** – Atidaryti centrinio valdymo GitHub įspėjimą ir taisyti konkretaus proceso klaidą.
 
 ## Nekeičiamos saugumo ribos
 
