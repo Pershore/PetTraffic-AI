@@ -81,3 +81,9 @@ Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas
 - **Bridge / issue #145:** issue #145 lieka open. Sėkmingas post-cycle Control Center reportas #44740427191 ir D1 diagnostika #44740538647 yra paskutinių 60 min. lange, todėl papildomas `/pettraffic-run-control-center` ar agent-diagnostics komentaras nepridėtas. Nenaudoti `/v1/tasks` ir rankinių agentų paleidimo endpointų.
 - **ATLIKTA / NEKEISTA:** `main` work-log įrašas sėkmingai įrašytas ir perskaitytas po commit. Šiame vykdyme kodo, workflow, PR, Worker/D1 produkcijos, D1 schemos, DNS, secrets, paskyrų ar repository nustatymų, ARO Vet, viešo turinio ir billing pakeitimų nebuvo. Papildomų scrape ar mokamų paslaugų nenaudota.
 - **Kitas veiksmas:** laukti tikro Daily-suite `event=schedule`; po jo patikrinti Control Center → snapshot sync → SELECT-only D1 diagnostiką ir vienintelį dienos Worker AI ciklą po 13:20 LT. Issue #145 neuždaryti, kol schedule, AI ciklas, D1 atmintis ir `recovery_confirmed=true` nepatvirtinti. Aktyvus darbo laikas NEMATUOTAS.
+
+## 2026-11-20 15:11 LT – PR #297 bazės pakartotinė patikra
+
+- **PATIKRINTA – PR #297 būklė po šio audito work-log commit:** naujausias `main` HEAD `1af39ba542515afde310d9b25436fa3adcb987b2`; `compare_commits(main...perf/dedupe-control-center-bridge-20261120)` rodo 3 commits ahead / 2 behind, o PR API `mergeable=false`. PR lieka draft, nesujungtas.
+- Ankstesniame 15:10 įraše nurodyti 3 ahead / 1 behind atitiko tuometinį `main` HEAD `e1cfda9`; po work-log commit main pasistūmėjo dar vienu commit, todėl dabartinis atsilikimas yra 2.
+- **ATLIKTA:** PR neperbazavau ir nekeičiau, nes tam reikia naujos izoliuotos šakos/CI ciklo; jokių merge veiksmų neatlikta. Kitas žingsnis – atnaujinti PR šaką nuo dabartinio main ir iš naujo paleisti visus reikalingus testus tik prieš svarstant žmogaus peržiūrą.
