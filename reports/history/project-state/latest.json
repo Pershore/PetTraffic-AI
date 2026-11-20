@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "project": "PetTraffic AI",
-  "generated_at": "2026-11-20T10:24:27.139673+00:00",
-  "run_id": "44718948603",
-  "source_commit": "55bd6d207b7ef3abbb723e03305b4c295f98c766",
+  "generated_at": "2026-11-20T12:49:05.997364+00:00",
+  "run_id": "44738929050",
+  "source_commit": "b7768fe120a2f6e29d52e641f94b419f98343dac",
   "overall_status": "needs_attention",
   "last_verified_stage": "Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataskaitoje.",
   "next_action": "Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas (warning). Suplanuotas ciklas nuo 2026-11-20 06:10 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-19T15:38:40Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.",
@@ -12,8 +12,8 @@
       "name": "Centrinės API sinchronizavimas",
       "state": "success",
       "detail": "Paskutinis paleidimas sėkmingas.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44717015938",
-      "created_at": "2026-11-20T10:10:55Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44719014216",
+      "created_at": "2026-11-20T10:24:48Z"
     },
     {
       "name": "Lighthouse auditas",
@@ -21,13 +21,6 @@
       "detail": "Paskutinis paleidimas sėkmingas.",
       "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/43915631789",
       "created_at": "2026-11-16T17:10:54Z"
-    },
-    {
-      "name": "Centrinis valdymo centras",
-      "state": "success",
-      "detail": "Paskutinis paleidimas sėkmingas.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44716957805",
-      "created_at": "2026-11-20T10:10:30Z"
     },
     {
       "name": "Debesijos read-only užduočių vykdytojas",
@@ -51,21 +44,28 @@
       "detail": "Suplanuotas ciklas nuo 2026-11-20 06:10 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-19T15:38:40Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.",
       "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44716442982",
       "created_at": "2026-11-20T10:06:56Z"
-    }
-  ],
-  "pending_checks": [
+    },
     {
       "name": "AI agentai + control-core atmintis",
-      "state": "waiting",
-      "detail": "Paskutinis AI agentų ciklas dar neįvyko 13:20 Lietuvos laiku lange; laukiama šiandienos suplanuoto ciklo.",
+      "state": "stale",
+      "detail": "Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-19.",
       "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
       "created_at": null
     }
   ],
+  "pending_checks": [
+    {
+      "name": "Centrinis valdymo centras",
+      "state": "running",
+      "detail": "Vyksta (pending).",
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44738942660",
+      "created_at": "2026-11-20T12:49:03Z"
+    }
+  ],
   "ai_agent_memory_check": {
     "name": "AI agentai + control-core atmintis",
-    "state": "waiting",
-    "detail": "Paskutinis AI agentų ciklas dar neįvyko 13:20 Lietuvos laiku lange; laukiama šiandienos suplanuoto ciklo.",
+    "state": "stale",
+    "detail": "Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-19.",
     "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
     "created_at": null
   },
