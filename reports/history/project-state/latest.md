@@ -121,3 +121,13 @@ Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas
 - **NEKEISTA:** jokie workflow/kodas, production Worker/D1, DNS, secrets, repo settings, ARO Vet, svetainės turinys, PR merge ar billing.
 - **Laikas:** aktyvus darbas NEMATUOTAS; dabartinės patikros laikas 15:48 LT, GitHub run trukmės – atskiri workflow elapsed matavimai.
 - **Kitas veiksmas:** patvirtinti Actions/scheduled workflows aktyvumą; po kito tikro cron tikrinti Daily-suite `event=schedule` → Control Center → sync → SELECT-only D1 diagnostika → AI 5/5 ir atmintį. Issue #145 palikti open iki `recovery_confirmed=true`.
+
+
+## 2026-11-20 15:52 LT – Actions įjungimo patvirtinimas ir cron diagnostika
+
+- **VARTOTOJO PATVIRTINIMAS:** GitHub Settings → Actions nustatyme Actions / scheduled workflows rodomi kaip įjungti. Tai patvirtina bendrą nustatymą, bet neatskleidžia konkretaus `daily-suite.yml` workflow aktyvumo būsenos.
+- **PATIKRINTA – GitHub run API:** peržiūrėta iki 100 naujausių repo run. `daily-suite.yml` šiame lange turi tik šiandienos #44716442982 (`workflow_dispatch`, success, 54 s); 2026-11-20 `event=schedule` nėra. Naujausias `main` site-check #44744111845 success (`push`), tai nėra schedule įrodymas.
+- **PATIKRINTA – repo aktyvumas:** `main` šiandien turėjo push ir site-check įvykių, todėl 60 dienų repo neaktyvumo išjungimas nėra tikėtinas paaiškinimas.
+- **TIKĖTINAS Kitas tikrinimo taškas:** individualus `daily-suite.yml` workflow gali būti išjungtas atskirai nuo bendro Actions nustatymo, arba GitHub cron event pristatymas neveikia. Ši integracija nepateikia workflow enable/disable statuso API; jo neatspėju ir pats nekeičiu.
+- **Kitas tikslus žingsnis:** atidaryti repo Actions → Daily automation suite workflow puslapį ir patikrinti, ar viršuje siūlomas mygtukas **Enable workflow** (tai reikštų, kad konkretus workflow išjungtas). Jei matomas **Disable workflow**, workflow jau įjungtas ir reikia tirti GitHub schedule event pristatymą.
+- **NEKEISTA:** jokie workflow failai, Actions/repo nustatymai, secrets, Worker/D1 production, DNS, ARO Vet, PR ar billing.
