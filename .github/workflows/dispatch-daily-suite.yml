@@ -127,9 +127,8 @@ jobs:
               const cutoff = now - 60 * 60 * 1000;
               const recent = data.workflow_runs.find(run =>
                 Date.parse(run.created_at) >= cutoff &&
-                (run.event === "workflow_dispatch" ||
-                  (run.event === "schedule" &&
-                    (run.status !== "completed" || run.conclusion === "success")))
+                ["workflow_run", "workflow_dispatch", "schedule"].includes(run.event) &&
+                (run.status !== "completed" || run.conclusion === "success")
               );
               if (recent) {
                 core.notice("Control Center already started within 60 minutes: #" +
