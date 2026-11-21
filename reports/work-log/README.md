@@ -1268,3 +1268,18 @@ Kitas veiksmas: tikrinti kitą tikrą Daily-suite `event=schedule`; po jo laukti
 - **Saugumas:** viešas turinys, ARO Vet, DNS, secrets, repository permissions, Cloudflare Worker/D1 production, billing ir mokamos paslaugos nekeistos. Aktyvus darbo laikas NEMATUOTAS.
 - **Kitas veiksmas:** patikrinti PR #299 visas patikras; tik po jų success galima užbaigti PR. Tada po 13:20 LT patikrinti vienintelį Worker AI ciklą ir 14:00 verifier. Rytoj patikrinti tikrą Daily-suite event=schedule po 60 min. grace.
 
+
+
+## 2026-11-21 – galutinė po-merge patikra
+
+- PR #299 sujungtas squash merge commit `60317ea258880ed2bb1e41bae0ee934bcbe816a1`; main HEAD po automatinio commit activity `3d62e4d9cea69ff2a7138b0e434d2345c69e1754`.
+- PR patikros success: `python agent/validate_site.py`, `python -m compileall -q agent`, `python -m unittest discover -s agent -p 'test_*.py' -v`, `tests/` regresijos ir Control Center testai. Cloudflare Pages preview success.
+- Po merge Cloudflare Pages production deploy success pagal main HEAD 3d62e4d. Main site-check push #44896871042 success, Control Center push #44896871017 success.
+- Site-check schedule 05:37 UTC šiandien neįvyko; saugus bridge #44896801810 paleido workflow_dispatch #44896813463 success. Tai nėra schedule įrodymas.
+- Sync-control-api #44896902196 success; read-only Worker diagnostics #44896924905 success. D1 artifact #14704292595 rodo analytics/topic snapshots iš daily-suite source run #44895862888 ir Control Center/recommendation snapshot readback.
+- Po merge bridge komentaras ant seno PR #297 sukėlė tik skipped bridge run #44896898700; naujas Control Center nuo bridge nebuvo paleistas. Control Center liko paleidžiamas nuo main push. PR #297 uždarytas kaip superseded.
+- Worker AI dar WAITING iki 13:20 LT: 10:59:49Z diagnostikoje run missing, 0 calls, specialist reports ir Control Core missing; memory atnaujinta 2026-11-20T15:30:36.388Z. 14:00 verifier turi patikrinti vienintelį dienos ciklą.
+- GA4/GSC duomenys ir RSS temų radaras užfiksuoti ankstesniame tos pačios dienos įraše. GA4 ataskaitos kodas naudoja 30 s GA4 report timeout; 2026-11-21 report sėkmingas vieną kartą, kelių ciklų stabilumui dar reikia kitų realių vykdymų.
+- Jokių viešo turinio, DNS, secrets, Worker/D1 production, ARO Vet ar mokamų paslaugų pakeitimų neatlikta.
+- **Kitas veiksmas:** po 13:20 LT patikrinti Worker /health ir specialistų įrodymus; po to naudoti 14:00 LT verifier. Rytoj tikrinti Daily-suite ir site-check event=schedule atskirai.
+
