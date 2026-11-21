@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "project": "PetTraffic AI",
-  "generated_at": "2026-11-21T07:28:42.530720+00:00",
-  "run_id": "44880387805",
+  "generated_at": "2026-11-21T10:46:05.906719+00:00",
+  "run_id": "44895876114",
   "source_commit": "a5f0a395f5a215fefd06662eac43a321a3298f50",
   "overall_status": "needs_attention",
   "last_verified_stage": "Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataskaitoje.",
@@ -12,8 +12,8 @@
       "name": "Centrinės API sinchronizavimas",
       "state": "success",
       "detail": "Paskutinis paleidimas sėkmingas.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44762416947",
-      "created_at": "2026-11-20T15:21:15Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44880447346",
+      "created_at": "2026-11-21T07:29:02Z"
     },
     {
       "name": "Lighthouse auditas",
@@ -26,8 +26,8 @@
       "name": "Centrinis valdymo centras",
       "state": "success",
       "detail": "Paskutinis paleidimas sėkmingas.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44880381643",
-      "created_at": "2026-11-21T07:28:06Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44880387805",
+      "created_at": "2026-11-21T07:28:10Z"
     },
     {
       "name": "Debesijos read-only užduočių vykdytojas",
@@ -39,7 +39,7 @@
     {
       "name": "Cloudflare Worker + D1",
       "state": "success",
-      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 13 min.",
+      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 1 min.",
       "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
       "created_at": null
     }
@@ -49,8 +49,8 @@
       "name": "GA4, temų radaras ir svetainės stebėjimas",
       "state": "warning",
       "detail": "Suplanuotas ciklas nuo 2026-11-21 06:10 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-20T15:19:45Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44762160249",
-      "created_at": "2026-11-20T15:19:45Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/44895862888",
+      "created_at": "2026-11-21T10:45:42Z"
     }
   ],
   "pending_checks": [
