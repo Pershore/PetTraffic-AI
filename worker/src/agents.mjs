@@ -245,6 +245,42 @@ export async function getEvents(env, expectedRunDate = new Date().toISOString().
  }
  return {events,invalidPayloadCount,missingKinds,staleKinds};
 }
+const CONTENT_REVIEW_TEXT_LIMIT = 1150;
+
+function cleanContentReviewText(html) {
+ return String(html||"").replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi," ")
+  .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi," ")
+  .replace(/<br\b[^>]*>/gi," ").replace(/<\/(?:p|li|h[1-6]|div|section)>/gi," ")
+  .replace(/<[^>]+>/g," ").replace(/&nbsp;/gi," ").replace(/&amp;/gi,"&")
+  .replace(/&lt;/gi,"<").replace(/&gt;/gi,">").replace(/&quot;/gi,'"')
+  .replace(/&#39;/gi,"'").replace(/\s+/g," ").trim();
+}
+
+export function extractContentReviewEvidence(html) {
+ const raw=String(html||"");
+ const main=(raw.match(/<main\b[^>]*>([\s\S]*?)<\/main>/i)||[])[1]||raw;
+ const body=main.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi," ")
+  .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi," ");
+ const text=cleanContentReviewText(body);
+ const headings=[...body.matchAll(/<h[1-3]\b[^>]*>([\s\S]*?)<\/h[1-3]>/gi)]
+  .map(match=>cleanContentReviewText(match[1])).filter(Boolean);
+ const sourceLinks=[...body.matchAll(/<a\b[^>]*href=["'](https?:\/\/[^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)]
+  .map(match=>{
+   const label=cleanContentReviewText(match[2]);
+   let host="";
+   try { host=new URL(match[1]).hostname; } catch {}
+   return label&&host&&host!==new URL(SITE).hostname ? label+" ("+host+")" : "";
+  }).filter(Boolean).slice(0,4);
+ const sections=headings.join(" · ").slice(0,260);
+ const references=sourceLinks.length ? sourceLinks.join("; ").slice(0,330) : "Nerasta išorinių šaltinių nuorodų.";
+ return [
+  "Įžanga: "+text.slice(0,300),
+  "Skyriai: "+sections,
+  "Išoriniai šaltiniai: "+references,
+  "Pabaiga: "+text.slice(-140),
+ ].join("\n").slice(0,CONTENT_REVIEW_TEXT_LIMIT);
+}
+
 async function getPublicContent(env) {
  const pages=[]; const fetcher=env.FETCH||fetch;
  for(const path of CONTENT_PATHS) {
@@ -252,10 +288,7 @@ async function getPublicContent(env) {
    const response=await fetcher(SITE+path,{headers:{"user-agent":"PetTraffic-AgentContentReview/1.0"},redirect:"follow"});
    if(!response.ok){pages.push({path,status:response.status,text:""});continue;}
    const html=await response.text();
-   const text=html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi," ").replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi," ")
-    .replace(/<[^>]+>/g," ").replace(/&nbsp;/gi," ").replace(/&amp;/gi,"&").replace(/&lt;/gi,"<").replace(/&gt;/gi,">")
-    .replace(/&quot;/gi,'"').replace(/&#39;/gi,"'").replace(/\s+/g," ").trim();
-   pages.push({path,status:response.status,text:text.slice(0,900)});
+   pages.push({path,status:response.status,text:extractContentReviewEvidence(html)});
   } catch { pages.push({path,status:0,text:""}); }
  }
  return pages;

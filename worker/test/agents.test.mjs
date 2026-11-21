@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { runAgentOrchestration, isVilniusAgentRunTime, isAgentScheduledEvent, isAgentCatchUpEvent, shouldRunAgentOrchestration, isEligibleScheduledDailySuiteSnapshot, parseResult, extractResponseText, callModel, getEvents } from "../src/agents.mjs";
+import { runAgentOrchestration, isVilniusAgentRunTime, isAgentScheduledEvent, isAgentCatchUpEvent, shouldRunAgentOrchestration, isEligibleScheduledDailySuiteSnapshot, parseResult, extractResponseText, callModel, getEvents, extractContentReviewEvidence } from "../src/agents.mjs";
 function mockEnv({ai=true,existingRun=false,reserveErrorAt=0,reserveErrorBeforeCommit=false,reserveReadbackError=false,invalidEventPayload=false,modelResponse=null,modelResponses=null}={}) {
  const state={inserted:false,aiCalls:0,updates:[],reservationErrorThrown:false};
  const env={FETCH:async()=>new Response("<html><body><p>Test content</p></body></html>",{status:200}),DB:{prepare(sql){return {
@@ -327,4 +327,28 @@ test("only same-day successful Daily-suite schedule provenance can unlock an AI 
  assert.equal(reject({}, "2026-11-15"), false);
  assert.equal(reject({}, "2026-11-16", Date.parse("2026-11-16T15:30:00.000Z")), false);
  assert.equal(isEligibleScheduledDailySuiteSnapshot({...good,payload_json:"{bad",payload:undefined},"2026-11-16",cutoff), false);
+});
+
+
+test("content review keeps article structure, external veterinary sources and disclaimer within its evidence budget",()=>{
+ const intro="Gyvūno sveikata ir svarbūs požymiai. ".repeat(20);
+ const middle="Išsamus straipsnio tekstas apie simptomus ir saugius veiksmus. ".repeat(40);
+ const html=`<nav>NAVIGATION_NOISE</nav><main><h1>Katės sveikatos vadovas</h1><p>${intro}</p><h2>Skubios pagalbos požymiai</h2><p>${middle}</p><h2>Patikimi šaltiniai</h2><ul><li><a href="https://www.vet.cornell.edu/health">Cornell Veterinary Medicine</a></li><li><a href="https://www.acvs.org/small-animal/">American College of Veterinary Surgeons</a></li></ul><p>Šis straipsnis nepakeičia veterinarijos gydytojo apžiūros.</p></main><section>COOKIE_BANNER_NOISE</section>`;
+ const evidence=extractContentReviewEvidence(html);
+ assert.ok(evidence.length<=1150);
+ assert.match(evidence,/Katės sveikatos vadovas/);
+ assert.match(evidence,/Skubios pagalbos požymiai/);
+ assert.match(evidence,/Cornell Veterinary Medicine/);
+ assert.match(evidence,/vet\.cornell\.edu/);
+ assert.match(evidence,/nepakeičia veterinarijos gydytojo apžiūros/);
+ assert.doesNotMatch(evidence,/NAVIGATION_NOISE|COOKIE_BANNER_NOISE/);
+});
+
+test("four compact content-review evidence records fit the existing model input budget",()=>{
+ const headings=Array.from({length:20},(_,i)=>`<h2>Ilgas skyriaus pavadinimas ${i} apie svarbius augintinio sveikatos požymius</h2>`).join("");
+ const sources=Array.from({length:4},(_,i)=>`<a href="https://source${i}.example.org/veterinary/long-reference">Autoritetingas veterinarinės medicinos informacijos šaltinis numeris ${i}</a>`).join("");
+ const html=`<main><h1>Gyvūno priežiūra</h1><p>${"Įžanginis tekstas apie augintinio sveikatą. ".repeat(40)}</p>${headings}<p>${"Turinio dalis apie simptomus, rizikas ir saugius veiksmus. ".repeat(100)}</p><h2>Šaltiniai</h2>${sources}<p>Informacija nepakeičia veterinaro apžiūros. ${"Papildoma svarbi informacija. ".repeat(10)}</p></main>`;
+ const publicPages=Array.from({length:4},(_,i)=>({path:"/articles/guide-"+i+".html",status:200,text:extractContentReviewEvidence(html)}));
+ const input=JSON.stringify({task:"Peržiūrėk viešų puslapių tekstą ir struktūrą.",source:{expected_run_date:"2026-11-20",evidence_status:"available",requested_pages:4,available_pages:4,unavailable_pages:[],public_pages:publicPages}});
+ assert.ok(input.length<=6000,"all four page summaries should fit MAX_INPUT_CHARS without truncating the final page");
 });
