@@ -1,13 +1,32 @@
 # Pet traffic – vienintelė kanoninė projekto atmintis
 
-**Atnaujinta:** 2026-11-20 12:11 LT
+**Atnaujinta:** 2026-11-21 12:55 LT
 **Saugykla:** https://github.com/Pershore/PetTraffic-AI  
 **Pagrindinė šaka:** `main`  
 **Tikslas:** vienas patikimas tęstinumo šaltinis ChatGPT, Codex ir būsimiems projekto agentams.
 
 Šis dokumentas sujungia ilgalaikius sprendimus, patvirtintą architektūrą, dabartines integracijų būsenas, neišspręstus blokatorius ir kitus veiksmus. Jis nepakeičia GitHub testų ar realių vykdymų įrodymų. Kiekvieną būseną reikia tikrinti pagal naujausią commit, workflow run ir gyvą sistemos atsakymą.
 
-## Naujausia patikrinta būsena (2026-11-20 12:11 LT)
+## Naujausia patikrinta būsena (2026-11-21 12:55 LT)
+
+- **Main / produkcija – PATIKRINTA:** main HEAD `a5f0a395f5a215fefd06662eac43a321a3298f50`. Cloudflare Pages production check-run patvirtino sėkmingą deploy pagal šį commit 2026-11-20 14:49 UTC. 2026-11-21 live-check #44895862888 success: 12 vidinių URL, sitemap, robots.txt, 404 ir 20 senų 301 peradresavimų. Viešas turinys, domenas ir produkcija šiame cikle nekeisti.
+- **Daily-suite schedule – NEĮVYKO:** 2026-11-21 06:10 UTC paleidimo po 60 min. grace nėra; paskutinis tikras schedule #44762160249 (2026-11-20 15:19:45Z). Saugus bridge #44895852313 sėkmingai paleido #44895862888 kaip `workflow_dispatch`; visi trys job (`analytics`, `topic-radar`, `live-check`) success. Tai tik atsarginis duomenų surinkimas, ne schedule įrodymas ir neatveria Worker AI vartų.
+- **GA4 / GSC – PATIKRINTA, rinkimas pavyko:** analytics artefaktas #14703554165, GA4 laikotarpis 2026-11-14–20, palyginimas su 2026-11-07–13: 2 aktyvūs / 2 nauji naudotojai, 2 sesijos, 2 peržiūros, 0 organinių sesijų. GSC laikotarpis 2026-11-12–18: 0 parodymų, 0 paspaudimų, CTR 0 %, vidutinė pozicija 0 (kai parodymų nėra, pozicija nėra prasmingas reitingo įrodymas). Sitemap pateiktas 2026-11-10, apdorojimas dar laukia; 5 prioritetiniai URL dar nežinomi Google. Nulis nelaikomas API gedimu.
+- **Temų radaras – PATIKRINTA:** artifact #14704320615, 30 unikalių viešų RSS nuorodų, 7 temos, 0/7 temų be rezultatų. Tai antraščių stebėsena, ne keyword volume. Naujo turinio nekurta ir nepublikuota.
+- **D1 sync / readback – PATIKRINTA:** bridge #44896007399 paleido sync #44896017766 su tiksliu source run ID #44895862888. Source run patvirtintas, analytics ir topic artefaktai parsisiųsti, paruošti 2 privatumo filtruoti įvykiai, OIDC autentifikacija sėkminga; abu įvykiai atliko D1 write/readback. Vėlesnis SELECT-only diagnostikos artifact #14704490608 patvirtina `analytics_snapshot=1` ir `topic_snapshot=1`, abu iš source run #44895862888.
+- **Worker AI – LAUKIA iki 13:20 LT:** diagnostika #44896086631 (2026-11-21T10:48:43Z) rodo šiandienos agent run missing, 0 AI calls, 4 specialist reports missing, Control Core missing; memory readback paskutinis atnaujintas 2026-11-20T15:30:36.388Z. Patikra atlikta iki 13:20 LT, todėl tai laukimo būsena, ne STALE. Rankiniu būdu AI ciklas nekviestas.
+- **Control Center bridge trigerio problema – PATIKRINTA / taisoma PR:** bridge #44895852313 sukėlė Control Center #44895876114 dar prieš Daily-suite #44895862888 pabaigą; antras bridge #44896007399 sukėlė #44896025044 dar prieš sync #44896017766 pabaigą. Automation-history snapshot #44896025044 sugeneruotas 10:47:56Z ir tuo metu teisingai rodė sync in_progress, bet po sync completion tapo pasenęs. Sukurtas PR #299 nuo naujausio main: pašalina bridge kaip Control Center workflow_run šaltinį, išplečia 60 min. deduplikaciją ir prideda regresijos testą. PR draft, CI dar tikrinamas.
+- **Lighthouse – paskutinis patikimas auditas istorinis, bet per 7 d.:** run #43915631789 (2026-11-16 17:10Z), 10 HTML/JSON ataskaitų. Lyginant su #43855151465 (11:08Z), dog mobile LCP 1.855→9.779 s / TTFB 0.097→4.347 s; vet desktop LCP 0.536→8.078 s / TTFB 0.035→2.564 s; vet mobile LCP 1.852→5.548 s / TTFB 0.090→2.143 s. TBT liko 0 ms, CLS 0; perdavimo dydžiai ir main-thread darbas iš esmės stabilūs. Tai labiau server response / render delay anomalija nei įrodyta kodo regresija. Kodo nekeista; kitas savaitinis grafikas pirmadienį.
+- **SEO / UX – PATIKRINTA šaltiniuose ir monitoriuje:** robots leidžia visus puslapius; sitemap turi 7 URL; 4 gidai turi po vieną H1, title, description, canonical, OG ir 2 JSON-LD blokus. About/privacy neturi OG laukų; homepage Twitter image skiriasi nuo og:image. Canonical ir sitemap vis dar naudoja `.html`; clean-URL PR #298 liko draft, preview deploy success, bet šaka 5 commitais atsilikusi nuo main, preview turinio/redirect grandinių gyvai nepatvirtinome. Slapukų kodas aktyvuoja GA tik po sutikimo; atmetus sutikimą išjungia GA ir šalina analytics cookies. CSS turi 900/680/600/390 px responsive breakpoints; paskutinis mobilus Lighthouse yra 11-16, ne šiandienos matavimas.
+- **PR / CI – PATIKRINTA:** 9 atviri PR, visi draft. #299 naujas ir tikrinamas; #298 SEO URL PR nesujungtas; #297 senasis bridge pataisos PR 28 commitais atsilikęs ir bus laikomas superseded, kai #299 patikros bus sėkmingos.
+- **Saugumas:** ARO Vet, vaistinės skiltis, reklama, affiliate, DNS, secrets, repo permissions, Worker/D1 production, billing ir mokamos paslaugos nekeistos. automation-history latest.md/latest.json rankiniu būdu nekeisti.
+
+### Kiti veiksmai
+1. Patikrinti visus PR #299 check/job rezultatus; jei visi success, užbaigti PR, o po merge patikrinti main site-check ir Control Center elgesį.
+2. Po 13:20 LT patikrinti vienintelį 2026-11-21 Worker AI ciklą per /health ir jo specialistų įrodymus, Control Core bei D1 memory readback; 14:00 LT naudoti esamą verifier. Nekartoti ciklo.
+3. Rytoj po 06:10 UTC + 60 min. grace patikrinti tikrą Daily-suite event=schedule; manual fallback niekada nelaikyti schedule įrodymu.
+
+## Ankstesnė patikrinta būsena (2026-11-20 12:11 LT)
 
 - **Main / PR – PATIKRINTA:** `main` HEAD `55bd6d207b7ef3abbb723e03305b4c295f98c766` (automatinis work-log commit; ankstesnis dokumentų commit `8465af50799caa12103007ccf9203f9128e17054`). Atviri 7 PR. #294 – draft, 4 ahead / 2 behind; #264 canonical-clean-URL pasiūlymas – draft, 1 ahead / 117 behind. Nei vienas nejungtas.
 - **Daily-suite / site-check schedule – NEĮVYKO šiandien:** po 60 min. grace nėra 2026-11-20 `event=schedule`. Paskutinis Daily-suite schedule #44557115983 sukurtas ir pradėtas 2026-11-19 15:38:40Z (apie 9 val. 28 min. po 06:10 UTC); baigėsi 15:39:15Z. Paskutinis site-check schedule #44546115868 sukurtas ir pradėtas 14:39:25Z (apie 9 val. 2 min. po 05:37 UTC); baigėsi 14:39:41Z. `created_at` ir `run_started_at` sutampa, todėl matomas vėlavimas yra iki run sukūrimo, ne GitHub runner eilėje ar pačiame job. Tiksli GitHub scheduler priežastis nepatvirtinta.
