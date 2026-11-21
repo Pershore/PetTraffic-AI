@@ -71,8 +71,8 @@ def main() -> int:
     checked: set[str] = set()
     pages = [
         BASE + "/",
-        BASE + "/about.html",
-        BASE + "/privacy.html",
+        BASE + "/about",
+        BASE + "/privacy",
         BASE + "/sitemap.xml",
         BASE + "/robots.txt",
     ]
@@ -98,7 +98,9 @@ def main() -> int:
         if status != 200:
             failures.append(f"{page_url} returned HTTP {status}")
             continue
-        if page_url.endswith(".html") or page_url.endswith("/"):
+        if final_url != page_url:
+            failures.append(f"Canonical sitemap page redirected to {final_url}: {page_url}")
+        if not page_url.endswith((".xml", ".txt")):
             parser = Links()
             parser.feed(body)
             for raw in parser.values:
@@ -113,10 +115,12 @@ def main() -> int:
                     external_links.add(normalized)
 
     for url in sorted(internal_links - checked):
-        status, _, _ = fetch(url)
+        status, _, final_url = fetch(url)
         checked.add(url)
         if status != 200:
             failures.append(f"Internal link returned HTTP {status}: {url}")
+        elif final_url != url:
+            failures.append(f"Internal link is not canonical and redirects to {final_url}: {url}")
 
     for url in sorted(external_links):
         status, _, _ = fetch(url)
