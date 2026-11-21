@@ -57,5 +57,20 @@ class DispatchBridgeWorkflowTests(unittest.TestCase):
         self.assertNotIn("curl ", workflow)
 
 
+    def test_control_center_bridge_has_one_trigger_path_and_deduplicates_all_run_events(self):
+        bridge = Path(".github/workflows/dispatch-daily-suite.yml").read_text(encoding="utf-8")
+        control_center_block = bridge.split('if (action === "control-center") {', 1)[1].split('if (action === "lighthouse") {', 1)[0]
+        self.assertIn('["workflow_run", "workflow_dispatch", "schedule"].includes(run.event)', control_center_block)
+        self.assertIn('run.status !== "completed" || run.conclusion === "success"', control_center_block)
+        self.assertIn("github.rest.actions.createWorkflowDispatch", control_center_block)
+
+        control_center = Path(".github/workflows/control-center.yml").read_text(encoding="utf-8")
+        workflow_run_triggers = control_center.split("workflow_run:", 1)[1].split("push:", 1)[0]
+        self.assertNotIn('"Pet traffic secure workflow dispatch"', workflow_run_triggers)
+        self.assertIn('"Pet traffic daily automation suite"', workflow_run_triggers)
+        self.assertIn('"Pet traffic Lighthouse audits"', workflow_run_triggers)
+        self.assertIn('"Deploy PetTraffic control API"', workflow_run_triggers)
+        self.assertIn("workflow_dispatch:", control_center)
+
 if __name__ == "__main__":
     unittest.main()
