@@ -14,24 +14,24 @@ ROOT = Path(__file__).resolve().parents[1] / "site"
 BASE_URL = "https://pettraffic-ai.pages.dev"
 
 REQUIRED_RETIRED_ARTICLE_REDIRECTS = {
-    "/articles/augintiniai-ir-fejerverkai-kaip-padeti.html": "/articles/kada-kreiptis-i-veterinara.html",
-    "/articles/augintiniai-ir-fejerverkai-kaip-padeti": "/articles/kada-kreiptis-i-veterinara.html",
-    "/articles/augintinio-prieziura-po-operacijos.html": "/articles/kada-kreiptis-i-veterinara.html",
-    "/articles/augintinio-prieziura-po-operacijos": "/articles/kada-kreiptis-i-veterinara.html",
+    "/articles/augintiniai-ir-fejerverkai-kaip-padeti.html": "/articles/kada-kreiptis-i-veterinara",
+    "/articles/augintiniai-ir-fejerverkai-kaip-padeti": "/articles/kada-kreiptis-i-veterinara",
+    "/articles/augintinio-prieziura-po-operacijos.html": "/articles/kada-kreiptis-i-veterinara",
+    "/articles/augintinio-prieziura-po-operacijos": "/articles/kada-kreiptis-i-veterinara",
     "/articles/kaip-issirinkti-gyvuno-maista.html": "/",
     "/articles/kaip-issirinkti-gyvuno-maista": "/",
     "/articles/kaip-maitinti-suni.html": "/",
     "/articles/kaip-maitinti-suni": "/",
     "/articles/kaip-paruosti-namus-kaciukui.html": "/",
     "/articles/kaip-paruosti-namus-kaciukui": "/",
-    "/articles/kaip-pripratinti-kate-prie-transportavimo-dezes.html": "/articles/kada-kreiptis-i-veterinara.html",
-    "/articles/kaip-pripratinti-kate-prie-transportavimo-dezes": "/articles/kada-kreiptis-i-veterinara.html",
-    "/articles/kates-kvepavimas-miegant.html": "/articles/kada-kreiptis-i-veterinara.html",
-    "/articles/kates-kvepavimas-miegant": "/articles/kada-kreiptis-i-veterinara.html",
-    "/articles/kates-prieziura-namuose.html": "/articles/kada-kreiptis-i-veterinara.html",
-    "/articles/kates-prieziura-namuose": "/articles/kada-kreiptis-i-veterinara.html",
-    "/articles/suns-ir-kates-dantu-prieziura.html": "/articles/kada-kreiptis-i-veterinara.html",
-    "/articles/suns-ir-kates-dantu-prieziura": "/articles/kada-kreiptis-i-veterinara.html",
+    "/articles/kaip-pripratinti-kate-prie-transportavimo-dezes.html": "/articles/kada-kreiptis-i-veterinara",
+    "/articles/kaip-pripratinti-kate-prie-transportavimo-dezes": "/articles/kada-kreiptis-i-veterinara",
+    "/articles/kates-kvepavimas-miegant.html": "/articles/kada-kreiptis-i-veterinara",
+    "/articles/kates-kvepavimas-miegant": "/articles/kada-kreiptis-i-veterinara",
+    "/articles/kates-prieziura-namuose.html": "/articles/kada-kreiptis-i-veterinara",
+    "/articles/kates-prieziura-namuose": "/articles/kada-kreiptis-i-veterinara",
+    "/articles/suns-ir-kates-dantu-prieziura.html": "/articles/kada-kreiptis-i-veterinara",
+    "/articles/suns-ir-kates-dantu-prieziura": "/articles/kada-kreiptis-i-veterinara",
     "/articles/suns-pagrindines-komandos.html": "/",
     "/articles/suns-pagrindines-komandos": "/",
 }
@@ -106,6 +106,16 @@ class PageParser(HTMLParser):
             self.current_jsonld.append(data)
 
 
+def canonical_public_path(relative_path: str) -> str:
+    """Return the public Cloudflare Pages path for a source HTML file."""
+    relative = Path(relative_path).as_posix()
+    if relative == "index.html":
+        return "/"
+    if relative.endswith(".html"):
+        relative = relative[:-5]
+    return "/" + relative
+
+
 def local_target(page: Path, link: str) -> Path | None:
     parsed = urlparse(link)
     if parsed.scheme or parsed.netloc or not parsed.path:
@@ -117,6 +127,11 @@ def local_target(page: Path, link: str) -> Path | None:
         target = page.parent / path
     if path.endswith("/"):
         target = target / "index.html"
+    elif not target.exists() and not target.suffix:
+        # Cloudflare Pages serves file.html at the canonical extensionless route.
+        html_target = target.with_suffix(".html")
+        if html_target.exists():
+            target = html_target
     return target.resolve()
 
 
@@ -192,7 +207,7 @@ def main() -> int:
             elif urlparse(parser.canonicals[0]).scheme != "https" or urlparse(parser.canonicals[0]).netloc != urlparse(BASE_URL).netloc:
                 errors.append(f"{rel}: canonical URL must use {BASE_URL}")
             else:
-                expected_path = "/" if rel.as_posix() == "index.html" else "/" + rel.as_posix()
+                expected_path = canonical_public_path(rel.as_posix())
                 expected_canonical = BASE_URL + expected_path
                 if parser.canonicals[0] != expected_canonical:
                     errors.append(f"{rel}: canonical URL should be {expected_canonical}")
@@ -270,12 +285,8 @@ def main() -> int:
                 sitemap_entries.append(url)
                 sitemap_urls.add(url)
                 path = unquote(parsed_url.path)
-                target = ROOT / (path.lstrip("/") or "index.html")
-                if path == "/":
-                    target = ROOT / "index.html"
-                elif path.endswith("/"):
-                    target = ROOT / path.lstrip("/") / "index.html"
-                if not target.exists():
+                target = ROOT / "index.html" if path == "/" else local_target(ROOT / "index.html", path)
+                if target is None or not target.exists():
                     errors.append(f"sitemap.xml: URL has no matching file: {url}")
         except ET.ParseError as exc:
             errors.append(f"sitemap.xml: invalid XML: {exc}")
@@ -316,8 +327,8 @@ def main() -> int:
             source_path = ROOT / unquote(source.lstrip("/"))
             if source_path.exists():
                 errors.append(f"_redirects:{line_number}: redirect source still exists as a published file: {source}")
-            destination_path = ROOT / "index.html" if destination == "/" else ROOT / unquote(destination.lstrip("/"))
-            if not destination_path.exists():
+            destination_path = ROOT / "index.html" if destination == "/" else local_target(ROOT / "index.html", destination)
+            if destination_path is None or not destination_path.exists():
                 errors.append(f"_redirects:{line_number}: destination file does not exist: {destination}")
             destination_url = BASE_URL + ("/" if destination == "/" else destination)
             if destination_url not in sitemap_urls and not dashboard_proxy:
