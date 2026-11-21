@@ -8,7 +8,6 @@ on:
       - "Pet traffic Lighthouse audits"
       - "Deploy PetTraffic control API"
       - "Pet traffic Worker cron diagnostics"
-      - "Pet traffic secure workflow dispatch"
       - "Pet traffic read-only task runner"
       - "Pet traffic weekly growth review"
     types: [completed]
