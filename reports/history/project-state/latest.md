@@ -1,6 +1,6 @@
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
-- Atnaujinta: 2026-11-21T12:28:47.933284+00:00
+- Atnaujinta: 2026-11-21T12:34:45+00:00
 - Būsena: **REIKIA DĖMESIO**
 - GitHub run: 44903952296 (Control Center); D1 diagnostika: 44904090148
 - Šaltinio commit: a19d0d03b2d5ede87e7abbb6744f5186d7b03a11
@@ -47,6 +47,8 @@ Patikrinti ir atkurti tikrą Daily-suite `event=schedule` pristatymą; šiandien
 - **ATLIKTA – PR #301:** [perf: skip site checks for documentation-only changes](https://github.com/Pershore/PetTraffic-AI/pull/301), viena workflow byla, 8 papildytos eilutės. Keturi docs-only push anksčiau sunaudojo 37 runner sekundes (17 + 16 + 0 + 4); PR prideda `paths-ignore` docs/reports/Markdown tik push ir PR įvykiams. CI success, PR ready for review, mergeable, nesujungtas. Tikėtinas po-merge docs-only runner laikas 0 s; po-merge elgsena dar nematuota.
 - **Analytics / RSS – PATIKRINTA:** GA4 2026-11-14–20: 2 aktyvūs, 2 sesijos, 2 pageviews, 0 organinių sesijų; GSC 2026-11-12–18: 0 parodymų ir paspaudimų. Topic radar: 30 unikalių RSS nuorodų, 7 temos; tai nėra paieškų apimtys.
 - **Saugumo ribos:** PR #301 neįdiegtas į main; jokio production, Worker/D1, ARO Vet, DNS, secrets, billing ar mokamo serviso pakeitimo nėra. Aktyvus darbo laikas NEMATUOTAS.
+
+- Papildomas docs-only work-log commit `6aee359` po šio audito įrašo dar sukėlė site-check #44904512073 (22 s). Todėl iš viso jau 5 dokumentacijos-only push'ai sunaudojo 59 runner sekundes (55 s užbaigti job, 4 s atšauktas); PR #301 aprašymas atnaujintas šiuo papildomu realiu matavimu. Po-merge 0 s dar tik laukiamas, nepatvirtintas.
 
 ## Rekomendacijos
 
