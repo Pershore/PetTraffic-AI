@@ -31,7 +31,7 @@ jobs:
       actions: read
       contents: read
     outputs:
-      run_suite: \${{ steps.gate.outputs.run_suite }}
+      run_suite: ${{ steps.gate.outputs.run_suite }}
     steps:
       - name: Skip later retries after a successful scheduled audit
         id: gate
