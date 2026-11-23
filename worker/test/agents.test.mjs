@@ -92,8 +92,11 @@ test("orchestrator skips malformed stored event JSON and preserves an evidence g
  assert.ok(report.coordinator.evidence_gaps.some(x=>x.includes("invalid stored event payload")));
 });
 
-test("model JSON must contain every required schema field",()=>{
- assert.equal(parseResult('{"status":"reviewed"}').status,"invalid_json");
+test("model JSON with missing schema fields is preserved as needs_evidence",()=>{
+ const partial=parseResult('{"status":"reviewed"}');
+ assert.equal(partial.status,"needs_evidence");
+ assert.equal(partial.partial_schema,true);
+ assert.match(partial.evidence_gaps[0],/findings, recommendations, evidence_gaps/);
  assert.equal(parseResult('{"status":"reviewed","findings":[],"recommendations":[],"evidence_gaps":[]}').status,"reviewed");
 });
 
