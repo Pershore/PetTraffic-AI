@@ -1,13 +1,13 @@
 # Pet traffic – vienintelė kanoninė projekto atmintis
 
-**Atnaujinta:** 2026-11-23 15:10 LT
+**Atnaujinta:** 2026-11-23 16:15 LT
 **Saugykla:** https://github.com/Pershore/PetTraffic-AI  
 **Pagrindinė šaka:** `main`  
 **Tikslas:** vienas patikimas tęstinumo šaltinis ChatGPT, Codex ir būsimiems projekto agentams.
 
 Šis dokumentas sujungia ilgalaikius sprendimus, patvirtintą architektūrą, dabartines integracijų būsenas, neišspręstus blokatorius ir kitus veiksmus. Jis nepakeičia GitHub testų ar realių vykdymų įrodymų. Kiekvieną būseną reikia tikrinti pagal naujausią commit, workflow run ir gyvą sistemos atsakymą.
 
-## Naujausia patikrinta būsena (2026-11-23 15:10 LT)
+## Ankstesnė patikrinta būsena (2026-11-23 15:10 LT)
 
 - **Main / PR #304 / Pages – PATIKRINTA:** Daily-suite schedule retry pakeitimas sujungtas PR #304 commit c1abc1463440e2957f1e9cec1f6e16340da31ce6; dokumentų / atminties atnaujinimas PR #305 sujungtas commit d94d9ac2bb97ffa8f61cd468f83c23bc308cd84b. Po jų main automatinis work-log commit dc1e8ee4c84596c93dcfc5627f97a050919e9f9d. PR #304 sujungtas 2026-11-23 13:07:18Z po sėkmingų PR patikrų: site-check #45180671302 (156 testai OK), Control Center #45180671449 success, Cloudflare Pages preview success. Po merge site-check #45180769046 success, Control Center #45180768937 success, Cloudflare Pages check success. PR #304 pakeitė tik Daily-suite workflow ir testus.
 - **Daily-suite schedule atsparumas – ATLIKTA, veikimas dar LAUKIA:** .github/workflows/daily-suite.yml dabar turi schedule laikus 06:10, 08:10, 10:10 ir 11:10 UTC. Lengvas actions:read gate praleidžia vėlesnius pakartojimus, kai tą pačią Europe/Vilnius kalendorinę dieną jau yra sėkmingas event=schedule vykdymas. workflow_dispatch lieka nepakeistas. Išlaikytas tas pats workflow ID 418322987 ir event=schedule provenance, todėl Worker AI evidence gate nesusilpnintas. Pirmas realus šios pataisos veikimo įrodymas bus 2026-11-24 grafikai; šiandienos trūkstamo schedule atgaline data tai nepataiso.

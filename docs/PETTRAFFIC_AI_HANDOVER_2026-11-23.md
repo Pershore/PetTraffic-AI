@@ -1,6 +1,6 @@
 # Pet traffic – perdavimo ataskaita (2026-11-23)
 
-## Naujausias papildymas – 2026-11-23 15:10 LT
+## Ankstesnis papildymas – 2026-11-23 15:10 LT
 
 - **Main / PR #304 – PATIKRINTA:** PR #304 sujungtas į main commit c1abc1463440e2957f1e9cec1f6e16340da31ce6. Jis prideda Daily-suite schedule bandymus 06:10, 08:10, 10:10 ir 11:10 UTC bei Europe/Vilnius dienos gate, kuris po vieno sėkmingo schedule vykdymo praleidžia vėlesnius pakartojimus. Manual workflow_dispatch lieka nepakeistas; Worker schedule provenance reikalavimas nesusilpnintas.
 - **PR CI – PATIKRINTA:** site-check #45180671302 success, 156 testai OK; Control Center #45180671449 success; Cloudflare Pages preview success.
