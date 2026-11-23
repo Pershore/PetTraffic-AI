@@ -2,7 +2,9 @@ name: Pet traffic Lighthouse audits
 
 on:
   schedule:
-    - cron: "27 7 * * 1"
+    # Retry the weekly audit at staggered times if GitHub delays or drops an earlier schedule event.
+    # The gate below allows only one successful scheduled audit per Vilnius calendar day.
+    - cron: "27 7,9,11,13 * * 1"
   workflow_dispatch:
   push:
     branches: [main]
@@ -18,10 +20,63 @@ permissions:
 
 concurrency:
   group: pettraffic-lighthouse-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
+  schedule-gate:
+    name: Allow one successful scheduled Lighthouse audit per Vilnius day
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      run_suite: ${{ steps.gate.outputs.run_suite }}
+    steps:
+      - name: Skip later retries after a successful scheduled audit
+        id: gate
+        uses: actions/github-script@v9
+        with:
+          script: |
+            if (context.eventName !== "schedule") {
+              core.setOutput("run_suite", "true");
+              core.info("Manual and push-triggered audits are unchanged.");
+              return;
+            }
+
+            const { owner, repo } = context.repo;
+            const current = await github.rest.actions.getWorkflowRun({
+              owner, repo, run_id: context.runId
+            });
+            const vilniusDay = value => {
+              const parts = new Intl.DateTimeFormat("en-GB", {
+                timeZone: "Europe/Vilnius",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit"
+              }).formatToParts(new Date(value));
+              const fields = Object.fromEntries(parts.map(part => [part.type, part.value]));
+              return fields.year + "-" + fields.month + "-" + fields.day;
+            };
+            const day = vilniusDay(current.data.created_at);
+            const { data } = await github.rest.actions.listWorkflowRuns({
+              owner, repo, workflow_id: "lighthouse-audit.yml", event: "schedule", per_page: 100
+            });
+            const alreadySucceeded = data.workflow_runs.some(run =>
+              run.id !== context.runId &&
+              run.status === "completed" &&
+              run.conclusion === "success" &&
+              vilniusDay(run.created_at) === day
+            );
+
+            core.setOutput("run_suite", alreadySucceeded ? "false" : "true");
+            core.info(alreadySucceeded
+              ? "A scheduled Lighthouse audit already succeeded on " + day + "; skipping this retry."
+              : "No successful scheduled Lighthouse audit exists on " + day + "; run the full audit.");
+
   lighthouse:
+    needs: schedule-gate
+    if: needs.schedule-gate.outputs.run_suite == 'true'
     name: Mobile and desktop Lighthouse reports
     runs-on: ubuntu-latest
     timeout-minutes: 35
