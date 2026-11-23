@@ -1,5 +1,22 @@
 # Pet traffic – perdavimo ataskaita (2026-11-23)
 
+## Naujausias papildymas – 2026-11-23 16:18 LT
+
+- **Main / PR #307 – PATIKRINTA:** PR #307 sujungtas commit 524c8ab020a21c0c40fb949c437a79ba8d2eca0d; po dokumentų PR #308 ir automatinio work-log main HEAD 00f30a4bd69d1706a6f9caa9f67915612e396222.
+- **Lighthouse schedule retry – ATLIKTA:** pirmadienio cron 07:27 / 09:27 / 11:27 / 13:27 UTC; Europe/Vilnius dienos gate po vienos sėkmės praleidžia retry. Manual/push paleidimai nepakeisti. PR CI site-check #45191186559 (160 testų), Control Center #45191186685, Pages preview success; po merge site-check #45191443020, Control Center #45191443096, work-log #45191443139 success.
+- **Lighthouse push audit – PATIKRINTA:** #45191443021 success; 10 derinių našumas 98–100, home-mobile 100 (LCP 1.66 s, TBT 0 ms, CLS 0), SEO/prieinamumas/best-practices visi 100. Tai push, ne schedule; kitas tikras grafiko testas 2026-11-30.
+- **Daily-suite – LAUKIA:** PR #304 retry grafikas main, bet 2026-11-23 visi retry slotai buvo praėję iki merge 13:07Z. Šiandien schedule nėra; manual #45158543329 ir sync #45158713578 neatveria AI vartų. Kitas runtime testas 2026-11-24.
+- **Worker / D1 / AI – NEPATVIRTINTA:** paskutinis AI ciklas 2026-11-22 completed, 5 kvietimai, error_code=null, bet Control Core needs_evidence su 4 spragomis; analytics/topics/content-review needs_evidence, technical-seo reviewed; memory 2026-11-22T14:30:22.711Z.
+- **Naujausia D1 diagnostika – PATIKRINTA:** #45192351078 / artifact #14825564045 po sync #45192295510 ir Control Center #45192166705. 2026-11-23 agent_run missing, 0 AI calls, visi 4 specialistai, coordinator ir Control Core missing. Analytics/topic snapshot'ai iš manual #45158543329; control/recommendation snapshot'ai iš #45192166705. Memory present, bet paskutinis update 2026-11-22T14:30:22.711Z. Issue #145 lieka open.
+- **PR #306 – PARUOŠTA, nesujungta:** content-review struktūruota įvestis ir dalinio JSON needs_evidence apdorojimas; Node 84/84, Python 22/22, Cloudflare validation success, production deploy skipped. PR draft/open.
+- **Seni AI PR:** #294, #261, #263 uždaryti kaip superseded, istorija išsaugota.
+- **Dashboard / Control – PATIKRINTA:** 16:12 LT reali naršyklė patvirtino HTTP 200, main a37ec08, 7 open PR, Worker/D1 connected, AI stale 2026-11-22. Viešas READ-ONLY, noindex nėra autentifikacija, komandų kopijavimas nėra vykdymas, Worker task API išjungta. Analytics/topic vykdymų atvaizdavimas ir grafiko tekstai turi būti patikslinti.
+- **Saugumas:** Worker/D1 production, DNS, Cloudflare nustatymai, secrets, ARO Vet, viešas turinys, billing ir mokamos paslaugos nekeisti.
+
+## Pirmas neužbaigtas veiksmas
+
+2026-11-24 patikrinti Daily-suite tikrą event=schedule, pilną suite, retry deduplikaciją, source provenance ir D1 readback. Po 13:20 LT patikrinti vienintelį AI ciklą ir specialistų įrodymus; nekartoti. 2026-11-30 patikrinti Lighthouse Monday schedule ir retry gate. Issue #145 neuždaryti be recovery_confirmed=true.
+
 ## Ankstesnis papildymas – 2026-11-23 15:10 LT
 
 - **Main / PR #304 – PATIKRINTA:** PR #304 sujungtas į main commit c1abc1463440e2957f1e9cec1f6e16340da31ce6. Jis prideda Daily-suite schedule bandymus 06:10, 08:10, 10:10 ir 11:10 UTC bei Europe/Vilnius dienos gate, kuris po vieno sėkmingo schedule vykdymo praleidžia vėlesnius pakartojimus. Manual workflow_dispatch lieka nepakeistas; Worker schedule provenance reikalavimas nesusilpnintas.
