@@ -370,3 +370,27 @@ test("partial content-review model schema remains an evidence gap without discar
  assert.equal(report.data_quality.degraded_specialist_count,1);
  assert.ok(report.coordinator.evidence_gaps.some(x=>x.includes("content-review")));
 });
+
+
+test("model JSON with missing schema fields is preserved as needs_evidence",()=>{
+ const partial=parseResult('{"status":"reviewed"}');
+ assert.equal(partial.status,"needs_evidence");
+ assert.equal(partial.partial_schema,true);
+ assert.match(partial.evidence_gaps[0],/findings, recommendations, evidence_gaps/);
+ assert.equal(parseResult('{"status":"reviewed","findings":[],"recommendations":[],"evidence_gaps":[]}').status,"reviewed");
+});
+
+test("model JSON with non-string array items is never marked reviewed",()=>{
+ const partial=parseResult(JSON.stringify({
+  status:"reviewed",
+  findings:["Valid bounded finding",{unexpected:"object"}],
+  recommendations:[42],
+  evidence_gaps:[false],
+ }));
+ assert.equal(partial.status,"needs_evidence");
+ assert.equal(partial.partial_schema,true);
+ assert.deepEqual(partial.findings,["Valid bounded finding"]);
+ assert.deepEqual(partial.recommendations,[]);
+ assert.match(partial.evidence_gaps[0],/recommendations, evidence_gaps/);
+ assert.equal(partial.requires_human_approval,true);
+});
