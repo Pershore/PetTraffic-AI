@@ -10,8 +10,11 @@ class ControlCenterTests(unittest.TestCase):
             workflow = stream.read()
         self.assertIn("  topic-radar:", workflow)
         self.assertIn("  live-check:", workflow)
-        expected_condition = "    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'"
+        expected_condition = "    if: needs.schedule-gate.outputs.run_suite == 'true' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')"
         self.assertEqual(workflow.count(expected_condition), 3)
+        for job in ("analytics", "topic-radar", "live-check"):
+            block = workflow.split(f"  {job}:", 1)[1]
+            self.assertTrue(block[:160].lstrip().startswith("needs: schedule-gate"))
         self.assertNotIn("github.event.workflow_run.event == 'schedule'", workflow)
 
     def test_control_center_rechecks_after_worker_deployment(self):
@@ -540,7 +543,9 @@ class ControlCenterTests(unittest.TestCase):
     def test_daily_suite_has_an_independent_direct_cron(self):
         with open(".github/workflows/daily-suite.yml", encoding="utf-8") as stream:
             workflow = stream.read()
-        self.assertIn('    - cron: "10 6 * * *"', workflow)
+        self.assertIn('    - cron: "10 6,8,10,11 * * *"', workflow)
+        self.assertIn('workflow_id: "daily-suite.yml"', workflow)
+        self.assertIn('timeZone: "Europe/Vilnius"', workflow)
         self.assertNotIn("workflow_run:", workflow)
         self.assertIn("github.event_name == 'schedule'", workflow)
 
