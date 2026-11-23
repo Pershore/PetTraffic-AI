@@ -143,8 +143,26 @@ export function parseResult(raw) {
  }
  if(!value||typeof value!=="object"||Array.isArray(value)) return invalidResult("invalid_json","Model response did not match the expected JSON object.");
  const required=["status","findings","recommendations","evidence_gaps"];
- if(typeof value.status!=="string"||!required.slice(1).every(key=>Array.isArray(value[key]))) {
-  return invalidResult("invalid_json","Model JSON did not contain the required status, findings, recommendations and evidence_gaps fields.");
+ const missingFields=required.filter(key=>key==="status"
+  ? typeof value[key]!=="string"
+  : !Array.isArray(value[key]));
+ const invalidArrayItems=["findings","recommendations","evidence_gaps"].filter(key=>
+  Array.isArray(value[key])&&value[key].some(item=>typeof item!=="string"));
+ const schemaIssues=[...new Set([...missingFields,...invalidArrayItems])];
+ if(schemaIssues.length) {
+  // Preserve typed fields from a parseable object, but never mark it reviewed.
+  const safeStrings=key=>Array.isArray(value[key])
+   ? value[key].filter(item=>typeof item==="string").slice(0,1).map(item=>item.slice(0,120))
+   : [];
+  const gap="Model JSON schema incomplete; missing or invalid required fields: "+schemaIssues.join(", ")+". Result marked needs_evidence.";
+  return {
+   status:"needs_evidence",
+   findings:safeStrings("findings"),
+   recommendations:safeStrings("recommendations"),
+   evidence_gaps:[gap,...safeStrings("evidence_gaps")].slice(0,2),
+   partial_schema:true,
+   requires_human_approval:true,
+  };
  }
  const rawStatus=value.status.trim().toLowerCase().replace(/[\s-]+/g,"_");
  const statusAliases={reviewed:"reviewed",ok:"reviewed",complete:"reviewed",completed:"reviewed",needs_evidence:"needs_evidence",no_data:"needs_evidence",error:"needs_evidence",monitor:"needs_evidence"};
@@ -366,7 +384,7 @@ export async function runAgentOrchestration(env, scheduledTime = new Date()) {
    // prevent the coordinator from persisting a bounded, evidence-aware result.
   }
   const degradedSpecialistIds=Object.entries(specialists)
-   .filter(([,result])=>!isUsableModelResult(result))
+   .filter(([,result])=>!isUsableModelResult(result)||result.partial_schema===true)
    .map(([id])=>id);
   const degradedSpecialists=degradedSpecialistIds.flatMap(id=>(specialists[id].evidence_gaps||[]).map(gap=>`${id}: ${gap}`));
   let coordinator;
@@ -387,7 +405,7 @@ export async function runAgentOrchestration(env, scheduledTime = new Date()) {
   if(eventData.invalidPayloadCount>0) {
    coordinator.evidence_gaps=[...(coordinator.evidence_gaps||[]),`Skipped ${eventData.invalidPayloadCount} invalid stored event payload(s); source data requires review.`].slice(0,5);
   }
-  const report={date_utc:date,generated_at:new Date().toISOString(),model:MODEL,ai_calls:reservedCalls,specialists,coordinator,data_quality:{invalid_event_payload_count:eventData.invalidPayloadCount,degraded_specialist_count:degradedSpecialistIds.length,missing_source_kinds:eventData.missingKinds,stale_source_kinds:eventData.staleKinds},read_only:true,publication_enabled:false};
+  const report={date_utc:date,generated_at:new Date().toISOString(),model:MODEL,ai_calls:reservedCalls,specialists,coordinator,data_quality:{invalid_event_payload_count:eventData.invalidPayloadCount,degraded_specialist_count:degradedSpecialistIds.length,partial_schema_specialist_count:Object.values(specialists).filter(result=>result.partial_schema===true).length,missing_source_kinds:eventData.missingKinds,stale_source_kinds:eventData.staleKinds},read_only:true,publication_enabled:false};
   stage="build_control_decision";
   const decision=buildControlDecision(report);
   stage="persist_control_decision";
