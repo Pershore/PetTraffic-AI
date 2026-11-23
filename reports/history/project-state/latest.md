@@ -1,9 +1,9 @@
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
-- Atnaujinta: 2026-11-23T13:07:32.942224+00:00
+- Atnaujinta: 2026-11-23T14:11:08.668408+00:00
 - Būsena: **REIKIA DĖMESIO**
-- GitHub run: 45180768937
-- Šaltinio commit: c1abc1463440e2957f1e9cec1f6e16340da31ce6
+- GitHub run: 45191443096
+- Šaltinio commit: 524c8ab020a21c0c40fb949c437a79ba8d2eca0d
 
 ## Paskutinis patikrintas etapas
 
@@ -11,23 +11,23 @@ Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataska
 
 ## Kitas veiksmas
 
-Spręsti pirmą aptiktą problemą: Lighthouse auditas (warning). Suplanuotas ciklas nuo 2026-11-23 07:27 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-16T17:10:54Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.
+Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (stale). Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-22.
 
 ## Patvirtinti procesai
 
 - Centrinės API sinchronizavimas: Paskutinis paleidimas sėkmingas.
 - Centrinis valdymo centras: Paskutinis paleidimas sėkmingas.
 - Debesijos read-only užduočių vykdytojas: Paskutinis debesijos užduoties vykdymas sėkmingas.
-- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 7 min.
+- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 11 min.
 
 ## Problemos
 
-- **Lighthouse auditas** (warning): Suplanuotas ciklas nuo 2026-11-23 07:27 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-16T17:10:54Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia. – https://github.com/Pershore/PetTraffic-AI/actions/runs/45173330353
 - **AI agentai + control-core atmintis** (stale): Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-22. – https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health
 
 ## Laukiančios patikros
 
 - GA4, temų radaras ir svetainės stebėjimas: Workflow atnaujintas 2026-11-23 13:07 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.
+- Lighthouse auditas: Workflow atnaujintas 2026-11-23 14:10 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.
 
 ## AI agentų ir atminties patikra
 
