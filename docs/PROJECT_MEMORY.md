@@ -1,11 +1,33 @@
 # Pet traffic – vienintelė kanoninė projekto atmintis
 
-**Atnaujinta:** 2026-11-23 16:15 LT
+**Atnaujinta:** 2026-11-23 16:18 LT
 **Saugykla:** https://github.com/Pershore/PetTraffic-AI  
 **Pagrindinė šaka:** `main`  
 **Tikslas:** vienas patikimas tęstinumo šaltinis ChatGPT, Codex ir būsimiems projekto agentams.
 
 Šis dokumentas sujungia ilgalaikius sprendimus, patvirtintą architektūrą, dabartines integracijų būsenas, neišspręstus blokatorius ir kitus veiksmus. Jis nepakeičia GitHub testų ar realių vykdymų įrodymų. Kiekvieną būseną reikia tikrinti pagal naujausią commit, workflow run ir gyvą sistemos atsakymą.
+
+## Naujausia patikrinta būsena (2026-11-23 16:18 LT)
+
+- **Main / PR #307 – PATIKRINTA:** PR #307 sujungtas 2026-11-23 14:10:59Z, merge commit 524c8ab020a21c0c40fb949c437a79ba8d2eca0d. Po automatinio work-log įrašo main HEAD tapo a37ec080294aec092e3ac80cd7d8d2512e4d0987; po dokumentų PR #308 ir auto work-log – 00f30a4bd69d1706a6f9caa9f67915612e396222.
+- **Lighthouse schedule atsparumas – ATLIKTA, tikras schedule dar LAUKIA:** pirmadienio grafikas 27 7,9,11,13 UTC; gate leidžia vieną sėkmingą event=schedule auditą per Vilniaus dieną, vėlesnius retry praleidžia. Manual/push neblokuojami; cancel-in-progress=false. PR CI site-check #45191186559 (160 testų), Control Center #45191186685, Pages preview success. Po merge site-check #45191443020, Control Center #45191443096, work-log #45191443139 success.
+- **Lighthouse po merge – PATIKRINTA kaip push, ne schedule:** run #45191443021 success. 10 puslapio/įrenginio derinių našumas 98–100; home-mobile 100, LCP 1.66 s, TBT 0 ms, CLS 0; SEO, accessibility ir best-practices visi 100. Ankstesnio manual #45173330353 home-mobile 89/TBT 416 ms skirtumas rodo matavimo svyravimą; kodo nekeisti pagal vieną rezultatą. Kitas tikras schedule testas 2026-11-30.
+- **Daily-suite schedule retry – ATLIKTA, runtime dar LAUKIA:** PR #304 grafikas 10 6,8,10,11 UTC. 2026-11-23 visi retry laikai buvo praėję prieš merge 13:07Z, todėl schedule įvykio nėra; manual #45158543329 ir sync #45158713578 neatveria Worker AI vartų. Pirmas runtime testas – 2026-11-24.
+- **GA4 / GSC / temų radaras – PATIKRINTA, bet tik manual fallback:** #45158543329 analytics snapshot GA4 available, 2026-11-16–22: 2 aktyvūs / nauji naudotojai, 2 sesijos, 2 peržiūros, 0 patvirtintų organinių sesijų. GSC available, 2026-11-14–20: 0 parodymų ir paspaudimų; sitemap pateiktas 2026-11-10, pending, 5 prioritetiniai URL Google nežinomi / dar netikrinti. Pozicija 0 be parodymų nėra reitingo įrodymas. Topic radar: 31 unikali vieša Google News RSS nuoroda, 7 temos, 0 tuščių temų; tai ne Google paieškų apimtys. Šie duomenys nėra schedule provenance.
+- **Worker / D1 / AI – PATIKRINTA sveikata, AI ciklas NEPATVIRTINTAS:** /health rodo Worker/D1/Control Core connected, site heartbeat HTTP 200. Paskutinis AI run 2026-11-22, completed, 5 kvietimai, error_code=null, bet Control Core needs_evidence su 4 spragomis (2 insufficient_evidence, 2 other); analytics/topics/content-review needs_evidence, technical-seo reviewed; memory updated 2026-11-22T14:30:22.711Z.
+- **Naujausia D1 diagnostika – PATIKRINTA, AI missing:** po Lighthouse push sync #45192295510 ir Control Center #45192166705 sekė read-only diagnostika #45192351078, artifact #14825564045 (2026-11-23T14:16:13Z). Dienos agent_run missing, 0 AI calls, visi 4 specialistai missing, coordinator ir Control Core missing. Memory present, paskutinis update 2026-11-22T14:30:22.711Z. Analytics/topic snapshot'ai iš manual workflow_dispatch #45158543329; Control Center/recommendation snapshot'ai – 3, naujausi iš #45192166705. Nauji kontrolės snapshot'ai nėra AI ciklo ar schedule provenance įrodymas. Issue #145 lieka open.
+- **AI specialisto pataisa – PARUOŠTA, nesujungta:** PR #306 head dac39f2f96f3d0cb42d875ac73804636052d74ff išplečia content-review įvestį (įžanga, H1–H3, išorinių veterinarinių šaltinių pavadinimai/domenai, pabaiga) ir dalinį validų JSON išsaugo kaip needs_evidence, pažymint specialistą degraded. Node 84/84, Python 22/22; Cloudflare validation success; deploy skipped. PR #306 draft/open; Worker produkcija nekeista.
+- **Seni AI PR:** #294, #261, #263 uždaryti kaip superseded, jų istorija išsaugota.
+- **Dashboard / Control – PATIKRINTA gyvai:** 2026-11-23 16:12 LT HTTP 200, main a37ec08, 7 open PR, Worker/D1 connected, agentų ciklas SENA nuo 2026-11-22, Control Core needs_evidence, memory present. Skydas viešas READ-ONLY; noindex nėra autentifikacija, komandų kopijavimas nėra vykdymas, Worker task API išjungta. Analytics/topic kortelės nerodo atskirų vykdymų, nors tai Daily-suite darbai; statiniai grafiko aprašai dar neatnaujinti.
+- **Atviri klausimai:** Issue #145 ir #248 open. Atviri PR: #306, #301, #298, #280, #267, #266, #264. #306 nejungti be atskiro Worker production deploy leidimo.
+- **Saugumas:** nebuvo Worker/D1 produkcinių pakeitimų, DNS, Cloudflare paskyros nustatymų, secrets, ARO Vet, viešo turinio, billing ar mokamų paslaugų pakeitimų. automation-history latest.md/latest.json palikti automatiniam Control Center.
+
+### Kiti veiksmai
+1. 2026-11-24 patikrinti tikrą Daily-suite event=schedule, vieną sėkmingą pilną suite, vėlesnių retry praleidimą, source provenance ir D1 write/readback.
+2. Po 13:20 LT patikrinti vienintelį 2026-11-24 AI ciklą: run_date, status=completed, 5 kvietimai, error_code=null, keturi specialistų įrodymai, Control Core sprendimas, evidence_gaps ir to paties ciklo memory readback. Nekartoti ciklo; Issue #145 neuždaryti be recovery įrodymo.
+3. 2026-11-30 patikrinti Lighthouse tikrą pirmadienio schedule ir retry gate; push run #45191443021 nelaikyti schedule įrodymu.
+4. Atnaujinti dashboard grafiko aprašus ir aiškiau parodyti Daily-suite analytics/topic job būsenas, išlaikant READ-ONLY ribas.
+5. Po tikro schedule atnaujinti GA4/GSC, sitemap ir Googlebot patikras; klaidų ar trūkstamų duomenų nepaversti nuliais.
 
 ## Ankstesnė patikrinta būsena (2026-11-23 15:10 LT)
 
