@@ -1,11 +1,27 @@
 # Pet traffic – vienintelė kanoninė projekto atmintis
 
-**Atnaujinta:** 2026-11-23 12:40 LT
+**Atnaujinta:** 2026-11-23 15:10 LT
 **Saugykla:** https://github.com/Pershore/PetTraffic-AI  
 **Pagrindinė šaka:** `main`  
 **Tikslas:** vienas patikimas tęstinumo šaltinis ChatGPT, Codex ir būsimiems projekto agentams.
 
 Šis dokumentas sujungia ilgalaikius sprendimus, patvirtintą architektūrą, dabartines integracijų būsenas, neišspręstus blokatorius ir kitus veiksmus. Jis nepakeičia GitHub testų ar realių vykdymų įrodymų. Kiekvieną būseną reikia tikrinti pagal naujausią commit, workflow run ir gyvą sistemos atsakymą.
+
+## Naujausia patikrinta būsena (2026-11-23 15:10 LT)
+
+- **Main / PR #304 / Pages – PATIKRINTA:** main HEAD c1abc1463440e2957f1e9cec1f6e16340da31ce6. PR #304 sujungtas 2026-11-23 13:07:18Z po sėkmingų PR patikrų: site-check #45180671302 (156 testai OK), Control Center #45180671449 success, Cloudflare Pages preview success. Po merge site-check #45180769046 success, Control Center #45180768937 success, Cloudflare Pages check success. PR #304 pakeitė tik Daily-suite workflow ir testus.
+- **Daily-suite schedule atsparumas – ATLIKTA, veikimas dar LAUKIA:** .github/workflows/daily-suite.yml dabar turi schedule laikus 06:10, 08:10, 10:10 ir 11:10 UTC. Lengvas actions:read gate praleidžia vėlesnius pakartojimus, kai tą pačią Europe/Vilnius kalendorinę dieną jau yra sėkmingas event=schedule vykdymas. workflow_dispatch lieka nepakeistas. Išlaikytas tas pats workflow ID 418322987 ir event=schedule provenance, todėl Worker AI evidence gate nesusilpnintas. Pirmas realus šios pataisos veikimo įrodymas bus 2026-11-24 grafikai; šiandienos trūkstamo schedule atgaline data tai nepataiso.
+- **2026-11-23 Daily-suite – NEĮVYKO kaip schedule:** nėra tikro event=schedule. Atsarginis run #45158543329 buvo workflow_dispatch, 3/3 job success; sync #45158713578 patvirtino 2/2 D1 write/readback, bet manual provenance neatveria AI vartų. Site-check #45158716443 taip pat workflow_dispatch, ne schedule.
+- **Worker / D1 / AI – PATIKRINTA sveikata, AI ciklas NEPATVIRTINTAS:** gyvas /health atsakymas 2026-11-23T13:00:13Z patvirtino Worker ir D1 connected, Control Core schema connected, heartbeat site HTTP 200 ir DB healthy. Paskutinis AI run vis dar 2026-11-22: completed, 5 kvietimai, error_code=null; tačiau Control Core needs_evidence, 4 spragos (2 insufficient_evidence, 2 other), analytics/topics/content-review needs_evidence, technical-seo reviewed, memory present. 2026-11-23 D1 diagnostika #45172869024: 7 SELECT-only užklausos, rows_written=0; šiandienos agent_run missing, 0 AI kvietimų, 4 specialistai missing, Control Core missing; memory paskutinis 2026-11-22T14:30:22.711Z. Issue #145 lieka open.
+- **Vieša svetainė – PATIKRINTA:** po merge gyvas homepage nuskaitymas grąžino HTTP 200, lietuvišką „Pet traffic“ turinį ir pagrindinius 4 gidus. Homepage nuskaityme ARO Vet elementų nepastebėta. Tai nėra visų puslapių naujas pilnas E2E testas.
+- **Lighthouse / SEO – LAUKIA:** 2026-11-23 07:27 UTC tikro Lighthouse event=schedule nėra; paskutinis sėkmingas schedule #43915631789 (2026-11-16). GA4/GSC ir temų duomenys šiandien gauti tik per manual fallback, kaip aprašyta ankstesniame audite.
+- **Saugumas:** PR #304 nekeičia Worker/D1 kodo ar produkcijos, Cloudflare nustatymų, DNS, secrets, ARO Vet, viešo turinio, billing ar mokamų paslaugų. latest.md/latest.json automation-history palikti automatiniams Control Center snapshot.
+
+### Kiti veiksmai
+1. 2026-11-24 patikrinti tikrus Daily-suite event=schedule paleidimus pagal naują seką 06:10 / 08:10 / 10:10 / 11:10 UTC. Patvirtinti, kad pirmas sėkmingas vykdymas paleidžia analytics/topic/live-check, o vėlesni tą pačią Vilniaus dieną praleidžiami; patikrinti source provenance ir D1 write/readback.
+2. Po 13:20 LT patikrinti vienintelį 2026-11-24 Worker AI ciklą ir 14:00 LT verifier: run_date, started_at, status=completed, 5 AI kvietimai, error_code=null, 4 specialistų validūs įrodymai, Control Core sprendimas, evidence_gaps ir to paties ciklo memory readback. Nekartoti ciklo; Issue #145 neuždaryti be recovery_confirmed=true.
+3. Stebėti Lighthouse savaitinį schedule ir Google sitemap / URL indeksavimo būseną; rankinių indexing užklausų ir sitemap pakartotinio pateikimo nedaryti be pagrindo.
+4. automation-history latest failų rankiniu būdu nekeisti; atvirus SEO ir specialistų PR peržiūrėti atskirai, jų nesujungti automatiškai.
 
 ## Naujausia patikrinta būsena (2026-11-23 12:40 LT)
 

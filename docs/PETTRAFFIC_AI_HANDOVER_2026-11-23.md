@@ -1,10 +1,18 @@
 # Pet traffic – perdavimo ataskaita (2026-11-23)
 
+## Naujausias papildymas – 2026-11-23 15:10 LT
+
+- **Main / PR #304 – PATIKRINTA:** PR #304 sujungtas į main commit c1abc1463440e2957f1e9cec1f6e16340da31ce6. Jis prideda Daily-suite schedule bandymus 06:10, 08:10, 10:10 ir 11:10 UTC bei Europe/Vilnius dienos gate, kuris po vieno sėkmingo schedule vykdymo praleidžia vėlesnius pakartojimus. Manual workflow_dispatch lieka nepakeistas; Worker schedule provenance reikalavimas nesusilpnintas.
+- **PR CI – PATIKRINTA:** site-check #45180671302 success, 156 testai OK; Control Center #45180671449 success; Cloudflare Pages preview success.
+- **Po merge – PATIKRINTA:** site-check #45180769046 success; Control Center #45180768937 success; Cloudflare Pages check success. Tiesioginis homepage nuskaitymas grąžino HTTP 200, viešas brand „Pet traffic“. Worker deploy nebuvo paleistas, nes pakeisti tik workflow ir testų failai.
+- **AI ciklas – NEPATVIRTINTA:** 2026-11-23 tikro Daily-suite event=schedule nėra. Manual Daily-suite #45158543329 ir D1 sync #45158713578 sėkmingi, bet jų workflow_dispatch provenance neatveria AI vartų. D1 diagnostika #45172869024 SELECT-only (7 užklausos, rows_written=0): šiandienos agent_run, visi 4 specialistai ir Control Core missing; memory liko iš 2026-11-22 needs_evidence. Gyvas /health 2026-11-23T13:00:13Z patvirtino Worker/D1 connected ir site heartbeat HTTP 200; paskutinis AI run 2026-11-22 completed/5 calls/error_code=null, bet Control Core needs_evidence su 4 spragomis. Issue #145 paliktas open.
+- **Saugumas:** nebuvo Worker/D1 production pakeitimų, Cloudflare nustatymų, DNS, secrets, ARO Vet, viešo turinio, billing ar mokamų paslaugų pakeitimų.
+
 ## Pirmas neužbaigtas veiksmas
 
-2026-11-23 po 13:20 LT patikrinti vienintelį tos dienos Worker AI ciklą per /health ir po jo to paties ciklo D1 memory readback. 14:00 LT naudoti esamą post-cycle verifier. Reikalauti run_date=2026-11-23, started_at po 13:20 Europe/Vilnius, status=completed, ai_calls=5, error_code=null, keturių specialistų validžių atsakymų su konkrečiais įrodymais, Control Core sprendimo, evidence_gaps ir memory_updated_at/readback. Nekartoti ciklo; Issue #145 neuždaryti be pilno įrodymo.
+2026-11-24 patikrinti Daily-suite tikrą event=schedule pagal naują 06:10 / 08:10 / 10:10 / 11:10 UTC grafiką. Patvirtinti, kad bent vienas schedule run užbaigė analytics/topic/live-check, o kiti tos pačios Vilniaus dienos retry po sėkmės buvo praleisti; patikrinti source_event= schedule provenance ir D1 write/readback. Po 13:20 LT patikrinti vienintelį 2026-11-24 Worker AI ciklą ir 14:00 LT verifier: run_date, started_at, status=completed, ai_calls=5, error_code=null, keturių specialistų validūs įrodymai, Control Core sprendimas, evidence_gaps ir to paties ciklo memory readback. Nekartoti ciklo; Issue #145 neuždaryti be pilno įrodymo.
 
-## Patikrinti faktai
+## Patikrinti faktai (2026-11-23 12:40 LT auditas – istorinis kontekstas)
 
 - **Main / Pages:** main HEAD `d54f1fc0bcdf0ae39269b84b663825c66aa7b01c`; paskutinis commit yra dokumentų pakeitimas. Atvirų PR paieška grąžino 0. Cloudflare Pages check-run prie šio commit success 2026-11-22 12:24:15Z. Produkcija šiame vykdyme nekeista.
 - **Daily-suite schedule – NEĮVYKO:** 2026-11-23 06:10 UTC + 60 min. grace nėra `event=schedule`. Komentaras #7098352814 → bridge #45158523500 success → Daily-suite #45158543329 `workflow_dispatch` success. Job'ai analytics, topic-radar ir live-check visi success. Artefaktai: analytics #14809407730, topic-radar #14810396272. Live-check: 12 vidinių URL, sitemap, robots.txt, 404 ir 20 istorinių 301 redirectų. Tai tik atsarginis rinkimas, ne schedule įrodymas ir neatveria Worker AI vartų.
