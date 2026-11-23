@@ -1357,3 +1357,12 @@ Kitas veiksmas: tikrinti kitą tikrą Daily-suite `event=schedule`; po jo laukti
 - **Saugumas:** nebuvo Worker/D1 production pakeitimų, DNS, Cloudflare account settings, secrets, ARO Vet, viešo turinio, billing ar mokamų paslaugų pakeitimų. automation-history latest.md ir latest.json palikti automatiniam Control Center.
 - **Kitas žingsnis:** 2026-11-24 patikrinti Daily-suite schedule retries, D1 sync/provenance ir vienintelį AI ciklą po 13:20 LT; 2026-11-30 patikrinti Lighthouse schedule retry. PR #306 palikti draft, kol bus atskiras leidimas Worker production deploy. Aktyvus darbo laikas NEMATUOTAS.
 
+
+
+## 2026-11-23 16:18 LT – post-Lighthouse D1 readback
+
+- **PATIKRINTA:** po Lighthouse push audito #45191443021 automatinė sync/diagnostics grandinė užbaigė D1 readback: sync #45192295510 success, Control Center #45192166705 success, diagnostika #45192351078 success, artifact #14825564045.
+- **NEPATVIRTINTA – AI:** run_date 2026-11-23 agent_run missing, ai_calls=0, visi 4 specialistai missing, coordinator ir Control Core missing. Memory present, bet paskutinis update 2026-11-22T14:30:22.711Z. Analytics/topic snapshot'ai vis dar iš manual #45158543329 workflow_dispatch; control/recommendation snapshot'ai iš Control Center #45192166705. Todėl šiandien nėra schedule kilmės AI ciklo.
+- **automation-history:** latest.md automatiškai atnaujintas 2026-11-23T14:15:22Z pagal #45192166705; failas rankiniu būdu nekeistas.
+- **Kitas žingsnis:** laukti 2026-11-24 tikro Daily-suite schedule, po sync tikrinti vienintelį dienos AI ciklą ir to paties run_date memory readback. Issue #145 paliktas open; ciklo rankiniu būdu nekartoti.
+
