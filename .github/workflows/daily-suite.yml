@@ -3,8 +3,9 @@ run-name: "${{ github.event_name == 'schedule' && 'Scheduled daily automation su
 
 on:
   schedule:
-    # Run independently of site-check completion; the suite includes its own live-site check.
-    - cron: "10 6 * * *"
+    # Retry the daily data collection at staggered times if GitHub delays or drops an earlier schedule event.
+    # The gate below allows only one successful full suite per Vilnius calendar day.
+    - cron: "10 6,8,10,11 * * *"
   workflow_dispatch:
 
 concurrency:
@@ -12,8 +13,59 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  schedule-gate:
+    name: Allow one successful scheduled suite per Vilnius day
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      run_suite: ${{ steps.gate.outputs.run_suite }}
+    steps:
+      - name: Skip later retries after a successful scheduled run
+        id: gate
+        uses: actions/github-script@v9
+        with:
+          script: |
+            if (context.eventName !== "schedule") {
+              core.setOutput("run_suite", "true");
+              core.info("Manual dispatch is unchanged; the full suite will run.");
+              return;
+            }
+
+            const { owner, repo } = context.repo;
+            const current = await github.rest.actions.getWorkflowRun({
+              owner, repo, run_id: context.runId
+            });
+            const vilniusDay = value => {
+              const parts = new Intl.DateTimeFormat("en-GB", {
+                timeZone: "Europe/Vilnius",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit"
+              }).formatToParts(new Date(value));
+              const fields = Object.fromEntries(parts.map(part => [part.type, part.value]));
+              return fields.year + "-" + fields.month + "-" + fields.day;
+            };
+            const day = vilniusDay(current.data.created_at);
+            const { data } = await github.rest.actions.listWorkflowRuns({
+              owner, repo, workflow_id: "daily-suite.yml", event: "schedule", per_page: 100
+            });
+            const alreadySucceeded = data.workflow_runs.some(run =>
+              run.id !== context.runId &&
+              run.status === "completed" &&
+              run.conclusion === "success" &&
+              vilniusDay(run.created_at) === day
+            );
+
+            core.setOutput("run_suite", alreadySucceeded ? "false" : "true");
+            core.info(alreadySucceeded
+              ? "A scheduled daily suite already succeeded on " + day + "; skipping this retry."
+              : "No successful scheduled daily suite exists on " + day + "; run the full suite.");
   analytics:
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    needs: schedule-gate
+    if: needs.schedule-gate.outputs.run_suite == 'true' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -90,7 +142,8 @@ jobs:
           fi
 
   topic-radar:
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    needs: schedule-gate
+    if: needs.schedule-gate.outputs.run_suite == 'true' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -149,7 +202,8 @@ jobs:
           fi
 
   live-check:
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    needs: schedule-gate
+    if: needs.schedule-gate.outputs.run_suite == 'true' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     permissions:
       contents: read
       issues: write
