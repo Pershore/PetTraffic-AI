@@ -188,6 +188,194 @@
         }
       ],
       "privacy": "Aggregate category scores and Core Web Vitals only; no full audit payloads."
+    },
+    {
+      "run_id": "45191443021",
+      "generated_at": "2026-11-23T14:14:53.078168+00:00",
+      "page_count": 10,
+      "pages": [
+        {
+          "page": "cat-diarrhea",
+          "device": "desktop",
+          "path": "/articles/kate-viduriuoja-ka-daryti",
+          "scores": {
+            "performance": 100,
+            "accessibility": 100,
+            "best-practices": 100,
+            "seo": 100
+          },
+          "vitals": {
+            "fcp_ms": 436.026,
+            "lcp_ms": 590.435,
+            "tbt_ms": 0,
+            "cls": 0,
+            "speed_index_ms": 436.026
+          }
+        },
+        {
+          "page": "cat-diarrhea",
+          "device": "mobile",
+          "path": "/articles/kate-viduriuoja-ka-daryti",
+          "scores": {
+            "performance": 99,
+            "accessibility": 100,
+            "best-practices": 100,
+            "seo": 100
+          },
+          "vitals": {
+            "fcp_ms": 1153.974,
+            "lcp_ms": 2071.78,
+            "tbt_ms": 0,
+            "cls": 0,
+            "speed_index_ms": 1153.974
+          }
+        },
+        {
+          "page": "cat-emergency",
+          "device": "desktop",
+          "path": "/articles/kate-negali-pasislapinti-skubi-pagalba",
+          "scores": {
+            "performance": 100,
+            "accessibility": 100,
+            "best-practices": 100,
+            "seo": 100
+          },
+          "vitals": {
+            "fcp_ms": 374.868,
+            "lcp_ms": 632.007,
+            "tbt_ms": 0,
+            "cls": 0,
+            "speed_index_ms": 374.868
+          }
+        },
+        {
+          "page": "cat-emergency",
+          "device": "mobile",
+          "path": "/articles/kate-negali-pasislapinti-skubi-pagalba",
+          "scores": {
+            "performance": 98,
+            "accessibility": 100,
+            "best-practices": 100,
+            "seo": 100
+          },
+          "vitals": {
+            "fcp_ms": 1143.787,
+            "lcp_ms": 2366.341,
+            "tbt_ms": 0,
+            "cls": 0,
+            "speed_index_ms": 1143.787
+          }
+        },
+        {
+          "page": "dog-diarrhea",
+          "device": "desktop",
+          "path": "/articles/suo-viduriuoja-ka-daryti",
+          "scores": {
+            "performance": 100,
+            "accessibility": 100,
+            "best-practices": 100,
+            "seo": 100
+          },
+          "vitals": {
+            "fcp_ms": 364.443,
+            "lcp_ms": 543.686,
+            "tbt_ms": 0,
+            "cls": 0,
+            "speed_index_ms": 364.443
+          }
+        },
+        {
+          "page": "dog-diarrhea",
+          "device": "mobile",
+          "path": "/articles/suo-viduriuoja-ka-daryti",
+          "scores": {
+            "performance": 99,
+            "accessibility": 100,
+            "best-practices": 100,
+            "seo": 100
+          },
+          "vitals": {
+            "fcp_ms": 1128.329,
+            "lcp_ms": 1905.648,
+            "tbt_ms": 0,
+            "cls": 0,
+            "speed_index_ms": 1128.329
+          }
+        },
+        {
+          "page": "home",
+          "device": "desktop",
+          "path": "/",
+          "scores": {
+            "performance": 100,
+            "accessibility": 100,
+            "best-practices": 100,
+            "seo": 100
+          },
+          "vitals": {
+            "fcp_ms": 320.593,
+            "lcp_ms": 491.068,
+            "tbt_ms": 0,
+            "cls": 0,
+            "speed_index_ms": 320.593
+          }
+        },
+        {
+          "page": "home",
+          "device": "mobile",
+          "path": "/",
+          "scores": {
+            "performance": 100,
+            "accessibility": 100,
+            "best-practices": 100,
+            "seo": 100
+          },
+          "vitals": {
+            "fcp_ms": 1105.151,
+            "lcp_ms": 1660.12,
+            "tbt_ms": 0,
+            "cls": 0,
+            "speed_index_ms": 1105.151
+          }
+        },
+        {
+          "page": "vet-visit",
+          "device": "desktop",
+          "path": "/articles/kada-kreiptis-i-veterinara",
+          "scores": {
+            "performance": 100,
+            "accessibility": 100,
+            "best-practices": 100,
+            "seo": 100
+          },
+          "vitals": {
+            "fcp_ms": 499.024,
+            "lcp_ms": 563.316,
+            "tbt_ms": 0,
+            "cls": 0,
+            "speed_index_ms": 499.024
+          }
+        },
+        {
+          "page": "vet-visit",
+          "device": "mobile",
+          "path": "/articles/kada-kreiptis-i-veterinara",
+          "scores": {
+            "performance": 99,
+            "accessibility": 100,
+            "best-practices": 100,
+            "seo": 100
+          },
+          "vitals": {
+            "fcp_ms": 1094.225,
+            "lcp_ms": 1837.642,
+            "tbt_ms": 0,
+            "cls": 0,
+            "speed_index_ms": 1094.225
+          }
+        }
+      ],
+      "privacy": "Aggregate category scores and Core Web Vitals only; no full audit payloads."
     }
   ]
 }
