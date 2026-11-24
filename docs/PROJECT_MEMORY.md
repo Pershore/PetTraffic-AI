@@ -1,6 +1,6 @@
 # Pet traffic – vienintelė kanoninė projekto atmintis
 
-**Atnaujinta:** 2026-11-23 16:18 LT
+**Atnaujinta:** 2026-11-24 12:43 LT
 **Saugykla:** https://github.com/Pershore/PetTraffic-AI  
 **Pagrindinė šaka:** `main`  
 **Tikslas:** vienas patikimas tęstinumo šaltinis ChatGPT, Codex ir būsimiems projekto agentams.
@@ -9,7 +9,7 @@
 
 ## Naujausia patikrinta būsena (2026-11-24 12:35 LT)
 
-- **Main / produkcija – PATIKRINTA:** main HEAD `1f14b06db7729ca1a8a5c4f9f0b536015460233d`. Cloudflare Pages check prie naujausio main commit sėkmingas; paskutinis patvirtintas Pages deployment ID `04f96fe5-d1c7-424b-bd10-003faac1c286`. Vieša svetainė atsako; turinio ar production konfigūracijos šiame vykdyme nekeista.
+- **Main / produkcija – PATIKRINTA:** priežiūros pradžioje main HEAD buvo `1f14b06db7729ca1a8a5c4f9f0b536015460233d`; dokumentų PR #310 sujungtas commit `90950241a9df8d3a0b1ddab27fc76f10a8e2f905`. Po automatinio work-log commit main HEAD tapo `9576615e69c3f9c69df762f5ec7a12db74471fb9`. Cloudflare Pages check po merge success (deployment ID `0830c6fa-a087-4c6f-9e5c-504877d1372e`), homepage po merge HTTP 200, post-merge site-check #45377332777 ir work-log #45377332674 success. Viešo turinio ar production konfigūracijos nekeista.
 - **Daily-suite schedule – NEPATVIRTINTA, fallback ATLIKTA:** 2026-11-24 nėra nė vieno `event=schedule` run. Po 60 min. grace naudotas savininko bridge: komentaras #7128777888 → bridge #45374783438 success → Daily-suite #45374802744 `workflow_dispatch` success. Visi trys job'ai (live-check, analytics, topic-radar) success; live-check patikrino 12 vidinių URL, sitemap, robots, 404 ir 20 istorinių 301 redirectų. Tai atsarginis duomenų rinkimas, ne schedule įrodymas ir neatveria Worker AI vartų. Kitas schedule retry 11:10 UTC / 13:10 LT dar laukiamas.
 - **D1 snapshot sync – PATIKRINTA:** komentaras #7128863951 → bridge #45375375640 success → sync #45375406125 success, tikslus source run #45374802744 (`workflow_dispatch`). OIDC autentifikacija sėkminga; du privatumo filtruoti snapshot'ai įrašyti ir abu perskaityti iš D1 (`D1 snapshot write/read verified` 2/2). automation-history įrašyti 2026-11-24 analytics ir topic-radar snapshot'ai su source run ID. Šis sync taip pat nėra schedule provenance.
 - **Site-check – schedule NEĮVYKO, fallback PATIKRINTA:** 2026-11-24 `event=schedule` nėra. Komentaras #7128934338 → bridge #45375880205 success → site-check #45375907195 `workflow_dispatch` success. JavaScript sintaksė, `agent/validate_site.py`, `compileall`, agent testai ir analytics/history testai sėkmingi; 160 testų OK. Manual run nėra schedule įrodymas.
