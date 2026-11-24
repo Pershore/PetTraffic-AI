@@ -7,6 +7,7 @@ that headline counts equal Google search volume.
 from __future__ import annotations
 
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from pathlib import Path
@@ -26,6 +27,7 @@ TOPICS = [
 ]
 OUT = Path("reports/topic-radar.md")
 PER_TOPIC_LIMIT = 8
+MAX_FETCH_WORKERS = 3
 
 
 def clean_link(link: str) -> str:
@@ -77,6 +79,18 @@ def fetch(topic: str) -> list[dict[str, str]]:
     return items
 
 
+def fetch_topics(topics: list[str] | tuple[str, ...] = TOPICS, fetcher=None, max_workers: int = MAX_FETCH_WORKERS) -> list[list[dict[str, str]]]:
+    """Fetch independent topics concurrently, preserving their original order."""
+    topic_list = list(topics)
+    if max_workers < 1:
+        raise ValueError("max_workers must be at least 1")
+    if not topic_list:
+        return []
+    fetch_one = fetch if fetcher is None else fetcher
+    with ThreadPoolExecutor(max_workers=min(max_workers, len(topic_list))) as executor:
+        return list(executor.map(fetch_one, topic_list))
+
+
 def main() -> int:
     OUT.parent.mkdir(parents=True, exist_ok=True)
     generated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
@@ -93,8 +107,7 @@ def main() -> int:
     topic_counts: dict[str, int] = {}
     failed_topics: list[str] = []
 
-    for topic in TOPICS:
-        entries = fetch(topic)
+    for topic, entries in zip(TOPICS, fetch_topics()):
         topic_counts[topic] = len(entries)
         if not entries:
             failed_topics.append(topic)
