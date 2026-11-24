@@ -1,89 +1,73 @@
 {
   "schema_version": 1,
-  "run_id": "43999680694",
-  "generated_at": "2026-11-17T02:00:01.058644+00:00",
+  "run_id": "45323581220",
+  "generated_at": "2026-11-24T04:02:31.450039+00:00",
   "reporting_window_days": 7,
   "analytics": {
     "ga4": {
       "status": "available",
-      "period": "2026-11-09 – 2026-11-15",
-      "baseline_period": null,
-      "generated_at": "2026-11-16T15:34:41.509380+00:00",
+      "period": "2026-11-16 – 2026-11-22",
+      "baseline_period": "2026-11-09 – 2026-11-15",
+      "generated_at": "2026-11-23T10:42:56.915536+00:00",
       "metrics": {
         "active_users": {
-          "current": 7.0,
-          "previous": null,
-          "change": "nėra palyginimo duomenų"
+          "current": 2.0,
+          "previous": 7.0,
+          "change": "-71.4 %"
         },
         "new_users": {
-          "current": 7.0,
-          "previous": null,
-          "change": "nėra palyginimo duomenų"
+          "current": 2.0,
+          "previous": 7.0,
+          "change": "-71.4 %"
         },
         "sessions": {
-          "current": 24.0,
-          "previous": null,
-          "change": "nėra palyginimo duomenų"
+          "current": 2.0,
+          "previous": 19.0,
+          "change": "-89.5 %"
         },
         "page_views": {
-          "current": 88.0,
-          "previous": null,
-          "change": "nėra palyginimo duomenų"
+          "current": 2.0,
+          "previous": 82.0,
+          "change": "-97.6 %"
         },
         "organic_sessions_verified": {
           "current": 0.0,
-          "previous": null,
-          "change": "nėra palyginimo duomenų"
+          "previous": 0.0,
+          "change": "0 %"
         }
       },
       "top_pages": [
         {
           "path": "/",
-          "views": 73.0
-        },
-        {
-          "path": "/articles/kaip-issirinkti-gyvuno-maista",
           "views": 2.0
-        },
-        {
-          "path": "/gargzdai-augintiniams",
-          "views": 2.0
-        },
-        {
-          "path": "/about",
-          "views": 1.0
-        },
-        {
-          "path": "/articles/kada-kreiptis-i-veterinara",
-          "views": 1.0
         }
       ]
     },
     "search_console": {
       "status": "available",
-      "period": "2026-11-07 – 2026-11-13 (duomenys gali vėluoti kelias dienas).",
-      "baseline_period": null,
-      "generated_at": "2026-11-16T15:34:41.509380+00:00",
+      "period": "2026-11-14 – 2026-11-20 (duomenys gali vėluoti kelias dienas).",
+      "baseline_period": "2026-11-07 – 2026-11-13 (duomenys gali vėluoti kelias dienas).",
+      "generated_at": "2026-11-23T10:42:56.915536+00:00",
       "metrics": {
         "search_impressions": {
           "current": 0.0,
-          "previous": null,
-          "change": "nėra palyginimo duomenų"
+          "previous": 0.0,
+          "change": "0 %"
         },
         "search_clicks": {
           "current": 0.0,
-          "previous": null,
-          "change": "nėra palyginimo duomenų"
+          "previous": 0.0,
+          "change": "0 %"
         },
         "search_ctr": {
           "current": 0.0,
-          "previous": null,
-          "change": "nėra palyginimo duomenų"
+          "previous": 0.0,
+          "change": "+0.00 proc. punkto"
         },
         "average_position": {
           "current": 0.0,
-          "previous": null,
-          "change": "nėra palyginimo duomenų"
+          "previous": 0.0,
+          "change": "+0.0 poz. (be pokyčio)"
         }
       },
       "sitemap": {
@@ -143,43 +127,43 @@
   },
   "topics": {
     "source": "Viešų naujienų RSS antraštės; ne Google paieškų apimtis.",
-    "days_covered": 4,
-    "latest_at": "2026-11-16T15:34:27.182358+00:00",
-    "unique_article_links_sum": 123,
+    "days_covered": 7,
+    "latest_at": "2026-11-23T10:42:39.831421+00:00",
+    "unique_article_links_sum": 206,
     "topic_counts": {
       "kačių priežiūra": {
-        "current": 32,
-        "previous": null
+        "current": 56,
+        "previous": 88
       },
       "šunų priežiūra": {
-        "current": 32,
-        "previous": null
+        "current": 55,
+        "previous": 86
       },
       "augintinio sveikata veterinaras": {
-        "current": 29,
-        "previous": null
+        "current": 52,
+        "previous": 80
       },
       "augintinių mityba": {
-        "current": 24,
-        "previous": null
+        "current": 48,
+        "previous": 64
       },
       "augintinio ženklinimas registravimas Lietuva": {
-        "current": 16,
-        "previous": null
-      },
-      "šunų dantų priežiūra": {
-        "current": 14,
-        "previous": null
+        "current": 21,
+        "previous": 45
       },
       "kačių dantų priežiūra": {
         "current": 7,
-        "previous": null
+        "previous": 18
+      },
+      "šunų dantų priežiūra": {
+        "current": 7,
+        "previous": 38
       }
     }
   },
   "lighthouse": {
-    "generated_at": "2026-11-16T17:14:28.765610+00:00",
-    "baseline_at": null,
+    "generated_at": "2026-11-23T14:14:53.078168+00:00",
+    "baseline_at": "2026-11-16T17:14:28.765610+00:00",
     "pages": [
       {
         "page": "cat-diarrhea",
@@ -188,27 +172,27 @@
         "scores": {
           "performance": {
             "current": 100,
-            "previous": null
+            "previous": 100
           },
           "accessibility": {
             "current": 100,
-            "previous": null
+            "previous": 100
           },
           "best-practices": {
             "current": 100,
-            "previous": null
+            "previous": 100
           },
           "seo": {
             "current": 100,
-            "previous": null
+            "previous": 100
           }
         },
         "vitals": {
-          "fcp_ms": 353.818,
-          "lcp_ms": 535.79,
+          "fcp_ms": 436.026,
+          "lcp_ms": 590.435,
           "tbt_ms": 0,
           "cls": 0,
-          "speed_index_ms": 353.818
+          "speed_index_ms": 436.026
         }
       },
       {
@@ -218,27 +202,27 @@
         "scores": {
           "performance": {
             "current": 99,
-            "previous": null
+            "previous": 99
           },
           "accessibility": {
             "current": 100,
-            "previous": null
+            "previous": 100
           },
           "best-practices": {
             "current": 100,
-            "previous": null
+            "previous": 100
           },
           "seo": {
             "current": 100,
-            "previous": null
+            "previous": 100
           }
         },
         "vitals": {
-          "fcp_ms": 1158.387,
-          "lcp_ms": 2031.076,
+          "fcp_ms": 1153.974,
+          "lcp_ms": 2071.78,
           "tbt_ms": 0,
           "cls": 0,
-          "speed_index_ms": 1158.387
+          "speed_index_ms": 1153.974
         }
       },
       {
@@ -248,27 +232,27 @@
         "scores": {
           "performance": {
             "current": 100,
-            "previous": null
+            "previous": 100
           },
           "accessibility": {
             "current": 100,
-            "previous": null
+            "previous": 100
           },
           "best-practices": {
             "current": 100,
-            "previous": null
+            "previous": 100
           },
           "seo": {
             "current": 100,
-            "previous": null
+            "previous": 100
           }
         },
         "vitals": {
-          "fcp_ms": 485.267,
-          "lcp_ms": 635.194,
+          "fcp_ms": 374.868,
+          "lcp_ms": 632.007,
           "tbt_ms": 0,
           "cls": 0,
-          "speed_index_ms": 485.267
+          "speed_index_ms": 374.868
         }
       },
       {
@@ -278,27 +262,27 @@
         "scores": {
           "performance": {
             "current": 98,
-            "previous": null
+            "previous": 98
           },
           "accessibility": {
             "current": 100,
-            "previous": null
+            "previous": 100
           },
           "best-practices": {
             "current": 100,
-            "previous": null
+            "previous": 100
           },
           "seo": {
             "current": 100,
-            "previous": null
+            "previous": 100
           }
         },
         "vitals": {
-          "fcp_ms": 1176.315,
-          "lcp_ms": 2346.95,
+          "fcp_ms": 1143.787,
+          "lcp_ms": 2366.341,
           "tbt_ms": 0,
           "cls": 0,
-          "speed_index_ms": 1176.315
+          "speed_index_ms": 1143.787
         }
       },
       {
@@ -307,28 +291,28 @@
         "path": "/articles/suo-viduriuoja-ka-daryti",
         "scores": {
           "performance": {
-            "current": 86,
-            "previous": null
+            "current": 100,
+            "previous": 86
           },
           "accessibility": {
             "current": 100,
-            "previous": null
+            "previous": 100
           },
           "best-practices": {
             "current": 100,
-            "previous": null
+            "previous": 100
           },
           "seo": {
             "current": 100,
-            "previous": null
+            "previous": 100
           }
         },
         "vitals": {
-          "fcp_ms": 1676.566,
-          "lcp_ms": 1676.566,
+          "fcp_ms": 364.443,
+          "lcp_ms": 543.686,
           "tbt_ms": 0,
           "cls": 0,
-          "speed_index_ms": 1676.566
+          "speed_index_ms": 364.443
         }
       },
       {
@@ -337,28 +321,28 @@
         "path": "/articles/suo-viduriuoja-ka-daryti",
         "scores": {
           "performance": {
-            "current": 55,
-            "previous": null
+            "current": 99,
+            "previous": 55
           },
           "accessibility": {
             "current": 100,
-            "previous": null
+            "previous": 100
           },
           "best-practices": {
             "current": 100,
-            "previous": null
+            "previous": 100
           },
           "seo": {
             "current": 100,
-            "previous": null
+            "previous": 100
           }
         },
         "vitals": {
-          "fcp_ms": 9779.11,
-          "lcp_ms": 9779.11,
+          "fcp_ms": 1128.329,
+          "lcp_ms": 1905.648,
           "tbt_ms": 0,
           "cls": 0,
-          "speed_index_ms": 14651.455
+          "speed_index_ms": 1128.329
         }
       },
       {
@@ -368,27 +352,27 @@
         "scores": {
           "performance": {
             "current": 100,
-            "previous": null
+            "previous": 100
           },
           "accessibility": {
             "current": 100,
-            "previous": null
+            "previous": 100
           },
           "best-practices": {
             "current": 100,
-            "previous": null
+            "previous": 100
           },
           "seo": {
             "current": 100,
-            "previous": null
+            "previous": 100
           }
         },
         "vitals": {
-          "fcp_ms": 303.809,
-          "lcp_ms": 481.984,
+          "fcp_ms": 320.593,
+          "lcp_ms": 491.068,
           "tbt_ms": 0,
           "cls": 0,
-          "speed_index_ms": 303.809
+          "speed_index_ms": 320.593
         }
       },
       {
@@ -398,27 +382,27 @@
         "scores": {
           "performance": {
             "current": 100,
-            "previous": null
+            "previous": 100
           },
           "accessibility": {
             "current": 100,
-            "previous": null
+            "previous": 100
           },
           "best-practices": {
             "current": 100,
-            "previous": null
+            "previous": 100
           },
           "seo": {
             "current": 100,
-            "previous": null
+            "previous": 100
           }
         },
         "vitals": {
-          "fcp_ms": 1104.691,
-          "lcp_ms": 1652.374,
-          "tbt_ms": 27,
+          "fcp_ms": 1105.151,
+          "lcp_ms": 1660.12,
+          "tbt_ms": 0,
           "cls": 0,
-          "speed_index_ms": 1104.691
+          "speed_index_ms": 1105.151
         }
       },
       {
@@ -427,28 +411,28 @@
         "path": "/articles/kada-kreiptis-i-veterinara",
         "scores": {
           "performance": {
-            "current": 55,
-            "previous": null
+            "current": 100,
+            "previous": 55
           },
           "accessibility": {
             "current": 100,
-            "previous": null
+            "previous": 100
           },
           "best-practices": {
             "current": 100,
-            "previous": null
+            "previous": 100
           },
           "seo": {
             "current": 100,
-            "previous": null
+            "previous": 100
           }
         },
         "vitals": {
-          "fcp_ms": 8078.418,
-          "lcp_ms": 8078.418,
+          "fcp_ms": 499.024,
+          "lcp_ms": 563.316,
           "tbt_ms": 0,
           "cls": 0,
-          "speed_index_ms": 9221.41
+          "speed_index_ms": 499.024
         }
       },
       {
@@ -457,48 +441,59 @@
         "path": "/articles/kada-kreiptis-i-veterinara",
         "scores": {
           "performance": {
-            "current": 60,
-            "previous": null
+            "current": 99,
+            "previous": 60
           },
           "accessibility": {
             "current": 100,
-            "previous": null
+            "previous": 100
           },
           "best-practices": {
             "current": 100,
-            "previous": null
+            "previous": 100
           },
           "seo": {
             "current": 100,
-            "previous": null
+            "previous": 100
           }
         },
         "vitals": {
-          "fcp_ms": 5547.527,
-          "lcp_ms": 5547.527,
+          "fcp_ms": 1094.225,
+          "lcp_ms": 1837.642,
           "tbt_ms": 0,
           "cls": 0,
-          "speed_index_ms": 13625.099
+          "speed_index_ms": 1094.225
         }
       }
     ]
   },
   "system": {
-    "generated_at": "2026-11-16T17:57:31.774522+00:00",
+    "generated_at": "2026-11-23T14:15:22.492334+00:00",
     "overall_status": "needs_attention",
-    "next_action": "Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (warning). AI agentų ciklas ir atminties įrašymas baigti; rekomendacijų: 1; trūksta įrodymų: 5.",
+    "next_action": "Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (stale). Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-22.",
     "problems": [
       {
         "name": "AI agentai + control-core atmintis",
-        "state": "warning",
-        "detail": "AI agentų ciklas ir atminties įrašymas baigti; rekomendacijų: 1; trūksta įrodymų: 5."
+        "state": "stale",
+        "detail": "Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-22."
       }
     ],
-    "pending_checks": [],
+    "pending_checks": [
+      {
+        "name": "GA4, temų radaras ir svetainės stebėjimas",
+        "state": "waiting",
+        "detail": "Workflow atnaujintas 2026-11-23 13:07 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo."
+      },
+      {
+        "name": "Lighthouse auditas",
+        "state": "waiting",
+        "detail": "Workflow atnaujintas 2026-11-23 14:10 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo."
+      }
+    ],
     "ai_agent_memory_check": {
       "name": "AI agentai + control-core atmintis",
-      "state": "warning",
-      "detail": "AI agentų ciklas ir atminties įrašymas baigti; rekomendacijų: 1; trūksta įrodymų: 5.",
+      "state": "stale",
+      "detail": "Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-22.",
       "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
       "created_at": null
     }
@@ -508,7 +503,7 @@
       "id": "automation-health",
       "priority": "high",
       "title": "Pašalinti automatizacijų būklės problemas",
-      "evidence": "AI agentai + control-core atmintis: warning",
+      "evidence": "AI agentai + control-core atmintis: stale",
       "next_action": "Atidaryti centrinio valdymo GitHub įspėjimą ir taisyti konkretaus proceso klaidą.",
       "status": "monitor"
     },
@@ -533,13 +528,13 @@
     {
       "priority": "high",
       "title": "AI agentai + control-core atmintis",
-      "evidence": "AI agentų ciklas ir atminties įrašymas baigti; rekomendacijų: 1; trūksta įrodymų: 5.",
-      "action": "Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (warning). AI agentų ciklas ir atminties įrašymas baigti; rekomendacijų: 1; trūksta įrodymų: 5."
+      "evidence": "Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-22.",
+      "action": "Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (stale). Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-22."
     },
     {
       "priority": "high",
       "title": "Pašalinti automatizacijų būklės problemas",
-      "evidence": "AI agentai + control-core atmintis: warning",
+      "evidence": "AI agentai + control-core atmintis: stale",
       "action": "Atidaryti centrinio valdymo GitHub įspėjimą ir taisyti konkretaus proceso klaidą."
     },
     {
@@ -550,13 +545,13 @@
     }
   ],
   "coverage": {
-    "analytics_latest": "2026-11-16T15:34:41.509380+00:00",
-    "search_console_latest": "2026-11-16T15:34:41.509380+00:00",
-    "topic_radar_latest": "2026-11-16T15:34:27.182358+00:00",
-    "lighthouse_latest": "2026-11-16T17:14:28.765610+00:00",
-    "control_center_latest": "2026-11-16T17:57:31.774522+00:00",
-    "project_state_latest": "2026-11-16T17:57:31.774522+00:00",
-    "topic_days_covered": 4
+    "analytics_latest": "2026-11-23T10:42:56.915536+00:00",
+    "search_console_latest": "2026-11-23T10:42:56.915536+00:00",
+    "topic_radar_latest": "2026-11-23T10:42:39.831421+00:00",
+    "lighthouse_latest": "2026-11-23T14:14:53.078168+00:00",
+    "control_center_latest": "2026-11-23T14:15:22.492334+00:00",
+    "project_state_latest": "2026-11-23T14:15:22.492334+00:00",
+    "topic_days_covered": 7
   },
   "method": "Deterministic analysis of existing aggregated history; no additional AI/API calls.",
   "privacy": "No visitor-level data or raw Search Console phrases are stored in this report."

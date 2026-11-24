@@ -1,0 +1,563 @@
+{
+  "date": "2026-11-24",
+  "snapshots": [
+    {
+      "schema_version": 1,
+      "run_id": "45323581220",
+      "generated_at": "2026-11-24T04:02:31.450039+00:00",
+      "reporting_window_days": 7,
+      "analytics": {
+        "ga4": {
+          "status": "available",
+          "period": "2026-11-16 – 2026-11-22",
+          "baseline_period": "2026-11-09 – 2026-11-15",
+          "generated_at": "2026-11-23T10:42:56.915536+00:00",
+          "metrics": {
+            "active_users": {
+              "current": 2.0,
+              "previous": 7.0,
+              "change": "-71.4 %"
+            },
+            "new_users": {
+              "current": 2.0,
+              "previous": 7.0,
+              "change": "-71.4 %"
+            },
+            "sessions": {
+              "current": 2.0,
+              "previous": 19.0,
+              "change": "-89.5 %"
+            },
+            "page_views": {
+              "current": 2.0,
+              "previous": 82.0,
+              "change": "-97.6 %"
+            },
+            "organic_sessions_verified": {
+              "current": 0.0,
+              "previous": 0.0,
+              "change": "0 %"
+            }
+          },
+          "top_pages": [
+            {
+              "path": "/",
+              "views": 2.0
+            }
+          ]
+        },
+        "search_console": {
+          "status": "available",
+          "period": "2026-11-14 – 2026-11-20 (duomenys gali vėluoti kelias dienas).",
+          "baseline_period": "2026-11-07 – 2026-11-13 (duomenys gali vėluoti kelias dienas).",
+          "generated_at": "2026-11-23T10:42:56.915536+00:00",
+          "metrics": {
+            "search_impressions": {
+              "current": 0.0,
+              "previous": 0.0,
+              "change": "0 %"
+            },
+            "search_clicks": {
+              "current": 0.0,
+              "previous": 0.0,
+              "change": "0 %"
+            },
+            "search_ctr": {
+              "current": 0.0,
+              "previous": 0.0,
+              "change": "+0.00 proc. punkto"
+            },
+            "average_position": {
+              "current": 0.0,
+              "previous": 0.0,
+              "change": "+0.0 poz. (be pokyčio)"
+            }
+          },
+          "sitemap": {
+            "status": "submitted",
+            "path": "https://pettraffic-ai.pages.dev/sitemap.xml",
+            "last_submitted": "2026-11-10T07:22:24.861Z",
+            "last_downloaded": "dar nenurodyta",
+            "submitted_urls": null,
+            "indexed_urls": null,
+            "is_pending": true
+          },
+          "priority_url_inspections": [
+            {
+              "url_path": "/",
+              "verdict": "NEUTRAL",
+              "coverage": "URL nežinomas „Google“",
+              "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
+              "indexing_state": "INDEXING_STATE_UNSPECIFIED",
+              "last_crawl": "Dar netikrinta"
+            },
+            {
+              "url_path": "/articles/kate-negali-pasislapinti-skubi-pagalba.html",
+              "verdict": "NEUTRAL",
+              "coverage": "URL nežinomas „Google“",
+              "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
+              "indexing_state": "INDEXING_STATE_UNSPECIFIED",
+              "last_crawl": "Dar netikrinta"
+            },
+            {
+              "url_path": "/articles/kate-viduriuoja-ka-daryti.html",
+              "verdict": "NEUTRAL",
+              "coverage": "URL nežinomas „Google“",
+              "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
+              "indexing_state": "INDEXING_STATE_UNSPECIFIED",
+              "last_crawl": "Dar netikrinta"
+            },
+            {
+              "url_path": "/articles/suo-viduriuoja-ka-daryti.html",
+              "verdict": "NEUTRAL",
+              "coverage": "URL nežinomas „Google“",
+              "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
+              "indexing_state": "INDEXING_STATE_UNSPECIFIED",
+              "last_crawl": "Dar netikrinta"
+            },
+            {
+              "url_path": "/articles/kada-kreiptis-i-veterinara.html",
+              "verdict": "NEUTRAL",
+              "coverage": "URL nežinomas „Google“",
+              "robots_txt_state": "ROBOTS_TXT_STATE_UNSPECIFIED",
+              "indexing_state": "INDEXING_STATE_UNSPECIFIED",
+              "last_crawl": "Dar netikrinta"
+            }
+          ],
+          "intent_themes": {},
+          "top_pages": []
+        }
+      },
+      "topics": {
+        "source": "Viešų naujienų RSS antraštės; ne Google paieškų apimtis.",
+        "days_covered": 7,
+        "latest_at": "2026-11-23T10:42:39.831421+00:00",
+        "unique_article_links_sum": 206,
+        "topic_counts": {
+          "kačių priežiūra": {
+            "current": 56,
+            "previous": 88
+          },
+          "šunų priežiūra": {
+            "current": 55,
+            "previous": 86
+          },
+          "augintinio sveikata veterinaras": {
+            "current": 52,
+            "previous": 80
+          },
+          "augintinių mityba": {
+            "current": 48,
+            "previous": 64
+          },
+          "augintinio ženklinimas registravimas Lietuva": {
+            "current": 21,
+            "previous": 45
+          },
+          "kačių dantų priežiūra": {
+            "current": 7,
+            "previous": 18
+          },
+          "šunų dantų priežiūra": {
+            "current": 7,
+            "previous": 38
+          }
+        }
+      },
+      "lighthouse": {
+        "generated_at": "2026-11-23T14:14:53.078168+00:00",
+        "baseline_at": "2026-11-16T17:14:28.765610+00:00",
+        "pages": [
+          {
+            "page": "cat-diarrhea",
+            "device": "desktop",
+            "path": "/articles/kate-viduriuoja-ka-daryti",
+            "scores": {
+              "performance": {
+                "current": 100,
+                "previous": 100
+              },
+              "accessibility": {
+                "current": 100,
+                "previous": 100
+              },
+              "best-practices": {
+                "current": 100,
+                "previous": 100
+              },
+              "seo": {
+                "current": 100,
+                "previous": 100
+              }
+            },
+            "vitals": {
+              "fcp_ms": 436.026,
+              "lcp_ms": 590.435,
+              "tbt_ms": 0,
+              "cls": 0,
+              "speed_index_ms": 436.026
+            }
+          },
+          {
+            "page": "cat-diarrhea",
+            "device": "mobile",
+            "path": "/articles/kate-viduriuoja-ka-daryti",
+            "scores": {
+              "performance": {
+                "current": 99,
+                "previous": 99
+              },
+              "accessibility": {
+                "current": 100,
+                "previous": 100
+              },
+              "best-practices": {
+                "current": 100,
+                "previous": 100
+              },
+              "seo": {
+                "current": 100,
+                "previous": 100
+              }
+            },
+            "vitals": {
+              "fcp_ms": 1153.974,
+              "lcp_ms": 2071.78,
+              "tbt_ms": 0,
+              "cls": 0,
+              "speed_index_ms": 1153.974
+            }
+          },
+          {
+            "page": "cat-emergency",
+            "device": "desktop",
+            "path": "/articles/kate-negali-pasislapinti-skubi-pagalba",
+            "scores": {
+              "performance": {
+                "current": 100,
+                "previous": 100
+              },
+              "accessibility": {
+                "current": 100,
+                "previous": 100
+              },
+              "best-practices": {
+                "current": 100,
+                "previous": 100
+              },
+              "seo": {
+                "current": 100,
+                "previous": 100
+              }
+            },
+            "vitals": {
+              "fcp_ms": 374.868,
+              "lcp_ms": 632.007,
+              "tbt_ms": 0,
+              "cls": 0,
+              "speed_index_ms": 374.868
+            }
+          },
+          {
+            "page": "cat-emergency",
+            "device": "mobile",
+            "path": "/articles/kate-negali-pasislapinti-skubi-pagalba",
+            "scores": {
+              "performance": {
+                "current": 98,
+                "previous": 98
+              },
+              "accessibility": {
+                "current": 100,
+                "previous": 100
+              },
+              "best-practices": {
+                "current": 100,
+                "previous": 100
+              },
+              "seo": {
+                "current": 100,
+                "previous": 100
+              }
+            },
+            "vitals": {
+              "fcp_ms": 1143.787,
+              "lcp_ms": 2366.341,
+              "tbt_ms": 0,
+              "cls": 0,
+              "speed_index_ms": 1143.787
+            }
+          },
+          {
+            "page": "dog-diarrhea",
+            "device": "desktop",
+            "path": "/articles/suo-viduriuoja-ka-daryti",
+            "scores": {
+              "performance": {
+                "current": 100,
+                "previous": 86
+              },
+              "accessibility": {
+                "current": 100,
+                "previous": 100
+              },
+              "best-practices": {
+                "current": 100,
+                "previous": 100
+              },
+              "seo": {
+                "current": 100,
+                "previous": 100
+              }
+            },
+            "vitals": {
+              "fcp_ms": 364.443,
+              "lcp_ms": 543.686,
+              "tbt_ms": 0,
+              "cls": 0,
+              "speed_index_ms": 364.443
+            }
+          },
+          {
+            "page": "dog-diarrhea",
+            "device": "mobile",
+            "path": "/articles/suo-viduriuoja-ka-daryti",
+            "scores": {
+              "performance": {
+                "current": 99,
+                "previous": 55
+              },
+              "accessibility": {
+                "current": 100,
+                "previous": 100
+              },
+              "best-practices": {
+                "current": 100,
+                "previous": 100
+              },
+              "seo": {
+                "current": 100,
+                "previous": 100
+              }
+            },
+            "vitals": {
+              "fcp_ms": 1128.329,
+              "lcp_ms": 1905.648,
+              "tbt_ms": 0,
+              "cls": 0,
+              "speed_index_ms": 1128.329
+            }
+          },
+          {
+            "page": "home",
+            "device": "desktop",
+            "path": "/",
+            "scores": {
+              "performance": {
+                "current": 100,
+                "previous": 100
+              },
+              "accessibility": {
+                "current": 100,
+                "previous": 100
+              },
+              "best-practices": {
+                "current": 100,
+                "previous": 100
+              },
+              "seo": {
+                "current": 100,
+                "previous": 100
+              }
+            },
+            "vitals": {
+              "fcp_ms": 320.593,
+              "lcp_ms": 491.068,
+              "tbt_ms": 0,
+              "cls": 0,
+              "speed_index_ms": 320.593
+            }
+          },
+          {
+            "page": "home",
+            "device": "mobile",
+            "path": "/",
+            "scores": {
+              "performance": {
+                "current": 100,
+                "previous": 100
+              },
+              "accessibility": {
+                "current": 100,
+                "previous": 100
+              },
+              "best-practices": {
+                "current": 100,
+                "previous": 100
+              },
+              "seo": {
+                "current": 100,
+                "previous": 100
+              }
+            },
+            "vitals": {
+              "fcp_ms": 1105.151,
+              "lcp_ms": 1660.12,
+              "tbt_ms": 0,
+              "cls": 0,
+              "speed_index_ms": 1105.151
+            }
+          },
+          {
+            "page": "vet-visit",
+            "device": "desktop",
+            "path": "/articles/kada-kreiptis-i-veterinara",
+            "scores": {
+              "performance": {
+                "current": 100,
+                "previous": 55
+              },
+              "accessibility": {
+                "current": 100,
+                "previous": 100
+              },
+              "best-practices": {
+                "current": 100,
+                "previous": 100
+              },
+              "seo": {
+                "current": 100,
+                "previous": 100
+              }
+            },
+            "vitals": {
+              "fcp_ms": 499.024,
+              "lcp_ms": 563.316,
+              "tbt_ms": 0,
+              "cls": 0,
+              "speed_index_ms": 499.024
+            }
+          },
+          {
+            "page": "vet-visit",
+            "device": "mobile",
+            "path": "/articles/kada-kreiptis-i-veterinara",
+            "scores": {
+              "performance": {
+                "current": 99,
+                "previous": 60
+              },
+              "accessibility": {
+                "current": 100,
+                "previous": 100
+              },
+              "best-practices": {
+                "current": 100,
+                "previous": 100
+              },
+              "seo": {
+                "current": 100,
+                "previous": 100
+              }
+            },
+            "vitals": {
+              "fcp_ms": 1094.225,
+              "lcp_ms": 1837.642,
+              "tbt_ms": 0,
+              "cls": 0,
+              "speed_index_ms": 1094.225
+            }
+          }
+        ]
+      },
+      "system": {
+        "generated_at": "2026-11-23T14:15:22.492334+00:00",
+        "overall_status": "needs_attention",
+        "next_action": "Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (stale). Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-22.",
+        "problems": [
+          {
+            "name": "AI agentai + control-core atmintis",
+            "state": "stale",
+            "detail": "Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-22."
+          }
+        ],
+        "pending_checks": [
+          {
+            "name": "GA4, temų radaras ir svetainės stebėjimas",
+            "state": "waiting",
+            "detail": "Workflow atnaujintas 2026-11-23 13:07 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo."
+          },
+          {
+            "name": "Lighthouse auditas",
+            "state": "waiting",
+            "detail": "Workflow atnaujintas 2026-11-23 14:10 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo."
+          }
+        ],
+        "ai_agent_memory_check": {
+          "name": "AI agentai + control-core atmintis",
+          "state": "stale",
+          "detail": "Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-22.",
+          "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
+          "created_at": null
+        }
+      },
+      "recommendations": [
+        {
+          "id": "automation-health",
+          "priority": "high",
+          "title": "Pašalinti automatizacijų būklės problemas",
+          "evidence": "AI agentai + control-core atmintis: stale",
+          "next_action": "Atidaryti centrinio valdymo GitHub įspėjimą ir taisyti konkretaus proceso klaidą.",
+          "status": "monitor"
+        },
+        {
+          "id": "search-visibility",
+          "priority": "medium",
+          "title": "Patikrinti Google paieškos matomumą",
+          "evidence": "Dviejuose naujausiuose prieinamuose Search Console laikotarpiuose parodymai ir paspaudimai buvo nuliniai.",
+          "next_action": "Patikrinti URL indeksavimo būseną, sitemap apdorojimą ir ar svarbiausi puslapiai prieinami Googlebot.",
+          "status": "monitor"
+        },
+        {
+          "id": "sitemap-processing",
+          "priority": "info",
+          "title": "Stebėti Google sitemap apdorojimą",
+          "evidence": "Search Console nurodo, kad sitemap dar laukia apdorojimo.",
+          "next_action": "Pakartotinai patikrinti kitame cikle; sitemap pakartotinai neteikti, jei jis jau pateiktas.",
+          "status": "monitor"
+        }
+      ],
+      "next_actions": [
+        {
+          "priority": "high",
+          "title": "AI agentai + control-core atmintis",
+          "evidence": "Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-22.",
+          "action": "Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (stale). Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-22."
+        },
+        {
+          "priority": "high",
+          "title": "Pašalinti automatizacijų būklės problemas",
+          "evidence": "AI agentai + control-core atmintis: stale",
+          "action": "Atidaryti centrinio valdymo GitHub įspėjimą ir taisyti konkretaus proceso klaidą."
+        },
+        {
+          "priority": "medium",
+          "title": "Patikrinti Google paieškos matomumą",
+          "evidence": "Dviejuose naujausiuose prieinamuose Search Console laikotarpiuose parodymai ir paspaudimai buvo nuliniai.",
+          "action": "Patikrinti URL indeksavimo būseną, sitemap apdorojimą ir ar svarbiausi puslapiai prieinami Googlebot."
+        }
+      ],
+      "coverage": {
+        "analytics_latest": "2026-11-23T10:42:56.915536+00:00",
+        "search_console_latest": "2026-11-23T10:42:56.915536+00:00",
+        "topic_radar_latest": "2026-11-23T10:42:39.831421+00:00",
+        "lighthouse_latest": "2026-11-23T14:14:53.078168+00:00",
+        "control_center_latest": "2026-11-23T14:15:22.492334+00:00",
+        "project_state_latest": "2026-11-23T14:15:22.492334+00:00",
+        "topic_days_covered": 7
+      },
+      "method": "Deterministic analysis of existing aggregated history; no additional AI/API calls.",
+      "privacy": "No visitor-level data or raw Search Console phrases are stored in this report."
+    }
+  ]
+}
