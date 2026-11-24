@@ -1,5 +1,12 @@
 # Pet traffic – perdavimo ataskaita (2026-11-24)
 
+## Post-merge patikra – 2026-11-24 12:43 LT
+
+- **PR #310 – ATLIKTA:** dokumentų PR sujungtas squash commit `90950241a9df8d3a0b1ddab27fc76f10a8e2f905`; automatinis work-log commit atnaujino main į `9576615e69c3f9c69df762f5ec7a12db74471fb9`.
+- **Cloudflare Pages – PATIKRINTA:** merge commit check success, deployment ID `0830c6fa-a087-4c6f-9e5c-504877d1372e`; po merge homepage HTTP 200. Site-check #45377332777 ir automatinis work-log #45377332674 success.
+- **CI:** PR #310 site-check #45377187885 success, 160 testų OK; Cloudflare Pages preview success. Po merge site-check success.
+- **Pakeitimų ribos:** PR #310 keitė tik PROJECT_MEMORY, work-log ir handover dokumentus. Viešas puslapio turinys, Worker/D1 production, DNS, secrets ir teisės nepakeistos.
+
 ## Naujausias papildymas – 2026-11-24 12:35 LT
 
 - **Main / produkcija – PATIKRINTA:** main HEAD `1f14b06db7729ca1a8a5c4f9f0b536015460233d`; Cloudflare Pages check success, paskutinis patvirtintas deployment ID `04f96fe5-d1c7-424b-bd10-003faac1c286`. Vieša svetainė veikia, produkcijos pakeitimų neatlikta.
