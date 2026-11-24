@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "project": "PetTraffic AI",
-  "generated_at": "2026-11-24T10:35:07.325196+00:00",
-  "run_id": "45376152167",
-  "source_commit": "1f14b06db7729ca1a8a5c4f9f0b536015460233d",
+  "generated_at": "2026-11-24T12:11:58.600137+00:00",
+  "run_id": "45391175690",
+  "source_commit": "a43b1ca519058c742330c2c13f2e6b4df982dc12",
   "overall_status": "needs_attention",
   "last_verified_stage": "Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataskaitoje.",
   "next_action": "Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas (warning). Suplanuotas ciklas nuo 2026-11-24 06:10 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-22T14:27:51Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.",
@@ -19,8 +19,8 @@
       "name": "Centrinis valdymo centras",
       "state": "success",
       "detail": "Paskutinis paleidimas sėkmingas.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/45323614807",
-      "created_at": "2026-11-24T04:02:42Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/45376152167",
+      "created_at": "2026-11-24T10:35:00Z"
     },
     {
       "name": "Debesijos read-only užduočių vykdytojas",
@@ -32,7 +32,7 @@
     {
       "name": "Cloudflare Worker + D1",
       "state": "success",
-      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 5 min.",
+      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 11 min.",
       "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
       "created_at": null
     }
@@ -44,6 +44,13 @@
       "detail": "Suplanuotas ciklas nuo 2026-11-24 06:10 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-22T14:27:51Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.",
       "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/45374802744",
       "created_at": "2026-11-24T10:26:23Z"
+    },
+    {
+      "name": "AI agentai + control-core atmintis",
+      "state": "stale",
+      "detail": "Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-22.",
+      "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
+      "created_at": null
     }
   ],
   "pending_checks": [
@@ -53,19 +60,12 @@
       "detail": "Workflow atnaujintas 2026-11-23 14:10 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.",
       "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/45191443021",
       "created_at": "2026-11-23T14:11:01Z"
-    },
-    {
-      "name": "AI agentai + control-core atmintis",
-      "state": "waiting",
-      "detail": "Paskutinis AI agentų ciklas dar neįvyko 13:20 Lietuvos laiku lange; laukiama šiandienos suplanuoto ciklo.",
-      "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
-      "created_at": null
     }
   ],
   "ai_agent_memory_check": {
     "name": "AI agentai + control-core atmintis",
-    "state": "waiting",
-    "detail": "Paskutinis AI agentų ciklas dar neįvyko 13:20 Lietuvos laiku lange; laukiama šiandienos suplanuoto ciklo.",
+    "state": "stale",
+    "detail": "Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-22.",
     "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
     "created_at": null
   },
