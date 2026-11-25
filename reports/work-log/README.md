@@ -1401,3 +1401,18 @@ Kitas veiksmas: tikrinti kitą tikrą Daily-suite `event=schedule`; po jo laukti
 - **SAUGUMAS:** jokių Worker/D1 production, ARO Vet, DNS, secrets, paskyrų konfigūracijos, viešo turinio ar mokamų paslaugų pakeitimų. D1 tik SELECT. PR #301 ir #312 nejungti; PR #306 liko draft. Aktyvus techninio darbo laikas **NEMATUOTAS**.
 - **Kitas žingsnis:** kitame cikle patikrinti tikrą Daily-suite `event=schedule`; po jo patvirtinti automatinį Control Center `workflow_run` ir D1 diagnostics. Worker AI žymėti PATIKRINTA tik su tos dienos `run_date`, `started_at` po 13:20 LT, `status=completed`, 5 AI calls, `error_code=null` ir šviežia present memory. PR #312 palikti draft iki realaus tinklo matavimo; PR #301 palikti nesujungtą iki atskiro sprendimo.
 
+
+
+## 2026-11-25 11:58 LT – Daily-suite catch-up, D1 sync ir site-check
+
+- **Main:** `7d7b6fd0c4de0bc5b4e6767bcfbbc4b18579854f`; pradžios protokolas ir istorijos šakos perskaityti. `automation-history/latest.md` snapshot yra 2026-11-24 17:34:28Z, todėl šiandienos tiesa nustatyta pagal naujus run/artifact įrodymus.
+- **Daily-suite schedule:** iki 09:53Z 2026-11-25 nebuvo `event=schedule`. Po 60 min. grace vieną kartą panaudotas savininko bridge: komentaras `/pettraffic-run-daily-suite` → bridge #45589634815 success → run #45589661930 `workflow_dispatch` success. Trys job'ai success. Tai tik atsarginis duomenų surinkimas, ne schedule įrodymas ir neatveria Worker AI vartų. Workflow retry slotai 10:10 ir 11:10 UTC tuo metu dar laukė.
+- **Duomenys:** analytics ir live-check ir topic-radar success. Live check – 12 vidinių URL, sitemap/robots, 404 ir 20 istorinių 301. Topic radar – 31 unikali Google News RSS antraštė, 7/7 temos, 0 tuščių patikrų; ne keyword volume. GA4 2026-11-18–24: API available, 0 aktyvių/naujų naudotojų, sesijų ir pageviews; organic sessions null. GSC 2026-11-16–22: API available, 0 parodymų/paspaudimų; sitemap pending, 5 URL Inspection neutral / nežinomi Google, crawl dar netikrintas.
+- **D1:** komentaras `/pettraffic-sync-latest` → bridge #45589952437 success → sync #45589984865 success, source run #45589661930, source_event=workflow_dispatch. OIDC success, 2 snapshot write/readback success. Manual sync nepaverčia šaltinio schedule.
+- **Site-check:** šiandienos schedule nebuvo; komentaras `/pettraffic-run-site-check` → bridge #45590389796 success → run #45590420563 workflow_dispatch success. JS syntax, validate_site, compileall ir 160 testų success. Manual run nėra schedule įrodymas.
+- **Lighthouse:** naujausias sėkmingas audit #45191443021 buvo push (ne schedule), artifact #14826272555 turi 10 HTML/10 JSON. LCP pagerėjo visuose 10 palygintuose reportuose, home mobile TBT 416.5→0 ms, CLS=0; INP laboratoriniame JSON nepateiktas. Sėkmingas auditas yra 7 dienų lange, todėl dubliuotas manual audit nepaleistas.
+- **Cloudflare / produkcija:** main commit Cloudflare Pages check success (deployment check ID `fd814d66-7413-4789-8250-cf644991ef65`); production live-check success. Tiesioginis URL atidarymas iš koordinatoriaus aplinkos dėl DNS rezoliucijos klaidos nepatvirtintas.
+- **Worker AI:** 11:58 LT dar iki 13:20 ciklo; būsena LAUKIA. Manual Daily-suite/sync neįrodo schedule ir neatveria AI vartų. Issue #145 open.
+- **PR:** 8 open. #301 24 commits behind; #312 draft, mergeable=false, 1 behind; #306 draft, mergeable=false, 11 behind. Nė vienas PR nemergintas.
+- **Saugumas:** jokių Worker/D1 production, DNS, secrets, permissions, billing, ARO Vet, viešo turinio ar mokamų paslaugų pakeitimų.
+
