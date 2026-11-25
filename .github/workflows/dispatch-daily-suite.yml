@@ -82,8 +82,8 @@ jobs:
                   bridge_comment_id: String(context.payload.comment.id)
                 }
               });
-              core.notice("Authorized owner-bridge daily-suite fallback sent to main. " +
-                "The Worker accepts it only after sync-control-api independently verifies this exact owner comment and bridge run.");
+              core.notice("This manual fallback is not schedule provenance. It is an owner-bridge fallback; " +
+                "the Worker accepts it only after sync-control-api independently verifies this exact owner comment and bridge run.");
               return;
             }
 
