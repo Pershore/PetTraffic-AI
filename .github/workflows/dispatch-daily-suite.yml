@@ -55,24 +55,77 @@ jobs:
                 core.notice("Daily-suite fallback is not eligible until the 60-minute schedule grace has passed.");
                 return;
               }
-              const recent = data.workflow_runs.find(run => {
-                const createdAt = Date.parse(run.created_at);
-                const activeOrSuccessful =
-                  run.status !== "completed" || run.conclusion === "success";
-                const currentDaySchedule =
-                  run.event === "schedule" &&
-                  createdAt >= dailySuiteScheduleAt.getTime() &&
-                  activeOrSuccessful;
-                const recentManualFallback =
-                  run.event === "workflow_dispatch" &&
-                  createdAt >= utcDayStart.getTime() &&
-                  activeOrSuccessful;
-                return currentDaySchedule || recentManualFallback;
-              });
-              if (recent) {
-                core.notice("Daily suite already started: #" + recent.run_number +
-                  " (" + recent.event + ") " + recent.html_url);
+              const activeOrSuccessful = run =>
+                run.status !== "completed" || run.conclusion === "success";
+              const vilniusDay = value => {
+                const parts = new Intl.DateTimeFormat("en-GB", {
+                  timeZone: "Europe/Vilnius",
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit"
+                }).formatToParts(new Date(value));
+                const fields = Object.fromEntries(parts.map(part => [part.type, part.value]));
+                return fields.year + "-" + fields.month + "-" + fields.day;
+              };
+              const currentDaySchedule = data.workflow_runs.find(run =>
+                run.event === "schedule" &&
+                Date.parse(run.created_at) >= dailySuiteScheduleAt.getTime() &&
+                activeOrSuccessful(run)
+              );
+              if (currentDaySchedule) {
+                core.notice("Daily suite already started from today's schedule: #" +
+                  currentDaySchedule.run_number + " " + currentDaySchedule.html_url);
                 return;
+              }
+
+              // A plain workflow_dispatch is not valid AI evidence and must not
+              // suppress the separately authorized owner-bridge fallback.
+              // Only an active/successful dispatch with a complete, independently
+              // verified owner-bridge marker counts as a duplicate.
+              const bridgeCandidates = data.workflow_runs.filter(run =>
+                run.event === "workflow_dispatch" &&
+                Date.parse(run.created_at) >= dailySuiteScheduleAt.getTime() &&
+                activeOrSuccessful(run) &&
+                /^Owner-approved fallback \| bridge=(\d+) \| comment=(\d+)$/.test(String(run.display_title || ""))
+              );
+              for (const run of bridgeCandidates) {
+                const marker = /^Owner-approved fallback \| bridge=(\d+) \| comment=(\d+)$/.exec(String(run.display_title || ""));
+                const bridgeRunId = Number(marker[1]);
+                const commentId = Number(marker[2]);
+                if (!Number.isSafeInteger(bridgeRunId) || !Number.isSafeInteger(commentId)) continue;
+                try {
+                  const [bridgeResponse, commentResponse] = await Promise.all([
+                    github.rest.actions.getWorkflowRun({ owner, repo, run_id: bridgeRunId }),
+                    github.rest.issues.getComment({ owner, repo, comment_id: commentId })
+                  ]);
+                  const bridge = bridgeResponse.data;
+                  const comment = commentResponse.data;
+                  const issueNumber = Number(String(comment.issue_url || "").match(/\/issues\/(\d+)$/)?.[1] || 0);
+                  const commentAt = Date.parse(comment.created_at || "");
+                  const bridgeAt = Date.parse(bridge.created_at || "");
+                  const runAt = Date.parse(run.created_at || "");
+                  const validBridge = bridge.workflow_id === 418997808 &&
+                    bridge.event === "issue_comment" && bridge.head_branch === "main" &&
+                    bridge.status === "completed" && bridge.conclusion === "success" &&
+                    bridge.actor?.login === "Pershore";
+                  const validComment = issueNumber === 145 &&
+                    String(comment.body || "").trim() === "/pettraffic-run-daily-suite" &&
+                    comment.user?.login === "Pershore";
+                  const sameVilniusDay = vilniusDay(comment.created_at) ===
+                    vilniusDay(bridge.created_at) && vilniusDay(bridge.created_at) === vilniusDay(run.created_at);
+                  const validSequence = Number.isFinite(commentAt) && Number.isFinite(bridgeAt) &&
+                    Number.isFinite(runAt) && bridgeAt >= commentAt &&
+                    bridgeAt - commentAt <= 10 * 60 * 1000 && runAt >= bridgeAt &&
+                    runAt - bridgeAt <= 10 * 60 * 1000;
+                  if (validBridge && validComment && sameVilniusDay && validSequence) {
+                    core.notice("Verified owner-bridge daily suite already started: #" +
+                      run.run_number + " " + run.html_url);
+                    return;
+                  }
+                } catch (error) {
+                  core.warning("Could not verify a prior owner-bridge candidate #" +
+                    run.run_number + "; it will not suppress this authorized fallback. " + error.message);
+                }
               }
               await github.rest.actions.createWorkflowDispatch({
                 owner, repo, workflow_id, ref: "main",
