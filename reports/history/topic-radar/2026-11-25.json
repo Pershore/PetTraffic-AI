@@ -34,6 +34,23 @@
       "unique_article_links": 30,
       "empty_topic_checks": 0,
       "total_topic_checks": 7
+    },
+    {
+      "run_id": "45661106260",
+      "generated_at": "2026-11-25T17:06:27.393089+00:00",
+      "source": "Google News RSS public headlines; not Google search volume",
+      "topic_counts": {
+        "kačių priežiūra": 8,
+        "šunų priežiūra": 8,
+        "augintinių mityba": 7,
+        "augintinio ženklinimas registravimas Lietuva": 3,
+        "kačių dantų priežiūra": 1,
+        "augintinio sveikata veterinaras": 0,
+        "šunų dantų priežiūra": 0
+      },
+      "unique_article_links": 24,
+      "empty_topic_checks": 2,
+      "total_topic_checks": 7
     }
   ]
 }
