@@ -124,8 +124,9 @@ jobs:
                     return;
                   }
                 } catch (error) {
-                  core.warning("Could not verify a prior owner-bridge candidate #" +
-                    run.run_number + "; it will not suppress this authorized fallback. " + error.message);
+                  core.setFailed("Could not verify prior owner-bridge candidate #" +
+                    run.run_number + "; fallback stopped to avoid a duplicate dispatch. " + error.message);
+                  return;
                 }
               }
               await github.rest.actions.createWorkflowDispatch({
