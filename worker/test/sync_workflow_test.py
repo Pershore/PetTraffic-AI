@@ -44,6 +44,11 @@ class SyncWorkflowRoutingTests(unittest.TestCase):
         self.assertIn("owner_approved_fallback", self.workflow)
         self.assertIn("owner_bridge_fallback", self.workflow)
 
+    def test_owner_comment_lookup_has_only_read_issues_permission(self):
+        self.assertEqual(self.workflow.count("issues: read"), 2)
+        self.assertIn("actions: read", self.workflow)
+        self.assertIn("id-token: write", self.workflow)
+
     def test_other_workflow_events_keep_their_own_artifact_mapping(self):
         self.assertIn(
             "github.event.workflow_run.name == 'Pet traffic analytics snapshot'",
