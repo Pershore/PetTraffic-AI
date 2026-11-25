@@ -35,6 +35,15 @@ class SyncWorkflowRoutingTests(unittest.TestCase):
         )
         self.assertIn(expected, self.workflow)
 
+    def test_manual_daily_suite_requires_exact_owner_bridge_verification(self):
+        self.assertIn("Owner-approved fallback", self.workflow)
+        self.assertIn("github.rest.issues.getComment", self.workflow)
+        self.assertIn('String(comment.body || "").trim() === "/pettraffic-run-daily-suite"', self.workflow)
+        self.assertIn("bridge.workflow_id === 418997808", self.workflow)
+        self.assertIn('bridge.actor?.login === "Pershore"', self.workflow)
+        self.assertIn("owner_approved_fallback", self.workflow)
+        self.assertIn("owner_bridge_fallback", self.workflow)
+
     def test_other_workflow_events_keep_their_own_artifact_mapping(self):
         self.assertIn(
             "github.event.workflow_run.name == 'Pet traffic analytics snapshot'",

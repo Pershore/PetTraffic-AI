@@ -139,6 +139,52 @@ class BuildEventTests(unittest.TestCase):
                 "source_workflow_id": "418322987",
             })
 
+    def test_owner_bridge_fallback_provenance_is_explicit_and_complete(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "topic-radar.md").write_text(
+                "# Temų radaras\\n- **Katės mityba** – 5 antraščių\\n",
+                encoding="utf-8",
+            )
+            events = build_events(
+                "Pet traffic daily topic radar", root, "run-owner-fallback",
+                source_event="owner_bridge_fallback",
+                source_run_created_at="2026-11-25T10:00:00Z",
+                source_workflow_id="418322987",
+                source_trigger_event="workflow_dispatch",
+                owner_approved_fallback=True,
+                owner_actor="Pershore",
+                owner_bridge_run_id="456780",
+                owner_bridge_comment_id="1234567",
+            )
+            provenance = events[0]["payload"]["provenance"]
+            self.assertEqual(provenance["source_event"], "owner_bridge_fallback")
+            self.assertEqual(provenance["source_trigger_event"], "workflow_dispatch")
+            self.assertIs(provenance["owner_approved_fallback"], True)
+            self.assertEqual(provenance["owner_actor"], "Pershore")
+            self.assertEqual(provenance["owner_bridge_run_id"], "456780")
+            self.assertEqual(provenance["owner_bridge_comment_id"], "1234567")
+
+    def test_incomplete_owner_bridge_fallback_provenance_is_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "topic-radar.md").write_text(
+                "# Temų radaras\\n- **Katės mityba** – 5 antraščių\\n",
+                encoding="utf-8",
+            )
+            with self.assertRaises(ValueError):
+                build_events(
+                    "Pet traffic daily topic radar", root, "run-owner-fallback",
+                    source_event="owner_bridge_fallback",
+                    source_run_created_at="2026-11-25T10:00:00Z",
+                    source_workflow_id="418322987",
+                    source_trigger_event="workflow_dispatch",
+                    owner_approved_fallback=True,
+                    owner_actor="not-owner",
+                    owner_bridge_run_id="",
+                    owner_bridge_comment_id="",
+                )
+
     def test_push_and_manual_runs_keep_their_original_event_type(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

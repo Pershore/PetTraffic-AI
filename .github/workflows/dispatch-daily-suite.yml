@@ -75,10 +75,15 @@ jobs:
                 return;
               }
               await github.rest.actions.createWorkflowDispatch({
-                owner, repo, workflow_id, ref: "main"
+                owner, repo, workflow_id, ref: "main",
+                inputs: {
+                  fallback_mode: "owner_bridge",
+                  bridge_run_id: String(context.runId),
+                  bridge_comment_id: String(context.payload.comment.id)
+                }
               });
-              core.notice("Authorized daily-suite workflow_dispatch fallback sent to main. " +
-                "This manual fallback is not schedule provenance and does not open the Worker AI schedule gate.");
+              core.notice("This manual fallback is not schedule provenance. It is an owner-bridge fallback; " +
+                "the Worker accepts it only after sync-control-api independently verifies this exact owner comment and bridge run.");
               return;
             }
 

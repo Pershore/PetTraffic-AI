@@ -51,7 +51,15 @@ export function isEligibleScheduledDailySuiteSnapshot(event, localDay, evidenceC
  })();
  if(!payload || !["analytics_snapshot","topic_snapshot"].includes(event?.kind)) return false;
  const provenance=payload.provenance;
- if(!provenance || provenance.source_event!=="schedule" || String(provenance.source_workflow_id)!=="418322987") return false;
+ if(!provenance || String(provenance.source_workflow_id)!=="418322987") return false;
+ const scheduledSource=provenance.source_event==="schedule";
+ const ownerBridgeFallback=provenance.source_event==="owner_bridge_fallback" &&
+  provenance.source_trigger_event==="workflow_dispatch" &&
+  provenance.owner_approved_fallback===true &&
+  provenance.owner_actor==="Pershore" &&
+  /^\d+$/.test(String(provenance.owner_bridge_run_id||"")) &&
+  /^\d+$/.test(String(provenance.owner_bridge_comment_id||""));
+ if(!scheduledSource&&!ownerBridgeFallback) return false;
  const sourceRunId=String(provenance.source_run_id||"");
  if(!sourceRunId || String(payload.run_id||"")!==sourceRunId) return false;
  if(typeof provenance.source_run_created_at!=="string") return false;
@@ -85,8 +93,9 @@ export async function shouldRunAgentOrchestration(env, controller) {
     "ORDER BY created_at DESC LIMIT 100"
   ).bind(scheduledAt.toISOString()).all();
 
-  // Require a same-day Daily-suite snapshot whose original event provenance
-  // proves that GitHub's scheduled workflow (not push/manual) produced it.
+  // Require a same-day Daily-suite snapshot with either a true GitHub schedule
+  // event or a separately verified owner-only bridge fallback. Plain manual
+  // dispatches, pushes, PRs and other events remain ineligible.
   return (snapshots.results || []).some(row =>
     isEligibleScheduledDailySuiteSnapshot(row, localDay, scheduledAt)
   );

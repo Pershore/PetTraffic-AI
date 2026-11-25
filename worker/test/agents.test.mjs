@@ -45,6 +45,67 @@ test("agent cron ignores the old 10:20 Vilnius winter trigger", () => {
  }), false);
 });
 
+test("same-day owner-bridge fallback can satisfy the AI evidence gate", () => {
+ const event = {
+  kind: "analytics_snapshot",
+  created_at: "2026-11-25T10:05:00.000Z",
+  payload_json: JSON.stringify({
+   run_id: "456789",
+   provenance: {
+    source_event: "owner_bridge_fallback",
+    source_trigger_event: "workflow_dispatch",
+    source_run_id: "456789",
+    source_run_created_at: "2026-11-25T10:00:00.000Z",
+    source_workflow_id: "418322987",
+    owner_approved_fallback: true,
+    owner_actor: "Pershore",
+    owner_bridge_run_id: "456780",
+    owner_bridge_comment_id: "1234567",
+   },
+  }),
+ };
+ assert.equal(isEligibleScheduledDailySuiteSnapshot(event, "2026-11-25", "2026-11-25T11:20:00.000Z"), true);
+});
+
+test("plain manual dispatch cannot satisfy the AI evidence gate", () => {
+ const event = {
+  kind: "analytics_snapshot",
+  created_at: "2026-11-25T10:05:00.000Z",
+  payload_json: JSON.stringify({
+   run_id: "456789",
+   provenance: {
+    source_event: "workflow_dispatch",
+    source_run_id: "456789",
+    source_run_created_at: "2026-11-25T10:00:00.000Z",
+    source_workflow_id: "418322987",
+   },
+  }),
+ };
+ assert.equal(isEligibleScheduledDailySuiteSnapshot(event, "2026-11-25", "2026-11-25T11:20:00.000Z"), false);
+});
+
+test("owner-bridge fallback without owner identity or bridge IDs is rejected", () => {
+ const event = {
+  kind: "topic_snapshot",
+  created_at: "2026-11-25T10:05:00.000Z",
+  payload_json: JSON.stringify({
+   run_id: "456789",
+   provenance: {
+    source_event: "owner_bridge_fallback",
+    source_trigger_event: "workflow_dispatch",
+    source_run_id: "456789",
+    source_run_created_at: "2026-11-25T10:00:00.000Z",
+    source_workflow_id: "418322987",
+    owner_approved_fallback: true,
+    owner_actor: "not-owner",
+    owner_bridge_run_id: "",
+    owner_bridge_comment_id: "",
+   },
+  }),
+ };
+ assert.equal(isEligibleScheduledDailySuiteSnapshot(event, "2026-11-25", "2026-11-25T11:20:00.000Z"), false);
+});
+
 
 test("incomplete model JSON is converted to a bounded evidence gap",()=>{
  const result=parseResult('{"status":"reviewed"');
