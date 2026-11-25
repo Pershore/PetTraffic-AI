@@ -61,3 +61,10 @@ Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas
 - **ATLIKTA:** PR #301 aprašyme baseline atnaujintas iki 211 s / 14 docs-only push'ų; PR #312 aprašyme pridėtas 2,4 s realus main topic-radar matavimas (ne po-pakeitimo benchmark). Abu PR atviri, nejungti.
 - **SAUGUMAS:** produkcija, Worker/D1 duomenys, ARO Vet, DNS, secrets, viešas turinys ir billing nepakeisti. Aktyvus darbas NEMATUOTAS.
 - **Kitas veiksmas:** tikrinti kitą tikrą Daily-suite schedule ir po jo automatinį Control Center / D1 / Worker AI įrodymų ciklą.
+
+
+## 2026-11-25 – post-work-log site-check verification
+
+- **PATIKRINTA:** main work-log commit `41e8525a8c47c2350a37123594da36ad1d84502f` paleido site-check #45617924099 (`push`), success, **17 s**. Validator baigė 31 agent testą ir 160 bendrų testų; RSS timeout eilutė buvo `test_fetch_handles_feed_failure` testinio atvejo įspėjimas, pats testas `ok`, ne realaus radaro paleidimo gedimas.
+- **ATLIKTA:** PR #301 baseline po šio matavimo atnaujintas iki **228 s per 15 docs-only push'ų** (224 s užbaigtuose darbuose + 4 s iki atšaukimo). PR lieka open, mergeable, nesujungtas. Šis papildomas site-check atsirado dėl darbo žurnalo commit; jo pakartotinis registravimas main sukeltų dar vieną site-check, todėl ši post-write patikra užfiksuota šiame automation-history priede ir PR #301 matavimo aprašyme.
+- **SAUGUMAS:** kodo ir produkcijos pakeitimų nėra.
