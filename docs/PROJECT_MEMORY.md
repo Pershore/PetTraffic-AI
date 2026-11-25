@@ -1,5 +1,16 @@
 # Pet traffic – vienintelė kanoninė projekto atmintis
 
+## 2026-11-25 – owner-bridge dubliavimo filtro pataisa (PR #317 DRAFT; CI PATIKRINTA)
+
+- Diagnozė PATIKRINTA: owner bridge #45646355710 buvo sėkmingas, bet jo workflow neteisingai traktavo ankstesnį paprastą Daily-suite `workflow_dispatch` #45589661930 kaip jau pradėtą fallback. Šis manual run neatitiko AI evidence vartų, todėl negalėjo pakeisti tikro schedule ar owner-bridge.
+- ATLIKTA šakoje `fix/owner-bridge-dedup-20261125`: PR #317 keičia tik `.github/workflows/dispatch-daily-suite.yml` ir `tests/test_dispatch_bridge_workflow.py`. Paprastas manual dispatch nebestabdo owner fallback; stabdo tik tos pačios Vilniaus dienos aktyvus/sėkmingas schedule arba independently patikrintas owner-bridge dispatch.
+- Saugumo patikra: tikrinamas tikslus run-name markeris, bridge workflow ID 418997808, event=issue_comment, bridge actor Pershore, issue #145, tikslus komentaras `/pettraffic-run-daily-suite`, savininko komentaro autorius, source run aktorius Pershore arba github-actions[bot], Vilniaus diena ir 10 min. seka. Jei esamo kandidato patikrinti nepavyksta, fallback sustabdomas (fail-closed). Worker AI vieno ciklo/dieną ir provenance vartai nekeičiami.
+- PATIKRINTA CI: PR head `c222094e69dcca8e94da0ad1becbf3aaa16cfb18`, run #45647424193 success; agent testai 31/31, bendras testų rinkinys 162/162, HTML/SEO/sitemap validacija ir compileall success. Cloudflare Pages PR preview #9e7aea9b success; tai preview, ne production deploy.
+- NEPATVIRTINTA: PR #317 dar DRAFT/open, merge ir production veikimas neatlikti. Worker/D1 production, DNS, secrets, ARO Vet, viešas turinys ir mokamos paslaugos nepakeisti.
+- AI recovery lieka NEPATVIRTINTA: naujausia read-only D1 diagnostika #45645954081 turėjo rows_written=0; iki jos agent run 2026-11-25 missing, 4 specialistai/coordinator/Control Core missing, memory stale nuo 2026-11-24. Naujo Daily-suite owner-bridge run nebuvo, nes ankstesnis filtras jį sustabdė. Issue #145 lieka open.
+- Kitas žingsnis: gauti atskirą PR #317 merge leidimą; po merge atskirai patikrinti tos dienos D1 `agent_runs.run_date` ir tik tada, jei ciklo nėra ir vartai tinkami, prašyti / vykdyti naują owner-bridge fallback. Nekartoti AI ciklo, jei tos dienos run_date jau yra.
+
+
 ## 2026-11-25 – owner-bridge AI fallback (PR #315 SUJUNGTAS; Worker production PATIKRINTA; AI vykdymas LAUKIA)
 
 - Diagnozė: GitHub Daily-suite tikras event=schedule gali vėluoti arba būti praleistas. Atsarginis workflow_dispatch dabar turi atskirą owner_bridge_fallback kilmę.
