@@ -63,6 +63,7 @@ class DispatchBridgeWorkflowTests(unittest.TestCase):
             'bridge.event === "issue_comment"',
             'bridge.actor?.login === "Pershore"',
             'comment.user?.login === "Pershore"',
+            '["Pershore", "github-actions[bot]"].includes(run.actor?.login)',
             "comment.body ||",
             "/pettraffic-run-daily-suite",
             "issueNumber === 145",
