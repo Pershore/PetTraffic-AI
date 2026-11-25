@@ -1,9 +1,9 @@
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
-- Atnaujinta: 2026-11-24T17:34:28.607142+00:00
+- Atnaujinta: 2026-11-25T12:46:11.621385+00:00
 - Būsena: **REIKIA DĖMESIO**
-- GitHub run: 45450047987
-- Šaltinio commit: 7d7b6fd0c4de0bc5b4e6767bcfbbc4b18579854f
+- GitHub run: 45616929438
+- Šaltinio commit: 309a513b93768dfefbe72d534e4085a73fc2bff5
 
 ## Paskutinis patikrintas etapas
 
@@ -11,27 +11,27 @@ Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataska
 
 ## Kitas veiksmas
 
-Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (stale). Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-22.
+Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas (warning). Suplanuotas ciklas nuo 2026-11-25 06:10 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-24T17:33:36Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.
 
 ## Patvirtinti procesai
 
-- GA4, temų radaras ir svetainės stebėjimas: Paskutinis paleidimas sėkmingas.
+- Centrinės API sinchronizavimas: Paskutinis paleidimas sėkmingas.
 - Centrinis valdymo centras: Paskutinis paleidimas sėkmingas.
 - Debesijos read-only užduočių vykdytojas: Paskutinis debesijos užduoties vykdymas sėkmingas.
-- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 4 min.
+- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 1 min.
 
 ## Problemos
 
-- **AI agentai + control-core atmintis** (stale): Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-22. – https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health
+- **GA4, temų radaras ir svetainės stebėjimas** (warning): Suplanuotas ciklas nuo 2026-11-25 06:10 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-24T17:33:36Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia. – https://github.com/Pershore/PetTraffic-AI/actions/runs/45589661930
+- **AI agentai + control-core atmintis** (stale): Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-24. – https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health
 
 ## Laukiančios patikros
 
-- Centrinės API sinchronizavimas: Vyksta (in_progress).
 - Lighthouse auditas: Workflow atnaujintas 2026-11-23 14:10 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.
 
 ## AI agentų ir atminties patikra
 
-- Būsena: **stale** – Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-22.
+- Būsena: **stale** – Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-24.
 - Patikros šaltinis: https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health
 
 ## Rekomendacijos
