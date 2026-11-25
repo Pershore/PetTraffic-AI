@@ -1,9 +1,9 @@
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
-- Atnaujinta: 2026-11-25T15:42:13.866701+00:00
+- Atnaujinta: 2026-11-25T17:07:11.009294+00:00
 - Būsena: **REIKIA DĖMESIO**
-- GitHub run: 45648122205
-- Šaltinio commit: 965211559188d9431aa23a36ec4bc261c7923f5d
+- GitHub run: 45661257685
+- Šaltinio commit: 69f6bf515e13ede2538f0484dbf6c8f99b289737
 
 ## Paskutinis patikrintas etapas
 
@@ -15,10 +15,10 @@ Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (stale). 
 
 ## Patvirtinti procesai
 
-- Centrinės API sinchronizavimas: Paskutinis paleidimas sėkmingas.
+- GA4, temų radaras ir svetainės stebėjimas: Paskutinis paleidimas sėkmingas.
 - Centrinis valdymo centras: Paskutinis paleidimas sėkmingas.
 - Debesijos read-only užduočių vykdytojas: Paskutinis debesijos užduoties vykdymas sėkmingas.
-- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 12 min.
+- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 7 min.
 
 ## Problemos
 
@@ -26,7 +26,7 @@ Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (stale). 
 
 ## Laukiančios patikros
 
-- GA4, temų radaras ir svetainės stebėjimas: Workflow atnaujintas 2026-11-25 15:25 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.
+- Centrinės API sinchronizavimas: Vyksta (in_progress).
 - Lighthouse auditas: Workflow atnaujintas 2026-11-23 14:10 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.
 
 ## AI agentų ir atminties patikra
@@ -38,6 +38,7 @@ Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (stale). 
 
 - **[medium] Patikrinti Google paieškos matomumą** – Patikrinti URL indeksavimo būseną, sitemap apdorojimą ir ar svarbiausi puslapiai prieinami Googlebot.
 - **[info] Stebėti Google sitemap apdorojimą** – Pakartotinai patikrinti kitame cikle; sitemap pakartotinai neteikti, jei jis jau pateiktas.
+- **[low] Stebėti tuščias temų RSS užklausas** – Patikrinti, ar tai laikinas Google News RSS rezultatų nebuvimas; nekurti temų paklausos išvadų iš šių skaičių.
 - **[high] Pašalinti automatizacijų būklės problemas** – Atidaryti centrinio valdymo GitHub įspėjimą ir taisyti konkretaus proceso klaidą.
 
 ## Nekeičiamos saugumo ribos
