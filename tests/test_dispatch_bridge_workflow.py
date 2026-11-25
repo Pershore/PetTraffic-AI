@@ -38,13 +38,44 @@ class DispatchBridgeWorkflowTests(unittest.TestCase):
         self.assertIn("dailySuiteScheduleAt.setUTCHours(6, 10, 0, 0)", workflow)
         self.assertIn("scheduleGraceEndsAt = dailySuiteScheduleAt.getTime() + 60 * 60 * 1000", workflow)
         self.assertIn("now < scheduleGraceEndsAt", workflow)
-        self.assertIn("createdAt >= dailySuiteScheduleAt.getTime()", workflow)
+        self.assertIn("Date.parse(run.created_at) >= dailySuiteScheduleAt.getTime()", workflow)
         self.assertIn('run.event === "schedule"', workflow)
-        self.assertIn('run.event === "workflow_dispatch"', workflow)
-        self.assertIn("createdAt >= utcDayStart.getTime()", workflow)
         self.assertIn("This manual fallback is not schedule provenance", workflow)
-        # A previous day's delayed schedule must not suppress today's fallback.
-        self.assertNotIn('run.event === "schedule" &&\n                    Date.parse(run.created_at) >= manualCutoff', workflow)
+
+    def test_plain_manual_daily_suite_does_not_suppress_owner_bridge(self):
+        workflow = Path(".github/workflows/dispatch-daily-suite.yml").read_text(encoding="utf-8")
+        daily_block = workflow.split('if (action === "daily-suite") {', 1)[1].split('if (action === "sync-latest") {', 1)[0]
+        self.assertIn("A plain workflow_dispatch is not valid AI evidence", daily_block)
+        self.assertIn('run.event === "workflow_dispatch"', daily_block)
+        self.assertIn("run.display_title", daily_block)
+        self.assertIn("Owner-approved fallback", daily_block)
+        self.assertIn("bridge=(\\d+)", daily_block)
+        self.assertNotIn("recentManualFallback", daily_block)
+        self.assertNotIn("createdAt >= utcDayStart.getTime()", daily_block)
+
+    def test_only_verified_owner_bridge_dispatch_suppresses_fallback(self):
+        workflow = Path(".github/workflows/dispatch-daily-suite.yml").read_text(encoding="utf-8")
+        daily_block = workflow.split('if (action === "daily-suite") {', 1)[1].split('if (action === "sync-latest") {', 1)[0]
+        for expected in (
+            "github.rest.actions.getWorkflowRun",
+            "github.rest.issues.getComment",
+            "bridge.workflow_id === 418997808",
+            'bridge.event === "issue_comment"',
+            'bridge.actor?.login === "Pershore"',
+            'comment.user?.login === "Pershore"',
+            '["Pershore", "github-actions[bot]"].includes(run.actor?.login)',
+            "comment.body ||",
+            "/pettraffic-run-daily-suite",
+            "issueNumber === 145",
+            "bridgeAt - commentAt <= 10 * 60 * 1000",
+            "runAt - bridgeAt <= 10 * 60 * 1000",
+            "sameVilniusDay",
+            "fallback stopped to avoid a duplicate dispatch",
+        ):
+            with self.subTest(expected=expected):
+                self.assertIn(expected, daily_block)
+        self.assertIn('run.event === "schedule"', daily_block)
+        self.assertIn("activeOrSuccessful(run)", daily_block)
 
     def test_bridge_has_deduplication_and_no_secrets_or_external_services(self):
         workflow = Path(".github/workflows/dispatch-daily-suite.yml").read_text(encoding="utf-8")
