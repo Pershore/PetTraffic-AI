@@ -1,3 +1,26 @@
+# 2026-11-25 17:40 LT – PR #317 owner-bridge deduplication pataisa
+
+## Rezultatas
+
+- **PATIKRINTA priežastis:** Issue #145 savininko komentaras #7167005842 paleido bridge #45646355710 (success), bet Daily-suite nebuvo dispatchintas. Bridge logas nurodė, kad ankstesnis run #45589661930 (`workflow_dispatch`) jau pradėtas. Tas run buvo paprastas manual fallback ir neturėjo owner-bridge provenance; Worker AI vartai jo nepriima.
+- **ATLIKTA šakoje / PR:** PR #317 DRAFT: https://github.com/Pershore/PetTraffic-AI/pull/317. Pataisytas tik `.github/workflows/dispatch-daily-suite.yml` ir pridėti regresijos testai. Paprastas manual dispatch nebestabdo owner fallback. Tikras tos dienos schedule stabdo. Esamas owner-bridge dublikatas stabdo tik po tikslios bridge/comment/actor/Vilniaus dienos/10 min. sekos patikros. Jei ankstesnio kandidato patikrinti nepavyksta, vykdymas sustabdomas fail-closed.
+- **PATIKRINTA CI:** PR head `c222094e69dcca8e94da0ad1becbf3aaa16cfb18`; Actions #45647424193 success: 31/31 agent testai, 162/162 bendri testai, HTML/SEO/sitemap validacija, compileall. Cloudflare Pages preview #9e7aea9b success. Preview nėra production deployment.
+- **NEPATVIRTINTA:** PR #317 dar DRAFT/open; nebuvo merge, Worker/D1 production deploy ar naujo owner-bridge Daily-suite paleidimo. Issue #145 lieka open.
+
+## AI / D1 būsena
+
+- Naujausia read-only diagnostika #45645954081 success; 7 SELECT-only užklausos, `rows_written=0`.
+- 2026-11-25 diagnostikoje agent run nebuvo; iki ankstesnio D1 readback trūko visų 4 specialistų, coordinator ir Control Core; memory buvo stale nuo 2026-11-24. Naujas tinkamas Daily-suite source snapshot dar nebuvo sukurtas.
+- Jokio antro AI ciklo nepaleisti. Po PR merge būtina dar kartą patikrinti tą pačią dieną D1 `agent_runs.run_date` prieš svarstant fallback.
+
+## Leidimų ribos / kitas žingsnis
+
+- Laukia atskiras savininko leidimas sujungti PR #317. Ankstesnis leidimas buvo tik konkrečiam komentarui #7167005842 ir nesuteikia automatinio leidimo PR merge ar naujam fallback.
+- Po merge ir atskiro leidimo: read-only D1 patikra; jei šiandienos agent run nėra, tik tada owner-bridge fallback; po to patikrinti Daily-suite → sync → D1 readback → vienintelį AI ciklą → specialistų įrodymus → Control Core → memory readback.
+- Nepakeista Worker/D1 production, DNS, secrets, Cloudflare settings, ARO Vet, viešas turinys, billing ar mokamos paslaugos.
+
+---
+
 # Pet traffic – perdavimo ataskaita (2026-11-25)
 
 ## Koordinatoriaus auditas – 2026-11-25 11:58 LT
