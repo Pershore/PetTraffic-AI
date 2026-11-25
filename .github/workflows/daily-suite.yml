@@ -1,5 +1,5 @@
 name: Pet traffic daily automation suite
-run-name: "${{ github.event_name == 'schedule' && 'Scheduled daily automation suite' || 'Manually triggered daily automation suite' }}"
+run-name: "${{ inputs.fallback_mode == 'owner_bridge' && format('Owner-approved fallback | bridge={0} | comment={1}', inputs.bridge_run_id, inputs.bridge_comment_id) || (github.event_name == 'schedule' && 'Scheduled daily automation suite' || 'Manually triggered daily automation suite') }}"
 
 on:
   schedule:
@@ -7,6 +7,25 @@ on:
     # The gate below allows only one successful full suite per Vilnius calendar day.
     - cron: "10 6,8,10,11 * * *"
   workflow_dispatch:
+    inputs:
+      fallback_mode:
+        description: "Fallback authorization source; owner_bridge is accepted only with a verified owner issue command."
+        required: false
+        type: choice
+        options:
+          - manual
+          - owner_bridge
+        default: manual
+      bridge_run_id:
+        description: "Owner-command bridge workflow run ID (set only by the secure issue-comment bridge)."
+        required: false
+        type: string
+        default: ""
+      bridge_comment_id:
+        description: "Owner issue-comment ID authorizing this fallback."
+        required: false
+        type: string
+        default: ""
 
 concurrency:
   group: pettraffic-daily-suite

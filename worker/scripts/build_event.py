@@ -46,6 +46,11 @@ def build_events(
     source_event: str = "unknown",
     source_run_created_at: str | None = None,
     source_workflow_id: str | None = None,
+    source_trigger_event: str | None = None,
+    owner_approved_fallback: bool = False,
+    owner_actor: str | None = None,
+    owner_bridge_run_id: str | None = None,
+    owner_bridge_comment_id: str | None = None,
 ) -> list[dict]:
     if not run_id:
         raise ValueError("run_id is required")
@@ -55,6 +60,22 @@ def build_events(
         "source_run_created_at": source_run_created_at,
         "source_workflow_id": str(source_workflow_id) if source_workflow_id is not None else None,
     }
+    if owner_approved_fallback:
+        if (
+            source_event != "owner_bridge_fallback"
+            or source_trigger_event != "workflow_dispatch"
+            or owner_actor != "Pershore"
+            or not str(owner_bridge_run_id or "").isdigit()
+            or not str(owner_bridge_comment_id or "").isdigit()
+        ):
+            raise ValueError("Owner-approved fallback provenance is incomplete or invalid")
+        provenance.update({
+            "source_trigger_event": source_trigger_event,
+            "owner_approved_fallback": True,
+            "owner_actor": owner_actor,
+            "owner_bridge_run_id": str(owner_bridge_run_id),
+            "owner_bridge_comment_id": str(owner_bridge_comment_id),
+        })
 
     def attach_provenance(events: list[dict]) -> list[dict]:
         for event in events:
@@ -111,10 +132,20 @@ def main() -> int:
     parser.add_argument("--source-event", required=True)
     parser.add_argument("--source-run-created-at", required=True)
     parser.add_argument("--source-workflow-id", required=True)
+    parser.add_argument("--source-trigger-event", default="")
+    parser.add_argument("--owner-approved-fallback", choices=("true", "false"), default="false")
+    parser.add_argument("--owner-actor", default="")
+    parser.add_argument("--owner-bridge-run-id", default="")
+    parser.add_argument("--owner-bridge-comment-id", default="")
     args = parser.parse_args()
     events = build_events(
         args.workflow_name, args.artifact_dir, args.run_id,
         args.source_event, args.source_run_created_at, args.source_workflow_id,
+        args.source_trigger_event or None,
+        args.owner_approved_fallback == "true",
+        args.owner_actor or None,
+        args.owner_bridge_run_id or None,
+        args.owner_bridge_comment_id or None,
     )
     args.output_dir.mkdir(parents=True, exist_ok=True)
     for index, event in enumerate(events, start=1):
