@@ -70,6 +70,7 @@ class DispatchBridgeWorkflowTests(unittest.TestCase):
             "bridgeAt - commentAt <= 10 * 60 * 1000",
             "runAt - bridgeAt <= 10 * 60 * 1000",
             "sameVilniusDay",
+            "fallback stopped to avoid a duplicate dispatch",
         ):
             with self.subTest(expected=expected):
                 self.assertIn(expected, daily_block)
