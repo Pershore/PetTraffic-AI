@@ -2,6 +2,12 @@
 
 ## Koordinatoriaus auditas – 2026-11-25 11:58 LT
 
+## 2026-11-25 17:30 LT – papildoma minimali GitHub teisė (PR #316)
+
+- PATIKRINTA kodo peržiūroje: sync-control-api kviečia github.rest.issues.getComment, todėl aiškiai reikėjo issues: read. Be jos fallback galėjo sustoti su 403.
+- ATLIKTA: PR #316 sujungtas į main commit 8d791bc3da442894a4599cf4b76e649429458d07. Pridėta tik issues: read workflow ir sync job lygiu; actions: read, contents: read ir id-token: write išsaugotos.
+- PATIKRINTA: sync workflow test #45645713338 success; site-check #45645713237 success. Worker kodo ar produkcijos konfigūracijos šis PR nekeičia, todėl papildomo Worker deploy nereikia.
+
 ## 2026-11-25 17:27 LT – PR #315 sujungimas ir Worker production diegimas
 
 - ATLIKTA: PR #315 sujungtas į main commit 9d7dd4ac8810d549e9c47bacd5e57db1c4215298; owner-only fallback provenance atskirtas nuo tikro event=schedule.
