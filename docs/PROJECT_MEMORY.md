@@ -1,14 +1,18 @@
 # Pet traffic – vienintelė kanoninė projekto atmintis
 
-## 2026-11-25 – owner-bridge AI fallback (PR #315, PARUOŠTA; produkcijoje NEPATVIRTINTA)
+## 2026-11-25 – owner-bridge AI fallback (PR #315 SUJUNGTAS; Worker production PATIKRINTA; AI vykdymas LAUKIA)
 
-- Diagnozė: GitHub Daily-suite tikras `event=schedule` gali būti pristatytas keliomis valandomis pavėluotai arba praleistas. Esamas owner-only bridge gali paleisti atsarginį `workflow_dispatch` ir sinchronizuoti snapshot'us į D1, tačiau Worker AI vartai jį atmeta.
-- PR #315 siūlo atskirą `owner_bridge_fallback` kilmę: sync-control-api tikrina tikslią `/pettraffic-run-daily-suite` komandą Issue #145, komentaro autorių `Pershore`, bridge workflow ID 418997808, jo sėkmę ir tos pačios Vilniaus dienos laiko seką. Tik po šios patikros D1 snapshot gali atverti Worker AI dienos vartus.
-- Tikra `event=schedule` kilmė išlieka atskira. Paprastas rankinis `workflow_dispatch`, push, PR ir workflow_run lieka nepriimtini. Išlieka vieno AI ciklo per dieną riba ir read-only agentų teisės.
-- PR #315: https://github.com/Pershore/PetTraffic-AI/pull/315, draft/open. CI: site-check #45644225044 success; sync workflow test #45644225055 success; Worker test + Cloudflare validation #45644225012 success; production deploy job skipped. Ankstesnis site-check #45644055910 nepraėjo vien dėl pasenusio teksto assertion; jis pataisytas, pakartotinis CI sėkmingas.
-- **NEPATVIRTINTA produkcijoje:** PR nesujungtas, Worker/D1 nekeisti, AI fallback dar neveikia live. Issue #145 paliktas open.
+- Diagnozė: GitHub Daily-suite tikras event=schedule gali vėluoti arba būti praleistas. Atsarginis workflow_dispatch dabar turi atskirą owner_bridge_fallback kilmę.
+- PR #315 sujungtas į main commit 9d7dd4ac8810d549e9c47bacd5e57db1c4215298. sync-control-api tikrina tikslią /pettraffic-run-daily-suite komandą Issue #145, komentaro autorių Pershore, bridge workflow ID 418997808, jo sėkmę ir tos pačios Vilniaus dienos laiko seką.
+- Worker AI vartai priima tik tikrą event=schedule arba patikrintą owner_bridge_fallback. Paprastas workflow_dispatch, push, PR ir workflow_run lieka nepriimtini. Išlieka vieno AI ciklo per dieną riba ir read-only agentų teisės.
+- PATIKRINTA – production deploy: GitHub Actions #45645051740 (push į main) success. Worker Node ir Python testai success; Cloudflare token / D1 / Worker prieigos patikra success; D1 migracijų taikyti nereikėjo; Worker įkeltas. Po diegimo patikrinta: Worker health ok, D1 connected, Control Core schema connected, neautentifikuotas /v1/events grąžina HTTP 401, Cron grafikai */15 * * * * ir 20 10,11 * * * patvirtinti.
+- PATIKRINTA – post-deploy: site-check #45645051219, Control Center #45645051112, work-log #45645051494, snapshot sync #45645138526 ir read-only Worker AI diagnostics #45645212462 success.
+- NEPATVIRTINTA – AI recovery: diagnostikos artefaktas #15037801731 (7 SELECT užklausos, rows_written=0) rodo 2026-11-25 agent run missing, 4 specialist reports missing, coordinator ir Control Core missing; memory stale nuo 2026-11-24 (needs_evidence). Analytics ir topic snapshot'ai tik iš seno manual workflow_dispatch #45589661930; naujas owner-bridge fallback dar nevykdytas. Šios dienos tikro event=schedule taip pat nebuvo.
+- LAUKIA: savininko komentaras /pettraffic-run-daily-suite Issue #145. Po jo tikrinti bridge → Daily-suite → D1 readback → vienintelį AI ciklą → memory readback. Issue #145 lieka open.
+- Saugumas: nekeista ARO Vet, DNS, Worker secrets, paskyrų savininkai, billing ar viešas turinys. Deploy atliktas tik po atskiro vartotojo patvirtinimo.
 
-**Atnaujinta:** 2026-11-25 (PR #315 paruoštas; produkcijoje neįdiegtas)
+**Atnaujinta:** 2026-11-25 17:27 LT
+
 **Saugykla:** https://github.com/Pershore/PetTraffic-AI  
 **Pagrindinė šaka:** `main`  
 **Tikslas:** vienas patikimas tęstinumo šaltinis ChatGPT, Codex ir būsimiems projekto agentams.

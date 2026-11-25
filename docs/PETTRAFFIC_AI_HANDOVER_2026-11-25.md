@@ -2,6 +2,16 @@
 
 ## Koordinatoriaus auditas – 2026-11-25 11:58 LT
 
+## 2026-11-25 17:27 LT – PR #315 sujungimas ir Worker production diegimas
+
+- ATLIKTA: PR #315 sujungtas į main commit 9d7dd4ac8810d549e9c47bacd5e57db1c4215298; owner-only fallback provenance atskirtas nuo tikro event=schedule.
+- PATIKRINTA – Worker production: deploy workflow #45645051740 (push) success. Worker Node/Python testai, Cloudflare prieigos patikra, Worker deploy, D1/Control Core health, unauthenticated API 401 ir abu Cron grafikai patikrinti. D1 migracijų nereikėjo.
+- PATIKRINTA – post-merge: site-check #45645051219, Control Center #45645051112, work-log #45645051494, snapshot sync #45645138526 ir read-only agent diagnostics #45645212462 success.
+- NEPATVIRTINTA – AI recovery: D1 read-only diagnostikos artefaktas #15037801731: 2026-11-25 agent run missing; 4 specialist reports missing; coordinator ir Control Core missing; memory last updated 2026-11-24 17:45:24Z, needs_evidence. Analytics/topic snapshot'ai tik iš manual run #45589661930. Naujas owner-bridge fallback dar nepaleistas; tikro šios dienos event=schedule nėra.
+- LAUKIA: savininko komentaras /pettraffic-run-daily-suite Issue #145, tada tikrinti bridge → Daily-suite → D1 readback → vienintelį AI ciklą → memory readback. Issue #145 neuždaryti.
+- Saugumas: nebuvo keista ARO Vet, DNS, Worker secrets, paskyrų savininkai, billing ar viešas turinys. Deploy atliktas tik po atskiro vartotojo patvirtinimo.
+
+
 ### Pirmiausia – sesijos tęstinumas
 - Perskaityti `AGENTS.md`, `docs/SESSION_START.md`, `docs/PROJECT_MEMORY.md`, `reports/work-log/README.md`, `automation-history/reports/history/project-state/latest.md` ir naujausias 2026-11-24 handover.
 - Main HEAD: `7d7b6fd0c4de0bc5b4e6767bcfbbc4b18579854f`. Paskutinis commit: docs-only `reports/work-log/README.md`, 2026-11-24 12:24:29Z.
