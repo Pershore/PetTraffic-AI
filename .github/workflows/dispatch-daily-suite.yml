@@ -111,13 +111,14 @@ jobs:
                   const validComment = issueNumber === 145 &&
                     String(comment.body || "").trim() === "/pettraffic-run-daily-suite" &&
                     comment.user?.login === "Pershore";
+                  const validSourceActor = ["Pershore", "github-actions[bot]"].includes(run.actor?.login);
                   const sameVilniusDay = vilniusDay(comment.created_at) ===
                     vilniusDay(bridge.created_at) && vilniusDay(bridge.created_at) === vilniusDay(run.created_at);
                   const validSequence = Number.isFinite(commentAt) && Number.isFinite(bridgeAt) &&
                     Number.isFinite(runAt) && bridgeAt >= commentAt &&
                     bridgeAt - commentAt <= 10 * 60 * 1000 && runAt >= bridgeAt &&
                     runAt - bridgeAt <= 10 * 60 * 1000;
-                  if (validBridge && validComment && sameVilniusDay && validSequence) {
+                  if (validBridge && validComment && validSourceActor && sameVilniusDay && validSequence) {
                     core.notice("Verified owner-bridge daily suite already started: #" +
                       run.run_number + " " + run.html_url);
                     return;
