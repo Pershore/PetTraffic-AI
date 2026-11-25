@@ -1417,3 +1417,14 @@ Kitas veiksmas: tikrinti kitą tikrą Daily-suite `event=schedule`; po jo laukti
 - **PR:** 8 open. #301 24 commits behind; #312 draft, mergeable=false, 1 behind; #306 draft, mergeable=false, 11 behind. Nė vienas PR nemergintas.
 - **Saugumas:** jokių Worker/D1 production, DNS, secrets, permissions, billing, ARO Vet, viešo turinio ar mokamų paslaugų pakeitimų.
 
+
+
+## 2026-11-25 – schedule vėlavimų ir SEO metaduomenų papildymas
+
+- Site-check schedule #45435762586: cron 05:37 UTC, GitHub run sukurtas/pradėtas 16:19:22Z; queue ~2 s, job 13 s. Vėlavimas įvyko iki run sukūrimo (~10 val. 42 min.), ne pačiame workflow.
+- Daily-suite schedule #45449912631: po paskutinio 11:10 UTC retry sukurtas/pradėtas 17:33:36Z; gate 4 s, analytics 30 s, live-check 19 s, topic-radar 11 s; total ~40 s. Vėlavimas iki run sukūrimo ~6 val. 23 min.; queue praktiškai 0 s. Tiksli GitHub schedulerio priežastis nepatvirtinta; cron nekeistas.
+- HTML source audit: 4 gidai turi canonical, title/description, OG/Twitter ir 2 JSON-LD. Homepage turi 1 JSON-LD, bet twitter:image skiriasi nuo og:image. About/privacy neturi OG ir JSON-LD. 404 canonical nėra tyčia. Visi 9 HTML turi viewport ir favicon link; favicon asset egzistuoja, live internal-link check PASSED.
+- `site/assets/site.js` GA4 įkelia tik po aiškaus accept; reject neįkelia GA ir pašalina GA cookies. Browser E2E neatliktas. Public-site policy testas dėl ARO Vet/affiliate success; pirmosios šalies consent-gated GA4 leidžiama Growth Strategy.
+- PR #313 merged po visų PR check'ų success; post-merge site-check #45591650776 success, Pages check current main HEAD `15f068c` success (deployment `cd30ee50-5b2b-4717-bca4-bcb884b0a3dc`). Main HEAD po auto work-log commit keitė tik work-log eilutę. Viešas SEO/content nepakeistas.
+- **Kitas:** laukti 10:10/11:10 UTC Daily-suite schedule įrodymų ir po tikro schedule patikrinti Control Center workflow_run; 13:20 LT Worker AI ciklą palikti 14:00 verifieriui.
+
