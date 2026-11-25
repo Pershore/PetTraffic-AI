@@ -1,5 +1,13 @@
 # Pet traffic – vienintelė kanoninė projekto atmintis
 
+## 2026-11-25 17:44 LT – PR #317 SUJUNGTAS; D1 readback PATIKRINTA
+
+- PR #317 merge commit: `965211559188d9431aa23a36ec4bc261c7923f5d`. CI #45647812284 success (31 agent tests, 162 total); post-merge site-check #45648122394, Control Center #45648122205, sync #45648218345 ir read-only diagnostics #45648273924 success.
+- D1 artefaktas #15038422317 (15:43:03Z, SELECT-only): 2026-11-25 agent run missing / 0 AI calls; 4 specialist reports missing; Control Core missing; memory present, updated 2026-11-24T17:45:24Z; analytics/topic snapshots tik iš manual #45589661930; rows_written=0.
+- Worker health HTTP 200; D1 ir Control Core schema connected; heartbeat 15:30Z, site 200. AI recovery NEPATVIRTINTA; paskutinis orchestration run 2026-11-24 completed, 5 calls, Control Core needs_evidence / 5 gaps.
+- Naujas owner-bridge fallback po pataisos nebuvo paleistas. Jam reikia atskiro aiškaus leidimo; prieš paleidimą dar kartą tikrinti D1 run_date. Issue #145 open; produkcinė Worker/D1, DNS, secrets, ARO Vet ir turinys nepakeisti.
+
+
 ## 2026-11-25 – owner-bridge dubliavimo filtro pataisa (PR #317 DRAFT; CI PATIKRINTA)
 
 - Diagnozė PATIKRINTA: owner bridge #45646355710 buvo sėkmingas, bet jo workflow neteisingai traktavo ankstesnį paprastą Daily-suite `workflow_dispatch` #45589661930 kaip jau pradėtą fallback. Šis manual run neatitiko AI evidence vartų, todėl negalėjo pakeisti tikro schedule ar owner-bridge.
