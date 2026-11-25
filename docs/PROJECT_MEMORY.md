@@ -1,6 +1,14 @@
 # Pet traffic – vienintelė kanoninė projekto atmintis
 
-**Atnaujinta:** 2026-11-24 12:43 LT
+## 2026-11-25 – owner-bridge AI fallback (PR #315, PARUOŠTA; produkcijoje NEPATVIRTINTA)
+
+- Diagnozė: GitHub Daily-suite tikras `event=schedule` gali būti pristatytas keliomis valandomis pavėluotai arba praleistas. Esamas owner-only bridge gali paleisti atsarginį `workflow_dispatch` ir sinchronizuoti snapshot'us į D1, tačiau Worker AI vartai jį atmeta.
+- PR #315 siūlo atskirą `owner_bridge_fallback` kilmę: sync-control-api tikrina tikslią `/pettraffic-run-daily-suite` komandą Issue #145, komentaro autorių `Pershore`, bridge workflow ID 418997808, jo sėkmę ir tos pačios Vilniaus dienos laiko seką. Tik po šios patikros D1 snapshot gali atverti Worker AI dienos vartus.
+- Tikra `event=schedule` kilmė išlieka atskira. Paprastas rankinis `workflow_dispatch`, push, PR ir workflow_run lieka nepriimtini. Išlieka vieno AI ciklo per dieną riba ir read-only agentų teisės.
+- PR #315: https://github.com/Pershore/PetTraffic-AI/pull/315, draft/open. CI: site-check #45644225044 success; sync workflow test #45644225055 success; Worker test + Cloudflare validation #45644225012 success; production deploy job skipped. Ankstesnis site-check #45644055910 nepraėjo vien dėl pasenusio teksto assertion; jis pataisytas, pakartotinis CI sėkmingas.
+- **NEPATVIRTINTA produkcijoje:** PR nesujungtas, Worker/D1 nekeisti, AI fallback dar neveikia live. Issue #145 paliktas open.
+
+**Atnaujinta:** 2026-11-25 (PR #315 paruoštas; produkcijoje neįdiegtas)
 **Saugykla:** https://github.com/Pershore/PetTraffic-AI  
 **Pagrindinė šaka:** `main`  
 **Tikslas:** vienas patikimas tęstinumo šaltinis ChatGPT, Codex ir būsimiems projekto agentams.

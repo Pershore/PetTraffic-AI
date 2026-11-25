@@ -37,6 +37,14 @@
 - Viešas turinys, SEO metaduomenys, ARO Vet, Worker/D1 production, DNS, secrets, permissions, billing ir mokamos paslaugos nepakeisti.
 - Issue #145 lieka open.
 
+## 2026-11-25 – tęstinis darbas: saugus AI atsarginio šaltinio projektas
+
+- PATIKRINTA: 100 naujausių GitHub Actions vykdymų nerodo 2026-11-25 Daily-suite `event=schedule`; paskutinis tikras schedule #45449912631 (2026-11-24 17:33:36Z). Site-check po work-log commit #45640819496 (`push`) success.
+- PATIKRINTA: Worker /health HTTP 200, D1 ir Control Core schema connected; paskutinis AI ciklas 2026-11-24 completed / 5 calls / error_code=null, Control Core needs_evidence su 5 spragomis.
+- PARUOŠTA: PR #315 siūlo atskirą, patikrintą owner-bridge fallback kelią. CI pakartotinis vykdymas sėkmingas: site-check #45644225044; sync test #45644225055; Worker test ir Cloudflare validation #45644225012. Deploy job skipped.
+- NEPATVIRTINTA: PR #315 dar draft/open, nesujungtas; Worker production nepakeistas, todėl live AI fallback neaktyvus.
+- Saugumas: nebuvo Worker/D1 deploy, D1 pakeitimų, DNS, secrets, ARO Vet, viešo turinio ar mokamų paslaugų pakeitimų. Issue #145 lieka open.
+
 ## Pirmas neužbaigtas veiksmas
 1. Stebėti Daily-suite 10:10 ir 11:10 UTC retry slotus. Tikras `event=schedule` turi viršenybę; po sėkmės patikrinti tris job'us, Control Center `workflow_run`, sync ir D1 readback. Nedubliuoti.
 2. Po 13:20 LT patikrinti vienintelį Worker AI ciklą ir tą patį memory readback; 14:00 verifier palikti post-cycle auditui.
