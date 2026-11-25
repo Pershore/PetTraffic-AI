@@ -42,3 +42,23 @@
 2. Po 13:20 LT patikrinti vienintelį Worker AI ciklą ir tą patį memory readback; 14:00 verifier palikti post-cycle auditui.
 3. Iki tol SEO pakeitimus tik siūlyti, viešai nepublikuoti. Favicon, cookie consent browser E2E ir mobilų browser E2E palikti kaip nepatvirtintas patikras.
 
+
+
+## Papildomas patikrinimas po pirminio audito
+
+### Schedule vėlavimų diagnostika
+- Site-check #45435762586 buvo `event=schedule`: cron 05:37 UTC, run sukurtas ir pradėtas 16:19:22Z; job truko 13 s. Schedulerio pristatymas vėlavo apie 10 val. 42 min.; GitHub queue delay buvo tik apie 2 s.
+- Daily-suite #45449912631 buvo `event=schedule`: po paskutinio retry slot 11:10 UTC run sukurtas ir pradėtas 17:33:36Z. Gate truko 4 s, analytics 30 s, live-check 19 s, topic-radar 11 s; workflow baigėsi 17:34:16Z. Vėlavimas iki run sukūrimo apie 6 val. 23 min.; queue praktiškai 0 s. Tikroji GitHub schedulerio priežastis lieka nepatvirtinta. Cron nekeisti spėliojant.
+
+### SEO / privatumas – source patikra
+- Keturi pagrindiniai gidai: title, description, canonical, OG/Twitter ir 2 JSON-LD blokai kiekviename.
+- Homepage: title, description, canonical, OG ir 1 JSON-LD; **Twitter image skiriasi nuo OG image** (Unsplash URL vs Pet traffic `pets-hero.svg`).
+- About ir privacy: title, description ir canonical yra; **OG ir JSON-LD nėra**. 404 canonical nėra tyčia. Visi 9 HTML turi viewport ir favicon nuorodą; `site/favicon.svg` egzistuoja, o Daily live-check patikrina vidines `href/src` nuorodas ir PASSED.
+- `site/assets/site.js`: GA4 įkeliama tik po `accepted`; `rejected` atveju GA neįkeliama ir GA cookies pašalinami. Browser E2E neatliktas. ARO Vet/affiliate public-site policy testas PASSED; consent-gated first-party GA4 leidžiama Growth Strategy.
+- Metaduomenų pataisų nepublikuoti be atskiro patvirtinimo.
+
+### Post-merge
+- PR #313 merged 2026-11-25 10:05:42Z, merge commit `831f214`; PR Cloudflare Pages + site-check success, 31 agent test + 160 bendrų testų success.
+- Main site-check #45591650776 success; automatic work-log #45591650834 success. Main HEAD dabar `15f068c` (automatinis vienos work-log eilutės commit); Cloudflare Pages check success, deployment ID `cd30ee50-5b2b-4717-bca4-bcb884b0a3dc`.
+- 10:10 ir 11:10 UTC Daily-suite retry slotai dar laukia; manual run #45589661930 nėra schedule įrodymas. Worker AI 13:20 LT ciklas dar laukia.
+
