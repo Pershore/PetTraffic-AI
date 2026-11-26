@@ -1,3 +1,11 @@
+# 2026-11-26 14:58 LT – patikslintas runner laiko baseline
+
+- **PATIKRINTA – job runtime, ne run wall time:** site-check #45806623191 job truko 14 s (run 16 s); #45823899334 job 15 s (run 19 s); #45824546399 job 14 s (run 17 s). Visos trys docs-only push patikros success; paskutinė #45824546399 patikrino 162 testus, visi OK.
+- **ATLIKTA – PR #301 baseline korekcija:** dabar **271 s / 18 docs-only push'ų** (267 s užbaigtų runner job'ų + 4 s iki atšaukimo), skaičiuojant job runtime. PR #301 open, non-draft, mergeable=true, nesujungtas. Tikėtinas 0 s po merge dar nėra išmatuotas.
+- **Main log:** runner-time baseline sakinys pataisytas commit `da3c2d872b4d1e22432d85c596a38acf8f0a54df`; šio commit follow-up site-check #45824546399 success. Main work-log įrašas išsaugojo ankstesnį 257 s/17 push'ų matavimą prieš šį paskutinį docs-only commit; galutinis PR baseline atnaujintas atskirai.
+
+---
+
 # 2026-11-26 14:53 LT – po darbo žurnalo commit patikra
 
 - **PATIKRINTA – po main darbo žurnalo commit:** commit `0abf09c39b4d9a531cb707aa1e67811ca2f6e799` pakeitė tik `reports/work-log/README.md`; dėl jo automatiškai suveikė site-check #45823899334 (`push`, success, 19 s). Tai dar vienas docs-only runner paleidimas.
