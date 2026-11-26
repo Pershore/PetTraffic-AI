@@ -1,3 +1,11 @@
+# 2026-11-26 14:53 LT – po darbo žurnalo commit patikra
+
+- **PATIKRINTA – po main darbo žurnalo commit:** commit `0abf09c39b4d9a531cb707aa1e67811ca2f6e799` pakeitė tik `reports/work-log/README.md`; dėl jo automatiškai suveikė site-check #45823899334 (`push`, success, 19 s). Tai dar vienas docs-only runner paleidimas.
+- **ATLIKTA – PR #301 baseline:** aprašymas papildytas #45823899334; dabartinis išmatuotas baseline **263 s / 17 docs-only push'ų** (259 s užbaigtuose job'uose + 4 s iki atšaukimo). 0 s po merge tebėra tikėtinas, bet nepatvirtintas rezultatas. PR open, mergeable=true, nesujungtas.
+- **Schedule:** po 12:53:56Z vis dar nėra 2026-11-26 `event=schedule`; tikras schedule gali būti pristatytas vėliau. Owner-bridge/manual paleidimų schedule įrodymu nelaikyti.
+
+---
+
 # 2026-11-26 14:43 LT – papildyta patikrinta Pet traffic būsena
 
 - **Būsena:** REIKIA DĖMESIO – tikras Daily-suite `event=schedule` šiandien iki 12:47 UTC nepastebėtas; Worker AI dienos ciklas pagal griežtus kriterijus PATIKRINTAS, tačiau Control Core/memory vis dar `needs_evidence`.
