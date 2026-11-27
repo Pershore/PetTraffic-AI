@@ -49,3 +49,15 @@ Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas
 - AI rekomendacijos yra patariamosios; modelio išvestys nesuteikia vykdymo teisių.
 
 > Tik agreguotos procesų būsenos ir rekomendacijų santrauka; be lankytojų lygmens duomenų, žalių paieškos užklausų ar paslapčių.
+
+
+## 2026-11-27 14:53 LT – post-cycle verifier
+
+- **PATIKRINTA – Worker AI:** diagnostika #45997727040 / artefaktas #15195769794. `run_date=2026-11-27`, `started_at=2026-11-27T11:20:23.466Z` (13:20:23 LT), `status=completed`, `ai_calls=5`, `error_code=null`, `report_json_status=valid_object`; 4 specialistai, degraded=0, invalid_event_payload_count=0. Memory present, atnaujinta 11:21:17.382Z, tos pačios dienos run. Worker AI ciklas atitinka PATIKRINTA kriterijus.
+- **PATIKRINTA – Worker / D1:** Control Center #45997561126 (workflow_dispatch, 25 s) nurodo Worker API ir D1 healthy, site heartbeat sėkmingą maždaug 3 min. iki report. D1 read-only diagnostika atliko 7 SELECT, visi sėkmingi, `rows_written=0`; diagnostinės lentelės pasiekiamos. Migracijos/schema versijos numeris nepateiktas.
+- **NEPATVIRTINTA – Control Core:** present, bet `status=needs_evidence`, 5 evidence gaps, 1 recommendation; memory present, bet `last_status=needs_evidence`. Analytics ir topic snapshot'ai yra iš owner-bridge fallback #45979691648; `control_center_snapshot=0`, `recommendation_snapshot=0`. `recovery_confirmed=false`; Issue #145 lieka open.
+- **NEPATVIRTINTA – schedule:** 2026-11-27 iki 12:53 UTC nėra Daily-suite, site-check ar Google API connectivity `event=schedule`. Paskutiniai tikri schedule įvyko 2026-11-26. Owner-bridge Daily-suite #45979691648 ir sync #45980279823 buvo `workflow_dispatch`, todėl cron įrodymu nelaikomi.
+- **PATIKRINTA – post-cycle report:** Issue #145 komentaras #7218086342 paleido Control Center report po 13:20 LT; ataskaita sėkminga, bet manual fallback, ne automatinis `workflow_run` po schedule. Diagnostikos komentaras #7218110236 paleido read-only D1 ataskaitą. Papildomas Control Center komentaras nekartotas, nes sėkmingas report jau yra per paskutines 60 min.
+- **PATIKRINTA – greitis:** Daily-suite fallback 38 s; analytics 28 s, live-check 19 s, topic-radar 19 s, visi duomenų job'ai lygiagretūs. Site-check #45981779314 runner job 14 s; sync #45980279823 job 10 s; Control Center 25 s; D1 diagnostics 14 s. Nėra pagrįsto greičio pagerėjimo teiginio.
+- **ATLIKTA:** PR #301 aprašymas papildytas nauju docs-only matavimu; prieš merge baseline 285 s / 19 main push'ų. PR lieka open, 53 commits behind, nejungtas. Kiti PR #312/#306 draft ir diverged.
+- **Kitas veiksmas:** laukti tikro Daily-suite `event=schedule`; po jo patvirtinti automatinį Control Center `workflow_run` ir D1 sync. Worker AI šiandien PATIKRINTA; Control Core recovery dar NEPATVIRTINTA. Issue #145 neuždaryti.
