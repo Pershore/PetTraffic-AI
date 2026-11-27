@@ -111,10 +111,10 @@ jobs:
               const bridgeCandidates = data.workflow_runs.filter(run =>
                 run.event === "workflow_dispatch" &&
                 Date.parse(run.created_at) >= dailySuiteScheduleAt.getTime() &&
-                /^Owner-approved fallback \\| bridge=(\\d+) \\| comment=(\\d+)$/.test(String(run.display_title || ""))
+                /^Owner-approved fallback \| bridge=(\d+) \| comment=(\d+)$/.test(String(run.display_title || ""))
               );
               for (const run of bridgeCandidates) {
-                const marker = /^Owner-approved fallback \\| bridge=(\\d+) \| comment=(\\d+)$/.exec(String(run.display_title || ""));
+                const marker = /^Owner-approved fallback \| bridge=(\d+) \| comment=(\d+)$/.exec(String(run.display_title || ""));
                 if (!marker) continue;
                 const bridgeId = marker[1];
                 const commentId = marker[2];
@@ -125,7 +125,7 @@ jobs:
                   ]);
                   const bridge = bridgeResponse.data;
                   const comment = commentResponse.data;
-                  const issueNumber = Number(String(comment.issue_url || "").match(/\\/issues\\/(\\d+)$/)?.[1] || 0);
+                  const issueNumber = Number(String(comment.issue_url || "").match(/\/issues\/(\d+)$/)?.[1] || 0);
                   const commentAt = Date.parse(comment.created_at || "");
                   const bridgeAt = Date.parse(bridge.created_at || "");
                   const runAt = Date.parse(run.created_at || "");
