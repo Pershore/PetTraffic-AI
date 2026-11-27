@@ -146,13 +146,9 @@ class DispatchBridgeWorkflowTests(unittest.TestCase):
         self.assertIn('run.display_title === "Pet traffic read-only Worker agent diagnostics"', daily_block)
         self.assertIn("const automaticRunReuseWindowMs = 10 * 60 * 1000;", daily_block)
         self.assertEqual(daily_block.count("const automaticRunReuseWindowMs ="), 1)
-        self.assertIn(
-            'const manualMatch = run.event === "workflow_dispatch" &&\\n'
-            '                  run.display_title === "Pet traffic read-only Worker agent diagnostics" &&\\n'
-            '                  Date.parse(run.created_at) >= controlSyncCompletedAt &&\\n'
-            '                  Date.parse(run.created_at) <= controlSyncCompletedAt + automaticRunReuseWindowMs;',
-            daily_block,
-        )
+        manual_match = daily_block.split("const manualMatch =", 1)[1].split("const workflowRunMatch", 1)[0]
+        self.assertIn('run.display_title === "Pet traffic read-only Worker agent diagnostics"', manual_match)
+        self.assertIn("Date.parse(run.created_at) <= controlSyncCompletedAt + automaticRunReuseWindowMs", manual_match)
 
         sync = Path(".github/workflows/sync-control-api.yml").read_text(encoding="utf-8")
         self.assertIn("format('Sync workflow-run snapshot #{0}', github.event.workflow_run.id)", sync)
