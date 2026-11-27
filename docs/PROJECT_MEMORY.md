@@ -1170,3 +1170,16 @@ GitHub API patvirtino, kad Daily-suite run #44119444026 buvo tikras event=schedu
 - **Savaitinė peržiūra:** paskutinė weekly growth review #45323581220 / 2026-11-24, dar per paskutines 7 dienas; naujos dubliuojančios peržiūros nekurtos.
 - **Saugumas:** nekeista vieša svetainė, Worker/D1 production, DNS, secrets, permissions, billing, ARO Vet, reklama, affiliate ar mokamos paslaugos. Issue #145 lieka open.
 - **Kitas veiksmas:** po 11:10Z patikrinti, ar 10:10 retry atnešė tikrą `event=schedule`; 11:10 UTC slotas ir jo 60 min. grace taip pat dar laukia. Jei atsiras schedule, patikrinti visus 3 job'us, Control Center `workflow_run` per 60 min., sync ir D1 readback. Po 13:20 LT patikrinti vienintelį tos dienos Worker AI ciklą, o 14:00 verifier palikti post-cycle patikrai.
+
+
+## 2026-11-27 – Owner-bridge evidence recovery PR #320
+
+- PR #320 merged: d2d448afabb7efd96dbedaa6f31d865aab932df7. Main HEAD after automatic history commits: ead5b2d14c9b0c5c9786dceb5aaa29131093ed47 (before this memory/work-log append).
+- Owner-approved fallback now has a bounded orchestration path: Daily-suite → validated D1 sync/readback → Control Center → validated Control Center D1 sync/readback → SELECT-only Worker diagnostics. It reuses a same-day verified fallback run and does not repeat the daily AI cycle. Workflow timeout 25 min; shared polling deadline 24 min.
+- PR CI: site-check #46004643555 passed 164 tests, including JavaScript syntax parsing for embedded GitHub workflow scripts; Sync API PR test #46004643625 passed; Deploy API validation/test #46004643565 passed but production deploy was skipped. No production Worker deploy, schema, DNS, secrets, permissions, billing or ARO Vet changes. Existing dispatch OIDC permission was unchanged.
+- Post-merge: site-check #46004827527 success; Control Center #46004827639 push success; snapshot sync #46004902261 workflow_run success, 2 privacy-filtered events and D1 write/readback success; SELECT-only diagnostics #46004944841 success.
+- D1 same-day snapshots: analytics=1 and topics=1 from Daily-suite #45979691648; Control Center=1 and recommendations=1 from Control Center #46004827639.
+- Live production site: homepage, four core guides, sitemap.xml and robots.txt HTTP 200; unknown URL HTTP 404. No site content changed.
+- Worker /health HTTP 200; database connected; heartbeat HTTP 200. Today's AI cycle completed with 5 calls and error_code=null, but Control Core remains needs_evidence with 5 gaps. The AI cycle ran at 11:20 UTC, before Control Center evidence was written at 13:11 UTC; diagnostics therefore still report the earlier cycle's control_center_snapshot_missing gap. Do not rerun today's AI cycle (one/day limit). Next expected cycle: 2026-11-28 13:20 Europe/Vilnius.
+- 2026-11-27 Daily-suite event=schedule was not found. Owner fallback workflow_dispatch is not schedule proof. The merged fallback orchestration code has not yet been exercised end-to-end after merge; the post-merge push → Control Center → workflow_run sync → diagnostics path was verified.
+- Issue #145 remains open. Lighthouse next weekly slot 2026-11-30. Do not manually edit automation-history latest.md/json; latest snapshot #46004827639 predates sync #46004902261 and will be refreshed by a later Control Center cycle.
