@@ -69,13 +69,14 @@ class DispatchBridgeWorkflowTests(unittest.TestCase):
             "issueNumber === 145",
             "bridgeAt - commentAt <= 10 * 60 * 1000",
             "runAt - bridgeAt <= 10 * 60 * 1000",
-            "sameVilniusDay",
-            "fallback stopped to avoid a duplicate dispatch",
+            "validSequence",
+            "recovery stopped to avoid an unsafe duplicate",
         ):
             with self.subTest(expected=expected):
                 self.assertIn(expected, daily_block)
         self.assertIn('run.event === "schedule"', daily_block)
-        self.assertIn("activeOrSuccessful(run)", daily_block)
+        self.assertIn('run.event === "workflow_dispatch"', daily_block)
+        self.assertIn('run.status !== "completed" || run.conclusion === "success"', daily_block)
 
     def test_bridge_has_deduplication_and_no_secrets_or_external_services(self):
         workflow = Path(".github/workflows/dispatch-daily-suite.yml").read_text(encoding="utf-8")
