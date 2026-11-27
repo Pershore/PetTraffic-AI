@@ -139,9 +139,13 @@ class DispatchBridgeWorkflowTests(unittest.TestCase):
         self.assertIn("eligibleControlEvents.includes(run.event)", daily_block)
         self.assertIn('run.head_branch === "main"', daily_block)
         self.assertIn('const controlSyncWorkflowRunTitle = "Sync workflow-run snapshot #" + controlRun.id;', daily_block)
-        self.assertIn('run.event === "workflow_run" && run.display_title === controlSyncWorkflowRunTitle', daily_block)
+        control_sync_match = daily_block.split("const workflowRunMatch =", 1)[1].split("const legacyWorkflowRunMatch", 1)[0]
+        self.assertIn('run.event === "workflow_run"', control_sync_match)
+        self.assertIn("run.display_title === controlSyncWorkflowRunTitle", control_sync_match)
         self.assertIn('const diagnosticsWorkflowRunTitle = "Read-only Worker diagnostics after sync #" + controlSync.id;', daily_block)
-        self.assertIn('run.event === "workflow_run" && run.display_title === diagnosticsWorkflowRunTitle', daily_block)
+        diagnostics_match = daily_block.split("const workflowRunMatch =", 2)[2].split("const legacyWorkflowRunMatch", 1)[0]
+        self.assertIn('run.event === "workflow_run"', diagnostics_match)
+        self.assertIn("run.display_title === diagnosticsWorkflowRunTitle", diagnostics_match)
         self.assertIn('run.display_title === "Sync PetTraffic snapshots to central API"', daily_block)
         self.assertIn('run.display_title === "Pet traffic read-only Worker agent diagnostics"', daily_block)
         self.assertIn("const automaticRunReuseWindowMs = 10 * 60 * 1000;", daily_block)
