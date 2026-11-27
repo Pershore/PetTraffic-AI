@@ -61,3 +61,14 @@ Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas
 - **PATIKRINTA – greitis:** Daily-suite fallback 38 s; analytics 28 s, live-check 19 s, topic-radar 19 s, visi duomenų job'ai lygiagretūs. Site-check #45981779314 runner job 14 s; sync #45980279823 job 10 s; Control Center 25 s; D1 diagnostics 14 s. Nėra pagrįsto greičio pagerėjimo teiginio.
 - **ATLIKTA:** PR #301 aprašymas papildytas nauju docs-only matavimu; prieš merge baseline 285 s / 19 main push'ų. PR lieka open, 53 commits behind, nejungtas. Kiti PR #312/#306 draft ir diverged.
 - **Kitas veiksmas:** laukti tikro Daily-suite `event=schedule`; po jo patvirtinti automatinį Control Center `workflow_run` ir D1 sync. Worker AI šiandien PATIKRINTA; Control Core recovery dar NEPATVIRTINTA. Issue #145 neuždaryti.
+
+
+## 2026-11-27 15:07 LT – PR #320 CI ir saugumo peržiūra
+
+- **PATIKRINTA:** naujas draft PR #320 siūlo užbaigti owner-bridge grandinę: Daily-suite → D1 sync → Control Center → Control Center D1 sync → read-only diagnostics, kad būtų įrašyti trūkstami control-center/recommendation snapshot'ai.
+- **NEVEIKIA:** PR site-check #46004053655 – 6 testų assertion failures `tests/test_dispatch_bridge_workflow.py`, 163 testai per 6.080 s; testai tikisi senų bridge kodo tekstinių žymeklių. PR #320 lieka draft.
+- **SAUGUMAS:** PR dispatch job prideda `id-token: write`, nors aprašyme teigiama, kad permissions nekeičiamos; ši teisė dispatch job nereikalinga. `timeout-minutes: 45` ir iki 18 min. polling limitai taip pat per platūs. Main nepakeistas.
+- **PATIKRINTA:** PR Deploy API patikros sėkmingos, tikras deploy job skipped; Sync API PR test sėkmingas, sync job skipped. Produkcija nekeista.
+- **ATLIKTA:** PR #320 komentare #7219075459 pateiktos CI, least-privilege ir timeout pastabos. PR paliktas draft, merge neatliktas.
+- **PATIKRINTA:** po ankstesnio darbo žurnalo įrašo site-check #46004125231 (push iš `b27efa81`) success, 18 s wall / 14 s runner job.
+- **Kitas veiksmas:** laukti pataisyto PR #320 CI, pašalintos nereikalingos OIDC teisės ir trumpesnio laiko biudžeto; tik po to vertinti owner-bridge D1 snapshot recovery. Issue #145 lieka open.
