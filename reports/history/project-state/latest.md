@@ -1,9 +1,9 @@
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
-- Atnaujinta: 2026-11-26T16:46:54.159862+00:00
+- Atnaujinta: 2026-11-27T12:18:47.545738+00:00
 - Būsena: **REIKIA DĖMESIO**
-- GitHub run: 45861883263
-- Šaltinio commit: da3c2d872b4d1e22432d85c596a38acf8f0a54df
+- GitHub run: 45997561126
+- Šaltinio commit: 2fe9a6e27a28a621fa52ff9c67eff7ae2963c92e
 
 ## Paskutinis patikrintas etapas
 
@@ -11,22 +11,22 @@ Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataska
 
 ## Kitas veiksmas
 
-Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (warning). AI agentų ciklas ir atminties įrašymas baigti; rekomendacijų: 1; trūksta įrodymų: 5.
+Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas (warning). Suplanuotas ciklas nuo 2026-11-27 06:10 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-26T16:46:08Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.
 
 ## Patvirtinti procesai
 
-- GA4, temų radaras ir svetainės stebėjimas: Paskutinis paleidimas sėkmingas.
+- Centrinės API sinchronizavimas: Paskutinis paleidimas sėkmingas.
 - Centrinis valdymo centras: Paskutinis paleidimas sėkmingas.
 - Debesijos read-only užduočių vykdytojas: Paskutinis debesijos užduoties vykdymas sėkmingas.
-- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 1 min.
+- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 3 min.
 
 ## Problemos
 
+- **GA4, temų radaras ir svetainės stebėjimas** (warning): Suplanuotas ciklas nuo 2026-11-27 06:10 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-26T16:46:08Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia. – https://github.com/Pershore/PetTraffic-AI/actions/runs/45979691648
 - **AI agentai + control-core atmintis** (warning): AI agentų ciklas ir atminties įrašymas baigti; rekomendacijų: 1; trūksta įrodymų: 5. – https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health
 
 ## Laukiančios patikros
 
-- Centrinės API sinchronizavimas: Vyksta (in_progress).
 - Lighthouse auditas: Workflow atnaujintas 2026-11-23 14:10 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.
 
 ## AI agentų ir atminties patikra
