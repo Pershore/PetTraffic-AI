@@ -103,5 +103,31 @@ class DispatchBridgeWorkflowTests(unittest.TestCase):
         self.assertIn('"Deploy PetTraffic control API"', workflow_run_triggers)
         self.assertIn("workflow_dispatch:", control_center)
 
+    def test_owner_bridge_fallback_runs_complete_evidence_recovery_chain(self):
+        bridge = Path(".github/workflows/dispatch-daily-suite.yml").read_text(encoding="utf-8")
+        daily_block = bridge.split('if (action === "daily-suite") {', 1)[1].split('if (action === "sync-latest") {', 1)[0]
+        self.assertIn("timeout-minutes: 45", bridge)
+        for expected in (
+            "waitForCompletion",
+            'source_kind: "daily_suite"',
+            'workflow_id: "control-center.yml"',
+            'source_kind: "control_center"',
+            'workflow_id: "worker-agent-diagnostics.yml"',
+            "Control Center D1 snapshot sync",
+            "read-only Worker agent diagnostics",
+        ):
+            with self.subTest(expected=expected):
+                self.assertIn(expected, daily_block)
+        self.assertIn("lacks a successful " + "live-check", daily_block)
+        self.assertIn("Every stage completed successfully", daily_block)
+
+        sync = Path(".github/workflows/sync-control-api.yml").read_text(encoding="utf-8")
+        self.assertIn("- control_center", sync)
+        self.assertIn('sourceKind === "control_center"', sync)
+        self.assertIn("daily_suite_sync_run_id", sync)
+        self.assertIn("validDailySync", sync)
+        self.assertIn("Download manually dispatched Control Center artifact", sync)
+        self.assertIn("Pet traffic central control center", sync)
+
 if __name__ == "__main__":
     unittest.main()
