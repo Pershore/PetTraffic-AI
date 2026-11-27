@@ -107,7 +107,9 @@ class DispatchBridgeWorkflowTests(unittest.TestCase):
     def test_owner_bridge_fallback_runs_complete_evidence_recovery_chain(self):
         bridge = Path(".github/workflows/dispatch-daily-suite.yml").read_text(encoding="utf-8")
         daily_block = bridge.split('if (action === "daily-suite") {', 1)[1].split('if (action === "sync-latest") {', 1)[0]
-        self.assertIn("timeout-minutes: 45", bridge)
+        self.assertIn("timeout-minutes: 25", bridge)
+        self.assertIn("recoveryDeadline = Date.now() + 24 * 60 * 1000", daily_block)
+        self.assertIn("allowedWait = Math.min(timeoutMs", daily_block)
         for expected in (
             "waitForCompletion",
             'source_kind: "daily_suite"',
