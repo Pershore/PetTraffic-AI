@@ -11,7 +11,7 @@ jobs:
   dispatch:
     if: github.event.issue.number == 145 && github.event.issue.pull_request == null
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 25
     permissions:
       actions: write
       contents: read
@@ -74,13 +74,15 @@ jobs:
                 return;
               }
 
+              const recoveryDeadline = Date.now() + 24 * 60 * 1000;
               const sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
               const getRuns = async id => (await github.rest.actions.listWorkflowRuns({
                 owner, repo, workflow_id: id, branch: "main", per_page: 100
               })).data.workflow_runs;
-              const waitForCompletion = async (runId, label, timeoutMs = 18 * 60 * 1000) => {
+              const waitForCompletion = async (runId, label, timeoutMs = 16 * 60 * 1000) => {
                 const started = Date.now();
-                while (Date.now() - started < timeoutMs) {
+                const allowedWait = Math.min(timeoutMs, Math.max(0, recoveryDeadline - Date.now()));
+                while (Date.now() - started < allowedWait) {
                   const { data: run } = await github.rest.actions.getWorkflowRun({
                     owner, repo, run_id: runId
                   });
@@ -94,9 +96,10 @@ jobs:
                 }
                 throw new Error(label + " did not complete before the bounded wait expired.");
               };
-              const findOrWaitForRun = async (workflowId, predicate, label, timeoutMs = 3 * 60 * 1000) => {
+              const findOrWaitForRun = async (workflowId, predicate, label, timeoutMs = 2 * 60 * 1000) => {
                 const started = Date.now();
-                while (Date.now() - started < timeoutMs) {
+                const allowedWait = Math.min(timeoutMs, Math.max(0, recoveryDeadline - Date.now()));
+                while (Date.now() - started < allowedWait) {
                   const candidate = (await getRuns(workflowId)).find(predicate);
                   if (candidate) return await waitForCompletion(candidate.id, label);
                   await sleep(5000);
