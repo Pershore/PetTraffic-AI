@@ -132,7 +132,7 @@ jobs:
               ownerBridgeCommentId = String(process.env.OWNER_BRIDGE_COMMENT_ID || "");
               const dailyRunId = Number(process.env.DAILY_SUITE_RUN_ID);
               const dailySyncRunId = Number(process.env.DAILY_SUITE_SYNC_RUN_ID);
-              if (![ownerBridgeRunId, ownerBridgeCommentId].every(value => /^\\d+$/.test(value)) ||
+              if (![ownerBridgeRunId, ownerBridgeCommentId].every(value => /^\d+$/.test(value)) ||
                   !Number.isSafeInteger(dailyRunId) || dailyRunId <= 0 ||
                   !Number.isSafeInteger(dailySyncRunId) || dailySyncRunId <= 0) {
                 core.setFailed("Control Center fallback provenance identifiers are incomplete.");
@@ -148,7 +148,7 @@ jobs:
               const comment = commentResponse.data;
               const daily = dailyResponse.data;
               const dailySync = dailySyncResponse.data;
-              const issueNumber = Number(String(comment.issue_url || "").match(/\\/issues\\/(\\d+)$/)?.[1] || 0);
+              const issueNumber = Number(String(comment.issue_url || "").match(/\/issues\/(\d+)$/)?.[1] || 0);
               const marker = "Owner-approved fallback | bridge=" + ownerBridgeRunId + " | comment=" + ownerBridgeCommentId;
               const validBridge = bridge.workflow_id === 418997808 && bridge.event === "issue_comment" &&
                 bridge.head_branch === "main" && bridge.status === "completed" &&
@@ -184,7 +184,7 @@ jobs:
                 return;
               }
               if (run.event === "workflow_dispatch") {
-                const marker = /^Owner-approved fallback \\| bridge=(\\d+) \\| comment=(\\d+)$/.exec(String(run.display_title || ""));
+                const marker = /^Owner-approved fallback \| bridge=(\d+) \| comment=(\d+)$/.exec(String(run.display_title || ""));
                 if (!marker || !["Pershore", "github-actions[bot]"].includes(run.actor?.login)) {
                   core.setFailed("Manual daily-suite run has no owner-bridge authorization marker.");
                   return;
@@ -197,7 +197,7 @@ jobs:
                 ]);
                 const bridge = bridgeResponse.data;
                 const comment = commentResponse.data;
-                const issueNumber = Number(String(comment.issue_url || "").match(/\\/issues\\/(\\d+)$/)?.[1] || 0);
+                const issueNumber = Number(String(comment.issue_url || "").match(/\/issues\/(\d+)$/)?.[1] || 0);
                 const commentAt = timestamp(comment.created_at), bridgeAt = timestamp(bridge.created_at), sourceAt = timestamp(run.created_at);
                 const validBridge = bridge.workflow_id === 418997808 && bridge.event === "issue_comment" &&
                   bridge.head_branch === "main" && bridge.status === "completed" && bridge.conclusion === "success" &&
