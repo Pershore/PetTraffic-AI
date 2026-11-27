@@ -118,7 +118,7 @@ class DispatchBridgeWorkflowTests(unittest.TestCase):
         ):
             with self.subTest(expected=expected):
                 self.assertIn(expected, daily_block)
-        self.assertIn("lacks a successful " + "live-check", daily_block)
+        self.assertIn('["analytics", "topic-radar", "live-check"]', daily_block)
         self.assertIn("Every stage completed successfully", daily_block)
 
         sync = Path(".github/workflows/sync-control-api.yml").read_text(encoding="utf-8")
