@@ -60,3 +60,11 @@ Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas
 - **ATLIKTA:** PR #321 atskiroje šakoje pašalintas dubliuotas JS const, apribotas manual diagnostics reuse iki tikslaus title/10 min. lango, atnaujinti regression testai. Naujausias CI: site-check #46008334749 success, 165 testai, 21 s; sync-control-api PR #46008334700 test success. PR #321 draft, 12 ahead/0 behind, nesujungtas.
 - **PARUOŠTA:** PR #321 baseline 53 s wall / 42 s runner per tris etapus; po pakeitimo sutaupymas dar neišmatuotas. PR aprašyme nurodytos rizikos ir bounded legacy compatibility.
 - **LAUKIA:** kito tikro Daily-suite schedule, Control Center po schedule, kito Worker AI ciklo 2026-11-28 13:20 LT ir `recovery_confirmed=true`. D1 schema versija report'e neatskleista; jokie production, Worker/D1, DNS, secrets, permissions, ARO Vet ar viešo turinio pakeitimai neatlikti. Aktyvus darbo laikas NEMATUOTAS.
+
+
+## Galutinė patikra po istorijos įrašo (2026-11-27)
+
+- **PATIKRINTA:** main darbo žurnalo commit #58fb7e8 įrašas pakartotinai perskaitytas; naujos sesijos žymeklis išliko.
+- **PATIKRINTA:** šio žurnalo įrašo sukeltas main site-check #46009125481 baigtas success, runner job 17 s.
+- **PATIKRINTA:** PR #321 tebėra draft ir nesujungtas; lyginant su dabartiniu main yra 12 commitų ahead / 1 behind (vienintelis atsilikimas – šios sesijos work-log commit), GitHub nurodo `mergeable=true`.
+- **LAUKIA:** 2026-11-27 tikro Daily-suite `event=schedule` vis dar nėra; PR automatiškai nejungtas.
