@@ -130,5 +130,40 @@ class DispatchBridgeWorkflowTests(unittest.TestCase):
         self.assertIn("Download manually dispatched Control Center artifact", sync)
         self.assertIn("Pet traffic central control center", sync)
 
+    def test_owner_bridge_github_script_blocks_parse_as_javascript(self):
+        import shutil
+        import subprocess
+        import textwrap
+
+        node = shutil.which("node")
+        if not node:
+            self.skipTest("Node.js is not installed in this test environment.")
+
+        for relative in (
+            ".github/workflows/dispatch-daily-suite.yml",
+            ".github/workflows/sync-control-api.yml",
+        ):
+            workflow = Path(relative).read_text(encoding="utf-8")
+            lines = workflow.splitlines()
+            for index, line in enumerate(lines):
+                if line.strip() != "script: |":
+                    continue
+                script_lines = []
+                for candidate in lines[index + 1:]:
+                    if candidate.strip() and len(candidate) - len(candidate.lstrip()) < 12:
+                        break
+                    script_lines.append(candidate[12:] if candidate.startswith("            ") else "")
+                script = textwrap.dedent("\\n".join(script_lines))
+                wrapped = "async function __workflow_script_check__() {\\n" + script + "\\n}\\n"
+                result = subprocess.run(
+                    [node, "--check"],
+                    input=wrapped,
+                    text=True,
+                    capture_output=True,
+                    check=False,
+                )
+                with self.subTest(workflow=relative, script_line=index + 1):
+                    self.assertEqual(result.returncode, 0, result.stderr or result.stdout)
+
 if __name__ == "__main__":
     unittest.main()
