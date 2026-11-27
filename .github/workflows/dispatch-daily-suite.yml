@@ -11,7 +11,7 @@ jobs:
   dispatch:
     if: github.event.issue.number == 145 && github.event.issue.pull_request == null
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 45
     permissions:
       actions: write
       contents: read
@@ -44,8 +44,6 @@ jobs:
                 owner, repo, workflow_id, branch: "main", per_page: 100
               });
 
-              // Match the current UTC day's 06:10 schedule, not yesterday's
-              // delayed schedule run. Keep this UTC time aligned with daily-suite.yml.
               const utcDayStart = new Date();
               utcDayStart.setUTCHours(0, 0, 0, 0);
               const dailySuiteScheduleAt = new Date(utcDayStart);
@@ -55,8 +53,6 @@ jobs:
                 core.notice("Daily-suite fallback is not eligible until the 60-minute schedule grace has passed.");
                 return;
               }
-              const activeOrSuccessful = run =>
-                run.status !== "completed" || run.conclusion === "success";
               const vilniusDay = value => {
                 const parts = new Intl.DateTimeFormat("en-GB", {
                   timeZone: "Europe/Vilnius",
@@ -70,7 +66,7 @@ jobs:
               const currentDaySchedule = data.workflow_runs.find(run =>
                 run.event === "schedule" &&
                 Date.parse(run.created_at) >= dailySuiteScheduleAt.getTime() &&
-                activeOrSuccessful(run)
+                (run.status !== "completed" || run.conclusion === "success")
               );
               if (currentDaySchedule) {
                 core.notice("Daily suite already started from today's schedule: #" +
@@ -78,29 +74,58 @@ jobs:
                 return;
               }
 
-              // A plain workflow_dispatch is not valid AI evidence and must not
-              // suppress the separately authorized owner-bridge fallback.
-              // Only an active/successful dispatch with a complete, independently
-              // verified owner-bridge marker counts as a duplicate.
+              const sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
+              const getRuns = async id => (await github.rest.actions.listWorkflowRuns({
+                owner, repo, workflow_id: id, branch: "main", per_page: 100
+              })).data.workflow_runs;
+              const waitForCompletion = async (runId, label, timeoutMs = 18 * 60 * 1000) => {
+                const started = Date.now();
+                while (Date.now() - started < timeoutMs) {
+                  const { data: run } = await github.rest.actions.getWorkflowRun({
+                    owner, repo, run_id: runId
+                  });
+                  if (run.status === "completed") {
+                    if (run.conclusion !== "success") {
+                      throw new Error(label + " failed: " + run.conclusion + " " + run.html_url);
+                    }
+                    return run;
+                  }
+                  await sleep(10000);
+                }
+                throw new Error(label + " did not complete before the bounded wait expired.");
+              };
+              const findOrWaitForRun = async (workflowId, predicate, label, timeoutMs = 3 * 60 * 1000) => {
+                const started = Date.now();
+                while (Date.now() - started < timeoutMs) {
+                  const candidate = (await getRuns(workflowId)).find(predicate);
+                  if (candidate) return await waitForCompletion(candidate.id, label);
+                  await sleep(5000);
+                }
+                throw new Error("Could not locate " + label + " within the bounded wait.");
+              };
+              const bridgeCommentIdNow = String(context.payload.comment.id);
+              let ownerBridgeRunId = String(context.runId);
+              let ownerBridgeCommentId = bridgeCommentIdNow;
+              let dailySuiteRun = null;
+
               const bridgeCandidates = data.workflow_runs.filter(run =>
                 run.event === "workflow_dispatch" &&
                 Date.parse(run.created_at) >= dailySuiteScheduleAt.getTime() &&
-                activeOrSuccessful(run) &&
-                /^Owner-approved fallback \| bridge=(\d+) \| comment=(\d+)$/.test(String(run.display_title || ""))
+                /^Owner-approved fallback \\| bridge=(\\d+) \\| comment=(\\d+)$/.test(String(run.display_title || ""))
               );
               for (const run of bridgeCandidates) {
-                const marker = /^Owner-approved fallback \| bridge=(\d+) \| comment=(\d+)$/.exec(String(run.display_title || ""));
-                const bridgeRunId = Number(marker[1]);
-                const commentId = Number(marker[2]);
-                if (!Number.isSafeInteger(bridgeRunId) || !Number.isSafeInteger(commentId)) continue;
+                const marker = /^Owner-approved fallback \\| bridge=(\\d+) \| comment=(\\d+)$/.exec(String(run.display_title || ""));
+                if (!marker) continue;
+                const bridgeId = marker[1];
+                const commentId = marker[2];
                 try {
                   const [bridgeResponse, commentResponse] = await Promise.all([
-                    github.rest.actions.getWorkflowRun({ owner, repo, run_id: bridgeRunId }),
-                    github.rest.issues.getComment({ owner, repo, comment_id: commentId })
+                    github.rest.actions.getWorkflowRun({ owner, repo, run_id: Number(bridgeId) }),
+                    github.rest.issues.getComment({ owner, repo, comment_id: Number(commentId) })
                   ]);
                   const bridge = bridgeResponse.data;
                   const comment = commentResponse.data;
-                  const issueNumber = Number(String(comment.issue_url || "").match(/\/issues\/(\d+)$/)?.[1] || 0);
+                  const issueNumber = Number(String(comment.issue_url || "").match(/\\/issues\\/(\\d+)$/)?.[1] || 0);
                   const commentAt = Date.parse(comment.created_at || "");
                   const bridgeAt = Date.parse(bridge.created_at || "");
                   const runAt = Date.parse(run.created_at || "");
@@ -111,34 +136,163 @@ jobs:
                   const validComment = issueNumber === 145 &&
                     String(comment.body || "").trim() === "/pettraffic-run-daily-suite" &&
                     comment.user?.login === "Pershore";
-                  const validSourceActor = ["Pershore", "github-actions[bot]"].includes(run.actor?.login);
-                  const sameVilniusDay = vilniusDay(comment.created_at) ===
-                    vilniusDay(bridge.created_at) && vilniusDay(bridge.created_at) === vilniusDay(run.created_at);
                   const validSequence = Number.isFinite(commentAt) && Number.isFinite(bridgeAt) &&
                     Number.isFinite(runAt) && bridgeAt >= commentAt &&
                     bridgeAt - commentAt <= 10 * 60 * 1000 && runAt >= bridgeAt &&
-                    runAt - bridgeAt <= 10 * 60 * 1000;
-                  if (validBridge && validComment && validSourceActor && sameVilniusDay && validSequence) {
-                    core.notice("Verified owner-bridge daily suite already started: #" +
-                      run.run_number + " " + run.html_url);
-                    return;
+                    runAt - bridgeAt <= 10 * 60 * 1000 &&
+                    vilniusDay(comment.created_at) === vilniusDay(bridge.created_at) &&
+                    vilniusDay(bridge.created_at) === vilniusDay(run.created_at);
+                  if (validBridge && validComment && validSequence) {
+                    dailySuiteRun = run;
+                    ownerBridgeRunId = bridgeId;
+                    ownerBridgeCommentId = commentId;
+                    break;
                   }
                 } catch (error) {
                   core.setFailed("Could not verify prior owner-bridge candidate #" +
-                    run.run_number + "; fallback stopped to avoid a duplicate dispatch. " + error.message);
+                    run.run_number + "; recovery stopped to avoid an unsafe duplicate. " + error.message);
                   return;
                 }
               }
-              await github.rest.actions.createWorkflowDispatch({
-                owner, repo, workflow_id, ref: "main",
-                inputs: {
-                  fallback_mode: "owner_bridge",
-                  bridge_run_id: String(context.runId),
-                  bridge_comment_id: String(context.payload.comment.id)
+
+              if (!dailySuiteRun) {
+                const dispatchAt = Date.now();
+                await github.rest.actions.createWorkflowDispatch({
+                  owner, repo, workflow_id, ref: "main",
+                  inputs: {
+                    fallback_mode: "owner_bridge",
+                    bridge_run_id: ownerBridgeRunId,
+                    bridge_comment_id: ownerBridgeCommentId
+                  }
+                });
+                dailySuiteRun = await findOrWaitForRun(
+                  workflow_id,
+                  run => run.event === "workflow_dispatch" &&
+                    run.display_title === "Owner-approved fallback | bridge=" + ownerBridgeRunId +
+                      " | comment=" + ownerBridgeCommentId &&
+                    Date.parse(run.created_at) >= dispatchAt - 30000,
+                  "owner-bridge daily-suite run"
+                );
+              } else {
+                dailySuiteRun = await waitForCompletion(dailySuiteRun.id, "existing owner-bridge daily-suite run");
+              }
+
+              const suiteJobs = (await github.rest.actions.listJobsForWorkflowRun({
+                owner, repo, run_id: dailySuiteRun.id, per_page: 100
+              })).data.jobs;
+              for (const requiredJob of ["analytics", "topic-radar", "live-check"]) {
+                const job = suiteJobs.find(item => item.name === requiredJob);
+                if (!job || job.conclusion !== "success") {
+                  throw new Error("Daily-suite run #" + dailySuiteRun.id +
+                    " lacks a successful " + requiredJob + " job; no downstream sync was started.");
                 }
-              });
-              core.notice("This manual fallback is not schedule provenance. It is an owner-bridge fallback; " +
-                "the Worker accepts it only after sync-control-api independently verifies this exact owner comment and bridge run.");
+              }
+
+              const dailySyncTitle = "Sync daily-suite snapshot #" + dailySuiteRun.id;
+              let dailySync = (await getRuns("sync-control-api.yml")).find(run =>
+                run.event === "workflow_dispatch" && run.display_title === dailySyncTitle &&
+                (run.status !== "completed" || run.conclusion === "success")
+              );
+              if (!dailySync) {
+                const dispatchAt = Date.now();
+                await github.rest.actions.createWorkflowDispatch({
+                  owner, repo, workflow_id: "sync-control-api.yml", ref: "main",
+                  inputs: { source_run_id: String(dailySuiteRun.id), source_kind: "daily_suite" }
+                });
+                dailySync = await findOrWaitForRun(
+                  "sync-control-api.yml",
+                  run => run.event === "workflow_dispatch" && run.display_title === dailySyncTitle &&
+                    Date.parse(run.created_at) >= dispatchAt - 30000,
+                  "daily-suite D1 snapshot sync"
+                );
+              } else {
+                dailySync = await waitForCompletion(dailySync.id, "existing daily-suite D1 snapshot sync");
+              }
+
+              const ccRuns = await getRuns("control-center.yml");
+              let controlRun = ccRuns.find(run =>
+                run.event === "workflow_dispatch" &&
+                Date.parse(run.created_at) >= Date.parse(dailySync.created_at) &&
+                vilniusDay(run.created_at) === vilniusDay(dailySuiteRun.created_at) &&
+                (run.status !== "completed" || run.conclusion === "success")
+              );
+              if (!controlRun) {
+                const dispatchAt = Date.now();
+                await github.rest.actions.createWorkflowDispatch({
+                  owner, repo, workflow_id: "control-center.yml", ref: "main"
+                });
+                controlRun = await findOrWaitForRun(
+                  "control-center.yml",
+                  run => run.event === "workflow_dispatch" &&
+                    Date.parse(run.created_at) >= dispatchAt - 30000,
+                  "Control Center report"
+                );
+              } else {
+                controlRun = await waitForCompletion(controlRun.id, "existing Control Center report");
+              }
+              const controlJobs = (await github.rest.actions.listJobsForWorkflowRun({
+                owner, repo, run_id: controlRun.id, per_page: 100
+              })).data.jobs;
+              if (!controlJobs.some(job =>
+                job.name === "Read-only automation health and priorities" && job.conclusion === "success"
+              )) {
+                throw new Error("Control Center run #" + controlRun.id +
+                  " has no successful report-generation job.");
+              }
+
+              const controlSyncTitle = "Sync control-center snapshot #" + controlRun.id;
+              let controlSync = (await getRuns("sync-control-api.yml")).find(run =>
+                run.event === "workflow_dispatch" && run.display_title === controlSyncTitle &&
+                (run.status !== "completed" || run.conclusion === "success")
+              );
+              if (!controlSync) {
+                const dispatchAt = Date.now();
+                await github.rest.actions.createWorkflowDispatch({
+                  owner, repo, workflow_id: "sync-control-api.yml", ref: "main",
+                  inputs: {
+                    source_run_id: String(controlRun.id),
+                    source_kind: "control_center",
+                    owner_bridge_run_id: ownerBridgeRunId,
+                    owner_bridge_comment_id: ownerBridgeCommentId,
+                    daily_suite_run_id: String(dailySuiteRun.id),
+                    daily_suite_sync_run_id: String(dailySync.id)
+                  }
+                });
+                controlSync = await findOrWaitForRun(
+                  "sync-control-api.yml",
+                  run => run.event === "workflow_dispatch" && run.display_title === controlSyncTitle &&
+                    Date.parse(run.created_at) >= dispatchAt - 30000,
+                  "Control Center D1 snapshot sync"
+                );
+              } else {
+                controlSync = await waitForCompletion(controlSync.id, "existing Control Center D1 snapshot sync");
+              }
+
+              const diagnosticsRuns = await getRuns("worker-agent-diagnostics.yml");
+              let diagnostics = diagnosticsRuns.find(run =>
+                run.event === "workflow_dispatch" &&
+                Date.parse(run.created_at) >= Date.parse(controlSync.created_at) &&
+                (run.status !== "completed" || run.conclusion === "success")
+              );
+              if (!diagnostics) {
+                const dispatchAt = Date.now();
+                await github.rest.actions.createWorkflowDispatch({
+                  owner, repo, workflow_id: "worker-agent-diagnostics.yml", ref: "main"
+                });
+                diagnostics = await findOrWaitForRun(
+                  "worker-agent-diagnostics.yml",
+                  run => run.event === "workflow_dispatch" &&
+                    Date.parse(run.created_at) >= dispatchAt - 30000,
+                  "read-only Worker agent diagnostics"
+                );
+              } else {
+                diagnostics = await waitForCompletion(diagnostics.id, "existing Worker agent diagnostics");
+              }
+
+              core.notice("Owner-bridge recovery chain completed: daily-suite #" + dailySuiteRun.id +
+                " → D1 sync #" + dailySync.id + " → Control Center #" + controlRun.id +
+                " → Control Center D1 sync #" + controlSync.id + " → read-only diagnostics #" +
+                diagnostics.id + ". Every stage completed successfully.");
               return;
             }
 
