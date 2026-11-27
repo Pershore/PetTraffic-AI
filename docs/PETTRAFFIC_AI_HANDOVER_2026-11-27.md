@@ -42,3 +42,17 @@
 ## Saugumo ribos
 
 Jokio viešo turinio, SEO metaduomenų, Worker/D1 production, DNS, secrets, permissions, billing ar ARO Vet pakeitimo. Jokių mokamų paslaugų. Issue #145 paliktas open. `automation-history/reports/history/project-state/latest.md/json` automatiniai snapshot'ai rankiniu būdu nekeičiami.
+
+
+## 2026-11-27 15:11 LT – naujausia sesijos būsena po PR #320
+
+- PR #320 sujungtas į main: merge commit d2d448afabb7efd96dbedaa6f31d865aab932df7.
+- Pataisa įdiegia owner-approved fallback grandinę: Daily-suite → D1 sync/readback → Control Center → Control Center D1 sync/readback → SELECT-only diagnostics. Maksimali trukmė 25 min.; bendras polling deadline 24 min.
+- CI: site-check #46004643555 success (164 testai); Sync API PR test success; Deploy API validate/test success, production deploy skipped.
+- Po merge: site-check #46004827527 success; Control Center #46004827639 success; D1 sync #46004902261 success (2 event'ai, write/readback); diagnostics #46004944841 success.
+- D1 2026-11-27 snapshot'ai: analytics=1, topics=1, control_center=1, recommendations=1. Kontrolės centro ir rekomendacijų įrodymai jau D1 ir perskaityti atgal.
+- Live site: homepage, keturi pagrindiniai gidai, sitemap.xml, robots.txt – 200; neegzistuojantis URL – 404.
+- Worker /health=200, D1 connected, heartbeat=200. 2026-11-27 AI run completed, 5 calls, error_code=null, memory updated. Control Core vis dar needs_evidence (5 gap'ai), nes AI ciklas vyko 11:20 UTC, o Control Center snapshot D1 įrašytas 13:11 UTC. Šiandien AI ciklo nekartoti; kitas ciklas 2026-11-28 13:20 Europe/Vilnius.
+- 2026-11-27 Daily-suite event=schedule nerastas; owner fallback workflow_dispatch nėra schedule įrodymas. Naujas orchestratorius po merge dar neišbandytas per owner-fallback kelią; atskira post-merge push → Control Center → sync → diagnostics grandinė PATIKRINTA.
+- automation-history latest.md/json snapshot #46004827639 sukurtas prieš D1 sync #46004902261; automatinio failo rankiniu būdu neperrašyti. Issue #145 lieka open.
+- Kitas žingsnis: rytoj tikrinti tikrą schedule event ir po 13:20 LT vienintelio AI ciklo specialistų įrodymus bei D1 memory readback. Lighthouse weekly slotas 2026-11-30.
