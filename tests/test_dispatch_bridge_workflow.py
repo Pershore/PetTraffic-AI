@@ -132,6 +132,22 @@ class DispatchBridgeWorkflowTests(unittest.TestCase):
         self.assertIn("Download manually dispatched Control Center artifact", sync)
         self.assertIn("Pet traffic central control center", sync)
 
+    def test_owner_bridge_reuses_existing_control_center_sync_and_diagnostics_runs(self):
+        bridge = Path(".github/workflows/dispatch-daily-suite.yml").read_text(encoding="utf-8")
+        daily_block = bridge.split('if (action === "daily-suite") {', 1)[1].split('if (action === "sync-latest") {', 1)[0]
+        self.assertIn('["workflow_dispatch", "workflow_run", "push", "schedule"].includes(run.event)', daily_block)
+        self.assertIn('const controlSyncWorkflowRunTitle = "Sync workflow-run snapshot #" + controlRun.id;', daily_block)
+        self.assertIn('run.event === "workflow_run" && run.display_title === controlSyncWorkflowRunTitle', daily_block)
+        self.assertIn('const diagnosticsWorkflowRunTitle = "Read-only Worker diagnostics after sync #" + controlSync.id;', daily_block)
+        self.assertIn('run.event === "workflow_run" && run.display_title === diagnosticsWorkflowRunTitle', daily_block)
+
+        sync = Path(".github/workflows/sync-control-api.yml").read_text(encoding="utf-8")
+        self.assertIn("format('Sync workflow-run snapshot #{0}', github.event.workflow_run.id)", sync)
+
+        diagnostics = Path(".github/workflows/worker-agent-diagnostics.yml").read_text(encoding="utf-8")
+        self.assertIn("format('Read-only Worker diagnostics after sync #{0}', github.event.workflow_run.id)", diagnostics)
+
+
     def test_owner_bridge_github_script_blocks_parse_as_javascript(self):
         import shutil
         import subprocess
