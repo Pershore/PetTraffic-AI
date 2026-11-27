@@ -1529,3 +1529,13 @@ Kitas veiksmas: tikrinti kitą tikrą Daily-suite `event=schedule`; po jo laukti
 - **ATLIKTA – PR komentaras:** #7219075459 paliktas konkretus CI, least-privilege ir timeout grįžtamasis ryšys. PR #320 paliktas draft; jokio merge, workflow dispatch ar produkcinio veiksmo neatlikta.
 - **PR būklė:** dabar 9 atviri PR. #301 1 ahead / 53 behind; #312 2 ahead / 30 behind; #306 5 ahead / 40 behind; #320 draft ir paremtas dabartiniu main. #301/#312/#306 palikti nesujungti; #320 negali būti laikomas paruoštu, kol CI nepraeina ir nereikalinga OIDC teisė nepašalinta.
 - **Kitas veiksmas:** laukti PR #320 pataisytų testų ir naujo CI; patikrinti, kad dispatch job neįgyja `id-token: write`, o bendras polling laiko biudžetas yra trumpas. Tik po sėkmingo CI peržiūrėti ar owner-bridge grandinė iš tikrųjų sukuria Control Center ir recommendation D1 snapshot'us. Jokio merge automatiškai neatlikti.
+
+
+## 2026-11-27 15:09 LT – PR #320 CI atnaujinimas
+
+- **PATIKRINTA – naujausias PR #320 commit:** head `ba18610d8899921fbbd26dbd02abf4835b856f48`, PR lieka draft. Naujas commit atnaujino bridge testus ir pridėjo owner-bridge Control Center provenance testą.
+- **PATIKRINTA – CI po pataisymo:** site-check #46004367761 success; Deploy API PR #46004367717 test + Cloudflare resource validation success, tikras deploy job skipped; Sync API PR #46004367637 test success, tikras sync job skipped. Ankstesnis #46004053655 failure (6 senų tekstinių assertion'ų) yra ankstesnio commit rezultatas ir naujuose patikrinimuose nebepasikartojo.
+- **NEPATVIRTINTA – least privilege:** dabartinis PR branch `.github/workflows/dispatch-daily-suite.yml` vis dar turi `id-token: write` ir `timeout-minutes: 45`. Tai prieštarauja PR aprašymui ir šio projekto ribai nekeisti permissions; dispatch job D1 nerašo, todėl OIDC teisė jam nereikalinga. PR laikyti draft, kol ši teisė pašalinta ir laiko biudžetas sumažintas.
+- **ATLIKTA – follow-up:** PR komentaras #7219108916 patvirtino naujų CI patikrų sėkmę ir pakartojo likusius permission/timeout blokatorius. Jokio merge ar produkcinio veiksmo neatlikta.
+- **PATIKRINTA – šio žurnalo validacija:** ankstesnio work-log commit'o site-check #46004432598 baigėsi success (17 s wall).
+- **Kitas veiksmas:** laukti PR #320 naujo commit be `id-token: write`, su ribotu timeout ir pilnai žaliu CI; tada atskirai peržiūrėti D1 Control Center snapshot readback. Main kodas ir production nekeičiami.
