@@ -72,3 +72,12 @@ Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas
 - **ATLIKTA:** PR #320 komentare #7219075459 pateiktos CI, least-privilege ir timeout pastabos. PR paliktas draft, merge neatliktas.
 - **PATIKRINTA:** po ankstesnio darbo žurnalo įrašo site-check #46004125231 (push iš `b27efa81`) success, 18 s wall / 14 s runner job.
 - **Kitas veiksmas:** laukti pataisyto PR #320 CI, pašalintos nereikalingos OIDC teisės ir trumpesnio laiko biudžeto; tik po to vertinti owner-bridge D1 snapshot recovery. Issue #145 lieka open.
+
+
+## 2026-11-27 15:09 LT – PR #320 CI atnaujinimas
+
+- **PATIKRINTA:** PR #320 head atnaujintas į `ba18610d`; po ankstesnio CI failure naujas site-check #46004367761 success, Deploy API PR test/validation success (deploy skipped), Sync API PR test success (sync skipped).
+- **NEPATVIRTINTA:** PR branch vis dar turi `id-token: write` dispatch job'e ir 45 min. timeout. Tai prieštarauja aprašymui ir least-privilege; PR lieka draft.
+- **ATLIKTA:** follow-up komentaras #7219108916 įrašytas; merge/deploy neatliktas.
+- **PATIKRINTA:** ankstesnio work-log commit'o site-check #46004432598 success, 17 s wall.
+- **Kitas veiksmas:** laukti PR #320 permission/timeout pataisymo ir naujo CI; tik po to vertinti D1 snapshot readback. Main ir production nepakeisti.
