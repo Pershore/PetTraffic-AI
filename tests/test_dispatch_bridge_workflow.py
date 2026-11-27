@@ -139,19 +139,19 @@ class DispatchBridgeWorkflowTests(unittest.TestCase):
         self.assertIn("eligibleControlEvents.includes(run.event)", daily_block)
         self.assertIn('run.head_branch === "main"', daily_block)
         self.assertIn('const controlSyncWorkflowRunTitle = "Sync workflow-run snapshot #" + controlRun.id;', daily_block)
-        workflow_matches = daily_block.split("const workflowRunMatch =")
-        control_sync_match = workflow_matches[1].split("const legacyWorkflowRunMatch", 1)[0]
-        self.assertIn('run.event === "workflow_run"', control_sync_match)
-        self.assertIn("run.display_title === controlSyncWorkflowRunTitle", control_sync_match)
+        control_sync_block = daily_block.split("const controlSyncTitle =", 1)[1].split("const legacyWorkflowRunMatch", 1)[0]
+        self.assertIn("run.event === \"workflow_run\"", control_sync_block)
+        self.assertIn("run.display_title === controlSyncWorkflowRunTitle", control_sync_block)
         self.assertIn('const diagnosticsWorkflowRunTitle = "Read-only Worker diagnostics after sync #" + controlSync.id;', daily_block)
-        diagnostics_match = workflow_matches[2].split("const legacyWorkflowRunMatch", 1)[0]
-        self.assertIn('run.event === "workflow_run"', diagnostics_match)
+        diagnostics_block = daily_block.split('const diagnosticsRuns = await getRuns("worker-agent-diagnostics.yml");', 1)[1]
+        diagnostics_match = diagnostics_block.split("const workflowRunMatch =", 1)[1].split("const legacyWorkflowRunMatch", 1)[0]
+        self.assertIn("run.event === \"workflow_run\"", diagnostics_match)
         self.assertIn("run.display_title === diagnosticsWorkflowRunTitle", diagnostics_match)
         self.assertIn('run.display_title === "Sync PetTraffic snapshots to central API"', daily_block)
         self.assertIn('run.display_title === "Pet traffic read-only Worker agent diagnostics"', daily_block)
         self.assertIn("const automaticRunReuseWindowMs = 10 * 60 * 1000;", daily_block)
         self.assertEqual(daily_block.count("const automaticRunReuseWindowMs ="), 1)
-        manual_match = daily_block.split("const manualMatch =", 1)[1].split("const workflowRunMatch", 1)[0]
+        manual_match = diagnostics_block.split("const manualMatch =", 1)[1].split("const workflowRunMatch", 1)[0]
         self.assertIn('run.display_title === "Pet traffic read-only Worker agent diagnostics"', manual_match)
         self.assertIn("Date.parse(run.created_at) <= controlSyncCompletedAt + automaticRunReuseWindowMs", manual_match)
 
