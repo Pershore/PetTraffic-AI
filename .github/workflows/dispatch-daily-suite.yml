@@ -111,6 +111,7 @@ jobs:
               const bridgeCandidates = data.workflow_runs.filter(run =>
                 run.event === "workflow_dispatch" &&
                 Date.parse(run.created_at) >= dailySuiteScheduleAt.getTime() &&
+                (run.status !== "completed" || run.conclusion === "success") &&
                 /^Owner-approved fallback \| bridge=(\d+) \| comment=(\d+)$/.test(String(run.display_title || ""))
               );
               for (const run of bridgeCandidates) {
