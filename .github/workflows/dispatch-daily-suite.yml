@@ -291,10 +291,11 @@ jobs:
               const diagnosticsRuns = await getRuns("worker-agent-diagnostics.yml");
               const diagnosticsWorkflowRunTitle = "Read-only Worker diagnostics after sync #" + controlSync.id;
               const controlSyncCompletedAt = Date.parse(controlSync.updated_at || controlSync.created_at);
-              const automaticRunReuseWindowMs = 10 * 60 * 1000;
               let diagnostics = diagnosticsRuns.find(run => {
                 const manualMatch = run.event === "workflow_dispatch" &&
-                  Date.parse(run.created_at) >= controlSyncCompletedAt;
+                  run.display_title === "Pet traffic read-only Worker agent diagnostics" &&
+                  Date.parse(run.created_at) >= controlSyncCompletedAt &&
+                  Date.parse(run.created_at) <= controlSyncCompletedAt + automaticRunReuseWindowMs;
                 const workflowRunMatch = run.event === "workflow_run" &&
                   run.display_title === diagnosticsWorkflowRunTitle;
                 const legacyWorkflowRunMatch = run.event === "workflow_run" &&
