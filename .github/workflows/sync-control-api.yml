@@ -1,5 +1,5 @@
 name: Sync PetTraffic snapshots to central API
-run-name: "${{ github.event_name == 'workflow_dispatch' && format('Sync daily-suite snapshot #{0}', inputs.source_run_id) || 'Sync PetTraffic snapshots to central API' }}"
+run-name: "${{ github.event_name == 'workflow_dispatch' && format('Sync {0} snapshot #{1}', inputs.source_kind || 'daily_suite', inputs.source_run_id) || 'Sync PetTraffic snapshots to central API' }}"
 
 on:
   workflow_run:
@@ -13,8 +13,32 @@ on:
   workflow_dispatch:
     inputs:
       source_run_id:
-        description: "Completed daily-suite workflow run ID to sync"
+        description: "Completed source workflow run ID to sync"
         required: true
+        type: string
+      source_kind:
+        description: "Source snapshot type"
+        required: true
+        type: choice
+        options:
+          - daily_suite
+          - control_center
+        default: daily_suite
+      owner_bridge_run_id:
+        description: "Verified owner-bridge run ID (control_center fallback only)"
+        required: false
+        type: string
+      owner_bridge_comment_id:
+        description: "Verified owner issue-comment ID (control_center fallback only)"
+        required: false
+        type: string
+      daily_suite_run_id:
+        description: "Verified daily-suite run ID (control_center fallback only)"
+        required: false
+        type: string
+      daily_suite_sync_run_id:
+        description: "Successful daily-suite D1 sync run ID (control_center fallback only)"
+        required: false
         type: string
   pull_request:
     branches: [main]
@@ -64,84 +88,155 @@ jobs:
             echo "enabled=false" >> "$GITHUB_OUTPUT"
             echo "Central API URL is missing; GitHub history remains the source of truth."
           fi
-      - name: Validate daily-suite source run
+      - name: Validate source run and owner-bridge provenance
         id: suite-source
         if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.workflow_id == 418322987
         uses: actions/github-script@v9
         env:
           SOURCE_RUN_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.source_run_id || github.event.workflow_run.id }}
+          SOURCE_KIND: ${{ github.event_name == 'workflow_dispatch' && inputs.source_kind || 'daily_suite' }}
+          OWNER_BRIDGE_RUN_ID: ${{ inputs.owner_bridge_run_id }}
+          OWNER_BRIDGE_COMMENT_ID: ${{ inputs.owner_bridge_comment_id }}
+          DAILY_SUITE_RUN_ID: ${{ inputs.daily_suite_run_id }}
+          DAILY_SUITE_SYNC_RUN_ID: ${{ inputs.daily_suite_sync_run_id }}
         with:
           script: |
             const { owner, repo } = context.repo;
             const runId = Number(process.env.SOURCE_RUN_ID);
+            const sourceKind = process.env.SOURCE_KIND || "daily_suite";
             if (!Number.isSafeInteger(runId) || runId <= 0) {
-              core.setFailed("A valid source daily-suite run ID is required.");
+              core.setFailed("A valid source workflow run ID is required.");
               return;
             }
-            const { data: run } = await github.rest.actions.getWorkflowRun({
-              owner, repo, run_id: runId
-            });
-            if (run.workflow_id !== 418322987 || run.head_branch !== "main" ||
-                !["schedule", "workflow_dispatch"].includes(run.event) ||
-                run.status !== "completed") {
-              core.setFailed("Source run is not a completed main-branch daily-suite schedule/dispatch run.");
-              return;
-            }
+            const { data: run } = await github.rest.actions.getWorkflowRun({ owner, repo, run_id: runId });
+            const timestamp = value => Date.parse(value || "");
+            const day = value => {
+              const parts = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Vilnius", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date(value));
+              const fields = Object.fromEntries(parts.map(part => [part.type, part.value]));
+              return fields.year + "-" + fields.month + "-" + fields.day;
+            };
 
             let sourceEvent = "schedule";
             let ownerBridgeRunId = "";
             let ownerBridgeCommentId = "";
             let ownerActor = "";
-            if (run.event === "workflow_dispatch") {
-              const marker = /^Owner-approved fallback \| bridge=(\d+) \| comment=(\d+)$/.exec(String(run.display_title || ""));
-              if (!marker || !["Pershore", "github-actions[bot]"].includes(run.actor?.login)) {
-                core.setFailed("Manual daily-suite run has no owner-bridge authorization marker.");
+
+            if (sourceKind === "control_center") {
+              if (run.workflow_id !== 416336983 || run.head_branch !== "main" ||
+                  run.event !== "workflow_dispatch" || run.status !== "completed" ||
+                  run.conclusion !== "success") {
+                core.setFailed("Control Center source must be a successful main-branch workflow_dispatch run.");
                 return;
               }
-              ownerBridgeRunId = marker[1];
-              ownerBridgeCommentId = marker[2];
-              const [bridgeResponse, commentResponse] = await Promise.all([
+              ownerBridgeRunId = String(process.env.OWNER_BRIDGE_RUN_ID || "");
+              ownerBridgeCommentId = String(process.env.OWNER_BRIDGE_COMMENT_ID || "");
+              const dailyRunId = Number(process.env.DAILY_SUITE_RUN_ID);
+              const dailySyncRunId = Number(process.env.DAILY_SUITE_SYNC_RUN_ID);
+              if (![ownerBridgeRunId, ownerBridgeCommentId].every(value => /^\\d+$/.test(value)) ||
+                  !Number.isSafeInteger(dailyRunId) || dailyRunId <= 0 ||
+                  !Number.isSafeInteger(dailySyncRunId) || dailySyncRunId <= 0) {
+                core.setFailed("Control Center fallback provenance identifiers are incomplete.");
+                return;
+              }
+              const [bridgeResponse, commentResponse, dailyResponse, dailySyncResponse] = await Promise.all([
                 github.rest.actions.getWorkflowRun({ owner, repo, run_id: Number(ownerBridgeRunId) }),
-                github.rest.issues.getComment({ owner, repo, comment_id: Number(ownerBridgeCommentId) })
+                github.rest.issues.getComment({ owner, repo, comment_id: Number(ownerBridgeCommentId) }),
+                github.rest.actions.getWorkflowRun({ owner, repo, run_id: dailyRunId }),
+                github.rest.actions.getWorkflowRun({ owner, repo, run_id: dailySyncRunId })
               ]);
               const bridge = bridgeResponse.data;
               const comment = commentResponse.data;
-              const issueNumber = Number(String(comment.issue_url || "").match(/\/issues\/(\d+)$/)?.[1] || 0);
-              const timestamp = value => Date.parse(value || "");
-              const day = value => {
-                const parts = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Vilnius", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date(value));
-                const fields = Object.fromEntries(parts.map(part => [part.type, part.value]));
-                return fields.year + "-" + fields.month + "-" + fields.day;
-              };
-              const commentAt = timestamp(comment.created_at), bridgeAt = timestamp(bridge.created_at), sourceAt = timestamp(run.created_at);
+              const daily = dailyResponse.data;
+              const dailySync = dailySyncResponse.data;
+              const issueNumber = Number(String(comment.issue_url || "").match(/\\/issues\\/(\\d+)$/)?.[1] || 0);
+              const marker = "Owner-approved fallback | bridge=" + ownerBridgeRunId + " | comment=" + ownerBridgeCommentId;
               const validBridge = bridge.workflow_id === 418997808 && bridge.event === "issue_comment" &&
-                bridge.head_branch === "main" && bridge.status === "completed" && bridge.conclusion === "success" &&
-                bridge.actor?.login === "Pershore";
+                bridge.head_branch === "main" && bridge.status === "completed" &&
+                bridge.conclusion === "success" && bridge.actor?.login === "Pershore";
               const validComment = issueNumber === 145 &&
-                String(comment.body || "").trim() === "/pettraffic-run-daily-suite" && comment.user?.login === "Pershore";
-              const validSequence = Number.isFinite(commentAt) && Number.isFinite(bridgeAt) && Number.isFinite(sourceAt) &&
-                bridgeAt >= commentAt && bridgeAt - commentAt <= 10 * 60 * 1000 &&
-                sourceAt >= bridgeAt && sourceAt - bridgeAt <= 10 * 60 * 1000 &&
-                day(comment.created_at) === day(bridge.created_at) && day(bridge.created_at) === day(run.created_at);
-              if (!validBridge || !validComment || !validSequence) {
-                core.setFailed("Owner-bridge fallback failed exact issue-comment, workflow identity, actor, or same-day timing verification.");
+                String(comment.body || "").trim() === "/pettraffic-run-daily-suite" &&
+                comment.user?.login === "Pershore";
+              const validDaily = daily.workflow_id === 418322987 && daily.head_branch === "main" &&
+                daily.event === "workflow_dispatch" && daily.status === "completed" &&
+                daily.conclusion === "success" && daily.display_title === marker &&
+                ["Pershore", "github-actions[bot]"].includes(daily.actor?.login);
+              const validDailySync = dailySync.workflow_id === 416372705 &&
+                dailySync.head_branch === "main" && dailySync.event === "workflow_dispatch" &&
+                dailySync.status === "completed" && dailySync.conclusion === "success" &&
+                dailySync.display_title === "Sync daily-suite snapshot #" + dailyRunId;
+              const ordered = timestamp(comment.created_at) <= timestamp(bridge.created_at) &&
+                timestamp(bridge.created_at) <= timestamp(daily.created_at) &&
+                timestamp(daily.created_at) <= timestamp(dailySync.created_at) &&
+                timestamp(dailySync.created_at) <= timestamp(run.created_at);
+              const sameDay = [comment.created_at, bridge.created_at, daily.created_at,
+                dailySync.created_at, run.created_at].every(value => day(value) === day(run.created_at));
+              if (!validBridge || !validComment || !validDaily || !validDailySync || !ordered || !sameDay) {
+                core.setFailed("Control Center fallback failed owner comment, bridge, daily-suite, sync, or same-day sequence verification.");
                 return;
               }
               sourceEvent = "owner_bridge_fallback";
               ownerActor = "Pershore";
+            } else if (sourceKind === "daily_suite") {
+              if (run.workflow_id !== 418322987 || run.head_branch !== "main" ||
+                  !["schedule", "workflow_dispatch"].includes(run.event) ||
+                  run.status !== "completed") {
+                core.setFailed("Source run is not a completed main-branch daily-suite schedule/dispatch run.");
+                return;
+              }
+              if (run.event === "workflow_dispatch") {
+                const marker = /^Owner-approved fallback \\| bridge=(\\d+) \\| comment=(\\d+)$/.exec(String(run.display_title || ""));
+                if (!marker || !["Pershore", "github-actions[bot]"].includes(run.actor?.login)) {
+                  core.setFailed("Manual daily-suite run has no owner-bridge authorization marker.");
+                  return;
+                }
+                ownerBridgeRunId = marker[1];
+                ownerBridgeCommentId = marker[2];
+                const [bridgeResponse, commentResponse] = await Promise.all([
+                  github.rest.actions.getWorkflowRun({ owner, repo, run_id: Number(ownerBridgeRunId) }),
+                  github.rest.issues.getComment({ owner, repo, comment_id: Number(ownerBridgeCommentId) })
+                ]);
+                const bridge = bridgeResponse.data;
+                const comment = commentResponse.data;
+                const issueNumber = Number(String(comment.issue_url || "").match(/\\/issues\\/(\\d+)$/)?.[1] || 0);
+                const commentAt = timestamp(comment.created_at), bridgeAt = timestamp(bridge.created_at), sourceAt = timestamp(run.created_at);
+                const validBridge = bridge.workflow_id === 418997808 && bridge.event === "issue_comment" &&
+                  bridge.head_branch === "main" && bridge.status === "completed" && bridge.conclusion === "success" &&
+                  bridge.actor?.login === "Pershore";
+                const validComment = issueNumber === 145 &&
+                  String(comment.body || "").trim() === "/pettraffic-run-daily-suite" && comment.user?.login === "Pershore";
+                const validSequence = Number.isFinite(commentAt) && Number.isFinite(bridgeAt) && Number.isFinite(sourceAt) &&
+                  bridgeAt >= commentAt && bridgeAt - commentAt <= 10 * 60 * 1000 &&
+                  sourceAt >= bridgeAt && sourceAt - bridgeAt <= 10 * 60 * 1000 &&
+                  day(comment.created_at) === day(bridge.created_at) && day(bridge.created_at) === day(run.created_at);
+                if (!validBridge || !validComment || !validSequence) {
+                  core.setFailed("Owner-bridge fallback failed exact issue-comment, workflow identity, actor, or same-day timing verification.");
+                  return;
+                }
+                sourceEvent = "owner_bridge_fallback";
+                ownerActor = "Pershore";
+              }
+            } else {
+              core.setFailed("Unsupported source_kind; expected daily_suite or control_center.");
+              return;
             }
 
             const { data: jobs } = await github.rest.actions.listJobsForWorkflowRun({
               owner, repo, run_id: runId, per_page: 100
             });
-            const hasData = jobs.jobs.some(job =>
-              ["analytics", "topic-radar"].includes(job.name) && job.conclusion === "success"
-            );
-            if (!hasData) {
-              core.setFailed("Source daily-suite run has no successful analytics or topic-radar artifact job.");
+            if (sourceKind === "daily_suite") {
+              const hasData = jobs.jobs.some(job =>
+                ["analytics", "topic-radar"].includes(job.name) && job.conclusion === "success"
+              );
+              if (!hasData) {
+                core.setFailed("Source daily-suite run has no successful analytics or topic-radar artifact job.");
+                return;
+              }
+            } else if (!jobs.jobs.some(job => job.name === "Read-only automation health and priorities" && job.conclusion === "success")) {
+              core.setFailed("Control Center run has no successful report-generation job.");
               return;
             }
             core.setOutput("eligible", "true");
+            core.setOutput("source_kind", sourceKind);
             core.setOutput("source_run_id", String(run.id));
             core.setOutput("source_event", sourceEvent);
             core.setOutput("source_trigger_event", String(run.event));
@@ -151,7 +246,7 @@ jobs:
             core.setOutput("owner_actor", ownerActor);
             core.setOutput("owner_bridge_run_id", ownerBridgeRunId);
             core.setOutput("owner_bridge_comment_id", ownerBridgeCommentId);
-            core.info("Validated daily-suite source run #" + run.id + " (" + sourceEvent + ").");
+            core.info("Validated " + sourceKind + " source run #" + run.id + " (" + sourceEvent + ").");
       - name: Download source workflow artifact
         if: steps.config.outputs.enabled == 'true' && github.event_name == 'workflow_run' && github.event.workflow_run.workflow_id != 418322987
         uses: actions/download-artifact@v8
@@ -161,8 +256,17 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
           run-id: ${{ github.event.workflow_run.id }}
+      - name: Download manually dispatched Control Center artifact
+        if: steps.config.outputs.enabled == 'true' && steps.suite-source.outputs.eligible == 'true' && steps.suite-source.outputs.source_kind == 'control_center'
+        uses: actions/download-artifact@v8
+        with:
+          name: pettraffic-control-center
+          path: artifacts
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ steps.suite-source.outputs.source_run_id }}
       - name: Download daily suite analytics artifact
-        if: steps.config.outputs.enabled == 'true' && steps.suite-source.outputs.eligible == 'true'
+        if: steps.config.outputs.enabled == 'true' && steps.suite-source.outputs.eligible == 'true' && steps.suite-source.outputs.source_kind == 'daily_suite'
         continue-on-error: true
         uses: actions/download-artifact@v8
         with:
@@ -184,7 +288,7 @@ jobs:
       - name: Prepare privacy-filtered event payloads
         if: steps.config.outputs.enabled == 'true' && ((github.event_name == 'workflow_run' && github.event.workflow_run.workflow_id != 418322987) || steps.suite-source.outputs.eligible == 'true')
         env:
-          WORKFLOW_NAME: ${{ github.event_name == 'workflow_dispatch' && 'Pet traffic daily automation suite' || github.event.workflow_run.workflow_id == 418322987 && 'Pet traffic daily automation suite' || github.event.workflow_run.name }}
+          WORKFLOW_NAME: ${{ github.event_name == 'workflow_dispatch' && (inputs.source_kind == 'control_center' && 'Pet traffic central control center' || 'Pet traffic daily automation suite') || github.event.workflow_run.workflow_id == 418322987 && 'Pet traffic daily automation suite' || github.event.workflow_run.name }}
           SOURCE_RUN_ID: ${{ steps.suite-source.outputs.source_run_id || github.event.workflow_run.id }}
           SOURCE_EVENT: ${{ steps.suite-source.outputs.source_event || github.event.workflow_run.event }}
           SOURCE_TRIGGER_EVENT: ${{ steps.suite-source.outputs.source_trigger_event || github.event.workflow_run.event }}
