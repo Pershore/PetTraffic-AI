@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "project": "PetTraffic AI",
-  "generated_at": "2026-11-27T12:18:47.545738+00:00",
-  "run_id": "45997561126",
-  "source_commit": "2fe9a6e27a28a621fa52ff9c67eff7ae2963c92e",
+  "generated_at": "2026-11-27T13:10:40.298717+00:00",
+  "run_id": "46004827639",
+  "source_commit": "d2d448afabb7efd96dbedaa6f31d865aab932df7",
   "overall_status": "needs_attention",
   "last_verified_stage": "Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataskaitoje.",
   "next_action": "Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas (warning). Suplanuotas ciklas nuo 2026-11-27 06:10 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-26T16:46:08Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.",
@@ -19,8 +19,8 @@
       "name": "Centrinis valdymo centras",
       "state": "success",
       "detail": "Paskutinis paleidimas sėkmingas.",
-      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/45861883263",
-      "created_at": "2026-11-26T16:46:46Z"
+      "url": "https://github.com/Pershore/PetTraffic-AI/actions/runs/45997561126",
+      "created_at": "2026-11-27T12:18:39Z"
     },
     {
       "name": "Debesijos read-only užduočių vykdytojas",
@@ -32,7 +32,7 @@
     {
       "name": "Cloudflare Worker + D1",
       "state": "success",
-      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 3 min.",
+      "detail": "Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 10 min.",
       "url": "https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health",
       "created_at": null
     }
