@@ -202,5 +202,42 @@ class BuildEventTests(unittest.TestCase):
                 self.assertEqual(events[0]["payload"]["provenance"]["source_event"], source_event)
                 self.assertNotEqual(events[0]["payload"]["provenance"]["source_event"], "schedule")
 
+    def test_owner_bridge_control_center_events_keep_full_provenance(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "control-center.json").write_text(json.dumps({
+                "generated_at": "2026-11-27T12:00:00Z",
+                "needs_attention": True,
+                "results": [{"name": "Daily suite", "state": "warning", "detail": "Schedule pending"}],
+            }), encoding="utf-8")
+            (root / "recommendations.json").write_text(json.dumps({
+                "generated_at": "2026-11-27T12:00:00Z",
+                "recommendations": [{"id": "check", "priority": "high", "title": "Check schedule", "next_action": "Inspect run"}],
+            }), encoding="utf-8")
+            events = build_events(
+                "Pet traffic central control center", root, "control-run-789",
+                source_event="owner_bridge_fallback",
+                source_run_created_at="2026-11-27T12:00:00Z",
+                source_workflow_id="416336983",
+                source_trigger_event="workflow_dispatch",
+                owner_approved_fallback=True,
+                owner_actor="Pershore",
+                owner_bridge_run_id="123456",
+                owner_bridge_comment_id="654321",
+            )
+            self.assertEqual([event["kind"] for event in events], [
+                "control_center_snapshot", "recommendation_snapshot"
+            ])
+            for event in events:
+                provenance = event["payload"]["provenance"]
+                self.assertEqual(provenance["source_event"], "owner_bridge_fallback")
+                self.assertEqual(provenance["source_run_id"], "control-run-789")
+                self.assertEqual(provenance["source_workflow_id"], "416336983")
+                self.assertEqual(provenance["source_trigger_event"], "workflow_dispatch")
+                self.assertIs(provenance["owner_approved_fallback"], True)
+                self.assertEqual(provenance["owner_actor"], "Pershore")
+                self.assertEqual(provenance["owner_bridge_run_id"], "123456")
+                self.assertEqual(provenance["owner_bridge_comment_id"], "654321")
+
 if __name__ == "__main__":
     unittest.main()

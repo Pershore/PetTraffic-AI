@@ -69,13 +69,14 @@ class DispatchBridgeWorkflowTests(unittest.TestCase):
             "issueNumber === 145",
             "bridgeAt - commentAt <= 10 * 60 * 1000",
             "runAt - bridgeAt <= 10 * 60 * 1000",
-            "sameVilniusDay",
-            "fallback stopped to avoid a duplicate dispatch",
+            "validSequence",
+            "recovery stopped to avoid an unsafe duplicate",
         ):
             with self.subTest(expected=expected):
                 self.assertIn(expected, daily_block)
         self.assertIn('run.event === "schedule"', daily_block)
-        self.assertIn("activeOrSuccessful(run)", daily_block)
+        self.assertIn('run.event === "workflow_dispatch"', daily_block)
+        self.assertIn('run.status !== "completed" || run.conclusion === "success"', daily_block)
 
     def test_bridge_has_deduplication_and_no_secrets_or_external_services(self):
         workflow = Path(".github/workflows/dispatch-daily-suite.yml").read_text(encoding="utf-8")
@@ -102,6 +103,69 @@ class DispatchBridgeWorkflowTests(unittest.TestCase):
         self.assertIn('"Pet traffic Lighthouse audits"', workflow_run_triggers)
         self.assertIn('"Deploy PetTraffic control API"', workflow_run_triggers)
         self.assertIn("workflow_dispatch:", control_center)
+
+    def test_owner_bridge_fallback_runs_complete_evidence_recovery_chain(self):
+        bridge = Path(".github/workflows/dispatch-daily-suite.yml").read_text(encoding="utf-8")
+        daily_block = bridge.split('if (action === "daily-suite") {', 1)[1].split('if (action === "sync-latest") {', 1)[0]
+        self.assertIn("timeout-minutes: 25", bridge)
+        self.assertIn("recoveryDeadline = Date.now() + 24 * 60 * 1000", daily_block)
+        self.assertIn("allowedWait = Math.min(timeoutMs", daily_block)
+        for expected in (
+            "waitForCompletion",
+            'source_kind: "daily_suite"',
+            'workflow_id: "control-center.yml"',
+            'source_kind: "control_center"',
+            'workflow_id: "worker-agent-diagnostics.yml"',
+            "Control Center D1 snapshot sync",
+            "read-only Worker agent diagnostics",
+        ):
+            with self.subTest(expected=expected):
+                self.assertIn(expected, daily_block)
+        self.assertIn('["analytics", "topic-radar", "live-check"]', daily_block)
+        self.assertIn("Every stage completed successfully", daily_block)
+
+        sync = Path(".github/workflows/sync-control-api.yml").read_text(encoding="utf-8")
+        self.assertIn("- control_center", sync)
+        self.assertIn('sourceKind === "control_center"', sync)
+        self.assertIn("daily_suite_sync_run_id", sync)
+        self.assertIn("validDailySync", sync)
+        self.assertIn("Download manually dispatched Control Center artifact", sync)
+        self.assertIn("Pet traffic central control center", sync)
+
+    def test_owner_bridge_github_script_blocks_parse_as_javascript(self):
+        import shutil
+        import subprocess
+        import textwrap
+
+        node = shutil.which("node")
+        if not node:
+            self.skipTest("Node.js is not installed in this test environment.")
+
+        for relative in (
+            ".github/workflows/dispatch-daily-suite.yml",
+            ".github/workflows/sync-control-api.yml",
+        ):
+            workflow = Path(relative).read_text(encoding="utf-8")
+            lines = workflow.splitlines()
+            for index, line in enumerate(lines):
+                if line.strip() != "script: |":
+                    continue
+                script_lines = []
+                for candidate in lines[index + 1:]:
+                    if candidate.strip() and len(candidate) - len(candidate.lstrip()) < 12:
+                        break
+                    script_lines.append(candidate[12:] if candidate.startswith("            ") else "")
+                script = textwrap.dedent("\n".join(script_lines))
+                wrapped = "async function __workflow_script_check__() {\n" + script + "\n}\n"
+                result = subprocess.run(
+                    [node, "--check"],
+                    input=wrapped,
+                    text=True,
+                    capture_output=True,
+                    check=False,
+                )
+                with self.subTest(workflow=relative, script_line=index + 1):
+                    self.assertEqual(result.returncode, 0, result.stderr or result.stdout)
 
 if __name__ == "__main__":
     unittest.main()
