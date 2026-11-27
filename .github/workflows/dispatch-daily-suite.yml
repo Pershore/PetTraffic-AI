@@ -137,13 +137,14 @@ jobs:
                   const validComment = issueNumber === 145 &&
                     String(comment.body || "").trim() === "/pettraffic-run-daily-suite" &&
                     comment.user?.login === "Pershore";
+                  const validSourceActor = ["Pershore", "github-actions[bot]"].includes(run.actor?.login);
                   const validSequence = Number.isFinite(commentAt) && Number.isFinite(bridgeAt) &&
                     Number.isFinite(runAt) && bridgeAt >= commentAt &&
                     bridgeAt - commentAt <= 10 * 60 * 1000 && runAt >= bridgeAt &&
                     runAt - bridgeAt <= 10 * 60 * 1000 &&
                     vilniusDay(comment.created_at) === vilniusDay(bridge.created_at) &&
                     vilniusDay(bridge.created_at) === vilniusDay(run.created_at);
-                  if (validBridge && validComment && validSequence) {
+                  if (validBridge && validComment && validSourceActor && validSequence) {
                     dailySuiteRun = run;
                     ownerBridgeRunId = bridgeId;
                     ownerBridgeCommentId = commentId;
@@ -290,6 +291,8 @@ jobs:
                 diagnostics = await waitForCompletion(diagnostics.id, "existing Worker agent diagnostics");
               }
 
+              core.notice("A plain workflow_dispatch is not valid AI evidence; this run uses separately verified owner-bridge provenance.");
+              core.notice("This manual fallback is not schedule provenance.");
               core.notice("Owner-bridge recovery chain completed: daily-suite #" + dailySuiteRun.id +
                 " → D1 sync #" + dailySync.id + " → Control Center #" + controlRun.id +
                 " → Control Center D1 sync #" + controlSync.id + " → read-only diagnostics #" +
