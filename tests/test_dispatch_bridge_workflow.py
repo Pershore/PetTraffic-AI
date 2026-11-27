@@ -153,8 +153,8 @@ class DispatchBridgeWorkflowTests(unittest.TestCase):
                     if candidate.strip() and len(candidate) - len(candidate.lstrip()) < 12:
                         break
                     script_lines.append(candidate[12:] if candidate.startswith("            ") else "")
-                script = textwrap.dedent("\\n".join(script_lines))
-                wrapped = "async function __workflow_script_check__() {\\n" + script + "\\n}\\n"
+                script = textwrap.dedent("\n".join(script_lines))
+                wrapped = "async function __workflow_script_check__() {\n" + script + "\n}\n"
                 result = subprocess.run(
                     [node, "--check"],
                     input=wrapped,
