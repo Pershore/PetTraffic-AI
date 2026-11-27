@@ -140,6 +140,9 @@ class DispatchBridgeWorkflowTests(unittest.TestCase):
         self.assertIn('run.event === "workflow_run" && run.display_title === controlSyncWorkflowRunTitle', daily_block)
         self.assertIn('const diagnosticsWorkflowRunTitle = "Read-only Worker diagnostics after sync #" + controlSync.id;', daily_block)
         self.assertIn('run.event === "workflow_run" && run.display_title === diagnosticsWorkflowRunTitle', daily_block)
+        self.assertIn('run.display_title === "Sync PetTraffic snapshots to central API"', daily_block)
+        self.assertIn('run.display_title === "Pet traffic read-only Worker agent diagnostics"', daily_block)
+        self.assertIn("automaticRunReuseWindowMs = 10 * 60 * 1000", daily_block)
 
         sync = Path(".github/workflows/sync-control-api.yml").read_text(encoding="utf-8")
         self.assertIn("format('Sync workflow-run snapshot #{0}', github.event.workflow_run.id)", sync)
