@@ -303,18 +303,34 @@ export async function getEvents(env, expectedRunDate = new Date().toISOString().
  }
  return {events,invalidPayloadCount,missingKinds,staleKinds};
 }
+export function extractPublicPageEvidence(html, path, status = 200) {
+ const text=String(html||"").replace(/<script\\b[^>]*>[\\s\\S]*?<\\/script>/gi," ").replace(/<style\\b[^>]*>[\\s\\S]*?<\\/style>/gi," ")
+  .replace(/<[^>]+>/g," ").replace(/&nbsp;/gi," ").replace(/&amp;/gi,"&").replace(/&lt;/gi,"<").replace(/&gt;/gi,">")
+  .replace(/&quot;/gi,'"').replace(/&#39;/gi,"'").replace(/\\s+/g," ").trim();
+ const seen=new Set();
+ const sourceLinks=[];
+ for(const match of String(html||"").matchAll(/<a\\b[^>]*href\\s*=\\s*(["'])(https?:\\/\\/[^"']+)\\1[^>]*>([\\s\\S]*?)<\\/a>/gi)) {
+  try {
+   const parsed=new URL(match[2]);
+   if(!["http:","https:"].includes(parsed.protocol)||parsed.hostname==="pettraffic-ai.pages.dev") continue;
+   const url=(parsed.origin+parsed.pathname).slice(0,140);
+   if(seen.has(url)) continue;
+   seen.add(url);
+   const title=match[3].replace(/<[^>]+>/g," ").replace(/&amp;/gi,"&").replace(/&nbsp;/gi," ").replace(/\\s+/g," ").trim().slice(0,60);
+   sourceLinks.push({title,url});
+  } catch {}
+ }
+ return {path,status,text:text.slice(0,700),source_count:sourceLinks.length,source_links:sourceLinks.slice(0,3)};
+}
+
 async function getPublicContent(env) {
  const pages=[]; const fetcher=env.FETCH||fetch;
  for(const path of CONTENT_PATHS) {
   try {
    const response=await fetcher(SITE+path,{headers:{"user-agent":"PetTraffic-AgentContentReview/1.0"},redirect:"follow"});
-   if(!response.ok){pages.push({path,status:response.status,text:""});continue;}
-   const html=await response.text();
-   const text=html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi," ").replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi," ")
-    .replace(/<[^>]+>/g," ").replace(/&nbsp;/gi," ").replace(/&amp;/gi,"&").replace(/&lt;/gi,"<").replace(/&gt;/gi,">")
-    .replace(/&quot;/gi,'"').replace(/&#39;/gi,"'").replace(/\s+/g," ").trim();
-   pages.push({path,status:response.status,text:text.slice(0,900)});
-  } catch { pages.push({path,status:0,text:""}); }
+   if(!response.ok){pages.push({path,status:response.status,text:"",source_count:0,source_links:[]});continue;}
+   pages.push(extractPublicPageEvidence(await response.text(),path,response.status));
+  } catch { pages.push({path,status:0,text:"",source_count:0,source_links:[]}); }
  }
  return pages;
 }
