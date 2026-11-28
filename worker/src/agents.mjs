@@ -304,19 +304,19 @@ export async function getEvents(env, expectedRunDate = new Date().toISOString().
  return {events,invalidPayloadCount,missingKinds,staleKinds};
 }
 export function extractPublicPageEvidence(html, path, status = 200) {
- const text=String(html||"").replace(/<script\\b[^>]*>[\\s\\S]*?<\\/script>/gi," ").replace(/<style\\b[^>]*>[\\s\\S]*?<\\/style>/gi," ")
+ const text=String(html||"").replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi," ").replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi," ")
   .replace(/<[^>]+>/g," ").replace(/&nbsp;/gi," ").replace(/&amp;/gi,"&").replace(/&lt;/gi,"<").replace(/&gt;/gi,">")
-  .replace(/&quot;/gi,'"').replace(/&#39;/gi,"'").replace(/\\s+/g," ").trim();
+  .replace(/&quot;/gi,'"').replace(/&#39;/gi,"'").replace(/\s+/g," ").trim();
  const seen=new Set();
  const sourceLinks=[];
- for(const match of String(html||"").matchAll(/<a\\b[^>]*href\\s*=\\s*(["'])(https?:\\/\\/[^"']+)\\1[^>]*>([\\s\\S]*?)<\\/a>/gi)) {
+ for(const match of String(html||"").matchAll(/<a\b[^>]*href\s*=\s*(["'])(https?:\/\/[^"']+)\1[^>]*>([\s\S]*?)<\/a>/gi)) {
   try {
    const parsed=new URL(match[2]);
    if(!["http:","https:"].includes(parsed.protocol)||parsed.hostname==="pettraffic-ai.pages.dev") continue;
    const url=(parsed.origin+parsed.pathname).slice(0,140);
    if(seen.has(url)) continue;
    seen.add(url);
-   const title=match[3].replace(/<[^>]+>/g," ").replace(/&amp;/gi,"&").replace(/&nbsp;/gi," ").replace(/\\s+/g," ").trim().slice(0,60);
+   const title=match[3].replace(/<[^>]+>/g," ").replace(/&amp;/gi,"&").replace(/&nbsp;/gi," ").replace(/\s+/g," ").trim().slice(0,60);
    sourceLinks.push({title,url});
   } catch {}
  }
