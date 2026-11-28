@@ -13,6 +13,17 @@ class SnapshotSyncWorkflowTests(unittest.TestCase):
         self.assertIn('run.head_branch !== "main"', workflow)
         self.assertIn('run.status !== "completed"', workflow)
 
+    def test_owner_bridge_child_sync_accepts_only_active_or_successful_parent(self):
+        workflow = Path(".github/workflows/sync-control-api.yml").read_text(encoding="utf-8")
+        self.assertIn("const isVerifiedOwnerBridge = bridge =>", workflow)
+        self.assertIn('bridge.status === "in_progress" && bridge.conclusion == null', workflow)
+        self.assertIn('bridge.status === "completed" && bridge.conclusion === "success"', workflow)
+        self.assertEqual(workflow.count("const validBridge = isVerifiedOwnerBridge(bridge);"), 2)
+        self.assertIn('bridge.actor?.login === "Pershore"', workflow)
+        self.assertIn('String(comment.body || "").trim() === "/pettraffic-run-daily-suite"', workflow)
+        self.assertIn("bridgeAt >= commentAt", workflow)
+        self.assertIn("sourceAt >= bridgeAt", workflow)
+
     def test_sync_requires_at_least_one_successful_data_job(self):
         workflow = Path(".github/workflows/sync-control-api.yml").read_text(encoding="utf-8")
         self.assertIn('["analytics", "topic-radar"].includes(job.name)', workflow)
