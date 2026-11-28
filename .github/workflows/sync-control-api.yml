@@ -116,6 +116,17 @@ jobs:
               return fields.year + "-" + fields.month + "-" + fields.day;
             };
 
+            // The bridge waits for these child syncs, so it is still in progress
+            // when they validate it. Exact owner comment and timestamp checks below
+            // bind the active parent to this source run; the bridge must finish successfully.
+            const isVerifiedOwnerBridge = bridge =>
+              bridge.workflow_id === 418997808 &&
+              bridge.event === "issue_comment" &&
+              bridge.head_branch === "main" &&
+              ((bridge.status === "in_progress" && bridge.conclusion == null) ||
+                (bridge.status === "completed" && bridge.conclusion === "success")) &&
+              bridge.actor?.login === "Pershore";
+
             let sourceEvent = "schedule";
             let ownerBridgeRunId = "";
             let ownerBridgeCommentId = "";
@@ -150,9 +161,7 @@ jobs:
               const dailySync = dailySyncResponse.data;
               const issueNumber = Number(String(comment.issue_url || "").match(/\/issues\/(\d+)$/)?.[1] || 0);
               const marker = "Owner-approved fallback | bridge=" + ownerBridgeRunId + " | comment=" + ownerBridgeCommentId;
-              const validBridge = bridge.workflow_id === 418997808 && bridge.event === "issue_comment" &&
-                bridge.head_branch === "main" && bridge.status === "completed" &&
-                bridge.conclusion === "success" && bridge.actor?.login === "Pershore";
+              const validBridge = isVerifiedOwnerBridge(bridge);
               const validComment = issueNumber === 145 &&
                 String(comment.body || "").trim() === "/pettraffic-run-daily-suite" &&
                 comment.user?.login === "Pershore";
@@ -199,9 +208,7 @@ jobs:
                 const comment = commentResponse.data;
                 const issueNumber = Number(String(comment.issue_url || "").match(/\/issues\/(\d+)$/)?.[1] || 0);
                 const commentAt = timestamp(comment.created_at), bridgeAt = timestamp(bridge.created_at), sourceAt = timestamp(run.created_at);
-                const validBridge = bridge.workflow_id === 418997808 && bridge.event === "issue_comment" &&
-                  bridge.head_branch === "main" && bridge.status === "completed" && bridge.conclusion === "success" &&
-                  bridge.actor?.login === "Pershore";
+                const validBridge = isVerifiedOwnerBridge(bridge);
                 const validComment = issueNumber === 145 &&
                   String(comment.body || "").trim() === "/pettraffic-run-daily-suite" && comment.user?.login === "Pershore";
                 const validSequence = Number.isFinite(commentAt) && Number.isFinite(bridgeAt) && Number.isFinite(sourceAt) &&
