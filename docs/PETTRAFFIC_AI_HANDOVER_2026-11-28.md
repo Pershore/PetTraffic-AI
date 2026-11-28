@@ -35,3 +35,11 @@
 ## Saugumas
 
 Nekeista main, Worker production, D1 schema/duomenys, DNS, secrets, permissions, billing, ARO Vet ar viešas turinys. Automation-history latest.md/json yra automatiškai generuojami ir rankiniu būdu nekeistini. Issue #145 paliktas open.
+
+
+## Papildoma 2026-11-28 content-review patikra
+
+- Nustatyta, kad content-review įvestis buvo apribota pirmomis 900 teksto raidėmis, o šaltinių nuorodos keturiuose straipsniuose pateiktos pabaigoje. PR #322 dabar perduoda 700 simbolių ištrauką ir iki 3 išorinių šaltinių nuorodų iš viso HTML. Vidinės nuorodos neįtraukiamos; papildomų fetch ar AI kvietimų nėra.
+- Testas patikrina, kad šaltinių nuorodos, esančios po ilgo teksto, išlieka agento įvestyje.
+- Analytics spraga atskira ir reali: 2026-11-27 snapshot metrikos nulinės, top pages/queries tušti, organinės sesijos nepatvirtintos, sitemap pending, prioritetiniai URL Google nežinomi. Nekeisti statuso į reviewed be naujų duomenų.
+- Naujausias CI: site-check #46121855942 (164 testai) success; Worker API #46121855947 (84 Node + 27 Python testai, Cloudflare validation) success; Sync API #46121855949 success; Pages preview success. Production deploy skipped.
