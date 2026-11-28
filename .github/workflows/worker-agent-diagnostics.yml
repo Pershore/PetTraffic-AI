@@ -1,4 +1,5 @@
 name: Pet traffic read-only Worker agent diagnostics
+run-name: "${{ github.event_name == 'workflow_run' && format('Read-only Worker diagnostics after sync #{0}', github.event.workflow_run.id) || 'Pet traffic read-only Worker agent diagnostics' }}"
 
 on:
   workflow_dispatch:

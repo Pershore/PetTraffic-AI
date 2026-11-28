@@ -132,6 +132,36 @@ class DispatchBridgeWorkflowTests(unittest.TestCase):
         self.assertIn("Download manually dispatched Control Center artifact", sync)
         self.assertIn("Pet traffic central control center", sync)
 
+    def test_owner_bridge_reuses_existing_control_center_sync_and_diagnostics_runs(self):
+        bridge = Path(".github/workflows/dispatch-daily-suite.yml").read_text(encoding="utf-8")
+        daily_block = bridge.split('if (action === "daily-suite") {', 1)[1].split('if (action === "sync-latest") {', 1)[0]
+        self.assertIn('const eligibleControlEvents = ["workflow_dispatch", "workflow_run", "push", "schedule"];', daily_block)
+        self.assertIn("eligibleControlEvents.includes(run.event)", daily_block)
+        self.assertIn('run.head_branch === "main"', daily_block)
+        self.assertIn('const controlSyncWorkflowRunTitle = "Sync workflow-run snapshot #" + controlRun.id;', daily_block)
+        control_sync_block = daily_block.split("const controlSyncTitle =", 1)[1].split("const legacyWorkflowRunMatch", 1)[0]
+        self.assertIn("run.event === \"workflow_run\"", control_sync_block)
+        self.assertIn("run.display_title === controlSyncWorkflowRunTitle", control_sync_block)
+        self.assertIn('const diagnosticsWorkflowRunTitle = "Read-only Worker diagnostics after sync #" + controlSync.id;', daily_block)
+        diagnostics_block = daily_block.split('const diagnosticsRuns = await getRuns("worker-agent-diagnostics.yml");', 1)[1]
+        diagnostics_match = diagnostics_block.split("const workflowRunMatch =", 1)[1].split("const legacyWorkflowRunMatch", 1)[0]
+        self.assertIn("run.event === \"workflow_run\"", diagnostics_match)
+        self.assertIn("run.display_title === diagnosticsWorkflowRunTitle", diagnostics_match)
+        self.assertIn('run.display_title === "Sync PetTraffic snapshots to central API"', daily_block)
+        self.assertIn('run.display_title === "Pet traffic read-only Worker agent diagnostics"', daily_block)
+        self.assertIn("const automaticRunReuseWindowMs = 10 * 60 * 1000;", daily_block)
+        self.assertEqual(daily_block.count("const automaticRunReuseWindowMs ="), 1)
+        manual_match = diagnostics_block.split("const manualMatch =", 1)[1].split("const workflowRunMatch", 1)[0]
+        self.assertIn('run.display_title === "Pet traffic read-only Worker agent diagnostics"', manual_match)
+        self.assertIn("Date.parse(run.created_at) <= controlSyncCompletedAt + automaticRunReuseWindowMs", manual_match)
+
+        sync = Path(".github/workflows/sync-control-api.yml").read_text(encoding="utf-8")
+        self.assertIn("format('Sync workflow-run snapshot #{0}', github.event.workflow_run.id)", sync)
+
+        diagnostics = Path(".github/workflows/worker-agent-diagnostics.yml").read_text(encoding="utf-8")
+        self.assertIn("format('Read-only Worker diagnostics after sync #{0}', github.event.workflow_run.id)", diagnostics)
+
+
     def test_owner_bridge_github_script_blocks_parse_as_javascript(self):
         import shutil
         import subprocess
