@@ -215,5 +215,37 @@ class AnalyticsApiRetryTests(unittest.TestCase):
         sleep.assert_not_called()
 
 
+    def test_ga4_empty_rows_are_recorded_as_no_data_not_available_zero(self):
+        report = """# Pet traffic
+GA4 laikotarpis: 2026-11-09 – 2026-11-15
+
+## Pagrindiniai rodikliai (GA4)
+
+GA4 pagrindinių rodiklių eilutės: **Duomenų nėra** – API grąžino tuščią rezultatą, todėl nulis nepatvirtintas.
+
+| Rodiklis | Paskutinės 7 d. | Pokytis prieš ankstesnes 7 d. |
+|---|---:|---:|
+| Aktyvūs naudotojai | Duomenų nėra | nėra duomenų palyginimui |
+| Nauji naudotojai | Duomenų nėra | nėra duomenų palyginimui |
+| Sesijos / apsilankymai | Duomenų nėra | nėra duomenų palyginimui |
+| Puslapių peržiūros | Duomenų nėra | nėra duomenų palyginimui |
+
+## Google paieška (Search Console)
+
+Laikotarpis: 2026-11-06 – 2026-11-12
+
+| Rodiklis | Paskutinės 7 d. | Pokytis prieš ankstesnes 7 d. |
+|---|---:|---:|
+| Paieškos parodymai | Duomenų nėra | nėra duomenų palyginimui |
+| Paspaudimai | Duomenų nėra | nėra duomenų palyginimui |
+"""
+        item=parse_report(report,"empty-ga4-run","2026-11-16T08:00:00Z")
+        self.assertEqual(item["ga4_status"],"no_data")
+        self.assertIsNone(item["metrics"]["active_users"])
+        self.assertIsNone(item["metrics"]["sessions"])
+        self.assertIsNone(item["metrics"]["page_views"])
+        self.assertIsNone(item["metrics"]["search_impressions"])
+        self.assertIsNone(item["metrics"]["search_clicks"])
+
 if __name__ == "__main__":
     unittest.main()

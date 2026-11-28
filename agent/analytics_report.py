@@ -75,11 +75,33 @@ def ga_rows(session, url: str, start: date, end: date, metrics: list[str],
     )
 
 
-def metric_totals(data: dict) -> dict[str, float]:
+def metric_totals(data: dict) -> dict[str, float | None]:
+    """Preserve absent GA4 rows/values as None; only an explicit API zero is zero."""
     headers = [item["name"] for item in data.get("metricHeaders", [])]
-    rows = data.get("rows", [])
-    values = rows[0].get("metricValues", []) if rows else []
-    return {name: float(value.get("value", "0")) for name, value in zip(headers, values)}
+    rows = data.get("rows") or []
+    if not rows:
+        return {name: None for name in headers}
+    values = rows[0].get("metricValues") or []
+    result = {}
+    for index, name in enumerate(headers):
+        raw_value = values[index].get("value") if index < len(values) else None
+        result[name] = None if raw_value is None or raw_value == "" else float(raw_value)
+    return result
+
+
+def metric_value(row: dict, key: str) -> float | None:
+    raw_value = row.get(key)
+    return None if raw_value is None or raw_value == "" else float(raw_value)
+
+
+def fmt_metric(value: float | None) -> str:
+    return "Duomenų nėra" if value is None else fmt(value)
+
+
+def delta_metric(current: float | None, previous: float | None) -> str:
+    if current is None or previous is None:
+        return "nėra duomenų palyginimui"
+    return delta(current, previous)
 
 
 def metric_aggregation_total(data: dict, metric_name: str) -> float | None:
@@ -100,10 +122,14 @@ def metric_aggregation_total(data: dict, metric_name: str) -> float | None:
     return values.get(metric_name)
 
 def channel_breakdown_status(channel_sum: float, api_total: float | None,
-                             overall_total: float) -> tuple[bool, str]:
+                             overall_total: float | None, rows_complete: bool = True) -> tuple[bool, str]:
     """Only trust channel-level metrics when both GA4 totals reconcile."""
+    if not rows_complete:
+        return False, "bent vienai kanalo eilutei trūksta metrikos reikšmės."
     if api_total is None:
         return False, "GA4 nepateikė kanalų užklausos TOTAL agregato."
+    if overall_total is None:
+        return False, "GA4 nepateikė bendro sesijų skaičiaus."
     if abs(channel_sum - api_total) > 0.01:
         return False, (
             f"kanalų eilučių suma ({fmt(channel_sum)}) nesutampa su "
@@ -129,15 +155,18 @@ def aggregate_search_intents(rows: list[dict]) -> dict[str, dict]:
     """Classify phrases in memory and return aggregates with no raw phrase text."""
     themes: dict[str, dict] = {}
     for row in rows:
-        phrase = str(row.get("keys", [""])[0])
+        clicks = metric_value(row, "clicks")
+        impressions = metric_value(row, "impressions")
+        position = metric_value(row, "position")
+        keys = row.get("keys")
+        if clicks is None or impressions is None or position is None or not isinstance(keys, list) or not keys:
+            continue
+        phrase = str(keys[0])
         category = classify_search_intent(phrase)
         item = themes.setdefault(category, {
             "rows": 0, "clicks": 0.0, "impressions": 0.0,
             "position_weighted": 0.0,
         })
-        clicks = float(row.get("clicks", 0))
-        impressions = float(row.get("impressions", 0))
-        position = float(row.get("position", 0))
         item["rows"] += 1
         item["clicks"] += clicks
         item["impressions"] += impressions
@@ -216,7 +245,7 @@ def gsc_metric(data: dict, key: str) -> float | None:
     rows = data.get("rows") or []
     if not rows:
         return None
-    return float(rows[0].get(key, 0))
+    return metric_value(rows[0], key)
 
 
 def fmt_gsc(value: float | None) -> str:
@@ -316,15 +345,23 @@ def main() -> int:
                 "| Rodiklis | Paskutinės 7 d. | Pokytis prieš ankstesnes 7 d. |",
                 "|---|---:|---:|",
             ]
+            if not ga_current.get("rows"):
+                lines += [
+                    "",
+                    "GA4 pagrindinių rodiklių eilutės: **Duomenų nėra** – API grąžino tuščią rezultatą, todėl nulis nepatvirtintas.",
+                    "",
+                ]
             for key, label in (
                 ("activeUsers", "Aktyvūs naudotojai"),
                 ("newUsers", "Nauji naudotojai"),
                 ("sessions", "Sesijos / apsilankymai"),
                 ("screenPageViews", "Puslapių peržiūros"),
             ):
+                current_value = current.get(key)
+                previous_value = previous.get(key)
                 lines.append(
-                    f"| {label} | {fmt(current.get(key, 0))} | "
-                    f"{delta(current.get(key, 0), previous.get(key, 0))} |"
+                    f"| {label} | {fmt_metric(current_value)} | "
+                    f"{delta_metric(current_value, previous_value)} |"
                 )
     
             channels = ga_rows(
@@ -338,19 +375,26 @@ def main() -> int:
                 lines.append("_Google taiko duomenų slenkstį; kanalų suma gali nesutapti su bendru rodikliu._")
             organic_sessions = 0.0
             channel_sessions_total = 0.0
+            channel_rows_complete = True
             for row in channels.get("rows", []):
-                channel = row.get("dimensionValues", [{}])[0].get("value", "Nežinomas")
-                value = float(row.get("metricValues", [{}])[0].get("value", "0"))
+                dimension_values = row.get("dimensionValues") or []
+                channel = dimension_values[0].get("value", "Nežinomas") if dimension_values else "Nežinomas"
+                metric_values = row.get("metricValues") or []
+                value = metric_value(metric_values[0], "value") if metric_values else None
+                if value is None:
+                    channel_rows_complete = False
+                    lines.append(f"| {channel} | Duomenų nėra |")
+                    continue
                 lines.append(f"| {channel} | {fmt(value)} |")
                 channel_sessions_total += value
                 if channel == "Organic Search":
                     organic_sessions = value
             if not channels.get("rows"):
                 lines.append("| Duomenų nėra | – |")
-            total_sessions = current.get("sessions", 0.0)
+            total_sessions = current.get("sessions")
             channel_api_total = metric_aggregation_total(channels, "sessions")
             channel_verified, channel_note = channel_breakdown_status(
-                channel_sessions_total, channel_api_total, total_sessions
+                channel_sessions_total, channel_api_total, total_sessions, channel_rows_complete
             )
             if channel_verified:
                 lines += ["", f"Organinės paieškos sesijos: **{fmt(organic_sessions)}**", ""]
@@ -369,9 +413,14 @@ def main() -> int:
             lines += ["### Daugiausia peržiūrėti puslapiai (GA4)", ""]
             if top_pages.get("rows"):
                 for row in top_pages["rows"]:
-                    path = row.get("dimensionValues", [{}])[0].get("value", "/")
-                    views = float(row.get("metricValues", [{}])[0].get("value", "0"))
-                    lines.append(f"- {path} – {fmt(views)} peržiūrų")
+                    dimensions = row.get("dimensionValues") or []
+                    path = dimensions[0].get("value", "/") if dimensions else "/"
+                    metric_values = row.get("metricValues") or []
+                    views = metric_value(metric_values[0], "value") if metric_values else None
+                    lines.append(
+                        f"- {path} – {fmt_metric(views)}" +
+                        (" peržiūrų" if views is not None else "")
+                    )
             else:
                 lines.append("_GA4 puslapių duomenų šiam laikotarpiui nėra._")
     
@@ -454,11 +503,17 @@ def main() -> int:
                     "|---|---:|---:|---:|---:|",
                 ]
                 for row in pages["rows"]:
-                    page_url = str(row.get("keys", [""])[0]).split("?", 1)[0].split("#", 1)[0].replace("|", "%7C")
+                    keys = row.get("keys") or []
+                    page_url = str(keys[0] if keys else "Puslapis nenurodytas").split("?", 1)[0].split("#", 1)[0].replace("|", "%7C")
+                    clicks = metric_value(row, "clicks")
+                    impressions = metric_value(row, "impressions")
+                    ctr = metric_value(row, "ctr")
+                    position = metric_value(row, "position")
+                    ctr_display = f"{ctr:.1%}" if ctr is not None else "Duomenų nėra"
+                    position_display = f"{position:.1f}" if position is not None else "Duomenų nėra"
                     lines.append(
-                        f"| {page_url} | {fmt(float(row.get('clicks', 0)))} | "
-                        f"{fmt(float(row.get('impressions', 0)))} | "
-                        f"{float(row.get('ctr', 0)):.1%} | {float(row.get('position', 0)):.1f} |"
+                        f"| {page_url} | {fmt_gsc(clicks)} | {fmt_gsc(impressions)} | "
+                        f"{ctr_display} | {position_display} |"
                     )
             else:
                 lines.append("_Search Console puslapių eilučių nepateikė._")
