@@ -1621,3 +1621,10 @@ Kitas veiksmas: tikrinti kitą tikrą Daily-suite `event=schedule`; po jo laukti
 - Worker šiandien iki 13:20 LT WAITING; paskutinė diagnostika #46122216652 patvirtino D1/Control Core/site/DB ir heartbeat. Naujo AI ciklo dar nėra. Control Center po fallback nepaleistas, nes sync nepavyko.
 - Production Pages deploy nuo 2026-11-25 nebuvo naujas, nes `site/**` nepakito; 2026-11-28 live-check success. Jokių production Worker/D1, DNS, secrets, permissions, billing, ARO Vet ar viešo turinio pakeitimų.
 - Kitas žingsnis: užbaigti PR #323 CI ir gauti savininko patvirtinimą prieš merge; po 13:20 LT patikrinti vienintelį dienos AI ciklą ir 14:00 verifier. Issue #145 palikti open.
+
+
+### PR #323 papildymas – bridge baigiasi po duomenų sinchronizavimo
+
+- Owner-bridge fallback dabar baigiasi iškart po sėkmingų Daily-suite, D1 sync, Control Center ir Control Center D1 sync etapų. Nebelaukiama atskiro read-only Worker agent diagnostics vykdymo; jis lieka esamam 14:00 post-cycle verifieriui.
+- Priežastis: agent diagnostics nėra duomenų surinkimo / D1 snapshot patikros dalis ir neturi galėti paversti jau sėkmingos duomenų grandinės nesėkmingu owner bridge po to, kai visi keturi tos pačios dienos snapshot'ai įrašyti. Tai taip pat sumažina tėvinio bridge vykdymo laiką prieš 13:20 AI langą.
+- Pridėtas regresijos testas: daily-suite fallback grandinė tikrina visas keturias duomenų stadijas, o AI diagnostiką palieka esamam 14:00 verifieriui. Jokių papildomų workflow, cron ar teisių nesukurta.
