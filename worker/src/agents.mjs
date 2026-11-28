@@ -72,6 +72,46 @@ export function isEligibleScheduledDailySuiteSnapshot(event, localDay, evidenceC
   persistedAt.getTime()<=cutoff.getTime() && vilniusDateKey(sourceCreatedAt)===localDay;
 }
 
+export function isEligibleControlCenterSnapshot(event, localDay, evidenceCutoff) {
+  const payload = event?.payload && typeof event.payload === "object" ? event.payload : (() => {
+    if (typeof event?.payload_json !== "string") return null;
+    try {
+      const parsed = JSON.parse(event.payload_json);
+      return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : null;
+    } catch {
+      return null;
+    }
+  })();
+  if (!payload || !["control_center_snapshot", "recommendation_snapshot"].includes(event?.kind)) return false;
+
+  const provenance = payload.provenance;
+  if (!provenance || String(provenance.source_workflow_id) !== "416336983") return false;
+  const ownerBridgeFallback = provenance.source_event === "owner_bridge_fallback" &&
+    provenance.source_trigger_event === "workflow_dispatch" &&
+    provenance.owner_approved_fallback === true &&
+    provenance.owner_actor === "Pershore" &&
+    /^\d+$/.test(String(provenance.owner_bridge_run_id || "")) &&
+    /^\d+$/.test(String(provenance.owner_bridge_comment_id || ""));
+  // Control Center snapshots arrive through the authenticated workflow_run
+  // sync path. A manual dispatch is accepted only with the verified owner bridge.
+  if (provenance.source_event === "owner_bridge_fallback") {
+    if (!ownerBridgeFallback) return false;
+  } else if (!["push", "schedule", "workflow_run"].includes(provenance.source_event)) {
+    return false;
+  }
+
+  const sourceRunId = String(provenance.source_run_id || "");
+  if (!sourceRunId || String(payload.run_id || "") !== sourceRunId) return false;
+  if (typeof provenance.source_run_created_at !== "string") return false;
+  const sourceCreatedAt = new Date(provenance.source_run_created_at);
+  const persistedAt = new Date(event.created_at);
+  const cutoff = new Date(evidenceCutoff);
+  return Number.isFinite(sourceCreatedAt.getTime()) && Number.isFinite(persistedAt.getTime()) &&
+    Number.isFinite(cutoff.getTime()) && persistedAt.getTime() >= sourceCreatedAt.getTime() &&
+    sourceCreatedAt.getTime() <= cutoff.getTime() && persistedAt.getTime() <= cutoff.getTime() &&
+    vilniusDateKey(sourceCreatedAt) === localDay;
+}
+
 export async function shouldRunAgentOrchestration(env, controller) {
   if (!env?.DB || !(isAgentScheduledEvent(controller) || isAgentCatchUpEvent(controller))) return false;
 
@@ -86,19 +126,22 @@ export async function shouldRunAgentOrchestration(env, controller) {
   ).bind(runDate).first();
   if (existingRun) return false;
 
-  const localDay = vilniusDateKey(scheduledAt);
-  const snapshots = await env.DB.prepare(
-    "SELECT kind, payload_json, created_at FROM events " +
-    "WHERE kind IN ('analytics_snapshot', 'topic_snapshot') AND created_at <= ? " +
-    "ORDER BY created_at DESC LIMIT 100"
-  ).bind(scheduledAt.toISOString()).all();
+  // Do not spend the one daily AI cycle on a partial snapshot set. The
+  // heartbeat cron will retry this gate after 13:20 until all four verified
+  // same-day snapshots have been persisted and read back from D1.
+  const eventData = await getEvents(env, runDate, scheduledAt);
+  if (eventData.missingKinds.length || eventData.staleKinds.length) return false;
 
-  // Require a same-day Daily-suite snapshot with either a true GitHub schedule
-  // event or a separately verified owner-only bridge fallback. Plain manual
-  // dispatches, pushes, PRs and other events remain ineligible.
-  return (snapshots.results || []).some(row =>
-    isEligibleScheduledDailySuiteSnapshot(row, localDay, scheduledAt)
-  );
+  const control = eventData.events.find(event => event.kind === "control_center_snapshot");
+  const recommendations = eventData.events.find(event => event.kind === "recommendation_snapshot");
+  if (!control || !recommendations) return false;
+
+  const controlProvenance = control.payload.provenance || {};
+  const recommendationProvenance = recommendations.payload.provenance || {};
+  return String(control.payload.run_id || "") === String(recommendations.payload.run_id || "") &&
+    String(controlProvenance.source_run_id || "") === String(recommendationProvenance.source_run_id || "") &&
+    String(controlProvenance.source_run_created_at || "") === String(recommendationProvenance.source_run_created_at || "") &&
+    String(controlProvenance.source_workflow_id || "") === String(recommendationProvenance.source_workflow_id || "");
 }
 
 import { buildControlDecision, persistControlDecision } from "./control-core.mjs";
@@ -240,8 +283,14 @@ export async function getEvents(env, expectedRunDate = new Date().toISOString().
     invalidPayloadCount++;
     continue;
    }
+   const event = {kind,created_at:row.created_at,payload};
    if((kind==="analytics_snapshot"||kind==="topic_snapshot") &&
-      !isEligibleScheduledDailySuiteSnapshot({kind,created_at:row.created_at,payload},localDay,cutoff)) {
+      !isEligibleScheduledDailySuiteSnapshot(event,localDay,cutoff)) {
+    sawStale=true;
+    continue;
+   }
+   if((kind==="control_center_snapshot"||kind==="recommendation_snapshot") &&
+      !isEligibleControlCenterSnapshot(event,localDay,cutoff)) {
     sawStale=true;
     continue;
    }
@@ -254,18 +303,34 @@ export async function getEvents(env, expectedRunDate = new Date().toISOString().
  }
  return {events,invalidPayloadCount,missingKinds,staleKinds};
 }
+export function extractPublicPageEvidence(html, path, status = 200) {
+ const text=String(html||"").replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi," ").replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi," ")
+  .replace(/<[^>]+>/g," ").replace(/&nbsp;/gi," ").replace(/&amp;/gi,"&").replace(/&lt;/gi,"<").replace(/&gt;/gi,">")
+  .replace(/&quot;/gi,'"').replace(/&#39;/gi,"'").replace(/\s+/g," ").trim();
+ const seen=new Set();
+ const sourceLinks=[];
+ for(const match of String(html||"").matchAll(/<a\b[^>]*href\s*=\s*(["'])(https?:\/\/[^"']+)\1[^>]*>([\s\S]*?)<\/a>/gi)) {
+  try {
+   const parsed=new URL(match[2]);
+   if(!["http:","https:"].includes(parsed.protocol)||parsed.hostname==="pettraffic-ai.pages.dev") continue;
+   const url=(parsed.origin+parsed.pathname).slice(0,140);
+   if(seen.has(url)) continue;
+   seen.add(url);
+   const title=match[3].replace(/<[^>]+>/g," ").replace(/&amp;/gi,"&").replace(/&nbsp;/gi," ").replace(/\s+/g," ").trim().slice(0,60);
+   sourceLinks.push({title,url});
+  } catch {}
+ }
+ return {path,status,text:text.slice(0,700),source_count:sourceLinks.length,source_links:sourceLinks.slice(0,3)};
+}
+
 async function getPublicContent(env) {
  const pages=[]; const fetcher=env.FETCH||fetch;
  for(const path of CONTENT_PATHS) {
   try {
    const response=await fetcher(SITE+path,{headers:{"user-agent":"PetTraffic-AgentContentReview/1.0"},redirect:"follow"});
-   if(!response.ok){pages.push({path,status:response.status,text:""});continue;}
-   const html=await response.text();
-   const text=html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi," ").replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi," ")
-    .replace(/<[^>]+>/g," ").replace(/&nbsp;/gi," ").replace(/&amp;/gi,"&").replace(/&lt;/gi,"<").replace(/&gt;/gi,">")
-    .replace(/&quot;/gi,'"').replace(/&#39;/gi,"'").replace(/\s+/g," ").trim();
-   pages.push({path,status:response.status,text:text.slice(0,900)});
-  } catch { pages.push({path,status:0,text:""}); }
+   if(!response.ok){pages.push({path,status:response.status,text:"",source_count:0,source_links:[]});continue;}
+   pages.push(extractPublicPageEvidence(await response.text(),path,response.status));
+  } catch { pages.push({path,status:0,text:"",source_count:0,source_links:[]}); }
  }
  return pages;
 }

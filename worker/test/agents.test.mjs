@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { runAgentOrchestration, isVilniusAgentRunTime, isAgentScheduledEvent, isAgentCatchUpEvent, shouldRunAgentOrchestration, isEligibleScheduledDailySuiteSnapshot, parseResult, extractResponseText, callModel, getEvents } from "../src/agents.mjs";
+import { runAgentOrchestration, isVilniusAgentRunTime, isAgentScheduledEvent, isAgentCatchUpEvent, shouldRunAgentOrchestration, isEligibleScheduledDailySuiteSnapshot, isEligibleControlCenterSnapshot, extractPublicPageEvidence, parseResult, extractResponseText, callModel, getEvents } from "../src/agents.mjs";
 function mockEnv({ai=true,existingRun=false,reserveErrorAt=0,reserveErrorBeforeCommit=false,reserveReadbackError=false,invalidEventPayload=false,modelResponse=null,modelResponses=null}={}) {
  const state={inserted:false,aiCalls:0,updates:[],reservationErrorThrown:false};
  const env={FETCH:async()=>new Response("<html><body><p>Test content</p></body></html>",{status:200}),DB:{prepare(sql){return {
@@ -14,6 +14,22 @@ function mockEnv({ai=true,existingRun=false,reserveErrorAt=0,reserveErrorBeforeC
  if(ai)env.AI={run:async()=>({response:Array.isArray(modelResponses)?(modelResponses[state.aiCalls-1]??JSON.stringify({status:"reviewed",findings:[],recommendations:[],evidence_gaps:[]})):(modelResponse??JSON.stringify({status:"reviewed",findings:[],recommendations:[],evidence_gaps:[]}))})};
  return{env,state};
 }
+test("public content evidence includes external source links beyond the opening text excerpt",()=>{
+ const filler="<p>"+("Veterinarinė informacija ir simptomų aprašymas. ").repeat(40)+"</p>";
+ const html="<html><body>"+filler+
+  "<h2>Patikimi šaltiniai</h2><ul>"+
+  '<li><a href="https://www.vet.cornell.edu/guide">Cornell Veterinary Medicine</a></li>'+
+  '<li><a href="https://www.pdsa.org.uk/pet-help">PDSA Pet Advice</a></li>'+
+  '<li><a href="https://pettraffic-ai.pages.dev/about.html">Internal page</a></li>'+
+  "</ul></body></html>";
+ const page=extractPublicPageEvidence(html,"/articles/test.html",200);
+ assert.equal(page.status,200);
+ assert.equal(page.text.length,700);
+ assert.equal(page.source_count,2);
+ assert.deepEqual(page.source_links.map(item=>item.title),["Cornell Veterinary Medicine","PDSA Pet Advice"]);
+ assert.ok(page.source_links.every(item=>item.url.length<=140));
+});
+
 test("orchestrator performs five capped AI calls and stores a read-only report",async()=>{const{env,state}=mockEnv();const result=await runAgentOrchestration(env);assert.equal(result.completed,true);assert.equal(result.ai_calls,5);assert.equal(state.aiCalls,5);assert.ok(state.updates.some(x=>x.sql.includes("status='completed'")));});
 test("orchestrator is idempotent per UTC day",async()=>{const{env,state}=mockEnv({existingRun:true});const result=await runAgentOrchestration(env);assert.equal(result.skipped,true);assert.equal(result.reason,"daily_run_already_started");assert.equal(state.aiCalls,0);});
 test("orchestrator refuses to run without Workers AI binding",async()=>{const{env,state}=mockEnv({ai:false});const result=await runAgentOrchestration(env);assert.equal(result.skipped,true);assert.equal(result.reason,"ai_binding_missing");assert.equal(state.aiCalls,0);});
@@ -262,41 +278,93 @@ test("heartbeat catch-up opens at 13:20 Vilnius in both winter and summer", () =
  assert.equal(isAgentCatchUpEvent({ cron: "20 10,11 * * *", scheduledTime: winter.scheduledTime }), false);
 });
 
-test("daily orchestration waits for a same-day scheduled Daily-suite snapshot", async () => {
+test("daily orchestration waits for all four verified same-day snapshots", async () => {
  const controller = { cron: "*/15 * * * *", scheduledTime: Date.parse("2026-11-15T11:30:00.000Z") };
  const makeEnv = ({existingRun=null,rows=[]}={}) => ({
   DB: { prepare(sql) {
    return {
-    bind() { return {
+    bind(kind) { return {
      first: async () => sql.includes("FROM agent_runs") ? existingRun : null,
-     all: async () => ({results: rows}),
+     all: async () => ({results: rows.filter(row => row.kind === kind)}),
     }; },
    };
   } },
  });
- const provenance = {
+ const suiteProvenance = {
   source_event: "schedule",
   source_workflow_id: "418322987",
   source_run_id: "suite-today",
   source_run_created_at: "2026-11-15T11:24:00.000Z",
  };
- const today = makeEnv({rows:[{
-  kind:"analytics_snapshot",
-  created_at:"2026-11-15T11:25:00.000Z",
-  payload_json:JSON.stringify({run_id:"suite-today",provenance}),
- }]});
- const yesterday = makeEnv({rows:[{
-  kind:"topic_snapshot",
-  created_at:"2026-11-14T11:25:00.000Z",
-  payload_json:JSON.stringify({
-   run_id:"suite-yesterday",
-   provenance:{...provenance,source_run_id:"suite-yesterday",source_run_created_at:"2026-11-14T11:24:00.000Z"},
-  }),
- }]});
+ const ccProvenance = {
+  source_event: "workflow_run",
+  source_trigger_event: "workflow_run",
+  source_workflow_id: "416336983",
+  source_run_id: "cc-today",
+  source_run_created_at: "2026-11-15T11:27:00.000Z",
+ };
+ const rows = [
+  {kind:"analytics_snapshot",created_at:"2026-11-15T11:25:00.000Z",payload_json:JSON.stringify({run_id:"suite-today",provenance:suiteProvenance})},
+  {kind:"topic_snapshot",created_at:"2026-11-15T11:25:30.000Z",payload_json:JSON.stringify({run_id:"suite-today",provenance:suiteProvenance})},
+  {kind:"control_center_snapshot",created_at:"2026-11-15T11:28:00.000Z",payload_json:JSON.stringify({run_id:"cc-today",provenance:ccProvenance})},
+  {kind:"recommendation_snapshot",created_at:"2026-11-15T11:28:01.000Z",payload_json:JSON.stringify({run_id:"cc-today",provenance:ccProvenance})},
+ ];
+ const complete = makeEnv({rows});
+ const missingControl = makeEnv({rows:rows.filter(row => row.kind !== "control_center_snapshot")});
+ const missingRecommendation = makeEnv({rows:rows.filter(row => row.kind !== "recommendation_snapshot")});
+ const mismatchedControlRun = rows.map(row => row.kind === "recommendation_snapshot"
+  ? {...row,payload_json:JSON.stringify({run_id:"different-cc",provenance:{...ccProvenance,source_run_id:"different-cc"}})}
+  : row);
+ const mismatchedPair = makeEnv({rows:mismatchedControlRun});
  const none = makeEnv();
- assert.equal(await shouldRunAgentOrchestration(today,controller), true);
- assert.equal(await shouldRunAgentOrchestration(yesterday,controller), false);
+ assert.equal(await shouldRunAgentOrchestration(complete,controller), true);
+ assert.equal(await shouldRunAgentOrchestration(missingControl,controller), false);
+ assert.equal(await shouldRunAgentOrchestration(missingRecommendation,controller), false);
+ assert.equal(await shouldRunAgentOrchestration(mismatchedPair,controller), false);
  assert.equal(await shouldRunAgentOrchestration(none,controller), false);
+});
+
+test("Control Center evidence requires trusted same-day provenance", () => {
+ const good = {
+  kind:"control_center_snapshot",
+  created_at:"2026-11-15T11:28:00.000Z",
+  payload:{
+   run_id:"cc-today",
+   provenance:{
+    source_event:"workflow_run",source_trigger_event:"workflow_run",
+    source_workflow_id:"416336983",source_run_id:"cc-today",
+    source_run_created_at:"2026-11-15T11:27:00.000Z",
+   },
+  },
+ };
+ const cutoff = Date.parse("2026-11-15T11:30:00.000Z");
+ assert.equal(isEligibleControlCenterSnapshot(good,"2026-11-15",cutoff),true);
+ const fallback = {
+  ...good,
+  payload: {
+   run_id:"cc-today",
+   provenance:{
+    source_event:"owner_bridge_fallback",source_trigger_event:"workflow_dispatch",
+    source_workflow_id:"416336983",source_run_id:"cc-today",
+    source_run_created_at:"2026-11-15T11:27:00.000Z",
+    owner_approved_fallback:true,owner_actor:"Pershore",
+    owner_bridge_run_id:"123456",owner_bridge_comment_id:"987654",
+   },
+  },
+ };
+ assert.equal(isEligibleControlCenterSnapshot(fallback,"2026-11-15",cutoff),true);
+ const incompleteFallback = {...fallback,payload:{...fallback.payload,provenance:{...fallback.payload.provenance,owner_bridge_comment_id:""}}};
+ assert.equal(isEligibleControlCenterSnapshot(incompleteFallback,"2026-11-15",cutoff),false);
+ const reject = (changes,day="2026-11-15",time=cutoff) => isEligibleControlCenterSnapshot({
+  ...good,...changes,payload:{...good.payload,...changes.payload,
+   provenance:{...good.payload.provenance,...(changes.payload?.provenance||{})}},
+ } ,day,time);
+ assert.equal(reject({payload:{provenance:{source_workflow_id:"999"}}}),false);
+ assert.equal(reject({payload:{provenance:{source_event:"workflow_dispatch"}}}),false);
+ assert.equal(reject({payload:{provenance:{source_run_id:"other"}}}),false);
+ assert.equal(reject({created_at:"2026-11-15T11:26:00.000Z"}),false);
+ assert.equal(reject({}, "2026-11-14"),false);
+ assert.equal(reject({}, "2026-11-15", Date.parse("2026-11-15T11:26:00.000Z")),false);
 });
 
 test("daily orchestration never starts a second time after a run was reserved", async () => {
@@ -315,8 +383,10 @@ test("source selection uses scheduled analytics/topic snapshots and excludes new
  const rows=[];
  for(let i=0;i<18;i++) {
   const stamp=new Date(Date.parse("2026-11-17T11:50:00.000Z")+i*1000).toISOString();
-  rows.push({kind:"control_center_snapshot",created_at:stamp,payload_json:JSON.stringify({run_id:"cc-"+i})});
-  rows.push({kind:"recommendation_snapshot",created_at:stamp,payload_json:JSON.stringify({run_id:"rec-"+i})});
+  const ccRunId="cc-"+i;
+  const ccProvenance={source_event:"workflow_run",source_trigger_event:"workflow_run",source_workflow_id:"416336983",source_run_id:ccRunId,source_run_created_at:"2026-11-17T11:48:00.000Z"};
+  rows.push({kind:"control_center_snapshot",created_at:stamp,payload_json:JSON.stringify({run_id:ccRunId,provenance:ccProvenance})});
+  rows.push({kind:"recommendation_snapshot",created_at:stamp,payload_json:JSON.stringify({run_id:ccRunId,provenance:ccProvenance})});
  }
  const provenance=(runId,sourceEvent="schedule",createdAt="2026-11-17T11:48:00.000Z")=>({
   source_event:sourceEvent,source_workflow_id:"418322987",source_run_id:runId,source_run_created_at:createdAt,

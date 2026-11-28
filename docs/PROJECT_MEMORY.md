@@ -1183,3 +1183,21 @@ GitHub API patvirtino, kad Daily-suite run #44119444026 buvo tikras event=schedu
 - Worker /health HTTP 200; database connected; heartbeat HTTP 200. Today's AI cycle completed with 5 calls and error_code=null, but Control Core remains needs_evidence with 5 gaps. The AI cycle ran at 11:20 UTC, before Control Center evidence was written at 13:11 UTC; diagnostics therefore still report the earlier cycle's control_center_snapshot_missing gap. Do not rerun today's AI cycle (one/day limit). Next expected cycle: 2026-11-28 13:20 Europe/Vilnius.
 - 2026-11-27 Daily-suite event=schedule was not found. Owner fallback workflow_dispatch is not schedule proof. The merged fallback orchestration code has not yet been exercised end-to-end after merge; the post-merge push → Control Center → workflow_run sync → diagnostics path was verified.
 - Issue #145 remains open. Lighthouse next weekly slot 2026-11-30. Do not manually edit automation-history latest.md/json; latest snapshot #46004827639 predates sync #46004902261 and will be refreshed by a later Control Center cycle.
+
+
+## 2026-11-28 – AI evidence gate recovery
+
+- Root cause verified: the Worker preflight accepted any one eligible same-day analytics/topic snapshot and did not wait for the same-day Control Center plus recommendation snapshots. On 2026-11-27 the AI cycle started at 11:20:23Z; the Control Center evidence was synced around 13:11Z, after the cycle. This explains the technical-SEO control_center_snapshot_missing gap; other specialist gaps remain independently evidenced and must not be assumed fixed by this timing change.
+- Draft PR #322: fix/ai-evidence-gate-require-all-snapshots-20261128. It requires all four same-day D1 snapshot kinds, validates Control Center workflow provenance (workflow ID 416336983), rejects unverified manual dispatches, requires Control Center/recommendation events from the same run, and relies on the existing post-13:20 15-minute heartbeat catch-up without reserving the daily run early.
+- PR CI passed: site-check #46121610160 (164 tests); Worker API #46121610183 (83 Node + 27 Python tests; Cloudflare resource validation success); Sync API #46121610243; Cloudflare Pages preview success. Production Worker deploy and sync jobs were skipped on pull_request.
+- No production code, D1 data/schema, DNS, secrets, permissions, billing, public content or ARO Vet changes. Issue #145 remains open. PR #322 remains draft pending explicit approval for production merge/deploy. Runtime recovery is not yet verified.
+- Do not edit the generated automation-history reports/history/project-state/latest.md/json manually. After approved deployment, verify the live Worker, the next single daily AI cycle, all four specialists' evidence, Control Core, and same-cycle D1 memory readback.
+
+
+## 2026-11-28 – content-review source visibility
+
+- The public content-review agent previously received only the first 900 normalized text characters of each guide. The four current guides place their authoritative source links near the end, so the specialist input omitted those citations. This is a verified input-coverage gap, not proof that the published guides lack sources.
+- PR #322 now supplies a bounded 700-character text excerpt plus up to three unique external source links (short title and capped URL) from each full page. Internal Pet traffic links are excluded. No extra network requests or AI calls are introduced. A regression test verifies links near the end of long HTML reach the review evidence.
+- Latest CI on PR head 3686d42: site-check #46121855942 success (164 tests); Worker API #46121855947 success (84 Node + 27 Python tests; Cloudflare resource validation success); Sync API #46121855949 success; Pages preview success. Production Worker deploy skipped.
+- Analytics evidence remains legitimately insufficient in the 2026-11-27 snapshot: GA4 metrics and GSC impressions/clicks are zero, top pages/queries absent, organic sessions unverified, sitemap pending, and priority URLs unknown to Google. Do not normalize these gaps to reviewed; wait for real evidence.
+- PR #322 remains draft and production runtime is unverified. Issue #145 remains open.
