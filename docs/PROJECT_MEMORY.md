@@ -1228,3 +1228,10 @@ GitHub API patvirtino, kad Daily-suite run #44119444026 buvo tikras event=schedu
 - **Testai ir apribojimai:** vietinis pilno repo klonavimas nepavyko dėl DNS resolverio (`github.com` nepasiekiamas iš šios aplinkos). PR CI: sync workflow test run #46135981250 success; site-check #46135981226 tuo metu in_progress. PR #323 paliktas DRAFT, nes tai saugumo vartų elgsenos pakeitimas; production merge tik po visų privalomų CI patikrų ir aiškaus savininko patvirtinimo.
 - **Saugumas:** nekeista Worker/D1 production, D1 duomenys/schema, DNS, secrets, repository permissions, billing, ARO Vet ar viešas turinys. automation-history `reports/history/project-state/latest.md/json` rankiniu būdu nekeisti; naujo Control Center snapshot šiandien dar nėra. Issue #145 lieka open.
 - **Kitas veiksmas:** užbaigti PR #323 CI peržiūrą; laukti vienintelio 2026-11-28 13:20 LT Worker ciklo lango ir po jo patikrinti /health bei 14:00 verifier. Jei nėra naujo to paties run_date įrašo, žymėti STALE ir nekartoti; šiandienos Daily-suite fallback ir sync nedubliuoti.
+
+
+### PR #323 papildymas – bridge baigiasi po duomenų sinchronizavimo
+
+- Owner-bridge fallback dabar baigiasi iškart po sėkmingų Daily-suite, D1 sync, Control Center ir Control Center D1 sync etapų. Nebelaukiama atskiro read-only Worker agent diagnostics vykdymo; jis lieka esamam 14:00 post-cycle verifieriui.
+- Priežastis: agent diagnostics nėra duomenų surinkimo / D1 snapshot patikros dalis ir neturi galėti paversti jau sėkmingos duomenų grandinės nesėkmingu owner bridge po to, kai visi keturi tos pačios dienos snapshot'ai įrašyti. Tai taip pat sumažina tėvinio bridge vykdymo laiką prieš 13:20 AI langą.
+- Pridėtas regresijos testas: daily-suite fallback grandinė tikrina visas keturias duomenų stadijas, o AI diagnostiką palieka esamam 14:00 verifieriui. Jokių papildomų workflow, cron ar teisių nesukurta.
