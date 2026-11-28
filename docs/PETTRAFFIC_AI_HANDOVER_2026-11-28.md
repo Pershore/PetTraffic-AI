@@ -43,3 +43,14 @@ Nekeista main, Worker production, D1 schema/duomenys, DNS, secrets, permissions,
 - Testas patikrina, kad šaltinių nuorodos, esančios po ilgo teksto, išlieka agento įvestyje.
 - Analytics spraga atskira ir reali: 2026-11-27 snapshot metrikos nulinės, top pages/queries tušti, organinės sesijos nepatvirtintos, sitemap pending, prioritetiniai URL Google nežinomi. Nekeisti statuso į reviewed be naujų duomenų.
 - Naujausias CI: site-check #46121855942 (164 testai) success; Worker API #46121855947 (84 Node + 27 Python testai, Cloudflare validation) success; Sync API #46121855949 success; Pages preview success. Production deploy skipped.
+
+
+## 2026-11-28 09:39 LT – PR #322 sujungtas ir Worker įdiegtas
+
+- Savininko patvirtinimu PR #322 pažymėtas ready ir squash sujungtas į main: `a1a3132b95c04fbca2110bf88571c06542e0c2c1`.
+- Production Worker deploy workflow #46122167256 (event `push`) – success. D1 migracijų nebuvo; Worker versija `f771441b-6d64-4807-8573-9f0f9df9dbb5`.
+- Deploy workflow realiai patikrino D1 ir Control Core schema ryšį, neautentifikuoto `/v1/events` 401 atsakymą ir abu Cron grafikus `*/15 * * * *`, `20 10,11 * * *`.
+- Po merge: site-check #46122167222, automatic work-log #46122167317 ir central control center #46122167433 – success. Tai `push`, ne `schedule`.
+- Gyvas `/health` 2026-11-28T07:39Z vis dar rodo 2026-11-27 AI ciklą: 5 kvietimai, `completed`, `error_code=null`, bet Control Core `needs_evidence`, 5 spragos. Todėl AI recovery **NEPATVIRTINTA**. Šiandien nekartoti ciklo; laukti vienintelio 13:20 LT lango, tada tikrinti visų specialistų įrodymus, Control Core ir to paties ciklo D1 memory readback.
+- Analytics agentas atskirai lieka `needs_evidence`: 2026-11-27 GA4/GSC snapshot be pakankamų metrikų, top pages/queries nėra, organic sessions nepatvirtintos, sitemap pending. Issue #145 lieka open.
+- `automation-history/reports/history/project-state/latest.md/json` yra automatiškai generuojami; nekeisti rankiniu būdu. 07:39Z snapshot pažymėjo daily-suite `schedule` 06:10Z kaip neįvykusį; vėlesni `push` paleidimai jo neatstoja.
