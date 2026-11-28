@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { runAgentOrchestration, isVilniusAgentRunTime, isAgentScheduledEvent, isAgentCatchUpEvent, shouldRunAgentOrchestration, isEligibleScheduledDailySuiteSnapshot, isEligibleControlCenterSnapshot, parseResult, extractResponseText, callModel, getEvents } from "../src/agents.mjs";
+import { runAgentOrchestration, isVilniusAgentRunTime, isAgentScheduledEvent, isAgentCatchUpEvent, shouldRunAgentOrchestration, isEligibleScheduledDailySuiteSnapshot, isEligibleControlCenterSnapshot, extractPublicPageEvidence, parseResult, extractResponseText, callModel, getEvents } from "../src/agents.mjs";
 function mockEnv({ai=true,existingRun=false,reserveErrorAt=0,reserveErrorBeforeCommit=false,reserveReadbackError=false,invalidEventPayload=false,modelResponse=null,modelResponses=null}={}) {
  const state={inserted:false,aiCalls:0,updates:[],reservationErrorThrown:false};
  const env={FETCH:async()=>new Response("<html><body><p>Test content</p></body></html>",{status:200}),DB:{prepare(sql){return {
@@ -14,6 +14,22 @@ function mockEnv({ai=true,existingRun=false,reserveErrorAt=0,reserveErrorBeforeC
  if(ai)env.AI={run:async()=>({response:Array.isArray(modelResponses)?(modelResponses[state.aiCalls-1]??JSON.stringify({status:"reviewed",findings:[],recommendations:[],evidence_gaps:[]})):(modelResponse??JSON.stringify({status:"reviewed",findings:[],recommendations:[],evidence_gaps:[]}))})};
  return{env,state};
 }
+test("public content evidence includes external source links beyond the opening text excerpt",()=>{
+ const filler="<p>"+("Veterinarinė informacija ir simptomų aprašymas. ").repeat(40)+"</p>";
+ const html="<html><body>"+filler+
+  "<h2>Patikimi šaltiniai</h2><ul>"+
+  '<li><a href="https://www.vet.cornell.edu/guide">Cornell Veterinary Medicine</a></li>'+
+  '<li><a href="https://www.pdsa.org.uk/pet-help">PDSA Pet Advice</a></li>'+
+  '<li><a href="https://pettraffic-ai.pages.dev/about.html">Internal page</a></li>'+
+  "</ul></body></html>";
+ const page=extractPublicPageEvidence(html,"/articles/test.html",200);
+ assert.equal(page.status,200);
+ assert.equal(page.text.length,700);
+ assert.equal(page.source_count,2);
+ assert.deepEqual(page.source_links.map(item=>item.title),["Cornell Veterinary Medicine","PDSA Pet Advice"]);
+ assert.ok(page.source_links.every(item=>item.url.length<=140));
+});
+
 test("orchestrator performs five capped AI calls and stores a read-only report",async()=>{const{env,state}=mockEnv();const result=await runAgentOrchestration(env);assert.equal(result.completed,true);assert.equal(result.ai_calls,5);assert.equal(state.aiCalls,5);assert.ok(state.updates.some(x=>x.sql.includes("status='completed'")));});
 test("orchestrator is idempotent per UTC day",async()=>{const{env,state}=mockEnv({existingRun:true});const result=await runAgentOrchestration(env);assert.equal(result.skipped,true);assert.equal(result.reason,"daily_run_already_started");assert.equal(state.aiCalls,0);});
 test("orchestrator refuses to run without Workers AI binding",async()=>{const{env,state}=mockEnv({ai:false});const result=await runAgentOrchestration(env);assert.equal(result.skipped,true);assert.equal(result.reason,"ai_binding_missing");assert.equal(state.aiCalls,0);});
