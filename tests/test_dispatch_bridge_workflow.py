@@ -115,14 +115,15 @@ class DispatchBridgeWorkflowTests(unittest.TestCase):
             'source_kind: "daily_suite"',
             'workflow_id: "control-center.yml"',
             'source_kind: "control_center"',
-            'workflow_id: "worker-agent-diagnostics.yml"',
             "Control Center D1 snapshot sync",
-            "read-only Worker agent diagnostics",
         ):
             with self.subTest(expected=expected):
                 self.assertIn(expected, daily_block)
         self.assertIn('["analytics", "topic-radar", "live-check"]', daily_block)
-        self.assertIn("Every stage completed successfully", daily_block)
+        self.assertIn("Every data stage completed successfully", daily_block)
+        self.assertIn("existing 14:00 verifier", daily_block)
+        self.assertNotIn('workflow_id: "worker-agent-diagnostics.yml"', daily_block)
+        self.assertNotIn("read-only Worker agent diagnostics", daily_block)
 
         sync = Path(".github/workflows/sync-control-api.yml").read_text(encoding="utf-8")
         self.assertIn("- control_center", sync)

@@ -1608,3 +1608,23 @@ Kitas veiksmas: tikrinti kitą tikrą Daily-suite `event=schedule`; po jo laukti
 - **NEPATVIRTINTA – AI runtime recovery:** gyvas /health 2026-11-28T07:39Z grąžino paskutinį AI ciklą 2026-11-27, completed, 5 AI calls, error_code=null, bet Control Core needs_evidence, 5 gaps (analytics 1, insufficient_evidence 1, other 3). Tai nėra naujo ciklo įrodymas. Kitas numatytas AI langas 2026-11-28 13:20 LT; laikytis vieno ciklo per dieną. Po ciklo tikrinti keturis specialistus, Control Core ir to paties ciklo D1 memory readback.
 - **NEPATVIRTINTA – Analytics:** 2026-11-27 snapshot duomenys neleidžia analytics specialistui patvirtinti GA4/GSC įžvalgų: metrikos nulinės, top pages/queries nėra, organic sessions nepatvirtintos, sitemap pending. Reikia naujų realių duomenų.
 - **LAUKIA:** Issue #145 paliktas open, kol pilnas AI recovery neįrodytas. automation-history latest.md/json yra automatiškai generuojami; jų rankiniu būdu nekeisti. 2026-11-28 07:39Z snapshot nurodo, kad daily-suite schedule 06:10Z dar neįvykdytas; push run jo nepakeičia.
+
+
+## 2026-11-28 – Owner-bridge child sync ciklo klaida ir PR #323
+
+- Main HEAD: `813649e632adc54f682c0355f276d2379447e5ce`. Daily-suite `event=schedule` šiandien nerastas.
+- Owner fallback #46132934330 `workflow_dispatch` success: analytics, topic-radar ir live-check success; 12 URL ir 20 senų 301 redirectų patikrinti. Tai ne schedule įrodymas.
+- Bridge #46132925488 failure; child sync #46132981101 atmetė tėvinį bridge 09:59:17Z, o tėvas baigėsi 09:59:28Z. Tai patvirtina ciklinę priklausomybę. Pakartotinis sync #46133674274 taip pat failure. D1 readback neįvyko.
+- Paruoštas DRAFT PR #323: sync validator abiem etapams leidžia tik aktyvų tėvinį bridge arba jau sėkmingai užbaigtą bridge; exact owner comment/actor/workflow/time patikros išlaikytos. Sync workflow CI #46135981250 success; site-check #46135981226 dar vyko. Vietinio repo testų nepavyko paleisti dėl DNS blokavimo; CI turi atlikti privalomus testus.
+- GA4 2026-11-21–27 grąžino 0 naudotojų/sesijų/peržiūrų ir neturėjo kanalų TOTAL; organic sessions nepatvirtintos. GSC 2026-11-19–25 grąžino 0 parodymų/paspaudimų, sitemap pending, 5 prioritetiniai URL Google nežinomi. RSS radaras: 32 unikalios nuorodos, 7 temos; ne search volume.
+- Lighthouse 2026-11-23 artifact #14826272555 prieš #14818555756: LCP pagerėjo visuose 10, TBT 0 ms, CLS 0; INP nėra laboratoriniuose duomenyse. Render-blocking 55–235 ms ir image-sizing 12–87 KiB lieka optimizavimo kandidatais, ne regresija.
+- Worker šiandien iki 13:20 LT WAITING; paskutinė diagnostika #46122216652 patvirtino D1/Control Core/site/DB ir heartbeat. Naujo AI ciklo dar nėra. Control Center po fallback nepaleistas, nes sync nepavyko.
+- Production Pages deploy nuo 2026-11-25 nebuvo naujas, nes `site/**` nepakito; 2026-11-28 live-check success. Jokių production Worker/D1, DNS, secrets, permissions, billing, ARO Vet ar viešo turinio pakeitimų.
+- Kitas žingsnis: užbaigti PR #323 CI ir gauti savininko patvirtinimą prieš merge; po 13:20 LT patikrinti vienintelį dienos AI ciklą ir 14:00 verifier. Issue #145 palikti open.
+
+
+### PR #323 papildymas – bridge baigiasi po duomenų sinchronizavimo
+
+- Owner-bridge fallback dabar baigiasi iškart po sėkmingų Daily-suite, D1 sync, Control Center ir Control Center D1 sync etapų. Nebelaukiama atskiro read-only Worker agent diagnostics vykdymo; jis lieka esamam 14:00 post-cycle verifieriui.
+- Priežastis: agent diagnostics nėra duomenų surinkimo / D1 snapshot patikros dalis ir neturi galėti paversti jau sėkmingos duomenų grandinės nesėkmingu owner bridge po to, kai visi keturi tos pačios dienos snapshot'ai įrašyti. Tai taip pat sumažina tėvinio bridge vykdymo laiką prieš 13:20 AI langą.
+- Pridėtas regresijos testas: daily-suite fallback grandinė tikrina visas keturias duomenų stadijas, o AI diagnostiką palieka esamam 14:00 verifieriui. Jokių papildomų workflow, cron ar teisių nesukurta.

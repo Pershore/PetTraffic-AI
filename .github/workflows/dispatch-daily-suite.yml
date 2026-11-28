@@ -273,33 +273,12 @@ jobs:
                 controlSync = await waitForCompletion(controlSync.id, "existing Control Center D1 snapshot sync");
               }
 
-              const diagnosticsRuns = await getRuns("worker-agent-diagnostics.yml");
-              let diagnostics = diagnosticsRuns.find(run =>
-                run.event === "workflow_dispatch" &&
-                Date.parse(run.created_at) >= Date.parse(controlSync.created_at) &&
-                (run.status !== "completed" || run.conclusion === "success")
-              );
-              if (!diagnostics) {
-                const dispatchAt = Date.now();
-                await github.rest.actions.createWorkflowDispatch({
-                  owner, repo, workflow_id: "worker-agent-diagnostics.yml", ref: "main"
-                });
-                diagnostics = await findOrWaitForRun(
-                  "worker-agent-diagnostics.yml",
-                  run => run.event === "workflow_dispatch" &&
-                    Date.parse(run.created_at) >= dispatchAt - 30000,
-                  "read-only Worker agent diagnostics"
-                );
-              } else {
-                diagnostics = await waitForCompletion(diagnostics.id, "existing Worker agent diagnostics");
-              }
-
               core.notice("A plain workflow_dispatch is not valid AI evidence; this run uses separately verified owner-bridge provenance.");
               core.notice("This manual fallback is not schedule provenance.");
               core.notice("Owner-bridge recovery chain completed: daily-suite #" + dailySuiteRun.id +
                 " → D1 sync #" + dailySync.id + " → Control Center #" + controlRun.id +
-                " → Control Center D1 sync #" + controlSync.id + " → read-only diagnostics #" +
-                diagnostics.id + ". Every stage completed successfully.");
+                " → Control Center D1 sync #" + controlSync.id + ". Every data stage completed successfully.");
+              core.notice("Worker AI cycle verification remains with the existing 14:00 verifier.");
               return;
             }
 
