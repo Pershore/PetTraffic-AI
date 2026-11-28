@@ -1192,3 +1192,12 @@ GitHub API patvirtino, kad Daily-suite run #44119444026 buvo tikras event=schedu
 - PR CI passed: site-check #46121610160 (164 tests); Worker API #46121610183 (83 Node + 27 Python tests; Cloudflare resource validation success); Sync API #46121610243; Cloudflare Pages preview success. Production Worker deploy and sync jobs were skipped on pull_request.
 - No production code, D1 data/schema, DNS, secrets, permissions, billing, public content or ARO Vet changes. Issue #145 remains open. PR #322 remains draft pending explicit approval for production merge/deploy. Runtime recovery is not yet verified.
 - Do not edit the generated automation-history reports/history/project-state/latest.md/json manually. After approved deployment, verify the live Worker, the next single daily AI cycle, all four specialists' evidence, Control Core, and same-cycle D1 memory readback.
+
+
+## 2026-11-28 – content-review source visibility
+
+- The public content-review agent previously received only the first 900 normalized text characters of each guide. The four current guides place their authoritative source links near the end, so the specialist input omitted those citations. This is a verified input-coverage gap, not proof that the published guides lack sources.
+- PR #322 now supplies a bounded 700-character text excerpt plus up to three unique external source links (short title and capped URL) from each full page. Internal Pet traffic links are excluded. No extra network requests or AI calls are introduced. A regression test verifies links near the end of long HTML reach the review evidence.
+- Latest CI on PR head 3686d42: site-check #46121855942 success (164 tests); Worker API #46121855947 success (84 Node + 27 Python tests; Cloudflare resource validation success); Sync API #46121855949 success; Pages preview success. Production Worker deploy skipped.
+- Analytics evidence remains legitimately insufficient in the 2026-11-27 snapshot: GA4 metrics and GSC impressions/clicks are zero, top pages/queries absent, organic sessions unverified, sitemap pending, and priority URLs unknown to Google. Do not normalize these gaps to reviewed; wait for real evidence.
+- PR #322 remains draft and production runtime is unverified. Issue #145 remains open.
