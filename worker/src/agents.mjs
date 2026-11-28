@@ -94,8 +94,11 @@ export function isEligibleControlCenterSnapshot(event, localDay, evidenceCutoff)
     /^\\d+$/.test(String(provenance.owner_bridge_comment_id || ""));
   // Control Center snapshots arrive through the authenticated workflow_run
   // sync path. A manual dispatch is accepted only with the verified owner bridge.
-  if (provenance.source_event === "workflow_dispatch") return false;
-  if (provenance.source_event === "owner_bridge_fallback" && !ownerBridgeFallback) return false;
+  if (provenance.source_event === "owner_bridge_fallback") {
+    if (!ownerBridgeFallback) return false;
+  } else if (!["push", "schedule", "workflow_run"].includes(provenance.source_event)) {
+    return false;
+  }
 
   const sourceRunId = String(provenance.source_run_id || "");
   if (!sourceRunId || String(payload.run_id || "") !== sourceRunId) return false;
