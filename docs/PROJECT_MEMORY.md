@@ -1201,3 +1201,13 @@ GitHub API patvirtino, kad Daily-suite run #44119444026 buvo tikras event=schedu
 - Latest CI on PR head 3686d42: site-check #46121855942 success (164 tests); Worker API #46121855947 success (84 Node + 27 Python tests; Cloudflare resource validation success); Sync API #46121855949 success; Pages preview success. Production Worker deploy skipped.
 - Analytics evidence remains legitimately insufficient in the 2026-11-27 snapshot: GA4 metrics and GSC impressions/clicks are zero, top pages/queries absent, organic sessions unverified, sitemap pending, and priority URLs unknown to Google. Do not normalize these gaps to reviewed; wait for real evidence.
 - PR #322 remains draft and production runtime is unverified. Issue #145 remains open.
+
+
+## 2026-11-28 – PR #322 merged and Worker deployed
+
+- Owner explicitly approved merge and production Worker deployment. PR #322 was marked ready and squash-merged to main as a1a3132b95c04fbca2110bf88571c06542e0c2c1.
+- Final PR-head CI: site-check #46122028621 success (164 tests); Worker API #46122028594 success (84 Node + 27 Python tests; Cloudflare resource validation); Sync API #46122028644 success with sync skipped on pull_request; Pages preview success.
+- Production push deployment #46122167256 succeeded. No D1 migrations were pending. Worker version f771441b-6d64-4807-8573-9f0f9df9dbb5 deployed. Health confirmed D1 and control-core schema connected; unauthenticated /v1/events returned 401; schedules confirmed */15 * * * * and 20 10,11 * * *.
+- Post-merge site-check #46122167222, automatic work-log #46122167317, and central control center #46122167433 all succeeded (push events, not schedule evidence).
+- Runtime AI recovery remains unverified. Live health at 2026-11-28T07:39Z still showed the 2026-11-27 cycle completed with 5 AI calls/error_code=null but Control Core needs_evidence and 5 evidence gaps. Do not repeat today's cycle. Verify the single scheduled cycle in the 13:20 Europe/Vilnius window, all specialist evidence, Control Core, and same-cycle D1 memory readback.
+- Analytics evidence is independently insufficient: GA4/GSC snapshot zeros, no top pages/queries, organic sessions unverified, sitemap pending. Issue #145 remains open until recovery is proven. Generated automation-history latest.md/json must not be edited manually.
