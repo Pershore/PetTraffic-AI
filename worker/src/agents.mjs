@@ -152,8 +152,26 @@ export function parseResult(raw) {
  }
  if(!value||typeof value!=="object"||Array.isArray(value)) return invalidResult("invalid_json","Model response did not match the expected JSON object.");
  const required=["status","findings","recommendations","evidence_gaps"];
- if(typeof value.status!=="string"||!required.slice(1).every(key=>Array.isArray(value[key]))) {
-  return invalidResult("invalid_json","Model JSON did not contain the required status, findings, recommendations and evidence_gaps fields.");
+ const missingFields=required.filter(key=>key==="status"
+  ? typeof value[key]!=="string"
+  : !Array.isArray(value[key]));
+ const invalidArrayItems=["findings","recommendations","evidence_gaps"].filter(key=>
+  Array.isArray(value[key])&&value[key].some(item=>typeof item!=="string"));
+ const schemaIssues=[...new Set([...missingFields,...invalidArrayItems])];
+ if(schemaIssues.length) {
+  // Preserve typed fields from a parseable object, but never mark it reviewed.
+  const safeStrings=key=>Array.isArray(value[key])
+   ? value[key].filter(item=>typeof item==="string").slice(0,1).map(item=>item.slice(0,120))
+   : [];
+  const gap="Model JSON schema incomplete; missing or invalid required fields: "+schemaIssues.join(", ")+". Result marked needs_evidence.";
+  return {
+   status:"needs_evidence",
+   findings:safeStrings("findings"),
+   recommendations:safeStrings("recommendations"),
+   evidence_gaps:[gap,...safeStrings("evidence_gaps")].slice(0,2),
+   partial_schema:true,
+   requires_human_approval:true,
+  };
  }
  const rawStatus=value.status.trim().toLowerCase().replace(/[\s-]+/g,"_");
  const statusAliases={reviewed:"reviewed",ok:"reviewed",complete:"reviewed",completed:"reviewed",needs_evidence:"needs_evidence",no_data:"needs_evidence",error:"needs_evidence",monitor:"needs_evidence"};
@@ -254,6 +272,42 @@ export async function getEvents(env, expectedRunDate = new Date().toISOString().
  }
  return {events,invalidPayloadCount,missingKinds,staleKinds};
 }
+const CONTENT_REVIEW_TEXT_LIMIT = 1150;
+
+function cleanContentReviewText(html) {
+ return String(html||"").replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi," ")
+  .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi," ")
+  .replace(/<br\b[^>]*>/gi," ").replace(/<\/(?:p|li|h[1-6]|div|section)>/gi," ")
+  .replace(/<[^>]+>/g," ").replace(/&nbsp;/gi," ").replace(/&amp;/gi,"&")
+  .replace(/&lt;/gi,"<").replace(/&gt;/gi,">").replace(/&quot;/gi,'"')
+  .replace(/&#39;/gi,"'").replace(/\s+/g," ").trim();
+}
+
+export function extractContentReviewEvidence(html) {
+ const raw=String(html||"");
+ const main=(raw.match(/<main\b[^>]*>([\s\S]*?)<\/main>/i)||[])[1]||raw;
+ const body=main.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi," ")
+  .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi," ");
+ const text=cleanContentReviewText(body);
+ const headings=[...body.matchAll(/<h[1-3]\b[^>]*>([\s\S]*?)<\/h[1-3]>/gi)]
+  .map(match=>cleanContentReviewText(match[1])).filter(Boolean);
+ const sourceLinks=[...body.matchAll(/<a\b[^>]*href=["'](https?:\/\/[^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)]
+  .map(match=>{
+   const label=cleanContentReviewText(match[2]);
+   let host="";
+   try { host=new URL(match[1]).hostname; } catch {}
+   return label&&host&&host!==new URL(SITE).hostname ? label+" ("+host+")" : "";
+  }).filter(Boolean).slice(0,4);
+ const sections=headings.join(" · ").slice(0,260);
+ const references=sourceLinks.length ? sourceLinks.join("; ").slice(0,330) : "Nerasta išorinių šaltinių nuorodų.";
+ return [
+  "Įžanga: "+text.slice(0,300),
+  "Skyriai: "+sections,
+  "Išoriniai šaltiniai: "+references,
+  "Pabaiga: "+text.slice(-140),
+ ].join("\n").slice(0,CONTENT_REVIEW_TEXT_LIMIT);
+}
+
 async function getPublicContent(env) {
  const pages=[]; const fetcher=env.FETCH||fetch;
  for(const path of CONTENT_PATHS) {
@@ -261,10 +315,7 @@ async function getPublicContent(env) {
    const response=await fetcher(SITE+path,{headers:{"user-agent":"PetTraffic-AgentContentReview/1.0"},redirect:"follow"});
    if(!response.ok){pages.push({path,status:response.status,text:""});continue;}
    const html=await response.text();
-   const text=html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi," ").replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi," ")
-    .replace(/<[^>]+>/g," ").replace(/&nbsp;/gi," ").replace(/&amp;/gi,"&").replace(/&lt;/gi,"<").replace(/&gt;/gi,">")
-    .replace(/&quot;/gi,'"').replace(/&#39;/gi,"'").replace(/\s+/g," ").trim();
-   pages.push({path,status:response.status,text:text.slice(0,900)});
+   pages.push({path,status:response.status,text:extractContentReviewEvidence(html)});
   } catch { pages.push({path,status:0,text:""}); }
  }
  return pages;
@@ -342,7 +393,7 @@ export async function runAgentOrchestration(env, scheduledTime = new Date()) {
    // prevent the coordinator from persisting a bounded, evidence-aware result.
   }
   const degradedSpecialistIds=Object.entries(specialists)
-   .filter(([,result])=>!isUsableModelResult(result))
+   .filter(([,result])=>!isUsableModelResult(result)||result.partial_schema===true)
    .map(([id])=>id);
   const degradedSpecialists=degradedSpecialistIds.flatMap(id=>(specialists[id].evidence_gaps||[]).map(gap=>`${id}: ${gap}`));
   let coordinator;
@@ -363,7 +414,7 @@ export async function runAgentOrchestration(env, scheduledTime = new Date()) {
   if(eventData.invalidPayloadCount>0) {
    coordinator.evidence_gaps=[...(coordinator.evidence_gaps||[]),`Skipped ${eventData.invalidPayloadCount} invalid stored event payload(s); source data requires review.`].slice(0,5);
   }
-  const report={date_utc:date,generated_at:new Date().toISOString(),model:MODEL,ai_calls:reservedCalls,specialists,coordinator,data_quality:{invalid_event_payload_count:eventData.invalidPayloadCount,degraded_specialist_count:degradedSpecialistIds.length,missing_source_kinds:eventData.missingKinds,stale_source_kinds:eventData.staleKinds},read_only:true,publication_enabled:false};
+  const report={date_utc:date,generated_at:new Date().toISOString(),model:MODEL,ai_calls:reservedCalls,specialists,coordinator,data_quality:{invalid_event_payload_count:eventData.invalidPayloadCount,degraded_specialist_count:degradedSpecialistIds.length,partial_schema_specialist_count:Object.values(specialists).filter(result=>result.partial_schema===true).length,missing_source_kinds:eventData.missingKinds,stale_source_kinds:eventData.staleKinds},read_only:true,publication_enabled:false};
   stage="build_control_decision";
   const decision=buildControlDecision(report);
   stage="persist_control_decision";
