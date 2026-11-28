@@ -1,9 +1,9 @@
 # PetTraffic AI – paskutinė patikrinta projekto būsena
 
-- Atnaujinta: 2026-11-28T12:39:05.625558+00:00
+- Atnaujinta: 2026-11-28T15:26:49.601982+00:00
 - Būsena: **REIKIA DĖMESIO**
-- GitHub run: 46145708221
-- Šaltinio commit: 813649e632adc54f682c0355f276d2379447e5ce
+- GitHub run: 46159894565
+- Šaltinio commit: 7f0ec51fec27288c9b5bca029dcaad10373b7f49
 
 ## Paskutinis patikrintas etapas
 
@@ -11,22 +11,22 @@ Kasdienės automatizacijos ir Worker/D1 būklė patikrinta valdymo centro ataska
 
 ## Kitas veiksmas
 
-Spręsti pirmą aptiktą problemą: GA4, temų radaras ir svetainės stebėjimas (warning). Suplanuotas ciklas nuo 2026-11-28 06:10 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-27T16:32:19Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia.
+Spręsti pirmą aptiktą problemą: AI agentai + control-core atmintis (stale). Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-27.
 
 ## Patvirtinti procesai
 
+- GA4, temų radaras ir svetainės stebėjimas: Paskutinis paleidimas sėkmingas.
 - Centrinis valdymo centras: Paskutinis paleidimas sėkmingas.
 - Debesijos read-only užduočių vykdytojas: Paskutinis debesijos užduoties vykdymas sėkmingas.
-- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 9 min.
+- Cloudflare Worker + D1: Worker API ir D1 veikia; svetainės heartbeat sėkmingas prieš 11 min.
 
 ## Problemos
 
-- **GA4, temų radaras ir svetainės stebėjimas** (warning): Suplanuotas ciklas nuo 2026-11-28 06:10 UTC dar neįvykdytas; paskutinis suplanuotas paleidimas buvo 2026-11-27T16:32:19Z. Kiti paleidimo tipai (push / PR / rankinis) jo nepakeičia. – https://github.com/Pershore/PetTraffic-AI/actions/runs/46132934330
-- **Centrinės API sinchronizavimas** (failure): Paskutinis paleidimas nepavyko. – https://github.com/Pershore/PetTraffic-AI/actions/runs/46133674274
 - **AI agentai + control-core atmintis** (stale): Po 13:20 Lietuvos laiku nėra šiandienos AI agentų ciklo; paskutinis įrašas: 2026-11-27. – https://pettraffic-control-api.pauliusgrubliauskis.workers.dev/health
 
 ## Laukiančios patikros
 
+- Centrinės API sinchronizavimas: Vyksta (in_progress).
 - Lighthouse auditas: Workflow atnaujintas 2026-11-23 14:10 UTC po paskutinio suplanuoto laiko; laukiama kito ciklo.
 
 ## AI agentų ir atminties patikra
