@@ -72,6 +72,43 @@ export function isEligibleScheduledDailySuiteSnapshot(event, localDay, evidenceC
   persistedAt.getTime()<=cutoff.getTime() && vilniusDateKey(sourceCreatedAt)===localDay;
 }
 
+export function isEligibleControlCenterSnapshot(event, localDay, evidenceCutoff) {
+  const payload = event?.payload && typeof event.payload === "object" ? event.payload : (() => {
+    if (typeof event?.payload_json !== "string") return null;
+    try {
+      const parsed = JSON.parse(event.payload_json);
+      return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : null;
+    } catch {
+      return null;
+    }
+  })();
+  if (!payload || !["control_center_snapshot", "recommendation_snapshot"].includes(event?.kind)) return false;
+
+  const provenance = payload.provenance;
+  if (!provenance || String(provenance.source_workflow_id) !== "416336983") return false;
+  const ownerBridgeFallback = provenance.source_event === "owner_bridge_fallback" &&
+    provenance.source_trigger_event === "workflow_dispatch" &&
+    provenance.owner_approved_fallback === true &&
+    provenance.owner_actor === "Pershore" &&
+    /^\\d+$/.test(String(provenance.owner_bridge_run_id || "")) &&
+    /^\\d+$/.test(String(provenance.owner_bridge_comment_id || ""));
+  // Control Center snapshots arrive through the authenticated workflow_run
+  // sync path. A manual dispatch is accepted only with the verified owner bridge.
+  if (provenance.source_event === "workflow_dispatch") return false;
+  if (provenance.source_event === "owner_bridge_fallback" && !ownerBridgeFallback) return false;
+
+  const sourceRunId = String(provenance.source_run_id || "");
+  if (!sourceRunId || String(payload.run_id || "") !== sourceRunId) return false;
+  if (typeof provenance.source_run_created_at !== "string") return false;
+  const sourceCreatedAt = new Date(provenance.source_run_created_at);
+  const persistedAt = new Date(event.created_at);
+  const cutoff = new Date(evidenceCutoff);
+  return Number.isFinite(sourceCreatedAt.getTime()) && Number.isFinite(persistedAt.getTime()) &&
+    Number.isFinite(cutoff.getTime()) && persistedAt.getTime() >= sourceCreatedAt.getTime() &&
+    sourceCreatedAt.getTime() <= cutoff.getTime() && persistedAt.getTime() <= cutoff.getTime() &&
+    vilniusDateKey(sourceCreatedAt) === localDay;
+}
+
 export async function shouldRunAgentOrchestration(env, controller) {
   if (!env?.DB || !(isAgentScheduledEvent(controller) || isAgentCatchUpEvent(controller))) return false;
 
@@ -86,19 +123,22 @@ export async function shouldRunAgentOrchestration(env, controller) {
   ).bind(runDate).first();
   if (existingRun) return false;
 
-  const localDay = vilniusDateKey(scheduledAt);
-  const snapshots = await env.DB.prepare(
-    "SELECT kind, payload_json, created_at FROM events " +
-    "WHERE kind IN ('analytics_snapshot', 'topic_snapshot') AND created_at <= ? " +
-    "ORDER BY created_at DESC LIMIT 100"
-  ).bind(scheduledAt.toISOString()).all();
+  // Do not spend the one daily AI cycle on a partial snapshot set. The
+  // heartbeat cron will retry this gate after 13:20 until all four verified
+  // same-day snapshots have been persisted and read back from D1.
+  const eventData = await getEvents(env, runDate, scheduledAt);
+  if (eventData.missingKinds.length || eventData.staleKinds.length) return false;
 
-  // Require a same-day Daily-suite snapshot with either a true GitHub schedule
-  // event or a separately verified owner-only bridge fallback. Plain manual
-  // dispatches, pushes, PRs and other events remain ineligible.
-  return (snapshots.results || []).some(row =>
-    isEligibleScheduledDailySuiteSnapshot(row, localDay, scheduledAt)
-  );
+  const control = eventData.events.find(event => event.kind === "control_center_snapshot");
+  const recommendations = eventData.events.find(event => event.kind === "recommendation_snapshot");
+  if (!control || !recommendations) return false;
+
+  const controlProvenance = control.payload.provenance || {};
+  const recommendationProvenance = recommendations.payload.provenance || {};
+  return String(control.payload.run_id || "") === String(recommendations.payload.run_id || "") &&
+    String(controlProvenance.source_run_id || "") === String(recommendationProvenance.source_run_id || "") &&
+    String(controlProvenance.source_run_created_at || "") === String(recommendationProvenance.source_run_created_at || "") &&
+    String(controlProvenance.source_workflow_id || "") === String(recommendationProvenance.source_workflow_id || "");
 }
 
 import { buildControlDecision, persistControlDecision } from "./control-core.mjs";
@@ -240,8 +280,14 @@ export async function getEvents(env, expectedRunDate = new Date().toISOString().
     invalidPayloadCount++;
     continue;
    }
+   const event = {kind,created_at:row.created_at,payload};
    if((kind==="analytics_snapshot"||kind==="topic_snapshot") &&
-      !isEligibleScheduledDailySuiteSnapshot({kind,created_at:row.created_at,payload},localDay,cutoff)) {
+      !isEligibleScheduledDailySuiteSnapshot(event,localDay,cutoff)) {
+    sawStale=true;
+    continue;
+   }
+   if((kind==="control_center_snapshot"||kind==="recommendation_snapshot") &&
+      !isEligibleControlCenterSnapshot(event,localDay,cutoff)) {
     sawStale=true;
     continue;
    }
