@@ -296,10 +296,15 @@ test("daily orchestration waits for all four verified same-day snapshots", async
  const complete = makeEnv({rows});
  const missingControl = makeEnv({rows:rows.filter(row => row.kind !== "control_center_snapshot")});
  const missingRecommendation = makeEnv({rows:rows.filter(row => row.kind !== "recommendation_snapshot")});
+ const mismatchedControlRun = rows.map(row => row.kind === "recommendation_snapshot"
+  ? {...row,payload_json:JSON.stringify({run_id:"different-cc",provenance:{...ccProvenance,source_run_id:"different-cc"}})}
+  : row);
+ const mismatchedPair = makeEnv({rows:mismatchedControlRun});
  const none = makeEnv();
  assert.equal(await shouldRunAgentOrchestration(complete,controller), true);
  assert.equal(await shouldRunAgentOrchestration(missingControl,controller), false);
  assert.equal(await shouldRunAgentOrchestration(missingRecommendation,controller), false);
+ assert.equal(await shouldRunAgentOrchestration(mismatchedPair,controller), false);
  assert.equal(await shouldRunAgentOrchestration(none,controller), false);
 });
 
