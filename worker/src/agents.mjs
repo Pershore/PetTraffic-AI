@@ -90,8 +90,8 @@ export function isEligibleControlCenterSnapshot(event, localDay, evidenceCutoff)
     provenance.source_trigger_event === "workflow_dispatch" &&
     provenance.owner_approved_fallback === true &&
     provenance.owner_actor === "Pershore" &&
-    /^\\d+$/.test(String(provenance.owner_bridge_run_id || "")) &&
-    /^\\d+$/.test(String(provenance.owner_bridge_comment_id || ""));
+    /^\d+$/.test(String(provenance.owner_bridge_run_id || "")) &&
+    /^\d+$/.test(String(provenance.owner_bridge_comment_id || ""));
   // Control Center snapshots arrive through the authenticated workflow_run
   // sync path. A manual dispatch is accepted only with the verified owner bridge.
   if (provenance.source_event === "owner_bridge_fallback") {
