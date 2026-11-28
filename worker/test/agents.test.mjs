@@ -339,6 +339,22 @@ test("Control Center evidence requires trusted same-day provenance", () => {
  };
  const cutoff = Date.parse("2026-11-15T11:30:00.000Z");
  assert.equal(isEligibleControlCenterSnapshot(good,"2026-11-15",cutoff),true);
+ const fallback = {
+  ...good,
+  payload: {
+   run_id:"cc-today",
+   provenance:{
+    source_event:"owner_bridge_fallback",source_trigger_event:"workflow_dispatch",
+    source_workflow_id:"416336983",source_run_id:"cc-today",
+    source_run_created_at:"2026-11-15T11:27:00.000Z",
+    owner_approved_fallback:true,owner_actor:"Pershore",
+    owner_bridge_run_id:"123456",owner_bridge_comment_id:"987654",
+   },
+  },
+ };
+ assert.equal(isEligibleControlCenterSnapshot(fallback,"2026-11-15",cutoff),true);
+ const incompleteFallback = {...fallback,payload:{...fallback.payload,provenance:{...fallback.payload.provenance,owner_bridge_comment_id:""}}};
+ assert.equal(isEligibleControlCenterSnapshot(incompleteFallback,"2026-11-15",cutoff),false);
  const reject = (changes,day="2026-11-15",time=cutoff) => isEligibleControlCenterSnapshot({
   ...good,...changes,payload:{...good.payload,...changes.payload,
    provenance:{...good.payload.provenance,...(changes.payload?.provenance||{})}},
